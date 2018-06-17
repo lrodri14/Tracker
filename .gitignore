@@ -1,2 +1,5 @@
-employee/employee/__init__.pyc
-employee/employee/settings.pyc
+employee/employee/*.pyc
+employee/worksheet/*.pyc
+employee/worksheet/migrations/*.pyc
+employee/*.sqlite3
+.vscode
