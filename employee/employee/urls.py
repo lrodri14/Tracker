@@ -22,4 +22,11 @@ from worksheet import views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', views.home, name='home'),
+    url(r'^forms/empleado/$', views.empleado_form, name="empleados-form"),
+    url(r'^perfil/empleado/$', views.empleado_perfil, name="empleado-perfil"),
+    url(r'^listar/empleados/$', views.empleado_listado, name="empleados-listado"),
+
+
+    #----------------->>>AJAX<<<------------------
+    url(r'^guardar/empleado/$', views.guardar_empleado, name='guardar_empleado'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -1,0 +1,372 @@
+{% extends "base.html" %}
+{% block titulo %}Datos del Empleado{% endblock titulo %}
+{% block contenido %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="text-bold"><i class="ti-user"></i>
+                    Nuevo registro de empleado</h2>
+            </div>
+            <div class="panel-wrapper">
+                <div class="panel-body">
+                    <form class="">
+                        {% csrf_token %}
+                        <div class="form-body">
+                            <div class="row">
+                                <div class="col-md-9">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="" class="control-label">Primer Nombre</label>
+                                            <input type="text" name="primerNombre" id="txtPrimerNombre" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="" class="control-label">No. de empleado Ext.</label>
+                                            <input type="text" name="noEmpExt" id="txtNoEmpExt" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="" class="control-label">Segundo Nombre</label>
+                                            <input type="text" name="segundoNombre" id="txtSegundoNombre" class="form-control form-material" placeholder="Ingrese el nombre del empleado">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="" class="control-label">Apellido</label>
+                                            <input type="text" name="apellido" id="txtApellido" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <div class="checkbox checkbox-success">
+                                                <input id="chkActivo" type="checkbox">
+                                                <label for="chkActivo" class="control-label"> Activo </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="col-md-9">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="" class="control-label">Denominación de función</label>
+                                            <input type="text" name="jobTitle" id="txtJobTitle" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="" class="control-label">Posición</label>
+                                            <select class="form-control select2" name="position">
+                                                <option value="0">Select</option>
+                                                {% for position in positions %}
+                                                <option value="{{position.pk}}">{{position.name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="txtTelefonoOficina" class="control-label"> Teléfono de la oficina </label>
+                                            <input id="txtTelefonoOficina" type="textbox" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="" class="control-label">Departamento</label>
+                                            <select class="form-control select2" name="dept">
+                                                <option value="0">Select</option>
+                                                {% for department in departments %}
+                                                <option value="{{department.pk}}">{{department.name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="txtExtension" class="control-label"> Extensión </label>
+                                            <input id="txtExtension" type="textbox" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="" class="control-label">Sucursal</label>
+                                            <select class="form-control select2" name="branch">
+                                                <option value="0">Select</option>
+                                                {% for branch in branches %}
+                                                <option value="{{branch.pk}}">{{branch.name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="txtExtension" class="control-label"> Teléfono móvil </label>
+                                            <input id="txtTelMovil" type="textbox" class="form-control" name="telefono_movil">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="" class="control-label">Gerente</label>
+                                            <input id="txtGerente" type="textbox" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="txtPager" class="control-label"> Pager </label>
+                                            <input id="txtPager" type="textbox" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="" class="control-label">Empleado del departamento</label>
+                                            <select class="form-control select2" name="dept">
+                                                <option>Select</option>
+                                                {% for salesPerson in salesPersons %}
+                                                <option value="{{salesPerson.pk}}">{{salesPerson.slpName}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="txtPager" class="control-label"> Fax </label>
+                                            <input id="idTxtFax" type="textbox" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-9">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="txtCorreo" class="control-label">Correo electrónico</label>
+                                            <input id="txtCorreo" type="textbox" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="txtExtension" class="control-label"> Teléfono de casa </label>
+                                            <input id="txtTelCasa" type="textbox" class="form-control" name="telefono_casa">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Tabs -->
+                            <div class="row">
+                                <div class="col-md-9">
+                                    <ul class="nav nav-tabs" role="tablist">
+                                        <li role="presentation" class="active">
+                                            <a href="#home" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true">
+                                                <span class="visible-xs">
+                                                    <i class="ti-home"></i>
+                                                </span>
+                                                <span class="hidden-xs">Dirección</span>
+                                            </a>
+                                        </li>
+                                        <li role="presentation" class="">
+                                            <a href="#perfil" aria-controls="perfil" role="tab" data-toggle="tab" aria-expanded="true">
+                                                <span class="visible-xs">
+                                                    <i class="ti-user"></i>
+                                                </span>
+                                                <span class="hidden-xs">Miembro</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                    <div class="tab-content">
+                                        <div role="tabpanel" class="tab-pane active" id="home">
+                                            <div class="col-md-12">
+                                                <h3>Dirección de la casa</h3>
+                                                <div class="row">
+                                                    <div class="col-md-5">
+                                                        <div class="form-group">
+                                                            <label for="txt" class="control-label">Calle</label>
+                                                            <input id="txtCalle" type="text" name="celular" class="form-control" id="calle" placeholder="Ingrese numero de celular">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-5">
+                                                        <div class="form-group">
+                                                            <label for="txtCorreo" class="control-label">No. de calle</label>
+                                                            <input id="txtNoCalle" type="text" name="num_calle" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-5">
+                                                        <div class="form-group">
+                                                            <label for="txtCorreo" class="control-label">Bloque</label>
+                                                            <input id="txtBloque" type="text" name="bloque" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-5">
+                                                        <div class="form-group">
+                                                            <label for="txtCorreo" class="control-label">Edificio/Casa</label>
+                                                            <input id="txtEdificio" type="text" name="edificio" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-5">
+                                                        <div class="form-group">
+                                                            <label for="txtCorreo" class="control-label">Código postal</label>
+                                                            <input id="txtCodigoPostal" type="text" name="codigo_postal" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-5">
+                                                        <div class="form-group">
+                                                            <label for="txtCorreo" class="control-label">Ciudad</label>
+                                                            <input id="txtCiudad" type="text" name="ciudad" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-5">
+                                                        <div class="form-group">
+                                                            <label for="txtCorreo" class="control-label">Condado/Municipio</label>
+                                                            <input id="txtCondado" type="text" name="Condado" class="form-control">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-5">
+                                                        <div class="form-group">
+                                                            <label for="" class="control-label">Estado/Departamento</label>
+                                                            <select class="form-control select2" name="dept">
+                                                                    <option>Select</option>
+                                                                    {% for state in states %}
+                                                                    <option value="{{state.pk}}">{{state.name}}</option>
+                                                                    {% endfor %}
+                                                                    {% comment "" %}
+                                                                    
+                                                                    <option value="HI">Hawaii</option>
+                                                                    <option value="CA">California</option>
+                                                                    <option value="NV">Nevada</option>
+                                                                    <option value="OR">Oregon</option>
+                                                                    <option value="WA">Washington</option>
+                                                                    {% endcomment %}
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-5">
+                                                        <div class="form-group">
+                                                            <label for="" class="control-label">País</label>
+                                                            <select class="form-control select2" name="dept">
+                                                                    <option>Select</option>
+                                                                    {% for country in countries %}
+                                                                    <option value="{{country.pk}}">{{country.name}}</option>
+                                                                    
+                                                                    {% endfor %}
+                                                                </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div role="tabpanel" class="tab-pane" id="perfil">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <input type="text" name="contacto" class="form-control" id="contacto" placeholder="Ingrese el nombre del contacto">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Botones del formulario -->
+                        <div class="form-action">
+                            <button id="btnGuardar" class="btn btn-success">Guardar</button>
+                            <button id="btnCancelar" class="btn btn-default">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contenido %}
+{% block scripts %}
+<script>
+
+    $(".select2").select2();
+
+    $('#side-menu a').removeClass('active');
+    $('#aEmp').addClass('active');
+    $('#saEmpFrm').addClass('active');
+
+    //Funciones del botón guardar formulario
+    $('#btnGuardar').on('click', (e) => {
+        e.preventDefault();
+        GuardarEmpleado();
+    });
+
+
+    function GuardarEmpleado() {
+        var primerNombre = $('#txtPrimerNombre').val();
+        var segundoNombre = $('#txtSegundoNombre').val();
+        var apellido = $('#txtApellido').val();
+        var numExt = $('#txtNoEmpExt').val();
+        var puesto = $('#txtJobTitle').val();
+        var token = $('input[name="csrfmiddlewaretoken"]').val()
+        var url = "/guardar/empleado/"; // the script where you handle the form input.
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {
+                'primerNombre':primerNombre,
+                'segundoNombre':segundoNombre,
+                'apellido':apellido,
+                'numExt':numExt,
+                'puesto': puesto,
+				'csrfmiddlewaretoken': token,
+            }, // serializes the form's elements.
+            success: function(data)
+            {
+                if(data.error == false){
+                    $.toast({
+                        heading: 'Empleados',
+                        text: 'Se ha registrado un nuevo empleado.',
+                        position: 'top-right',
+                        loaderBg: '#ff6849',
+                        icon: 'success',
+                        hideAfter: 5000,
+                        stack: 6
+                    });
+                }else{
+                    $.toast({
+                        heading: 'Empleados',
+                        text: data.mensaje,
+                        position: 'top-right',
+                        loaderBg: '#ff6849',
+                        icon: 'error',
+                        hideAfter: 5000,
+                        stack: 6
+                    });
+                }
+            }
+        });
+    }
+</script>
+{% endblock scripts %}
