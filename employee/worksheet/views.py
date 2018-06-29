@@ -37,6 +37,14 @@ def guardar_empleado(request):
             apellido = request.POST['apellido']
             puesto = request.POST['puesto']
             no_ext = request.POST['numExt']
+            activo = request.POST['activo']
+            posicion = request.POST['posicion']
+            if activo == 1:
+                activo = True
+            else:
+                activo = False
+
+            obpos = Position.objects.get(pk=posicion)
             if len(primerNombre) > 0 and len(apellido) > 0 and len(puesto) > 0 and len(no_ext) > 0:
                 oEmpleado = Employee(
                     firstName=primerNombre,
@@ -44,7 +52,9 @@ def guardar_empleado(request):
                     lastName=apellido,
                     extEmpNo=no_ext,
                     jobTitle=puesto,
-                    user_reg=request.user, 
+                    user_reg=request.user,
+                    active = activo,
+                    position = obpos,
                 )
                 oEmpleado.save()
                 emp = {

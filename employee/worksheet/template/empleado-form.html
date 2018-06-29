@@ -65,7 +65,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="" class="control-label">Posición</label>
-                                            <select class="form-control select2" name="position">
+                                            <select class="form-control select2" name="position" id="cboPosicion">
                                                 <option value="0">Select</option>
                                                 {% for position in positions %}
                                                 <option value="{{position.pk}}">{{position.name}}</option>
@@ -309,13 +309,11 @@
 {% endblock contenido %}
 {% block scripts %}
 <script>
-
-    $(".select2").select2();
-
     $('#side-menu a').removeClass('active');
     $('#aEmp').addClass('active');
     $('#saEmpFrm').addClass('active');
 
+    $(".select2").select2();
     //Funciones del botón guardar formulario
     $('#btnGuardar').on('click', (e) => {
         e.preventDefault();
@@ -329,6 +327,15 @@
         var apellido = $('#txtApellido').val();
         var numExt = $('#txtNoEmpExt').val();
         var puesto = $('#txtJobTitle').val();
+        var activo = $('#chkActivo').val();
+        var posicion = $('#cboPosicion').val();
+        if ($('#chkActivo').is(":checked"))
+        {
+            activo = 1;
+        }else{
+            activo = 0;
+        }
+        console.log(activo);
         var token = $('input[name="csrfmiddlewaretoken"]').val()
         var url = "/guardar/empleado/"; // the script where you handle the form input.
         $.ajax({
@@ -340,6 +347,8 @@
                 'apellido':apellido,
                 'numExt':numExt,
                 'puesto': puesto,
+                'activo': activo,
+                'posicion': posicion,
 				'csrfmiddlewaretoken': token,
             }, // serializes the form's elements.
             success: function(data)
@@ -367,6 +376,15 @@
                 }
             }
         });
+    }
+
+    function LimpiarControles() {
+        $('#txtPrimerNombre').val(null);
+        $('#txtSegundoNombre').val(null);
+        $('#txtApellido').val(null);
+        $('#txtNoEmpExt').val(null);
+        $('#txtJobTitle').val(null);
+        $('#chkActivo').val(false);
     }
 </script>
 {% endblock scripts %}
