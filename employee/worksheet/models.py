@@ -87,6 +87,30 @@ class Country(models.Model):
     def __unicode__(self):
         return self.name
 
+class StatusEmp(models.Model):
+    name = models.CharField(max_length=150)
+    description = models.TextField()
+    user_reg = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name="sts_usermod", related_query_name="sts_usermod",)
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.BooleanField(default=True)
+
+    def __unicode__(self):
+        return self.name
+
+class TermReason(models.Model):
+    name = models.CharField(max_length=150)
+    description = models.TextField()
+    user_reg = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name="trm_usermod", related_query_name="trm_usermod",)
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.BooleanField(default=True)
+
+    def __unicode__(self):
+        return self.name
+
 
 class Employee(models.Model):
     firstName = models.CharField(max_length=50)
@@ -115,13 +139,26 @@ class Employee(models.Model):
     homeCounty = models.CharField(max_length=100, blank=True, null=True)
     homeState = models.ForeignKey(State, blank=True, null=True, on_delete=models.SET_NULL, related_name='home_state', related_query_name='home_state')
     homeCountry = models.ForeignKey(Country, blank=True, null=True, on_delete=models.SET_NULL, related_name='home_country', related_query_name='home_country')
+    workStreet = models.CharField(max_length=250, blank=True, null=True)
+    streetNoW = models.CharField(max_length=50, blank=True, null=True)
+    workBlock = models.CharField(max_length=50, blank=True, null=True)
+    workBuild = models.CharField(max_length=50, blank=True, null=True)
+    workZip = models.CharField(max_length=50, blank=True, null=True)
+    workCity = models.CharField(max_length=100, blank=True, null=True)
+    workCounty = models.CharField(max_length=100, blank=True, null=True)
+    workState = models.ForeignKey(State, blank=True, null=True, on_delete=models.SET_NULL, related_name='work_state', related_query_name='work_state')
+    workCountry = models.ForeignKey(Country, blank=True, null=True, on_delete=models.SET_NULL, related_name='work_country', related_query_name='work_country')
 
+    startDate = models.DateField(blank=True, null=True)
+    status = models.ForeignKey(StatusEmp, blank=True, null=True)
+    termDate = models.DateField(blank=True, null=True)
+    termReason = models.ForeignKey(TermReason, blank=True, null=True)
 
     user_reg = models.ForeignKey(User)
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='emp_usermod', related_query_name='emp_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.BooleanField(default=False)
+    active = models.BooleanField()
 
     def __unicode__(self):
         return self.firstName + ' ' + self.lastName 

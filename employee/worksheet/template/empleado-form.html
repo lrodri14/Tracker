@@ -14,161 +14,228 @@
                         {% csrf_token %}
                         <div class="form-body">
                             <div class="row">
-                                <div class="col-md-9">
+                                <div class="col-md-12 margin-bottom-5px">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="" class="control-label">Primer Nombre</label>
-                                            <input type="text" name="primerNombre" id="txtPrimerNombre" class="form-control">
+                                            <div class="col-md-5 text-right">
+                                                <label for="" class="control-label">Primer Nombre :</label>
+                                            </div>
+                                            <div class="col-md-7">
+                                                <input type="text" name="primerNombre" id="txtPrimerNombre" class="form-control input-sm">
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="" class="control-label">No. de empleado Ext.</label>
-                                            <input type="text" name="noEmpExt" id="txtNoEmpExt" class="form-control">
+                                            <div class="col-md-5 text-right">
+                                                <label for="" class="control-label">No. de empleado Ext. :</label>
+                                            </div>
+                                            <div class="col-md-7">
+                                                <input type="text" name="noEmpExt" id="txtNoEmpExt" class="form-control input-sm">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-9">
+                                <div class="col-md-12 margin-bottom-5px">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="" class="control-label">Segundo Nombre</label>
-                                            <input type="text" name="segundoNombre" id="txtSegundoNombre" class="form-control form-material" placeholder="Ingrese el nombre del empleado">
+                                            <div class="col-md-5 text-right">
+                                                <label for="" class="control-label">Segundo Nombre :</label>
+                                            </div>
+                                            <div class="col-md-7">
+                                                <input type="text" name="segundoNombre" id="txtSegundoNombre" class="form-control input-sm">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-9">
+                                <div class="col-md-12 margin-bottom-5px">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="" class="control-label">Apellido</label>
-                                            <input type="text" name="apellido" id="txtApellido" class="form-control">
+                                            <div class="col-md-5 text-right">
+                                                <label for="" class="control-label">Apellido :</label>
+                                            </div>
+                                            <div class="col-md-7">
+                                                <input type="text" name="apellido" id="txtApellido" class="form-control input-sm">
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <div class="checkbox checkbox-success">
-                                                <input id="chkActivo" type="checkbox">
+                                                <input id="chkActivo" type="checkbox" class="input-sm">
                                                 <label for="chkActivo" class="control-label"> Activo </label>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <hr>
-                                <div class="col-md-9">
+                                <div class="col-md-12 margin-bottom-5px">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="" class="control-label">Denominación de función</label>
-                                            <input type="text" name="jobTitle" id="txtJobTitle" class="form-control">
+                                            <div class="col-md-5 text-right">
+                                                <label for="" class="control-label">Denominación de función :</label>
+                                            </div>
+                                            <div class="col-md-7">
+                                                <input type="text" name="jobTitle" id="txtJobTitle" class="form-control input-sm">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-9">
+                                <div class="col-md-12 margin-bottom-5px">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="" class="control-label">Posición</label>
-                                            <select class="form-control select2" name="position" id="cboPosicion">
-                                                <option value="0">Select</option>
-                                                {% for position in positions %}
-                                                <option value="{{position.pk}}">{{position.name}}</option>
-                                                {% endfor %}
-                                            </select>
+                                            <div class="col-md-5 text-right">
+                                                <label for="" class="control-label">Posición :</label>
+                                            </div>
+                                            <div class="col-md-7">
+                                                <select class="form-control input-sm" name="position" id="cboPosicion">
+                                                    <option value="0">Seleccionar</option>
+                                                    {% for position in positions %}
+                                                    <option value="{{position.pk}}">{{position.name}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="txtTelefonoOficina" class="control-label"> Teléfono de la oficina </label>
-                                            <input id="txtTelefonoOficina" type="textbox" class="form-control">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-9">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label for="" class="control-label">Departamento</label>
-                                            <select class="form-control select2" name="dept">
-                                                <option value="0">Select</option>
-                                                {% for department in departments %}
-                                                <option value="{{department.pk}}">{{department.name}}</option>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label for="txtExtension" class="control-label"> Extensión </label>
-                                            <input id="txtExtension" type="textbox" class="form-control">
+                                            <div class="col-md-5 text-right">
+                                                <label for="txtTelefonoOficina" class="control-label"> Teléfono de la oficina :</label>
+                                            </div>
+                                            <div class="col-md-7">
+                                                <input id="txtTelefonoOficina" type="textbox" class="form-control input-sm">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-9">
+                                <div class="col-md-12 margin-bottom-5px">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="" class="control-label">Sucursal</label>
-                                            <select class="form-control select2" name="branch">
-                                                <option value="0">Select</option>
-                                                {% for branch in branches %}
-                                                <option value="{{branch.pk}}">{{branch.name}}</option>
-                                                {% endfor %}
-                                            </select>
+                                            <div class="col-md-5 text-right">
+                                                <label for="" class="control-label">Departamento :</label>
+                                            </div>
+                                            <div class="col-md-7">
+                                                <select class="form-control input-sm" name="dept" id="cboDepto">
+                                                    <option value="0">Seleccionar...</option>
+                                                    {% for department in departments %}
+                                                    <option value="{{department.pk}}">{{department.name}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="txtExtension" class="control-label"> Teléfono móvil </label>
-                                            <input id="txtTelMovil" type="textbox" class="form-control" name="telefono_movil">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-9">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label for="" class="control-label">Gerente</label>
-                                            <input id="txtGerente" type="textbox" class="form-control">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label for="txtPager" class="control-label"> Pager </label>
-                                            <input id="txtPager" type="textbox" class="form-control">
+                                            <div class="col-md-5 text-right">
+                                                <label for="txtExtension" class="control-label"> Extensión :</label>
+                                            </div>
+                                            <div class="col-md-7">
+                                                <input id="txtExtension" type="textbox" class="form-control input-sm">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-9">
+                                <div class="col-md-12 margin-bottom-5px">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="" class="control-label">Empleado del departamento</label>
-                                            <select class="form-control select2" name="dept">
-                                                <option>Select</option>
-                                                {% for salesPerson in salesPersons %}
-                                                <option value="{{salesPerson.pk}}">{{salesPerson.slpName}}</option>
-                                                {% endfor %}
-                                            </select>
+                                            <div class="col-md-5 text-right">
+                                                <label for="" class="control-label">Sucursal :</label>
+                                            </div>
+                                            <div class="col-md-7">
+                                                <select class="form-control input-sm" name="branch" id="cboSucursal">
+                                                    <option value="0">Seleccionar...</option>
+                                                    {% for branch in branches %}
+                                                    <option value="{{branch.pk}}">{{branch.name}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="txtPager" class="control-label"> Fax </label>
-                                            <input id="idTxtFax" type="textbox" class="form-control">
+                                            <div class="col-md-5 text-right">
+                                                <label for="txtExtension" class="control-label"> Teléfono móvil :</label>
+                                            </div>
+                                            <div class="col-md-7">
+                                                <input id="txtTelMovil" type="textbox" class="form-control input-sm" name="telefono_movil">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-9">
+                                <div class="col-md-12 margin-bottom-5px">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="txtCorreo" class="control-label">Correo electrónico</label>
-                                            <input id="txtCorreo" type="textbox" class="form-control">
+                                            <div class="col-md-5 text-right">
+                                                <label for="" class="control-label">Gerente :</label>
+                                            </div>
+                                            <div class="col-md-7">
+                                                <input id="txtGerente" type="textbox" class="form-control input-sm">
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="txtExtension" class="control-label"> Teléfono de casa </label>
-                                            <input id="txtTelCasa" type="textbox" class="form-control" name="telefono_casa">
+                                            <div class="col-md-5 text-right">
+                                                <label for="txtPager" class="control-label"> Pager :</label>
+                                            </div>
+                                            <div class="col-md-7">
+                                                <input id="txtPager" type="textbox" class="form-control input-sm">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 margin-bottom-5px">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <div class="col-md-5 text-right">
+                                                <label for="" class="control-label">Empleado del departamento :</label>
+                                            </div>
+                                            <div class="col-md-7">
+                                                <select class="form-control input-sm" name="slsPerson" id="cboSlsPerson">
+                                                    <option value="0">Seleccionar...</option>
+                                                    {% for salesPerson in salesPersons %}
+                                                    <option value="{{salesPerson.pk}}">{{salesPerson.slpName}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <div class="col-md-5 text-right">
+                                                <label for="txtFax" class="control-label"> Fax :</label>
+                                            </div>
+                                            <div class="col-md-7">
+                                                <input id="txtFax" type="textbox" class="form-control input-sm">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 margin-bottom-5px">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <div class="col-md-5 text-right">
+                                                <label for="txtCorreo" class="control-label">Correo electrónico :</label>
+                                            </div>
+                                            <div class="col-md-7">
+                                                <input id="txtCorreo" type="textbox" class="form-control input-sm">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <div class="col-md-5 text-right">
+                                                <label for="txtTelCasa" class="control-label"> Teléfono de casa :</label>
+                                            </div>
+                                            <div class="col-md-7">
+                                                <input id="txtTelCasa" type="textbox" class="form-control input-sm" name="telefono_casa">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             <!-- Tabs -->
                             <div class="row">
-                                <div class="col-md-9">
+                                <div class="col-md-12">
                                     <ul class="nav nav-tabs" role="tablist">
                                         <li role="presentation" class="active">
                                             <a href="#home" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true">
@@ -179,115 +246,320 @@
                                             </a>
                                         </li>
                                         <li role="presentation" class="">
-                                            <a href="#perfil" aria-controls="perfil" role="tab" data-toggle="tab" aria-expanded="true">
+                                            <a href="#gestion" aria-controls="gestion" role="tab" data-toggle="tab" aria-expanded="true">
                                                 <span class="visible-xs">
                                                     <i class="ti-user"></i>
                                                 </span>
-                                                <span class="hidden-xs">Miembro</span>
+                                                <span class="hidden-xs">Gestion</span>
                                             </a>
                                         </li>
                                     </ul>
                                     <div class="tab-content">
                                         <div role="tabpanel" class="tab-pane active" id="home">
-                                            <div class="col-md-12">
+                                            <div class="col-md-6">
                                                 <h3>Dirección de la casa</h3>
-                                                <div class="row">
-                                                    <div class="col-md-5">
+                                                <div class="row margin-bottom-5px">
+                                                    <div class="col-md-12">
                                                         <div class="form-group">
-                                                            <label for="txt" class="control-label">Calle</label>
-                                                            <input id="txtCalle" type="text" name="celular" class="form-control" id="calle" placeholder="Ingrese numero de celular">
+                                                            <div class="col-md-5 text-right">
+                                                                <label for="txtCalle" class="control-label">Calle :</label>
+                                                            </div>
+                                                            <div class="col-md-7">
+                                                                <input id="txtCalle" type="text" name="calle" class="form-control input-sm">
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="row">
-                                                    <div class="col-md-5">
+                                                <div class="row margin-bottom-5px">
+                                                    <div class="col-md-12">
                                                         <div class="form-group">
-                                                            <label for="txtCorreo" class="control-label">No. de calle</label>
-                                                            <input id="txtNoCalle" type="text" name="num_calle" class="form-control">
+                                                            <div class="col-md-5 text-right">
+                                                                <label for="txtNoCalle" class="control-label">No. de calle :</label>
+                                                            </div>
+                                                            <div class="col-md-7">
+                                                                <input id="txtNoCalle" type="text" name="num_calle" class="form-control input-sm">
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="row">
-                                                    <div class="col-md-5">
+                                                <div class="row margin-bottom-5px">
+                                                    <div class="col-md-12">
                                                         <div class="form-group">
-                                                            <label for="txtCorreo" class="control-label">Bloque</label>
-                                                            <input id="txtBloque" type="text" name="bloque" class="form-control">
+                                                            <div class="col-md-5 text-right">
+                                                                <label for="txtBloque" class="control-label">Bloque :</label>
+                                                            </div>
+                                                            <div class="col-md-7">
+                                                                <input id="txtBloque" type="text" name="bloque" class="form-control input-sm">
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="row">
-                                                    <div class="col-md-5">
+                                                <div class="row margin-bottom-5px">
+                                                    <div class="col-md-12">
                                                         <div class="form-group">
-                                                            <label for="txtCorreo" class="control-label">Edificio/Casa</label>
-                                                            <input id="txtEdificio" type="text" name="edificio" class="form-control">
+                                                            <div class="col-md-5 text-right">
+                                                                <label for="txtEdificio" class="control-label">Edificio/Casa :</label>
+                                                            </div>
+                                                            <div class="col-md-7">
+                                                                <input id="txtEdificio" type="text" name="edificio" class="form-control input-sm">
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="row">
-                                                    <div class="col-md-5">
+                                                <div class="row margin-bottom-5px">
+                                                    <div class="col-md-12">
                                                         <div class="form-group">
-                                                            <label for="txtCorreo" class="control-label">Código postal</label>
-                                                            <input id="txtCodigoPostal" type="text" name="codigo_postal" class="form-control">
+                                                            <div class="col-md-5 text-right">
+                                                                <label for="txtCodigoPostal" class="control-label">Código postal :</label>
+                                                            </div>
+                                                            <div class="col-md-7">
+                                                                <input id="txtCodigoPostal" type="text" name="codigo_postal" class="form-control input-sm">
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="row">
-                                                    <div class="col-md-5">
+                                                <div class="row margin-bottom-5px">
+                                                    <div class="col-md-12">
                                                         <div class="form-group">
-                                                            <label for="txtCorreo" class="control-label">Ciudad</label>
-                                                            <input id="txtCiudad" type="text" name="ciudad" class="form-control">
+                                                            <div class="col-md-5 text-right">
+                                                                <label for="txtCiudad" class="control-label">Ciudad :</label>
+                                                            </div>
+                                                            <div class="col-md-7">
+                                                                <input id="txtCiudad" type="text" name="ciudad" class="form-control input-sm">
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="row">
-                                                    <div class="col-md-5">
+                                                <div class="row margin-bottom-5px">
+                                                    <div class="col-md-12">
                                                         <div class="form-group">
-                                                            <label for="txtCorreo" class="control-label">Condado/Municipio</label>
-                                                            <input id="txtCondado" type="text" name="Condado" class="form-control">
+                                                            <div class="col-md-5 text-right">
+                                                                <label for="txtCondado" class="control-label">Condado/Municipio :</label>
+                                                            </div>
+                                                            <div class="col-md-7">
+                                                                <input id="txtCondado" type="text" name="Condado" class="form-control input-sm">
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="row">
-                                                    <div class="col-md-5">
+                                                <div class="row margin-bottom-5px">
+                                                    <div class="col-md-12">
                                                         <div class="form-group">
-                                                            <label for="" class="control-label">Estado/Departamento</label>
-                                                            <select class="form-control select2" name="dept">
-                                                                    <option>Select</option>
-                                                                    {% for state in states %}
-                                                                    <option value="{{state.pk}}">{{state.name}}</option>
-                                                                    {% endfor %}
-                                                                    {% comment "" %}
-                                                                    
-                                                                    <option value="HI">Hawaii</option>
-                                                                    <option value="CA">California</option>
-                                                                    <option value="NV">Nevada</option>
-                                                                    <option value="OR">Oregon</option>
-                                                                    <option value="WA">Washington</option>
-                                                                    {% endcomment %}
-                                                            </select>
+                                                            <div class="col-md-5 text-right">
+                                                                <label for="" class="control-label">Estado/Departamento :</label>
+                                                            </div>
+                                                            <div class="col-md-7">
+                                                                <select class="form-control input-sm" name="dept" id="cboEstado">
+                                                                        <option value="0">Seleccionar...</option>
+                                                                        {% for state in states %}
+                                                                        <option value="{{state.pk}}">{{state.name}}</option>
+                                                                        {% endfor %}
+                                                                </select>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="row">
-                                                    <div class="col-md-5">
+                                                <div class="row margin-bottom-5px">
+                                                    <div class="col-md-12">
                                                         <div class="form-group">
-                                                            <label for="" class="control-label">País</label>
-                                                            <select class="form-control select2" name="dept">
-                                                                    <option>Select</option>
+                                                            <div class="col-md-5 text-right">
+                                                                <label for="" class="control-label">País :</label>
+                                                            </div>
+                                                            <div class="col-md-7">
+                                                                <select class="form-control input-sm" name="pais" id="cboPais">
+                                                                    <option value="0">Seleccionar...</option>
                                                                     {% for country in countries %}
                                                                     <option value="{{country.pk}}">{{country.name}}</option>
                                                                     
                                                                     {% endfor %}
                                                                 </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h3>Dirección del trabajo</h3>
+                                                <div class="row margin-bottom-5px">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <div class="col-md-5 text-right">
+                                                                <label for="txtWCalle" class="control-label">Calle :</label>
+                                                            </div>
+                                                            <div class="col-md-7">
+                                                                <input id="txtWCalle" type="text" name="wcalle" class="form-control input-sm">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row margin-bottom-5px">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <div class="col-md-5 text-right">
+                                                                <label for="txtWNoCalle" class="control-label">No. de calle :</label>
+                                                            </div>
+                                                            <div class="col-md-7">
+                                                                <input id="txtWNoCalle" type="text" name="wnum_calle" class="form-control input-sm">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row margin-bottom-5px">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <div class="col-md-5 text-right">
+                                                                <label for="txtWBloque" class="control-label">Bloque :</label>
+                                                            </div>
+                                                            <div class="col-md-7">
+                                                                <input id="txtWBloque" type="text" name="wbloque" class="form-control input-sm">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row margin-bottom-5px">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <div class="col-md-5 text-right">
+                                                                <label for="txtWEdificio" class="control-label">Edificio/Casa :</label>
+                                                            </div>
+                                                            <div class="col-md-7">
+                                                                <input id="txtWEdificio" type="text" name="wedificio" class="form-control input-sm">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row margin-bottom-5px">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <div class="col-md-5 text-right">
+                                                                <label for="txtWCodigoPostal" class="control-label">Código postal :</label>
+                                                            </div>
+                                                            <div class="col-md-7">
+                                                                <input id="txtWCodigoPostal" type="text" name="wcodigo_postal" class="form-control input-sm">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row margin-bottom-5px">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <div class="col-md-5 text-right">
+                                                                <label for="txtWCiudad" class="control-label">Ciudad :</label>
+                                                            </div>
+                                                            <div class="col-md-7">
+                                                                <input id="txtWCiudad" type="text" name="wciudad" class="form-control input-sm">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row margin-bottom-5px">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <div class="col-md-5 text-right">
+                                                                <label for="txtWCondado" class="control-label">Condado/Municipio :</label>
+                                                            </div>
+                                                            <div class="col-md-7">
+                                                                <input id="txtWCondado" type="text" name="WCondado" class="form-control input-sm">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row margin-bottom-5px">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <div class="col-md-5 text-right">
+                                                                <label for="cboWEstado" class="control-label">Estado/Departamento :</label>
+                                                            </div>
+                                                            <div class="col-md-7">
+                                                                <select class="form-control input-sm" name="wdept" id="cboWEstado">
+                                                                        <option value="0">Seleccionar...</option>
+                                                                        {% for state in states %}
+                                                                        <option value="{{state.pk}}">{{state.name}}</option>
+                                                                        {% endfor %}
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row margin-bottom-5px">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <div class="col-md-5 text-right">
+                                                                <label for="cboWPais" class="control-label">País :</label>
+                                                            </div>
+                                                            <div class="col-md-7">
+                                                                <select class="form-control input-sm" name="wpais" id="cboWPais">
+                                                                    <option value="0">Seleccionar...</option>
+                                                                    {% for country in countries %}
+                                                                    <option value="{{country.pk}}">{{country.name}}</option>
+                                                                    {% endfor %}
+                                                                </select>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div role="tabpanel" class="tab-pane" id="perfil">
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <input type="text" name="contacto" class="form-control" id="contacto" placeholder="Ingrese el nombre del contacto">
+                                        <div role="tabpanel" class="tab-pane" id="gestion">
+                                            <div class="col-md-6">
+                                                <div class="row margin-bottom-5px">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <div class="col-md-5 text-right">
+                                                                <label for="txt" class="control-label">Fecha de Inicio :</label>
+                                                            </div>
+                                                            <div class="col-md-7">
+                                                                <input id="txtCalle" type="text" name="calle" class="form-control input-sm">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row margin-bottom-5px">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <div class="col-md-5 text-right">
+                                                                <label for="cboEstadoEmp" class="control-label">Estado :</label>
+                                                            </div>
+                                                            <div class="col-md-7">
+                                                                <select class="form-control input-sm" name="estado_emp" id="cboEstadoEmp">
+                                                                    <option value="0">Seleccionar...</option>
+                                                                    {% for status in stats %}
+                                                                    <option value="{{status.pk}}">{{status.name}}</option>
+                                                                    {% endfor %}
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="row margin-bottom-5px">
+                                                        <div class="col-md-12">
+                                                            <div class="form-group">
+                                                                <div class="col-md-5 text-right">
+                                                                    <label for="txt" class="control-label">Fecha de rescisión de contrato :</label>
+                                                                </div>
+                                                                <div class="col-md-7">
+                                                                    <input id="" type="text" name="calle" class="form-control input-sm">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row margin-bottom-5px">
+                                                        <div class="col-md-12">
+                                                            <div class="form-group">
+                                                                <div class="col-md-5 text-right">
+                                                                    <label for="cboEstadoEmp" class="control-label">Motivo rescisión del contrato :</label>
+                                                                </div>
+                                                                <div class="col-md-7">
+                                                                    <select class="form-control input-sm" name="term" id="cboTerm">
+                                                                        <option value="0">Seleccionar...</option>
+                                                                        {% for term in terms %}
+                                                                        <option value="{{term.pk}}">{{term.name}}</option>
+                                                                        {% endfor %}
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -314,6 +586,8 @@
     $('#saEmpFrm').addClass('active');
 
     $(".select2").select2();
+
+    
     //Funciones del botón guardar formulario
     $('#btnGuardar').on('click', (e) => {
         e.preventDefault();
@@ -322,20 +596,53 @@
 
 
     function GuardarEmpleado() {
+        var activo = 0;
+        if ($('#chkActivo').is(":checked"))
+        {
+            activo = 1
+        }
         var primerNombre = $('#txtPrimerNombre').val();
         var segundoNombre = $('#txtSegundoNombre').val();
         var apellido = $('#txtApellido').val();
         var numExt = $('#txtNoEmpExt').val();
         var puesto = $('#txtJobTitle').val();
-        var activo = $('#chkActivo').val();
         var posicion = $('#cboPosicion').val();
+        var telOficina = $('#txtTelefonoOficina').val();
+        var extOficina = $('#txtExtension').val();
+        var departamento = $('#cboDepto').val();
+        var sucursal = $('#cboSucursal').val();
+        var movil = $('#txtTelMovil').val();
+        var pager = $('#txtPager').val();
+        var slsPerson = $('#cboSlsPerson').val();
+        var fax = $('#txtFax').val();
+        var correo = $('#txtCorreo').val();
+        var telCasa = $('#txtTelCasa').val();
+        var calle = $('#txtCalle').val();
+        var num_calle = $('#txtNoCalle').val();
+        var bloque = $('#txtBloque').val();
+        var edificio = $('#txtEdificio').val();
+        var codigo_postal = $('#txtCodigoPostal').val();
+        var ciudad = $('#txtCiudad').val();
+        var condado = $('#txtCondado').val();
+        var estado = $('#cboEstado').val();
+        var pais = $('#cboPais').val();
+        var wcalle = $('#txtWCalle').val();
+        var wnum_calle = $('#txtWNoCalle').val();
+        var wbloque = $('#txtWBloque').val();
+        var wedificio = $('#txtWEdificio').val();
+        var wcodigo_postal = $('#txtWCodigoPostal').val();
+        var wciudad = $('#txtWCiudad').val();
+        var wcondado = $('#txtWCondado').val();
+        var westado = $('#cboWEstado').val();
+        var wpais = $('#cboWPais').val();
+
         if ($('#chkActivo').is(":checked"))
         {
             activo = 1;
         }else{
             activo = 0;
         }
-        console.log(activo);
+        console.log("SlsPerson: " + slsPerson);
         var token = $('input[name="csrfmiddlewaretoken"]').val()
         var url = "/guardar/empleado/"; // the script where you handle the form input.
         $.ajax({
@@ -349,6 +656,34 @@
                 'puesto': puesto,
                 'activo': activo,
                 'posicion': posicion,
+                'departamento': departamento,
+                'sucursal': sucursal,
+                'empVentas': slsPerson,
+                'telOficina': telOficina,
+                'extOficina': extOficina,
+                'celular': movil,
+                'pager': pager,
+                'telCasa': telCasa,
+                'fax': fax,
+                'correo': correo,
+                'calle': calle,
+                'num_calle': num_calle,
+                'bloque': bloque,
+                'edificio':edificio,
+                'codigo_postal':codigo_postal,
+                'ciudad':ciudad,
+                'condado':condado,
+                'estado':estado,
+                'pais':pais,
+                'wcalle': wcalle,
+                'wnum_calle': wnum_calle,
+                'wbloque': wbloque,
+                'wedificio':wedificio,
+                'wcodigo_postal':wcodigo_postal,
+                'wciudad':wciudad,
+                'wcondado':wcondado,
+                'westado':westado,
+                'wpais':wpais,
 				'csrfmiddlewaretoken': token,
             }, // serializes the form's elements.
             success: function(data)
@@ -363,6 +698,7 @@
                         hideAfter: 5000,
                         stack: 6
                     });
+                    LimpiarControles();
                 }else{
                     $.toast({
                         heading: 'Empleados',
@@ -374,6 +710,18 @@
                         stack: 6
                     });
                 }
+            },
+            error: function(data) {
+                console.log(data);
+                $.toast({
+                    heading: 'Empleados',
+                    text: data.status + ' - ' + data.statusText,
+                    position: 'top-right',
+                    loaderBg: '#ff6849',
+                    icon: 'error',
+                    hideAfter: 5000,
+                    stack: 6
+                });
             }
         });
     }
@@ -384,7 +732,37 @@
         $('#txtApellido').val(null);
         $('#txtNoEmpExt').val(null);
         $('#txtJobTitle').val(null);
-        $('#chkActivo').val(false);
+        //$('#chkActivo').val(false);
+        $('#chkActivo').removeAttr('checked');
+        $('#cboPosicion').val(0);
+        $('#txtTelefonoOficina').val(null);
+        $('#txtExtension').val(null);
+        $('#cboDepto').val(0);
+        $('#cboSucursal').val(0);
+        $('#txtTelMovil').val(null);
+        $('#txtPager').val(null);
+        $('#cboSlsPerson').val(0);
+        $('#txtFax').val(null);
+        $('#txtCorreo').val(null);
+        $('#txtTelCasa').val(null);
+        $('#txtCalle').val(null);
+        $('#txtNoCalle').val(null);
+        $('#txtBloque').val(null);
+        $('#txtEdificio').val(null);
+        $('#txtCodigoPostal').val(null);
+        $('#txtCiudad').val(null);
+        $('#txtCondado').val(null);
+        $('#cboEstado').val(0);
+        $('#cboPais').val(0);
+        $('#txtWCalle').val(null);
+        $('#txtWNoCalle').val(null);
+        $('#txtWBloque').val(null);
+        $('#txtWEdificio').val(null);
+        $('#txtWCodigoPostal').val(null);
+        $('#txtWCiudad').val(null);
+        $('#txtWCondado').val(null);
+        $('#cboWEstado').val(0);
+        $('#cboWPais').val(0);
     }
 </script>
 {% endblock scripts %}
