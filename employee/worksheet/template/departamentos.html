@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block titulo %}
+Registro de Departamentos de la Empresa
+{% endblock titulo %}
+{% load static %}
+{% block contenido %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="text-bold"><i class="ti-user"></i>
+                    Registro de Departamento de la Empresa</h2>
+            </div>
+            <div class="panel-wrapper">
+                <div class="panel-body">
+                    {% csrf_token %}
+                    <div class="col-md-6">
+                        <div class="col-md-12 margin-bottom-5px">
+                            <div class="form-group">
+                                <div class="col-md-5 text-right">
+                                    <label for="txtNombre" class="control-label">Nombre :</label>
+                                </div>
+                                <div class="col-md-7">
+                                    <input type="text" name="nombre" id="txtNombre" class="form-control input-sm input-sm-1">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 margin-bottom-5px">
+                            <div class="form-group">
+                                <div class="col-md-5 text-right">
+                                    <label for="txtDescripcion" class="control-label">Descripción :</label>
+                                </div>
+                                <div class="col-md-7">
+                                    <input type="text" name="descripcion" id="txtDescripcion" class="form-control input-sm input-sm-1">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <div class="col-md-5"></div>
+                                <div class="col-md-7">
+                                    <div class="checkbox checkbox-success">
+                                        <input id="chkActivo" name="activo" type="checkbox" class="input-sm">
+                                        <label for="chkActivo" class="control-label"> Activo </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="form-action col-md-12 text-right">
+                            <button id="btnGuardar" class="btn btn-success">Guardar</button>
+                            <button id="btnCancelar" class="btn btn-default">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contenido %}
+{% block scripts %}
+<script src="{% static 'js/app/departamentos.js' %}"></script>
+{% endblock scripts %}

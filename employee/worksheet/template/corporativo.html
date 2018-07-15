@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block titulo %}
+Grupo Corporativo
+{% endblock titulo %}
+{% load static %}
+{% block contenido %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="text-bold"><i class="ti-user"></i>
+                    Grupo Corporativo</h2>
+            </div>
+            <div class="panel-wrapper">
+                <div class="panel-body">
+                    {% csrf_token %}
+                    <div class="col-md-6">
+                        <div class="col-md-12 margin-bottom-5px">
+                            <div class="form-group">
+                                <div class="col-md-5 text-right">
+                                    <label for="txtRazonSocial" class="control-label">Razón social :</label>
+                                </div>
+                                <div class="col-md-7">
+                                    <input type="text" name="razonSocial" id="txtRazonSocial" class="form-control input-sm input-sm-1">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 margin-bottom-5px">
+                            <div class="form-group">
+                                <div class="col-md-5 text-right">
+                                    <label for="txtNombreComercial" class="control-label">Nombre comercial :</label>
+                                </div>
+                                <div class="col-md-7">
+                                    <input type="text" name="nombreComercial" id="txtNombreComercial" class="form-control input-sm input-sm-1">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <div class="col-md-5"></div>
+                                <div class="col-md-7">
+                                    <div class="checkbox checkbox-success">
+                                        <input id="chkActivo" name="activo" type="checkbox" class="input-sm">
+                                        <label for="chkActivo" class="control-label"> Activo </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="form-action col-md-12 text-right">
+                            <button id="btnGuardar" class="btn btn-success">Guardar</button>
+                            <button id="btnCancelar" class="btn btn-default">Cancelar</button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contenido %}
+{% block scripts %}
+<script src="{% static 'js/app/frmCorporativo.js' %}"></script>
+{% endblock scripts %}

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block titulo %}
+Listado de Sucursales de la Empresa
+{% endblock titulo %}
+{% load static %}
+{% block contenido %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="text-bold"><i class="ti-user"></i>
+                    Listado de Sucursales de la Empresa</h2>
+            </div>
+            <div class="panel-wrapper">
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table id="myTable" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Descripción</th>
+                                    <th>Activo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in sucursales %}
+                                <tr>
+                                    <td>{{item.name}}</td>
+                                    <td>{{item.description}}</td>
+                                    <td></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contenido %}
+{% block scripts %}
+<script>
+    //#region Efectos en SideBar
+    $('#side-menu a').removeClass('active');
+    $('#aCorporativo').addClass('active');
+    $('#aSucursal').addClass('active');
+    $('#sSucursal2').addClass('active');
+    //#endregion
+
+    //#region Librerías
+    $('#myTable').DataTable();
+    //#endregion
+</script>
+{% endblock scripts %}

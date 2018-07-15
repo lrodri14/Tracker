@@ -1,3 +1,14 @@
 .margin-bottom-5px{
     margin-bottom: 5px;
 }
+
+.input-sm-1{
+    height: 24px;
+    padding: 2px 5px;
+    font-size: 16px;
+    font-weight: bolder;
+}
+
+select.input-sm-1{
+    height: 24px;
+}

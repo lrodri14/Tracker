@@ -25,8 +25,23 @@ urlpatterns = [
     url(r'^forms/empleado/$', views.empleado_form, name="empleados-form"),
     url(r'^perfil/empleado/$', views.empleado_perfil, name="empleado-perfil"),
     url(r'^listar/empleados/$', views.empleado_listado, name="empleados-listado"),
+    url(r'^corporativo/$', views.corporativo, name="corporativo"),
+    url(r'^listar/corporativos/$', views.listadoCorporativo, name="listado_corporativos"),
+    url(r'^empresa/$', views.empresa, name="empresa"),
+    url(r'^listar/empresas/$', views.listadoEmpresa, name="listado_empresas"),
+    url(r'^sucursal/$', views.sucursal, name="sucursal"),
+    url(r'^listar/sucursales/$', views.listadoSucursal, name="listado_sucursal"),
+    url(r'^divisiones/$', views.divisiones, name="divisiones"),
+    url(r'^listar/divisiones/$', views.listadoDivisiones, name="listado_divisiones"),
+    url(r'^departamentos/$', views.departamentos, name="departamentos"),
+    url(r'^listar/departamentos/$', views.listadoDepartamentos, name="listado_departamentos"),
 
 
     #----------------->>>AJAX<<<------------------
     url(r'^guardar/empleado/$', views.guardar_empleado, name='guardar_empleado'),
+    url(r'^guardar/corporativo/$', views.guardar_corporativo, name='guardar_corporativo'),
+    url(r'^guardar/empresa/$', views.guardar_empresa, name='guardar_empresa'),
+    url(r'^guardar/sucursal/$', views.guardar_sucursal, name='guardar_sucursal'),
+    url(r'^guardar/division/$', views.guardar_division, name='guardar_division'),
+    url(r'^guardar/departamento/$', views.guardar_departamento, name='guardar_departamento'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

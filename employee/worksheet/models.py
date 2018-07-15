@@ -111,6 +111,67 @@ class TermReason(models.Model):
     def __unicode__(self):
         return self.name
 
+class Sex(models.Model):
+    name = models.CharField(max_length=25)
+    description = models.TextField()
+    user_reg = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name="sex_usermod", related_query_name="sex_usermod",)
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.BooleanField(default=True)
+
+    def __unicode__(self):
+        return self.name
+
+class CivilStatus(models.Model):
+    name = models.CharField(max_length=25)
+    description = models.TextField()
+    user_reg = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name="civStatus_usermod", related_query_name="civStatus_usermod",)
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.BooleanField(default=True)
+
+    def __unicode__(self):
+        return self.name
+
+class SalaryUnit(models.Model):
+    name = models.CharField(max_length=25)
+    description = models.TextField()
+    user_reg = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name="salary_usermod", related_query_name="salary_usermod",)
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.BooleanField(default=True)
+
+    def __unicode__(self):
+        return self.name
+
+class CostUnit(models.Model):
+    name = models.CharField(max_length=25)
+    description = models.TextField()
+    user_reg = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name="cost_usermod", related_query_name="cost_usermod",)
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.BooleanField(default=True)
+
+    def __unicode__(self):
+        return self.name
+
+class Bank(models.Model):
+    name = models.CharField(max_length=25)
+    description = models.TextField()
+    user_reg = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name="bank_usermod", related_query_name="bank_usermod",)
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.BooleanField(default=True)
+
+    def __unicode__(self):
+        return self.name
+
+
 
 class Employee(models.Model):
     firstName = models.CharField(max_length=50)
@@ -154,6 +215,29 @@ class Employee(models.Model):
     termDate = models.DateField(blank=True, null=True)
     termReason = models.ForeignKey(TermReason, blank=True, null=True)
 
+    sex = models.ForeignKey(Sex, blank=True, null=True)
+    birthDate = models.DateField(blank=True, null=True)
+    birthCountry = models.ForeignKey(Country, blank=True, null=True)
+    marrStatus = models.ForeignKey(CivilStatus, blank=True, null=True)
+    nChildren = models.IntegerField(blank=True, null=True)
+    govID = models.CharField(max_length=50, blank=True, null=True)
+    citizenship = models.ForeignKey(Country, blank=True, null=True, related_name='citizenship', related_query_name='citizenship')
+    passportNo = models.CharField(max_length=50, blank=True, null=True)
+    passportExt = models.DateField(blank=True, null=True)
+    passIssue = models.DateField(blank=True, null=True)
+    passIssuer = models.CharField(max_length=150, blank=True, null=True)
+
+    salary = models.DecimalField(decimal_places=2, max_digits=12, blank=True, null=True)
+    salaryUnits = models.ForeignKey(SalaryUnit, blank=True, null=True)
+    empCost = models.DecimalField(decimal_places=2, max_digits=12, blank=True, null=True)
+    empCostUnit = models.ForeignKey(CostUnit, blank=True, null=True)
+    bankCode = models.ForeignKey(Bank, blank=True, null=True)
+    bankAccount = models.CharField(max_length=50, blank=True, null=True)
+    branchBank = models.CharField(max_length=150, blank=True, null=True)
+
+    remark = models.TextField(blank=True, null=True)
+
+
     user_reg = models.ForeignKey(User)
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='emp_usermod', related_query_name='emp_usermod')
@@ -161,4 +245,40 @@ class Employee(models.Model):
     active = models.BooleanField()
 
     def __unicode__(self):
-        return self.firstName + ' ' + self.lastName 
+        return self.firstName + ' ' + self.lastName
+
+class GrupoCorporativo(models.Model):
+    razonSocial = models.CharField(max_length=100, blank=True, null=True)
+    nombreComercial = models.CharField(max_length=100, blank=True, null=True)
+    user_reg = models.ForeignKey(User)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='gcom_usermod', related_query_name='gcom_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.BooleanField()
+
+    def __unicode__(self):
+        return self.nombreComercial
+
+class Empresa(models.Model):
+    razonSocial = models.CharField(max_length=100, blank=True, null=True)
+    nombreComercial = models.CharField(max_length=100, blank=True, null=True)
+    user_reg = models.ForeignKey(User)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='empr_usermod', related_query_name='empr_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.BooleanField()
+
+    def __unicode__(self):
+        return self.nombreComercial
+
+class Divisiones(models.Model):
+    descripcion = models.CharField(max_length=250, blank=True, null=True)
+    user_reg = models.ForeignKey(User)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='div_usermod', related_query_name='div_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.BooleanField()
+
+    def __unicode__(self):
+        return self.descripcion
+

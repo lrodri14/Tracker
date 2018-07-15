@@ -13,6 +13,8 @@
     <!-- Bootstrap Core CSS -->
     <link href="{% static 'bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'plugins/bower_components/bootstrap-table/dist/bootstrap-table.min.css' %}" rel="stylesheet">
+    <link href="{% static 'plugins/bower_components/datatables/jquery.dataTables.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.datatables.net/buttons/1.2.2/css/buttons.dataTables.min.css" rel="stylesheet" type="text/css" />
     <!-- Menu CSS -->
     <link href="{% static 'plugins/bower_components/sidebar-nav/dist/sidebar-nav.min.css' %}" rel="stylesheet">
     <link href="{% static 'plugins/bower_components/toast-master/css/jquery.toast.css' %}" rel="stylesheet">
@@ -22,14 +24,20 @@
     <link href="{% static 'plugins/bower_components/switchery/dist/switchery.min.css' %}" rel="stylesheet">
     <link href="{% static 'plugins/bower_components/custom-select/custom-select.css' %}" rel="stylesheet">
     <link href="{% static 'plugins/bower_components/bootstrap-select/bootstrap-select.min.css' %}" rel="stylesheet">
+    <link href="{% static 'plugins/bower_components/clockpicker/dist/jquery-clockpicker.min.css' %}" rel="stylesheet"> 
+    <!-- Date picker plugins css -->
+
+    <link href="{% static 'plugins/bower_components/bootstrap-datepicker/bootstrap-datepicker.min.css' %}" rel="stylesheet" type="text/css" />
     <!-- animation CSS -->
     <link href="{% static 'css/animate.css' %}" rel="stylesheet">
     <!-- Custom CSS -->
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
     <!-- color CSS -->
     <link href="{% static 'css/colors/blue-dark.css' %}" id="theme" rel="stylesheet">
-    <link href="{% static 'css/mi-estilo.css' %}" id="theme" rel="stylesheet">
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <link href="{% static 'css/mi-estilo.css' %}" rel="stylesheet">
+    {% block estilo %}
+    {% endblock estilo %}
+    <!-- HTML5 Shim d Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -123,6 +131,48 @@
                 </div>
                 <ul class="nav" id="side-menu">
                     <li><a id="aInicio" href="{% url 'home' %}" class="waves-effect"><i data-icon="7" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Inicio </span></a> </li>
+                    <li><a href="javascript:void(0)" id="aCorporativo" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Organización<span class="fa arrow"></span></span></a>
+                        <ul class="nav nav-second-level">
+                            <li> <a href="javascript:void(0)" id="aCorporativo2" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Grupo Corporativo<span class="fa arrow"></span></span></a>
+                                <ul class="nav nav-third-level">
+                                    <li> <a id="sCorporativo1" href="{% url 'corporativo' %}"><i data-icon="/" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Agregar</span></a> </li>
+                                    <li> <a id="sCorporativo2" href="{% url 'listado_corporativos' %}"><i data-icon="/" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Listado</span></a> </li>
+                                </ul>
+                            </li>
+                            <li> <a href="javascript:void(0)" id="aEmpresa" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Empresa<span class="fa arrow"></span></span></a>
+                                <ul class="nav nav-third-level">
+                                    <li> <a id="sEmpresa1" href="{% url 'empresa' %}"><i data-icon="/" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Agregar</span></a> </li>
+                                    <li> <a id="sEmpresa2" href="{% url 'listado_empresas' %}"><i data-icon="/" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Listado</span></a> </li>
+                                </ul>
+                            </li>
+                            <li><a href="javascript:void(0)" id="aSucursal" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Sucursal de la Empresa<span class="fa arrow"></span></span></a>
+                                <ul class="nav nav-third-level">
+                                    <li> <a id="sSucursal1" href="{% url 'sucursal' %}"><i data-icon="/" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Agregar</span></a> </li>
+                                    <li> <a id="sSucursal2" href="{% url 'listado_sucursal' %}"><i data-icon="/" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Listado</span></a> </li>
+                                </ul>
+                            </li>
+                            <li><a href="javascript:void(0)" id="aDivision" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Divisiones de la Empr.<span class="fa arrow"></span></span></a>
+                                <ul class="nav nav-third-level">
+                                    <li> <a id="sDivision1" href="{% url 'divisiones' %}"><i data-icon="/" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Agregar</span></a> </li>
+                                    <li> <a id="sDivision2" href="{% url 'listado_divisiones' %}"><i data-icon="/" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Listado</span></a> </li>
+                                </ul>
+                            </li>
+                            <li><a href="javascript:void(0)" id="aDepartamentos" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Departament. de la Emp.<span class="fa arrow"></span></span></a>
+                                <ul class="nav nav-third-level">
+                                    <li> <a id="sDepartamentos1" href="{% url 'departamentos' %}"><i data-icon="/" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Agregar</span></a> </li>
+                                    <li> <a id="sDepartamentos2" href="{% url 'listado_departamentos' %}"><i data-icon="/" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Listado</span></a> </li>
+                                </ul>
+                            </li>
+                            <li><a href="javascript:void(0)" id="aPuesto" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Puesto de Trab.<span class="fa arrow"></span></span></a>
+                                <ul class="nav nav-third-level">
+                                    <li> <a id="sPuesto1" href="{% url 'departamentos' %}"><i data-icon="/" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Agregar</span></a> </li>
+                                    <li> <a id="sPuesto2" href="{% url 'listado_divisiones' %}"><i data-icon="/" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Listado</span></a> </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    
+                    
                     {% comment "" %}
                     <li> <a href="javascript:void(0)" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Multi Dropdown<span class="fa arrow"></span></span></a>
                         <ul class="nav nav-second-level">
@@ -142,7 +192,7 @@
                     <li><a id="aEmp" href="javascript:void(0)" class="waves-effect"><i data-icon="6" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Empleados <span class="fa arrow"></span></a>
                         <ul class="nav nav-second-level">
                                 <li><a id="saEmpFrm" href="{% url 'empleados-form' %}"><i data-icon="/" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Nuevo Empleado</span></a></li>
-                                <li><a id="saEmpLst" href="{% url 'empleados-listado' %}"><i data-icon="/" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Lista de Empleados</span></a></li>
+                                <li><a id="saEmpLst" href="{% url 'empleados-listado' %}"><i class="mdi mdi-format-list-bulleted"></i> <span class="hide-menu">Lista de Empleados</span></a></li>
                         </ul>
                     </li>
                 </ul>
@@ -180,11 +230,14 @@
     <script src="{% static 'plugins/bower_components/custom-select/custom-select.min.js' %}"></script>
     <script src="{% static 'plugins/bower_components/bootstrap-select/bootstrap-select.min.js' %}"></script>
     <script src="{% static 'plugins/bower_components/toast-master/js/jquery.toast.js' %}"></script>
+    <script src="{% static 'plugins/bower_components/datatables/jquery.dataTables.min.js' %}"></script>
     <script src="{% static 'js/toastr.js' %}"></script>
     <!--script src="{% static 'plugins/bower_components/raphael/raphael-min.js' %}"></script-->
     <script src="{% static 'js/custom.js' %}"></script>
     <script src="{% static 'js/own/my-script.js' %}"></script>
-    
+    <script src="{% static 'plugins/bower_components/moment/moment.js' %}"></script>
+    <!-- Date Picker Plugin JavaScript -->
+    <script src="{% static 'plugins/bower_components/bootstrap-datepicker/bootstrap-datepicker.min.js' %}"></script>
     {% block scripts %}{% endblock scripts %}
 </body>
 

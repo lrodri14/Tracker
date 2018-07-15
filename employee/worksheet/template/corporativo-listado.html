@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block titulo %}
+Listado de Grupos Corporativos
+{% endblock titulo %}
+{% load static %}
+{% block contenido %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="text-bold"><i class="ti-user"></i>
+                    Listado de Grupos Corporativos</h2>
+            </div>
+            <div class="panel-wrapper">
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table id="myTable" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Razón Social</th>
+                                    <th>Nombre comercial</th>
+                                    <th>Activo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in corporativos %}
+                                <tr>
+                                    <td>{{item.razonSocial}}</td>
+                                    <td>{{item.nombreComercial}}</td>
+                                    <td></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contenido %}
+{% block scripts %}
+<script src="{% static 'js/app/listadoCorporativos.js' %}"></script>
+{% endblock scripts %}
