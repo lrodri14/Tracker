@@ -3,4 +3,3 @@ employee/worksheet/*.pyc
 employee/worksheet/migrations/*.pyc
 employee/*.sqlite3
 .vscode
-app/
