@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block titulo %}
-Puesto de Trabajo
+Centros de Costos
 {% endblock titulo %}
 {% load static %}
 {% block estilo %}
@@ -20,7 +20,7 @@ Puesto de Trabajo
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h2 class="text-bold"><i class="ti-user"></i>
-                    Registro de Puesto de Trabajo</h2>
+                    Registro de Centro de Costos</h2>
             </div>
             <div class="panel-wrapper">
                 <div class="panel-body">
@@ -29,20 +29,10 @@ Puesto de Trabajo
                         <div class="col-md-12 margin-bottom-5px">
                             <div class="form-group">
                                 <div class="col-md-5 text-right">
-                                <label for="txtptNombre" class="control-label">Nombre :</label>
-                                </div>
-                                <div class="col-md-7">
-                                    <input type="text" name="pt_nombre" id="txtptNombre" class="form-control input-sm input-sm-1">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-12 margin-bottom-5px">
-                            <div class="form-group">
-                                <div class="col-md-5 text-right">
                                 <label for="txtptDescripcion" class="control-label">Descripción :</label>
                                 </div>
                                 <div class="col-md-7">
-                                    <input type="text" name="pt_descripcion" id="txtptDescripcion" class="form-control input-sm input-sm-1">
+                                    <input type="text" name="cc_descripcion" id="txtptDescripcion" maxlength="250" class="form-control input-sm input-sm-1">
                                 </div>
                             </div>
                         </div>
@@ -51,7 +41,7 @@ Puesto de Trabajo
                                 <div class="col-md-5"></div>
                                 <div class="col-md-7">
                                     <div class="checkbox checkbox-success">
-                                        <input id="chkptActivo" name="pt_activo" type="checkbox" class="input-sm">
+                                        <input id="chkptActivo" name="cc_activo" type="checkbox" class="input-sm">
                                         <label for="chkptActivo" class="control-label"> Activo </label>
                                     </div>
                                 </div>
@@ -59,8 +49,8 @@ Puesto de Trabajo
                         </div>
                         <hr>
                         <div class="form-action col-md-12 text-right">
-                            <button id="btnptGuardar" class="btn btn-success">Guardar</button>
-                            <button id="btnCancelar" class="btn btn-default">Cancelar</button>
+                            <button id="btnccGuardar" class="btn btn-success">Guardar</button>
+                            <button id="btnccCancelar" class="btn btn-default">Cancelar</button>
                         </div>
                     </div>
                 </div>
@@ -74,8 +64,8 @@ Puesto de Trabajo
     //#region Efectos en SideBar
     $('#side-menu a').removeClass('active');
     $('#aCorporativo').addClass('active');
-    $('#aPuesto').addClass('active');
-    $('#sPuesto1').addClass('active');
+    $('#aCCostos').addClass('active');
+    $('#sCCostos1').addClass('active');
     //#endregion
 </script>
 <script src="{% static 'js/app/scriptApp.js' %}"></script>

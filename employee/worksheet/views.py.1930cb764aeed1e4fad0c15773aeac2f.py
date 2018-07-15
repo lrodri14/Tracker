@@ -87,10 +87,6 @@ def listadoCentroCostos(request):
 def paises(request):
     return render(request, 'paises.html')
 
-def listadoPaises(request):
-    paises = Country.objects.all()
-    return render(request, 'paises-listado.html', {'paises':paises})
-
 
 
 #---------------------------->>>> VISTAS AJAX <<<<----------------------------#
@@ -711,10 +707,10 @@ def guardar_pais(request):
                     grupo = {
                         'pk': oCountry.pk,
                         'codigo': oCountry.code,
-                        'name': oCountry.name,
+                        'name': oCountry
                         'activo': oCountry.active,
                     }
-                    mensaje = 'Se ha guardado el registro del País'
+                    mensaje = 'Se ha guardado el registro del Centro de Costos'
                     data = {
                         'grupo': grupo, 'mensaje': mensaje, 'error': False
                     }

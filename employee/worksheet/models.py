@@ -77,6 +77,7 @@ class State(models.Model):
         return self.name
 
 class Country(models.Model):
+    code = models.CharField(max_length=5, blank=True, null=True)
     name = models.CharField(max_length=150)
     user_reg = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     date_reg = models.DateTimeField(auto_now_add=True)
@@ -282,3 +283,13 @@ class Divisiones(models.Model):
     def __unicode__(self):
         return self.descripcion
 
+class CentrosCostos(models.Model):
+    descripcion = models.CharField(max_length=250, blank=True, null=True)
+    user_reg = models.ForeignKey(User)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='cc_usermod', related_query_name='cc_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.BooleanField()
+
+    def __unicode__(self):
+        return self.descripcion

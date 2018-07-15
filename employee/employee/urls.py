@@ -35,7 +35,12 @@ urlpatterns = [
     url(r'^listar/divisiones/$', views.listadoDivisiones, name="listado_divisiones"),
     url(r'^departamentos/$', views.departamentos, name="departamentos"),
     url(r'^listar/departamentos/$', views.listadoDepartamentos, name="listado_departamentos"),
-
+    url(r'^puesto-trabajo/$', views.puestoTrabajo, name="puestoTrabajo"),
+    url(r'^listar/puestos-trabajo/$', views.listadoPuestoTrabajo, name="listado_puestos"),
+    url(r'^centro-costos/$', views.centro_costos, name="centro_costos"),
+    url(r'^listar/centro-costos/$', views.listadoCentroCostos, name="listado_ccostos"),
+    url(r'^paises/$', views.paises, name="paises"),
+    url(r'^listar/paises/$', views.listadoPaises, name="listado_paises"),
 
     #----------------->>>AJAX<<<------------------
     url(r'^guardar/empleado/$', views.guardar_empleado, name='guardar_empleado'),
@@ -44,4 +49,7 @@ urlpatterns = [
     url(r'^guardar/sucursal/$', views.guardar_sucursal, name='guardar_sucursal'),
     url(r'^guardar/division/$', views.guardar_division, name='guardar_division'),
     url(r'^guardar/departamento/$', views.guardar_departamento, name='guardar_departamento'),
+    url(r'^guardar/puesto/$', views.guardar_puesto, name='guardar_puesto'),
+    url(r'^guardar/centro-costo/$', views.guardar_ccosto, name='guardar_ccosto'),
+    url(r'^guardar/pais/$', views.guardar_pais, name='guardar_pais'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

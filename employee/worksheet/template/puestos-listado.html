@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block titulo %}
+Listado de Puestos
+{% endblock titulo %}
+{% load static %}
+{% block contenido %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="text-bold"><i class="fa fa-list"></i>
+                    Listado de Puestos</h2>
+            </div>
+            <div class="panel-wrapper">
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table id="myTable" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Descripción</th>
+                                    <th>Estado del registro</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in puesto %}
+                                <tr>
+                                    <td>{{item.name}}</td>
+                                    <td>{{item.description}}</td>
+                                    <td>
+                                    {% if item.active %}
+                                    <span class="label label-success">Activo</span>
+                                    {% else %}
+                                    <span class="label label-danger">Inactivo</span>
+                                    {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contenido %}
+{% block scripts %}
+<script>
+    //#region Efectos en SideBar
+    $('#side-menu a').removeClass('active');
+    $('#aCorporativo').addClass('active');
+    $('#aPuesto').addClass('active');
+    $('#sPuesto2').addClass('active');
+    //#endregion
+
+    //#region Librerías
+    $('#myTable').DataTable({
+        "language": {
+            "lengthMenu": "Mostrar _MENU_ registros por página",
+            "zeroRecords": "No se encontraron datos.",
+            "info": "Página _PAGE_ de _PAGES_",
+            "infoEmpty": "No existen registros",
+            "infoFiltered": "(resultado de _MAX_ registros en total.)",
+            "paginate": {
+                "first":      "Primer registro",
+                "last":       "Último registro",
+                "next":       "Siguiente",
+                "previous":   "Anterior"
+            },
+            "search":         "Buscar:",
+        }
+    });
+    //#endregion
+</script>
+{% endblock scripts %}
