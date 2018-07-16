@@ -79,10 +79,10 @@ DATABASES = {
         'ENGINE': 'sql_server.pyodbc',
         'NAME': 'django',
         'USER': 'sa',
-        #'PASSWORD': '12345',
-        'PASSWORD': 'holaMundo2018',
-        #'HOST': 'DESKTOP-O3RL0VG',
-        'HOST': 'IT06',
+        'PASSWORD': '12345',
+        #'PASSWORD': 'holaMundo2018',
+        'HOST': 'DESKTOP-O3RL0VG',
+        #'HOST': 'IT06',
         'PORT': '',
     }
 }
@@ -132,3 +132,6 @@ STATICFILES_DIRS = [
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/seguridad/login/'

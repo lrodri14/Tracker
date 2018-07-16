@@ -5,8 +5,10 @@ from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from worksheet.models import *
 import datetime
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
+@login_required(login_url='/seguridad/login/')
 def home(request):
     empleados = Employee.objects.all()
     return render(request, 'index.html', {'empleados':empleados})
