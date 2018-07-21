@@ -66,6 +66,7 @@ class SalesPerson(models.Model):
         return self.slpName
 
 class State(models.Model):
+    code = models.CharField(max_length=5, blank=True, null=True)
     name = models.CharField(max_length=150)
     user_reg = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     date_reg = models.DateTimeField(auto_now_add=True)

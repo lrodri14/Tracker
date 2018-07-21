@@ -8,6 +8,7 @@ $(document).on('ready', () => {
     //#endregion
     //#region Variables
     var vActivo = 0;
+    var id_org = $('input[name="id_org"]'); 
     var razon = $('input[name="razonSocial"]');
     var organizacion = $('input[name="nombreComercial"]');
     var activo = $('input[name="activo"]');
@@ -20,6 +21,15 @@ $(document).on('ready', () => {
     $('#btnGuardar').on('click', (e) => {
         e.preventDefault();
         GuardarRegistro();
+    });
+
+    $('#btnCancelar').on('click', (e) => {
+        e.preventDefault();
+        LimpiarControles();
+    });
+    $('#btnActualizar').on('click', (e) => {
+        e.preventDefault();
+        ActualizarRegistro();
     });
     //#endregion
     //#region Funciones
@@ -90,11 +100,72 @@ $(document).on('ready', () => {
                 }
             });
         }
+    }
 
+    function ActualizarRegistro(){
+        if (validarDatos() != false) {
 
+            if (activo.is(":checked"))
+            {
+                vActivo = 1;
+            }else{
+                vActivo = 0;
+            }
+
+            var url = "/actualizar/corporativo/"; // the script where you handle the form input.
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: {
+                    'id': id_org.val(),
+                    'razon':razon.val(),
+                    'organiz':organizacion.val(),
+                    'activo':vActivo,
+                    'csrfmiddlewaretoken': token.val(),
+                }, // serializes the form's elements.
+                success: function(data)
+                {
+                    if(data.error == false){
+                        $.toast({
+                            heading: 'Grupo Corporativo',
+                            text: 'Se ha actualizado registro en grupo corporativo.',
+                            position: 'top-right',
+                            loaderBg: '#ff6849',
+                            icon: 'success',
+                            hideAfter: 5000,
+                            stack: 6
+                        });
+                        LimpiarControles();
+                    }else{
+                        $.toast({
+                            heading: 'Grupo Corporativo',
+                            text: data.mensaje,
+                            position: 'top-right',
+                            loaderBg: '#ff6849',
+                            icon: 'error',
+                            hideAfter: 5000,
+                            stack: 6
+                        });
+                    }
+                },
+                error: function(data) {
+                    console.log(data);
+                    $.toast({
+                        heading: 'Grupo Corporativo',
+                        text: data.status + ' - ' + data.statusText,
+                        position: 'top-right',
+                        loaderBg: '#ff6849',
+                        icon: 'error',
+                        hideAfter: 5000,
+                        stack: 6
+                    });
+                }
+            });
+        }
     }
 
     function LimpiarControles() {
+        $('input[name="id_org"]').val(null);
         $('input[type="text"]').val(null);
         $('input[type="checkbox"]').removeAttr('checked');
         $('select').val(0);

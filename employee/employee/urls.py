@@ -26,6 +26,7 @@ urlpatterns = [
     url(r'^perfil/empleado/$', views.empleado_perfil, name="empleado-perfil"),
     url(r'^listar/empleados/$', views.empleado_listado, name="empleados-listado"),
     url(r'^corporativo/$', views.corporativo, name="corporativo"),
+    url(r'^editar/corporativo/(?P<reg_id>\w+)/$', views.corporativo_editar, name="corporativo_editar"),
     url(r'^listar/corporativos/$', views.listadoCorporativo, name="listado_corporativos"),
     url(r'^empresa/$', views.empresa, name="empresa"),
     url(r'^listar/empresas/$', views.listadoEmpresa, name="listado_empresas"),
@@ -53,6 +54,9 @@ urlpatterns = [
     url(r'^guardar/centro-costo/$', views.guardar_ccosto, name='guardar_ccosto'),
     url(r'^guardar/pais/$', views.guardar_pais, name='guardar_pais'),
 
+    url(r'^actualizar/corporativo/$', views.actualizar_corporativo, name='actualizar_corporativo'),
+
+    url(r'^eliminar/corporativo/(?P<reg_id>\w+)/$', views.eliminar_corporativo, name='eliminar_corporativo'),
     #------------------>>>AJAX<<<-------------------
 
     url(r'^seguridad/', include('django.contrib.auth.urls')),

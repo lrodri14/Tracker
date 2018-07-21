@@ -13,6 +13,12 @@ Listado de Grupos Corporativos
             </div>
             <div class="panel-wrapper">
                 <div class="panel-body">
+                    <div class="row text-right">
+                        <div class="col-md-12">
+                            <a href="{% url 'corporativo' %}" class="btn btn-primary">Agregar</a>
+                        </div>
+                    </div>
+                    <br>
                     <div class="table-responsive">
                         <table id="myTable" class="table table-striped">
                             <thead>
@@ -20,6 +26,7 @@ Listado de Grupos Corporativos
                                     <th>Razón Social</th>
                                     <th>Nombre comercial</th>
                                     <th>Activo</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -27,7 +34,17 @@ Listado de Grupos Corporativos
                                 <tr>
                                     <td>{{item.razonSocial}}</td>
                                     <td>{{item.nombreComercial}}</td>
-                                    <td></td>
+                                    <td>
+                                        {% if item.active %}
+                                        <span class="label label-success">Habilitado</span>
+                                        {% else %}
+                                        <span class="label label-danger">Inactivo</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-nowrap">
+                                        <a href="{% url 'corporativo_editar' item.pk %}" data-toggle="tooltip" data-original-title="Edit"> <i class="fa fa-pencil text-inverse m-r-10"></i> </a>
+                                        <a href="{% url 'eliminar_corporativo' item.pk %}"  data-toggle="tooltip" data-original-title="Close"> <i data="{{item.pk}}" class="btnEliminar fa fa-close text-danger"></i> </a>
+                                    </td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -41,4 +58,24 @@ Listado de Grupos Corporativos
 {% endblock contenido %}
 {% block scripts %}
 <script src="{% static 'js/app/listadoCorporativos.js' %}"></script>
+<script>
+    //#region Librerías
+    $('#myTable').DataTable({
+        "language": {
+            "lengthMenu": "Mostrar _MENU_ registros por página",
+            "zeroRecords": "No se encontraron datos.",
+            "info": "Página _PAGE_ de _PAGES_",
+            "infoEmpty": "No existen registros",
+            "infoFiltered": "(resultado de _MAX_ registros en total.)",
+            "paginate": {
+                "first":      "Primer registro",
+                "last":       "Último registro",
+                "next":       "Siguiente",
+                "previous":   "Anterior"
+            },
+            "search":         "Buscar:",
+        }
+    });
+    //#endregion
+</script>
 {% endblock scripts %}
