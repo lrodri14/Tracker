@@ -29,8 +29,10 @@ urlpatterns = [
     url(r'^editar/corporativo/(?P<reg_id>\w+)/$', views.corporativo_editar, name="corporativo_editar"),
     url(r'^listar/corporativos/$', views.listadoCorporativo, name="listado_corporativos"),
     url(r'^empresa/$', views.empresa, name="empresa"),
+    url(r'^editar/empresa/(?P<emp_id>\w+)/$', views.empresa_editar, name="empresa_editar"),
     url(r'^listar/empresas/$', views.listadoEmpresa, name="listado_empresas"),
     url(r'^sucursal/$', views.sucursal, name="sucursal"),
+    url(r'^editar/sucursal/(?P<id>\w+)/$', views.sucursal_editar, name="sucursal_editar"),
     url(r'^listar/sucursales/$', views.listadoSucursal, name="listado_sucursal"),
     url(r'^divisiones/$', views.divisiones, name="divisiones"),
     url(r'^listar/divisiones/$', views.listadoDivisiones, name="listado_divisiones"),
@@ -55,8 +57,11 @@ urlpatterns = [
     url(r'^guardar/pais/$', views.guardar_pais, name='guardar_pais'),
 
     url(r'^actualizar/corporativo/$', views.actualizar_corporativo, name='actualizar_corporativo'),
+    url(r'^actualizar/empresa/$', views.actualizar_empresa, name='actualizar_empresa'),
+    url(r'^actualizar/sucursal/$', views.actualizar_sucursal, name='actualizar_sucursal'),
 
-    url(r'^eliminar/corporativo/(?P<reg_id>\w+)/$', views.eliminar_corporativo, name='eliminar_corporativo'),
+    url(r'^eliminar/corporativo/$', views.eliminar_corporativo, name='eliminar_corporativo'),
+    url(r'^eliminar/sucursal/$', views.eliminar_sucursal, name='eliminar_sucursal'),
     #------------------>>>AJAX<<<-------------------
 
     url(r'^seguridad/', include('django.contrib.auth.urls')),

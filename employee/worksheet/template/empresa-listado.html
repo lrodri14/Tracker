@@ -13,6 +13,12 @@ Listado de Empresas
             </div>
             <div class="panel-wrapper">
                 <div class="panel-body">
+                    <div class="row text-right">
+                        <div class="col-md-12">
+                            <a href="{% url 'empresa' %}" class="btn btn-primary">Agregar</a>
+                        </div>
+                    </div>
+                    <br>
                     <div class="table-responsive">
                         <table id="myTable" class="table table-striped">
                             <thead>
@@ -20,6 +26,7 @@ Listado de Empresas
                                     <th>Razón Social</th>
                                     <th>Nombre comercial</th>
                                     <th>Activo</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -27,7 +34,21 @@ Listado de Empresas
                                 <tr>
                                     <td>{{item.razonSocial}}</td>
                                     <td>{{item.nombreComercial}}</td>
-                                    <td></td>
+                                    <td>
+                                        {% if item.active %}
+                                        <span class="label label-success">Habilitado</span>
+                                        {% else %}
+                                        <span class="label label-danger">Inactivo</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-nowrap acciones">
+                                        <a href="{% url 'empresa_editar' item.pk %}" data-toggle="tooltip" data-original-title="Edit">
+                                            <i class="fa fa-pencil text-inverse m-r-10"></i>
+                                        </a>
+                                        <a href="#" id="{{item.pk}}" data-toggle="tooltip" data-original-title="Close">
+                                            <i class="btnEliminar fa fa-close text-danger"></i>
+                                        </a>
+                                    </td>
                                 </tr>
                                 {% endfor %}
                             </tbody>

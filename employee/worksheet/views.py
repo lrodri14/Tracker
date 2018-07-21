@@ -52,12 +52,20 @@ def listadoCorporativo(request):
 def empresa(request):
     return render(request, 'empresa.html')
 
+def empresa_editar(request, emp_id):
+    dato = Empresa.objects.get(pk=emp_id)
+    return render(request, 'empresa.html', {'dato':dato, 'editar':True} )
+
 def listadoEmpresa(request):
     empresas = Empresa.objects.all()
     return render(request, 'empresa-listado.html', {'empresas':empresas})
 
 def sucursal(request):
     return render(request, 'sucursal.html')
+
+def sucursal_editar(request, id):
+    dato = Branch.objects.get(pk=id)
+    return render(request, 'sucursal.html', {'editar':True, 'dato':dato})
 
 def listadoSucursal(request):
     sucursales = Branch.objects.all()
@@ -440,16 +448,34 @@ def actualizar_corporativo(request):
         }
     return JsonResponse(data)
 
-def eliminar_corporativo(request, reg_id):
+def eliminar_corporativo(request):
     try:
-        if int(reg_id) > 0:
-            print "Entro"
-            oGrupo = GrupoCorporativo.objects.get(pk=reg_id)
-            oGrupo.delete()
-            print "Elimino"
-            mensaje = 'Se ha eliminado el registro del Grupo Corporativo'
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    print "Entro"
+                    oGrupo = GrupoCorporativo.objects.get(pk=reg_id)
+                    oGrupo.delete()
+                    print "Elimino"
+                    mensaje = 'Se ha eliminado el registro del Grupo Corporativo'
+                    data = {
+                        'mensaje':mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
             data = {
-                'mensaje':mensaje, 'error': False
+                'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
         print ex
@@ -457,8 +483,8 @@ def eliminar_corporativo(request, reg_id):
             'error':True,
             'mensaje': 'error',
         }
-    return HttpResponseRedirect('/listar/corporativos/')
-    #return JsonResponse(data)
+    #return HttpResponseRedirect('/listar/corporativos/')
+    return JsonResponse(data)
 
 def guardar_empresa(request):
     try:
@@ -514,6 +540,69 @@ def guardar_empresa(request):
         }
     return JsonResponse(data)
 
+def actualizar_empresa(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = request.POST['id']
+                razon = request.POST['razon']
+                nombre = request.POST['organiz']
+                activo = int(request.POST['activo'])
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                if len(razon) > 0:
+                    oGrupo = GrupoCorporativo.objects.get(pk=id)
+                    #day  = timezone.now()
+                    #formatedDay  = day.strftime("%Y-%m-%d %H:%M:%S")
+                    oGrupo.razonSocial = razon
+                    oGrupo.nombreComercial = nombre
+                    oGrupo.active = activo
+                    oGrupo.user_mod = request.user
+                    oGrupo.date_mod = datetime.datetime.now()
+                    # oGrupo = GrupoCorporativo(
+                    #     razonSocial = razon,
+                    #     nombreComercial = nombre,
+                    #     active = activo,
+                    #     user_reg=request.user,
+                    # )
+                    oGrupo.save()
+                    grupo = {
+                        'pk': oGrupo.pk,
+                        'razon': oGrupo.razonSocial,
+                        'nombre': oGrupo.nombreComercial,
+                        'activo': oGrupo.active,
+                    }
+                    mensaje = 'Se ha actualizado el registro del Grupo Corporativo'
+                    data = {
+                        'grupo': grupo, 'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "Complete los campos requeridos."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Metodo no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
 def guardar_sucursal(request):
     try:
         if  request.is_ajax():
@@ -564,6 +653,104 @@ def guardar_sucursal(request):
         print ex
         data = {
             'error':True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+
+def actualizar_sucursal(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = request.POST['id']
+                nombre = request.POST['nombre']
+                desc = request.POST['desc']
+                activo = int(request.POST['activo'])
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                if len(nombre) > 0 and len(desc) > 0:
+                    oSucursal = Branch.objects.get(pk=id)
+
+                    if oSucursal:
+                        oSucursal.name = nombre
+                        oSucursal.description = desc
+                        oSucursal.active = activo
+                        oSucursal.user_mod = request.user
+                        oSucursal.date_mod = datetime.datetime.now()
+                        oSucursal.save()
+                        sucursal = {
+                            'pk': oSucursal.pk,
+                            'desc': oSucursal.description,
+                            'nombre': oSucursal.name,
+                            'activo': oSucursal.active,
+                        }
+                        mensaje = 'Se ha actualizado el registro de la Sucursal'
+                        data = {
+                            'sucursal': sucursal, 'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = "No existe el registro."
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "Complete los campos requeridos."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Metodo no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def eliminar_sucursal(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oSucursal = Branch.objects.get(pk=reg_id)
+                    oSucursal.delete()
+                    mensaje = 'Se ha eliminado el registro de la sucursal'
+                    data = {
+                        'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
             'mensaje': 'error',
         }
     return JsonResponse(data)
@@ -775,7 +962,6 @@ def guardar_ccosto(request):
             'mensaje': 'error',
         }
     return JsonResponse(data)
-
 
 def guardar_pais(request):
     try:

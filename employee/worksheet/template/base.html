@@ -133,12 +133,7 @@
                     <li><a id="aInicio" href="{% url 'home' %}" class="waves-effect"><i data-icon="7" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Inicio </span></a> </li>
                     <li><a href="javascript:void(0)" id="aCorporativo" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Organización<span class="fa arrow"></span></span></a>
                         <ul class="nav nav-second-level">
-                            <li> <a href="javascript:void(0)" id="aCorporativo2" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Grupo Corporativo<span class="fa arrow"></span></span></a>
-                                <ul class="nav nav-third-level">
-                                    <li> <a id="sCorporativo1" href="{% url 'corporativo' %}"><i data-icon="/" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Agregar</span></a> </li>
-                                    <li> <a id="sCorporativo2" href="{% url 'listado_corporativos' %}"><i class="mdi mdi-format-list-bulleted"></i>  <span class="hide-menu">Listado</span></a> </li>
-                                </ul>
-                            </li>
+                            <li> <a href="{% url 'listado_corporativos' %}" id="aCorporativo2" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Grupo Corporativo</span></a></li>
                             <li> <a href="javascript:void(0)" id="aEmpresa" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Empresa<span class="fa arrow"></span></span></a>
                                 <ul class="nav nav-third-level">
                                     <li> <a id="sEmpresa1" href="{% url 'empresa' %}"><i data-icon="/" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Agregar</span></a> </li>
@@ -244,15 +239,15 @@
     <!-- /#wrapper -->
     <!-- jQuery -->
     <script src="{% static 'plugins/bower_components/jquery/dist/jquery.min.js' %}"></script>
-    <script src="{% static 'js/jquery-ui.min.js' %}"></script>
+    <script src="{% static 'js/lib/jquery-ui.min.js' %}"></script>
     <!-- Bootstrap Core JavaScript -->
     <script src="{% static 'bootstrap/dist/js/bootstrap.min.js' %}"></script>
     <!-- Menu Plugin JavaScript -->
     <script src="{% static 'plugins/bower_components/sidebar-nav/dist/sidebar-nav.min.js' %}"></script>
     <!--slimscroll JavaScript -->
-    <script src="{% static 'js/jquery.slimscroll.js' %}"></script>
+    <script src="{% static 'js/lib/jquery.slimscroll.js' %}"></script>
     <!--Wave Effects -->
-    <script src="{% static 'js/waves.js' %}"></script>
+    <script src="{% static 'js/lib/waves.js' %}"></script>
     <!-- Custom Theme JavaScript -->
     <!--script src="{% static 'plugins/bower_components/Chart.js/chartjs.init.js' %}"></script-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
@@ -263,9 +258,9 @@
     <script src="{% static 'plugins/bower_components/bootstrap-select/bootstrap-select.min.js' %}"></script>
     <script src="{% static 'plugins/bower_components/toast-master/js/jquery.toast.js' %}"></script>
     <script src="{% static 'plugins/bower_components/datatables/jquery.dataTables.min.js' %}"></script>
-    <script src="{% static 'js/toastr.js' %}"></script>
+    <script src="{% static 'js/lib/toastr.js' %}"></script>
     <!--script src="{% static 'plugins/bower_components/raphael/raphael-min.js' %}"></script-->
-    <script src="{% static 'js/custom.js' %}"></script>
+    <script src="{% static 'js/lib/custom.js' %}"></script>
     <script src="{% static 'js/own/my-script.js' %}"></script>
     <script src="{% static 'plugins/bower_components/moment/moment.js' %}"></script>
     <!-- Date Picker Plugin JavaScript -->

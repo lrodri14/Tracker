@@ -25,7 +25,7 @@ SECRET_KEY = '$o#5f0c6f4cifeoiu11(vsqw-qmi=r8c175yl+a+7h1guzw&tk'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'worksheet',
+    
 ]
 
 MIDDLEWARE = [
@@ -79,10 +80,10 @@ DATABASES = {
         'ENGINE': 'sql_server.pyodbc',
         'NAME': 'django',
         'USER': 'sa',
-        'PASSWORD': '12345',
-        #'PASSWORD': 'holaMundo2018',
-        'HOST': 'DESKTOP-O3RL0VG',
-        #'HOST': 'IT06',
+        #'PASSWORD': '12345',
+        'PASSWORD': 'holaMundo2018',
+        #'HOST': 'DESKTOP-O3RL0VG',
+        'HOST': 'IT06',
         'PORT': '',
     }
 }

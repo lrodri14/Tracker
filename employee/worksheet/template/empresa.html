@@ -14,6 +14,7 @@ Registro de Empresa
             <div class="panel-wrapper">
                 <div class="panel-body">
                     {% csrf_token %}
+                    <input type="hidden" name="id_emp" value="{{dato.pk}}">
                     <div class="col-md-6">
                         <div class="col-md-12 margin-bottom-5px">
                             <div class="form-group">
@@ -21,7 +22,7 @@ Registro de Empresa
                                     <label for="txtRazonSocial" class="control-label">Razón social :</label>
                                 </div>
                                 <div class="col-md-7">
-                                    <input type="text" name="razonSocial" id="txtRazonSocial" class="form-control input-sm input-sm-1">
+                                    <input type="text" name="razonSocial" id="txtRazonSocial" value="{{dato.razonSocial}}" class="form-control input-sm input-sm-1">
                                 </div>
                             </div>
                         </div>
@@ -31,7 +32,7 @@ Registro de Empresa
                                     <label for="txtNombreComercial" class="control-label">Nombre comercial :</label>
                                 </div>
                                 <div class="col-md-7">
-                                    <input type="text" name="nombreComercial" id="txtNombreComercial" class="form-control input-sm input-sm-1">
+                                    <input type="text" name="nombreComercial" id="txtNombreComercial" value="{{dato.nombreComercial}}" class="form-control input-sm input-sm-1">
                                 </div>
                             </div>
                         </div>
@@ -40,7 +41,11 @@ Registro de Empresa
                                 <div class="col-md-5"></div>
                                 <div class="col-md-7">
                                     <div class="checkbox checkbox-success">
-                                        <input id="chkActivo" name="activo" type="checkbox" class="input-sm">
+                                        {% if dato.active %}
+                                            <input id="chkActivo" name="activo" type="checkbox" checked class="input-sm"> 
+                                        {% else %}
+                                            <input id="chkActivo" name="activo" type="checkbox" class="input-sm">
+                                        {% endif %}
                                         <label for="chkActivo" class="control-label"> Activo </label>
                                     </div>
                                 </div>
@@ -48,8 +53,13 @@ Registro de Empresa
                         </div>
                         <hr>
                         <div class="form-action col-md-12 text-right">
-                            <button id="btnGuardar" class="btn btn-success">Guardar</button>
+                            {% if editar %}
+                                <button id="btnActualizar" class="btn btn-success">Actualizar</button>
+                            {% else %}
+                                <button id="btnGuardar" class="btn btn-success">Guardar</button>
+                            {% endif %}
                             <button id="btnCancelar" class="btn btn-default">Cancelar</button>
+                            <a href="{% url 'listado_empresas' %}" class="btn btn-primary">Ver Registros</a>
                         </div>
                     </div>
                     <div class="col-md-6">

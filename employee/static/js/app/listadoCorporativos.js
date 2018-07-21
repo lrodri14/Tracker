@@ -18,17 +18,17 @@ $(document).on('ready', () => {
     //#endregion
 
     //#region Eventos Controles
-    // $('.acciones a').on("click", function(e) {
-    //     e.preventDefault();
-    //     control = $(this);
-    //     var valor = control.attr('id');
-    //     var parent = control.parents('tr').attr('id');
-    //     Eliminar(valor, parent);
-    // });
+    $('.acciones .btnEliminar').on("click", function(e) {
+        e.preventDefault();
+        control = $(this);
+        //var parent = control.parents('tr').attr('id');
+        var valor = control.attr('id');
+        Eliminar(valor);
+    });
     //#endregion
 
     //#region Funciones
-    function Eliminar(id, parent) {
+    function Eliminar(id) {
         var url = "/eliminar/corporativo/"; // the script where you handle the form input.
         $.ajax({
             type: "POST",
@@ -46,11 +46,12 @@ $(document).on('ready', () => {
                         position: 'top-right',
                         loaderBg: '#ff6849',
                         icon: 'success',
-                        hideAfter: 5000,
+                        hideAfter: 2000,
                         stack: 6
                     });
-                    $('#'+parent).toggle(1000);
-                    actualizarTabla();
+                    setTimeout(function () {
+                        location.reload();
+                    }, 2000);
                 }else{
                     $.toast({
                         heading: 'Grupo Corporativo',
@@ -76,18 +77,6 @@ $(document).on('ready', () => {
                 });
             }
         });
-    }
-    function actualizarTabla(){
-        $('#myTable').DataTable({
-            "processing": true,
-            "serverSide": true,
-            "ajax": "/ajax/corporativos/",
-            "columns": [
-                { "data": "razonSocial" },
-                { "data": "nombreComercial" },
-                { "data": "active" },
-            ]
-        } );
     }
     //#endregion
 });
