@@ -74,12 +74,20 @@ def listadoSucursal(request):
 def divisiones(request):
     return render(request, 'divisiones.html')
 
+def division_editar(request, id):
+    dato = Divisiones.objects.get(pk=id)
+    return render(request, 'divisiones.html', {'editar':True, 'dato':dato})
+
 def listadoDivisiones(request):
     divisiones = Divisiones.objects.all()
     return render(request, 'divisiones-listado.html', {'divisiones':divisiones})
 
 def departamentos(request):
     return render(request, 'departamentos.html')
+
+def departamento_editar(request, id):
+    dato = Department.objects.get(pk=id)
+    return render(request, 'departamentos.html', {'editar':True, 'dato':dato})
 
 def listadoDepartamentos(request):
     deptos = Department.objects.all()
@@ -242,8 +250,6 @@ def guardar_empleado(request):
                 if banco > 0:
                     oBankCode = Bank.objects.get(pk=banco)
                 
-                
-
                 if len(pNom) > 0 and len(apellido) > 0 and len(puesto) > 0 and len(no_ext) > 0:
                     oEmpleado = Employee(
                         firstName=pNom,
@@ -555,31 +561,29 @@ def actualizar_empresa(request):
                     activo = False
 
                 if len(razon) > 0:
-                    oGrupo = GrupoCorporativo.objects.get(pk=id)
-                    #day  = timezone.now()
-                    #formatedDay  = day.strftime("%Y-%m-%d %H:%M:%S")
-                    oGrupo.razonSocial = razon
-                    oGrupo.nombreComercial = nombre
-                    oGrupo.active = activo
-                    oGrupo.user_mod = request.user
-                    oGrupo.date_mod = datetime.datetime.now()
-                    # oGrupo = GrupoCorporativo(
-                    #     razonSocial = razon,
-                    #     nombreComercial = nombre,
-                    #     active = activo,
-                    #     user_reg=request.user,
-                    # )
-                    oGrupo.save()
-                    grupo = {
-                        'pk': oGrupo.pk,
-                        'razon': oGrupo.razonSocial,
-                        'nombre': oGrupo.nombreComercial,
-                        'activo': oGrupo.active,
-                    }
-                    mensaje = 'Se ha actualizado el registro del Grupo Corporativo'
-                    data = {
-                        'grupo': grupo, 'mensaje': mensaje, 'error': False
-                    }
+                    oEmp = Empresa.objects.get(pk=id)
+                    if oEmp:
+                        oEmp.razonSocial = razon
+                        oEmp.nombreComercial = nombre
+                        oEmp.active = activo
+                        oEmp.user_mod = request.user
+                        oEmp.date_mod = datetime.datetime.now()
+                        oEmp.save()
+                        emp = {
+                            'pk': oEmp.pk,
+                            'razon': oEmp.razonSocial,
+                            'nombre': oEmp.nombreComercial,
+                            'activo': oEmp.active,
+                        }
+                        mensaje = 'Se ha actualizado el registro de la empresa'
+                        data = {
+                            'emp': emp, 'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'El registro no existe.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
                 else:
                     mensaje = "Complete los campos requeridos."
                     data = {
@@ -599,6 +603,46 @@ def actualizar_empresa(request):
         print ex
         data = {
             'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def eliminar_empresa(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oEmp = Empresa.objects.get(pk=reg_id)
+                    if oEmp:
+                        oEmp.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje':mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje':mensaje, 'error': False
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        data = {
+            'error':True,
             'mensaje': 'error',
         }
     return JsonResponse(data)
@@ -656,7 +700,6 @@ def guardar_sucursal(request):
             'mensaje': 'error',
         }
     return JsonResponse(data)
-
 
 def actualizar_sucursal(request):
     try:
@@ -806,6 +849,106 @@ def guardar_division(request):
         }
     return JsonResponse(data)
 
+def actualizar_division(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = request.POST['id']
+                desc = request.POST['desc']
+                activo = int(request.POST['activo'])
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                if len(desc) > 0:
+                    oDiv = Divisiones.objects.get(pk=id)
+
+                    if oDiv:
+                        oDiv.descripcion = desc
+                        oDiv.active = activo
+                        oDiv.user_mod = request.user
+                        oDiv.date_mod = datetime.datetime.now()
+                        oDiv.save()
+                        division = {
+                            'pk': oDiv.pk,
+                            'desc': oDiv.descripcion,
+                            'activo': oDiv.active,
+                        }
+                        mensaje = 'Se ha actualizado el registro.'
+                        data = {
+                            'division': division, 'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = "No existe el registro."
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "Complete los campos requeridos."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def eliminar_division(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oDivision = Divisiones.objects.get(pk=reg_id)
+                    if oDivision:
+                        oDivision.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
 def guardar_departamento(request):
     try:
         if  request.is_ajax():
@@ -855,6 +998,116 @@ def guardar_departamento(request):
         print ex
         data = {
             'error':True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def actualizar_departamento(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = request.POST['id']
+                nombre = request.POST['nombre']
+                desc = request.POST['desc']
+                activo = int(request.POST['activo'])
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                if len(desc) > 0:
+                    oDep = Department.objects.get(pk=id)
+
+                    if oDep:
+                        oDep.name = nombre
+                        oDep.description = desc
+                        oDep.active = activo
+                        oDep.user_mod = request.user
+                        oDep.date_mod = datetime.datetime.now()
+                        oDep.save()
+                        dep = {
+                            'pk': oDep.pk,
+                            'name':oDep.name,
+                            'desc': oDep.description,
+                            'activo': oDep.active,
+                        }
+                        mensaje = 'Se ha actualizado el registro.'
+                        data = {
+                            'departamento': dep, 'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = "No existe el registro."
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "Complete los campos requeridos."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def eliminar_departamento(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oDivision = Department.objects.get(pk=reg_id)
+                    totReg = Employee.objects.filter(dept__pk=reg_id).count()
+                    if oDivision:
+                        if totReg == 0:
+                            oDivision.delete()
+                            mensaje = 'Se ha eliminado el registro.'
+                            data = {
+                                'mensaje': mensaje, 'error': False
+                            }
+                        else:
+                            mensaje = 'Existen datos asociados al registro que quiere eliminar.'
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
             'mensaje': 'error',
         }
     return JsonResponse(data)

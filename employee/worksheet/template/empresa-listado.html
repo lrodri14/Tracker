@@ -21,6 +21,7 @@ Listado de Empresas
                     <br>
                     <div class="table-responsive">
                         <table id="myTable" class="table table-striped">
+                            {% csrf_token %}
                             <thead>
                                 <tr>
                                     <th>Razón Social</th>
@@ -45,8 +46,8 @@ Listado de Empresas
                                         <a href="{% url 'empresa_editar' item.pk %}" data-toggle="tooltip" data-original-title="Edit">
                                             <i class="fa fa-pencil text-inverse m-r-10"></i>
                                         </a>
-                                        <a href="#" id="{{item.pk}}" data-toggle="tooltip" data-original-title="Close">
-                                            <i class="btnEliminar fa fa-close text-danger"></i>
+                                        <a href="#" class="btnEliminar" data="{{item.pk}}" data-toggle="tooltip" data-original-title="Close">
+                                            <i class="fa fa-close text-danger"></i>
                                         </a>
                                     </td>
                                 </tr>

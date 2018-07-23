@@ -1,4 +1,5 @@
 $(document).on('ready', () => {
+    var dns = window.location.protocol+"//"+window.location.host;
     //#region Efectos en SideBar
     $('#side-menu a').removeClass('active');
     $('#aCorporativo').addClass('active');
@@ -8,7 +9,7 @@ $(document).on('ready', () => {
     //#endregion
     //#region Variables
     var vActivo = 0;
-    var id_emp = $('input[name="id_emp"]');
+    var id_emp = $('input[name="id"]');
     var razon = $('input[name="razonSocial"]');
     var organizacion = $('input[name="nombreComercial"]');
     var activo = $('input[name="activo"]');
@@ -25,11 +26,12 @@ $(document).on('ready', () => {
 
     $('#btnCancelar').on('click', function(e) {
        e.preventDefault();
-       LimpiarControles(); 
+       window.location.replace(dns + "/listar/empresas/");
     });
 
     $('#btnActualizar').on('click', function(e) {
         e.preventDefault();
+        ActualizarRegistro();
     });
     //#endregion
     //#region Funciones
@@ -124,10 +126,12 @@ $(document).on('ready', () => {
                             position: 'top-right',
                             loaderBg: '#ff6849',
                             icon: 'success',
-                            hideAfter: 5000,
+                            hideAfter: 2500,
                             stack: 6
                         });
-                        LimpiarControles();
+                        setTimeout(function () {
+                            window.location.replace(dns +"/listar/empresas/");
+                        }, 2500);
                     } else {
                         $.toast({
                             heading: 'Empresa',

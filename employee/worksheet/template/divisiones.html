@@ -14,6 +14,9 @@ Registro de División
             <div class="panel-wrapper">
                 <div class="panel-body">
                     {% csrf_token %}
+                    {% if editar %}
+                    <input type="hidden" value="{{dato.pk}}" name="id">
+                    {% endif %}
                     <div class="col-md-6">
                         <div class="col-md-12 margin-bottom-5px">
                             <div class="form-group">
@@ -21,7 +24,7 @@ Registro de División
                                     <label for="txtRazonSocial" class="control-label">Descripción :</label>
                                 </div>
                                 <div class="col-md-7">
-                                    <input type="text" name="descripcion" id="txtDescripcion" class="form-control input-sm input-sm-1">
+                                    <input type="text" name="descripcion" value="{{dato.descripcion}}" id="txtDescripcion" class="form-control input-sm input-sm-1">
                                 </div>
                             </div>
                         </div>
@@ -30,7 +33,11 @@ Registro de División
                                 <div class="col-md-5"></div>
                                 <div class="col-md-7">
                                     <div class="checkbox checkbox-success">
+                                        {% if dato.active %}
+                                        <input id="chkActivo" name="activo" type="checkbox" checked class="input-sm">
+                                        {% else %}
                                         <input id="chkActivo" name="activo" type="checkbox" class="input-sm">
+                                        {% endif %}
                                         <label for="chkActivo" class="control-label"> Activo </label>
                                     </div>
                                 </div>
@@ -38,7 +45,11 @@ Registro de División
                         </div>
                         <hr>
                         <div class="form-action col-md-12 text-right">
+                            {% if editar %}
+                            <button id="btnActualizar" class="btn btn-success">Actualizar</button>
+                            {% else %}
                             <button id="btnGuardar" class="btn btn-success">Guardar</button>
+                            {% endif %}
                             <button id="btnCancelar" class="btn btn-default">Cancelar</button>
                         </div>
                     </div>

@@ -35,8 +35,10 @@ urlpatterns = [
     url(r'^editar/sucursal/(?P<id>\w+)/$', views.sucursal_editar, name="sucursal_editar"),
     url(r'^listar/sucursales/$', views.listadoSucursal, name="listado_sucursal"),
     url(r'^divisiones/$', views.divisiones, name="divisiones"),
+    url(r'^editar/division/(?P<id>\w+)/$', views.division_editar, name="division_editar"),
     url(r'^listar/divisiones/$', views.listadoDivisiones, name="listado_divisiones"),
     url(r'^departamentos/$', views.departamentos, name="departamentos"),
+    url(r'^editar/departamento/(?P<id>\w+)/$', views.departamento_editar, name="departamento_editar"),
     url(r'^listar/departamentos/$', views.listadoDepartamentos, name="listado_departamentos"),
     url(r'^puesto-trabajo/$', views.puestoTrabajo, name="puestoTrabajo"),
     url(r'^listar/puestos-trabajo/$', views.listadoPuestoTrabajo, name="listado_puestos"),
@@ -59,9 +61,14 @@ urlpatterns = [
     url(r'^actualizar/corporativo/$', views.actualizar_corporativo, name='actualizar_corporativo'),
     url(r'^actualizar/empresa/$', views.actualizar_empresa, name='actualizar_empresa'),
     url(r'^actualizar/sucursal/$', views.actualizar_sucursal, name='actualizar_sucursal'),
+    url(r'^actualizar/division/$', views.actualizar_division, name='actualizar_division'),
+    url(r'^actualizar/departamento/$', views.actualizar_departamento, name='actualizar_departamento'),
 
     url(r'^eliminar/corporativo/$', views.eliminar_corporativo, name='eliminar_corporativo'),
+    url(r'^eliminar/empresa/$', views.eliminar_empresa, name='eliminar_empresa'),
     url(r'^eliminar/sucursal/$', views.eliminar_sucursal, name='eliminar_sucursal'),
+    url(r'^eliminar/division/$', views.eliminar_division, name='eliminar_division'),
+    url(r'^eliminar/departamento/$', views.eliminar_departamento, name='eliminar_departamento'),
     #------------------>>>AJAX<<<-------------------
 
     url(r'^seguridad/', include('django.contrib.auth.urls')),

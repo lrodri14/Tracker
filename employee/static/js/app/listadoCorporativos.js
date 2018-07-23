@@ -9,7 +9,7 @@ $(document).on('ready', () => {
     //#endregion
 
     //#region Librerías
-    $('#myTable').DataTable();
+
     //#endregion
 
     //#region  Variables

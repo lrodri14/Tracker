@@ -1,5 +1,5 @@
 $(document).on('ready', () => {
-    var dns = 'http://localhost:8000';
+    var dns = window.location.protocol+"//"+window.location.host;
     //#region Efectos en SideBar
     $('#side-menu a').removeClass('active');
     $('#aCorporativo').addClass('active');

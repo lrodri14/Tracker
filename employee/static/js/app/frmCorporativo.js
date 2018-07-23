@@ -1,4 +1,5 @@
 $(document).on('ready', () => {
+    var dns = window.location.protocol+"//"+window.location.host;
     //#region Efectos en SideBar
     $('#side-menu a').removeClass('active');
     $('#aCorporativo').addClass('active');
@@ -15,7 +16,6 @@ $(document).on('ready', () => {
     var token = $('input[name="csrfmiddlewaretoken"]');
     //#endregion
     //#region Librerías
-    $('#myTable').DataTable();
     //#endregion
     //#region Eventos Controles
     $('#btnGuardar').on('click', (e) => {
@@ -25,7 +25,7 @@ $(document).on('ready', () => {
 
     $('#btnCancelar').on('click', (e) => {
         e.preventDefault();
-        LimpiarControles();
+        window.location.replace(dns + "/listar/corporativos/");
     });
     $('#btnActualizar').on('click', (e) => {
         e.preventDefault();
@@ -128,14 +128,16 @@ $(document).on('ready', () => {
                     if(data.error == false){
                         $.toast({
                             heading: 'Grupo Corporativo',
-                            text: 'Se ha actualizado registro en grupo corporativo.',
+                            text: 'Se ha actualizado registro.',
                             position: 'top-right',
                             loaderBg: '#ff6849',
                             icon: 'success',
-                            hideAfter: 5000,
+                            hideAfter: 2500,
                             stack: 6
                         });
-                        LimpiarControles();
+                        setTimeout(function () {
+                            window.location.replace(dns +"/listar/corporativos/");
+                        }, 2500);
                     }else{
                         $.toast({
                             heading: 'Grupo Corporativo',

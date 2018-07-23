@@ -14,7 +14,9 @@ Registro de Empresa
             <div class="panel-wrapper">
                 <div class="panel-body">
                     {% csrf_token %}
-                    <input type="hidden" name="id_emp" value="{{dato.pk}}">
+                    {% if editar %}
+                    <input type="hidden" name="id" value="{{dato.pk}}">
+                    {% endif %}
                     <div class="col-md-6">
                         <div class="col-md-12 margin-bottom-5px">
                             <div class="form-group">
@@ -59,7 +61,6 @@ Registro de Empresa
                                 <button id="btnGuardar" class="btn btn-success">Guardar</button>
                             {% endif %}
                             <button id="btnCancelar" class="btn btn-default">Cancelar</button>
-                            <a href="{% url 'listado_empresas' %}" class="btn btn-primary">Ver Registros</a>
                         </div>
                     </div>
                     <div class="col-md-6">
