@@ -25,6 +25,9 @@ Registro de País
             <div class="panel-wrapper">
                 <div class="panel-body">
                     {% csrf_token %}
+                    {% if editar %}
+                    <input type="hidden" value="{{dato.pk}}" name="id">
+                    {% endif %}
                     <div class="col-md-6">
                         <div class="col-md-12 margin-bottom-5px">
                             <div class="form-group">
@@ -32,7 +35,7 @@ Registro de País
                                     <label for="txtpCodigo" class="control-label">Código :</label>
                                 </div>
                                 <div class="col-md-7">
-                                    <input type="text" name="p_codigo" id="txtpCodigo" maxlength="250" class="form-control input-sm input-sm-1">
+                                    <input type="text" name="p_codigo" value="{{dato.code}}" id="txtpCodigo" maxlength="250" class="form-control input-sm input-sm-1">
                                 </div>
                             </div>
                         </div>
@@ -42,7 +45,7 @@ Registro de País
                                 <label for="txtpNombre" class="control-label">Nombre :</label>
                                 </div>
                                 <div class="col-md-7">
-                                    <input type="text" name="p_nombre" id="txtpNombre" maxlength="250" class="form-control input-sm input-sm-1">
+                                    <input type="text" name="p_nombre" value="{{dato.name}}" id="txtpNombre" maxlength="250" class="form-control input-sm input-sm-1">
                                 </div>
                             </div>
                         </div>
@@ -51,7 +54,11 @@ Registro de País
                                 <div class="col-md-5"></div>
                                 <div class="col-md-7">
                                     <div class="checkbox checkbox-success">
-                                        <input id="chkpActivo" name="p_activo" type="checkbox" class="input-sm">
+                                        {% if dato.active %}
+                                        <input id="chkActivo" name="p_activo" type="checkbox" checked class="input-sm">
+                                        {% else %}
+                                        <input id="chkActivo" name="p_activo" type="checkbox" class="input-sm">
+                                        {% endif %}
                                         <label for="chkpActivo" class="control-label"> Activo </label>
                                     </div>
                                 </div>
@@ -59,7 +66,11 @@ Registro de País
                         </div>
                         <hr>
                         <div class="form-action col-md-12 text-right">
+                            {% if editar %}
+                            <button id="btnpActualizar" class="btn btn-success">Actualizar</button>
+                            {% else %}
                             <button id="btnpGuardar" class="btn btn-success">Guardar</button>
+                            {% endif %}
                             <button id="btnpCancelar" class="btn btn-default">Cancelar</button>
                         </div>
                     </div>

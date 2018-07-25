@@ -25,6 +25,9 @@ Puesto de Trabajo
             <div class="panel-wrapper">
                 <div class="panel-body">
                     {% csrf_token %}
+                    {% if editar %}
+                    <input type="hidden" value="{{dato.pk}}" name="id">
+                    {% endif %}
                     <div class="col-md-6">
                         <div class="col-md-12 margin-bottom-5px">
                             <div class="form-group">
@@ -32,7 +35,7 @@ Puesto de Trabajo
                                 <label for="txtptNombre" class="control-label">Nombre :</label>
                                 </div>
                                 <div class="col-md-7">
-                                    <input type="text" name="pt_nombre" id="txtptNombre" class="form-control input-sm input-sm-1">
+                                    <input type="text" name="pt_nombre" value="{{dato.name}}" id="txtptNombre" class="form-control input-sm input-sm-1">
                                 </div>
                             </div>
                         </div>
@@ -42,7 +45,7 @@ Puesto de Trabajo
                                 <label for="txtptDescripcion" class="control-label">Descripción :</label>
                                 </div>
                                 <div class="col-md-7">
-                                    <input type="text" name="pt_descripcion" id="txtptDescripcion" class="form-control input-sm input-sm-1">
+                                    <input type="text" name="pt_descripcion" value="{{dato.description}}" id="txtptDescripcion" class="form-control input-sm input-sm-1">
                                 </div>
                             </div>
                         </div>
@@ -51,7 +54,11 @@ Puesto de Trabajo
                                 <div class="col-md-5"></div>
                                 <div class="col-md-7">
                                     <div class="checkbox checkbox-success">
+                                        {% if dato.active %}
+                                        <input id="chkptActivo" name="pt_activo" type="checkbox" class="input-sm" checked>
+                                        {% else %}
                                         <input id="chkptActivo" name="pt_activo" type="checkbox" class="input-sm">
+                                        {% endif %}
                                         <label for="chkptActivo" class="control-label"> Activo </label>
                                     </div>
                                 </div>
@@ -59,8 +66,12 @@ Puesto de Trabajo
                         </div>
                         <hr>
                         <div class="form-action col-md-12 text-right">
+                            {% if editar %}
+                            <button id="btnptActualizar" class="btn btn-success">Actualizar</button>
+                            {% else %}
                             <button id="btnptGuardar" class="btn btn-success">Guardar</button>
-                            <button id="btnCancelar" class="btn btn-default">Cancelar</button>
+                            {% endif %}
+                            <button id="btnptCancelar" class="btn btn-default">Cancelar</button>
                         </div>
                     </div>
                 </div>

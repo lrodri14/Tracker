@@ -41,10 +41,13 @@ urlpatterns = [
     url(r'^editar/departamento/(?P<id>\w+)/$', views.departamento_editar, name="departamento_editar"),
     url(r'^listar/departamentos/$', views.listadoDepartamentos, name="listado_departamentos"),
     url(r'^puesto-trabajo/$', views.puestoTrabajo, name="puestoTrabajo"),
+    url(r'^editar/puesto/(?P<id>\w+)/$', views.puesto_editar, name="puesto_editar"),
     url(r'^listar/puestos-trabajo/$', views.listadoPuestoTrabajo, name="listado_puestos"),
     url(r'^centro-costos/$', views.centro_costos, name="centro_costos"),
+    url(r'^editar/centro-costos/(?P<id>\w+)/$', views.centro_costo_editar, name="centro_costo_editar"),
     url(r'^listar/centro-costos/$', views.listadoCentroCostos, name="listado_ccostos"),
     url(r'^paises/$', views.paises, name="paises"),
+    url(r'^editar/pais/(?P<id>\w+)/$', views.paises_editar, name="paises_editar"),
     url(r'^listar/paises/$', views.listadoPaises, name="listado_paises"),
 
     #----------------->>>AJAX<<<------------------
@@ -63,12 +66,18 @@ urlpatterns = [
     url(r'^actualizar/sucursal/$', views.actualizar_sucursal, name='actualizar_sucursal'),
     url(r'^actualizar/division/$', views.actualizar_division, name='actualizar_division'),
     url(r'^actualizar/departamento/$', views.actualizar_departamento, name='actualizar_departamento'),
+    url(r'^actualizar/puesto/$', views.actualizar_puesto, name='actualizar_puesto'),
+    url(r'^actualizar/centro-costo/$', views.actualizar_ccosto, name='actualizar_ccosto'),
+    url(r'^actualizar/pais/$', views.actualizar_pais, name='actualizar_pais'),
 
     url(r'^eliminar/corporativo/$', views.eliminar_corporativo, name='eliminar_corporativo'),
     url(r'^eliminar/empresa/$', views.eliminar_empresa, name='eliminar_empresa'),
     url(r'^eliminar/sucursal/$', views.eliminar_sucursal, name='eliminar_sucursal'),
     url(r'^eliminar/division/$', views.eliminar_division, name='eliminar_division'),
     url(r'^eliminar/departamento/$', views.eliminar_departamento, name='eliminar_departamento'),
+    url(r'^eliminar/puesto/$', views.eliminar_puesto, name='eliminar_puesto'),
+    url(r'^eliminar/centro-costo/$', views.eliminar_ccosto, name='eliminar_ccosto'),
+    url(r'^eliminar/pais/$', views.eliminar_pais, name='eliminar_pais'),
     #------------------>>>AJAX<<<-------------------
 
     url(r'^seguridad/', include('django.contrib.auth.urls')),

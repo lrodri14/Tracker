@@ -5,13 +5,15 @@ $(document).on('ready', () => {
     var metodo = '';
     var data = {};
     var token = $('input[name="csrfmiddlewaretoken"]');
+    var dns = window.location.protocol+"//"+window.location.host;
+    var id = $('input[name="id"]');
     //#endregion
 
     //#region Código para Puestos de Trabajo
     //#region Variables
     var pt_nombre = $('input[name="pt_nombre"]');
     var pt_desc = $('input[name="pt_descripcion"]');
-    var pt_activo = $('input[name="activo"]');
+    var pt_activo = $('input[name="pt_activo"]');
     //var token = $('input[name="csrfmiddlewaretoken"]');
     //#endregion
     //#region Eventos Controles
@@ -19,20 +21,47 @@ $(document).on('ready', () => {
         e.preventDefault();
         url = '/guardar/puesto/';
         metodo = 'POST';
-         if (validarptDatos() != false) {
-             if (pt_activo.is(":checked")) {
-                 vActivo = 1;
-             } else {
-                 vActivo = 0;
-             }
-             data = {
-                 'nombre':pt_nombre.val(),
-                 'descripcion': pt_desc.val(),
-                 'activo': vActivo,
-                 'csrfmiddlewaretoken': token.val(),
-             };
-             GuardarRegistro(url, metodo, data, "Puesto de Trabajo");
-         }
+        if (validarptDatos() != false) {
+            if (pt_activo.is(":checked")) {
+                vActivo = 1;
+            } else {
+                vActivo = 0;
+            }
+            data = {
+                'nombre':pt_nombre.val(),
+                'descripcion': pt_desc.val(),
+                'activo': vActivo,
+                'csrfmiddlewaretoken': token.val(),
+            };
+            GuardarRegistro(url, metodo, data, "Puesto de Trabajo", false, '');
+        }
+    });
+
+    $('#btnptActualizar').on('click', function(e) {
+        e.preventDefault();
+        url = '/actualizar/puesto/';
+        metodo = 'POST';
+        if (validarptDatos() != false) {
+            if (pt_activo.is(":checked")) {
+                console.log("Verdadero");
+                vActivo = 1;
+            } else {
+                console.log("Falso");
+                vActivo = 0;
+            }
+            data = {
+                'id': id.val(),
+                'nombre':pt_nombre.val(),
+                'desc': pt_desc.val(),
+                'activo': vActivo,
+                'csrfmiddlewaretoken': token.val(),
+            };
+            GuardarRegistro(url, metodo, data, "Puesto de Trabajo", true, "/listar/puestos-trabajo/");
+        }
+    });
+    $('#btnptCancelar').on('click', function(e) {
+        e.preventDefault();
+        window.location.replace(dns + "/listar/puestos-trabajo/");
     });
     //#endregion
     //#region Validación
@@ -79,9 +108,32 @@ $(document).on('ready', () => {
         }
     });
 
+    $('#btnccActualizar').on('click', function(e) {
+        e.preventDefault();
+        url = '/actualizar/centro-costo/';
+        metodo = 'POST';
+        if (validarccDatos() != false) {
+            if (cc_activo.is(":checked")) {
+                console.log("Verdadero");
+                vActivo = 1;
+            } else {
+                console.log("Falso");
+                vActivo = 0;
+            }
+            data = {
+                'id': id.val(),
+                'desc': cc_desc.val(),
+                'activo': vActivo,
+                'csrfmiddlewaretoken': token.val(),
+            };
+            GuardarRegistro(url, metodo, data, "Centro de Costos", true, "/listar/centro-costos/");
+        }
+    });
+    
+
     $('#btnccCancelar').on('click', (e) => {
         e.preventDefault();
-        LimpiarControles();
+        window.location.replace(dns + "/listar/centro-costos/");
     });
     //#endregion
 
@@ -132,9 +184,32 @@ $(document).on('ready', () => {
         }
     });
 
+    $('#btnpActualizar').on('click', function(e) {
+        e.preventDefault();
+        url = '/actualizar/pais/';
+        metodo = 'POST';
+        if (validarpDatos() != false) {
+            if (p_activo.is(":checked")) {
+                console.log("Verdadero");
+                vActivo = 1;
+            } else {
+                console.log("Falso");
+                vActivo = 0;
+            }
+            data = {
+                'id': id.val(),
+                'codigo': p_codigo.val(),
+                'nombre': p_nombre.val(),
+                'activo': vActivo,
+                'csrfmiddlewaretoken': token.val(),
+            };
+            GuardarRegistro(url, metodo, data, "Países", true, "/listar/paises/");
+        }
+    });
+
     $('#btnpCancelar').on('click', (e) => {
         e.preventDefault();
-        LimpiarControles();
+        window.location.replace(dns + "/listar/paises/");
     });
     //#endregion
 
@@ -165,26 +240,38 @@ $(document).on('ready', () => {
 //#endregion Fin código para registro de Países
 
     //#region Funciones Generales
-    function GuardarRegistro(url, metodo, data, encabezado) {
+    function GuardarRegistro(url, metodo, data, encabezado, editar, urlRedirect) {
+        var texto = 'Se ha creado un nuevo registro.';
+        var tiempo = 3500;
+        if (editar) {
+            texto = 'Se ha actualizado el registro.';
+            tiempo = 2500;
+        }
         $.ajax({
             type: metodo,
             url: url,
             data: data,
             success: function (data) {
                 if (data.error == false) {
-                    mensaje(encabezado, "Se ha creado un nuevo registro.", "ok");
-                    LimpiarControles();
+                    mensaje(encabezado, texto, "ok", tiempo);
+                    if (editar) {
+                        setTimeout(function () {
+                            window.location.replace(dns + urlRedirect);
+                        }, tiempo);
+                    }else{
+                        LimpiarControles();
+                    }
                 } else {
-                    mensaje(encabezado, data.mensaje, "error");
+                    mensaje(encabezado, data.mensaje, "error", tiempo);
                 }
             },
             error: function (data) {
-                mensaje(encabezado, data.statusText, "error");
+                mensaje(encabezado, data.statusText, "error", tiempo);
             }
         });
     }
 
-    function mensaje(encabezado, texto, tipomsj) {
+    function mensaje(encabezado, texto, tipomsj, tiempo) {
         vicon = "warning";
         if (tipomsj == "warning") {
             vicon = "warning";
@@ -199,7 +286,7 @@ $(document).on('ready', () => {
             position: 'top-right',
             loaderBg: '#ff6849',
             icon: vicon,
-            hideAfter: 3500,
+            hideAfter: tiempo,
             stack: 6
         });
     }

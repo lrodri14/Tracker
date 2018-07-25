@@ -13,13 +13,21 @@ Listado de Países
             </div>
             <div class="panel-wrapper">
                 <div class="panel-body">
+                    <div class="row text-right">
+                        <div class="col-md-12">
+                            <a href="{% url 'paises' %}" class="btn btn-primary">Agregar</a>
+                        </div>
+                    </div>
+                    <br>
                     <div class="table-responsive">
+                        {% csrf_token %}
                         <table id="myTable" class="table table-striped">
                             <thead>
                                 <tr>
                                     <th>Código</th>
                                     <th>Nombre</th>
                                     <th>Estado del registro</th>
+                                    <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -29,10 +37,18 @@ Listado de Países
                                     <td>{{item.name}}</td>
                                     <td>
                                     {% if item.active %}
-                                    <span class="label label-success">Activo</span>
+                                    <span class="label label-success">Habilitado</span>
                                     {% else %}
                                     <span class="label label-danger">Inactivo</span>
                                     {% endif %}
+                                    </td>
+                                    <td class="text-nowrap acciones">
+                                        <a href="{% url 'paises_editar' item.pk %}" data-toggle="tooltip" data-original-title="Edit">
+                                            <i class="fa fa-pencil text-inverse m-r-10"></i>
+                                        </a>
+                                        <a href="#" id="btnEliminar" data="{{item.pk}}" data-toggle="tooltip" data-original-title="Close">
+                                            <i class="fa fa-close text-danger"></i>
+                                        </a>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -47,6 +63,7 @@ Listado de Países
 {% endblock contenido %}
 {% block scripts %}
 <script>
+    var token = $('input[name="csrfmiddlewaretoken"]');
     //#region Efectos en SideBar
     $('#side-menu a').removeClass('active');
     $('#aPersonal').addClass('active');
@@ -54,23 +71,64 @@ Listado de Países
     $('#sPaises2').addClass('active');
     //#endregion
 
-    //#region Librerías
-    $('#myTable').DataTable({
-        "language": {
-            "lengthMenu": "Mostrar _MENU_ registros por página",
-            "zeroRecords": "No se encontraron datos.",
-            "info": "Página _PAGE_ de _PAGES_",
-            "infoEmpty": "No existen registros",
-            "infoFiltered": "(resultado de _MAX_ registros en total.)",
-            "paginate": {
-                "first":      "Primer registro",
-                "last":       "Último registro",
-                "next":       "Siguiente",
-                "previous":   "Anterior"
-            },
-            "search":         "Buscar:",
-        }
+    $('.acciones #btnEliminar').on('click', function(e) {
+        e.preventDefault();
+        var id = $(this).attr('data');
+        Eliminar(id);
     });
+
+    //#region Funciones
+    function Eliminar(id) {
+        var encabezado = 'Países';
+        var url = "/eliminar/pais/"; // the script where you handle the form input.
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {
+                'id': id,
+                'csrfmiddlewaretoken': token.val(),
+            }, // serializes the form's elements.
+            success: function(data)
+            {
+                if(data.error == false){
+                    $.toast({
+                        heading: encabezado,
+                        text: data.mensaje,
+                        position: 'top-right',
+                        loaderBg: '#ff6849',
+                        icon: 'success',
+                        hideAfter: 2000,
+                        stack: 6
+                    });
+                    setTimeout(function () {
+                        location.reload();
+                    }, 2000);
+                }else{
+                    $.toast({
+                        heading: encabezado,
+                        text: data.mensaje,
+                        position: 'top-right',
+                        loaderBg: '#ff6849',
+                        icon: 'error',
+                        hideAfter: 5000,
+                        stack: 6
+                    });
+                }
+            },
+            error: function(data) {
+                console.log(data);
+                $.toast({
+                    heading: encabezado,
+                    text: data.status + ' - ' + data.statusText,
+                    position: 'top-right',
+                    loaderBg: '#ff6849',
+                    icon: 'error',
+                    hideAfter: 5000,
+                    stack: 6
+                });
+            }
+        });
+    }
     //#endregion
 </script>
 {% endblock scripts %}

@@ -96,6 +96,10 @@ def listadoDepartamentos(request):
 def puestoTrabajo(request):
     return render(request, 'puesto-trabajo.html')
 
+def puesto_editar(request, id):
+    dato = Position.objects.get(pk=id)
+    return render(request, 'puesto-trabajo.html', {'editar':True, 'dato':dato})
+
 def listadoPuestoTrabajo(request):
     puestos = Position.objects.all()
     return render(request, 'puestos-listado.html', {'puesto':puestos})
@@ -103,12 +107,20 @@ def listadoPuestoTrabajo(request):
 def centro_costos(request):
     return render(request, 'centro-costos.html')
 
+def centro_costo_editar(request, id):
+    dato = CentrosCostos.objects.get(pk=id)
+    return render(request, 'centro-costos.html', {'editar':True, 'dato':dato})
+
 def listadoCentroCostos(request):
     ccostos = CentrosCostos.objects.all()
     return render(request, 'ccostos-listado.html', {'ccostos':ccostos})
 
 def paises(request):
     return render(request, 'paises.html')
+
+def paises_editar(request, id):
+    dato = Country.objects.get(pk=id)
+    return render(request, 'paises.html', {'editar':True, 'dato':dato})
 
 def listadoPaises(request):
     paises = Country.objects.all()
@@ -1165,6 +1177,124 @@ def guardar_puesto(request):
         }
     return JsonResponse(data)
 
+def actualizar_puesto(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                nombre = request.POST['nombre']
+                desc = request.POST['desc']
+                activo = int(request.POST['activo'])
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+                
+                print activo
+                if len(nombre) > 0 and len(desc) > 0:
+                    oPos = Position.objects.get(pk=id)
+
+                    if oPos:
+                        totReg = Employee.objects.filter(position__pk=id).count()
+                        if totReg > 0:
+                            oPos.name = nombre
+                            oPos.description = desc
+                            oPos.active = activo
+                            oPos.user_mod = request.user
+                            oPos.date_mod = datetime.datetime.now()
+                            oPos.save()
+                            pos = {
+                                'pk': oPos.pk,
+                                'name':oPos.name,
+                                'desc': oPos.description,
+                                'activo': oPos.active,
+                            }
+                            mensaje = 'Se ha actualizado el registro.'
+                            data = {
+                                'puesto': pos, 'mensaje': mensaje, 'error': False
+                            }
+                        else:
+                            mensaje = 'El registro tiene datos asociados.'
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                    else:
+                        mensaje = "No existe el registro."
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "Complete los campos requeridos."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def eliminar_puesto(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oPuesto = Position.objects.get(pk=reg_id)
+                    totReg = Employee.objects.filter(dept__pk=reg_id).count()
+                    if oPuesto:
+                        if totReg == 0:
+                            oPuesto.delete()
+                            mensaje = 'Se ha eliminado el registro.'
+                            data = {
+                                'mensaje': mensaje, 'error': False
+                            }
+                        else:
+                            mensaje = 'Existen datos asociados al registro que quiere eliminar.'
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
 def guardar_ccosto(request):
     try:
         if request.is_ajax():
@@ -1195,6 +1325,106 @@ def guardar_ccosto(request):
                     }
                 else:
                     mensaje = "Complete los campos requeridos."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def actualizar_ccosto(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                desc = request.POST['desc']
+                activo = int(request.POST['activo'])
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+                
+                if len(desc) > 0:
+                    oCC = CentrosCostos.objects.get(pk=id)
+
+                    if oCC:
+                        oCC.descripcion = desc
+                        oCC.active = activo
+                        oCC.user_mod = request.user
+                        oCC.date_mod = datetime.datetime.now()
+                        oCC.save()
+                        CC = {
+                            'pk': oCC.pk,
+                            'desc': oCC.descripcion,
+                            'activo': oCC.active,
+                        }
+                        mensaje = 'Se ha actualizado el registro.'
+                        data = {
+                            'puesto': CC, 'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = "No existe el registro."
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "Complete los campos requeridos."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def eliminar_ccosto(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oCC = CentrosCostos.objects.get(pk=reg_id)
+                    if oCC:
+                        oCC.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
                     data = {
                         'mensaje': mensaje, 'error': True
                     }
@@ -1249,6 +1479,118 @@ def guardar_pais(request):
                     }
                 else:
                     mensaje = "Complete los campos requeridos."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def actualizar_pais(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                cod = request.POST['codigo']
+                nombre = request.POST['nombre']
+                activo = int(request.POST['activo'])
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+                
+                if len(cod) > 0 and len(nombre) > 0:
+                    oCoun = Country.objects.get(pk=id)
+                    if oCoun:
+                        oCoun.code = cod
+                        oCoun.name = nombre
+                        oCoun.active = activo
+                        oCoun.user_mod = request.user
+                        oCoun.date_mod = datetime.datetime.now()
+                        oCoun.save()
+                        country = {
+                            'pk': oCoun.pk,
+                            'codigo':oCoun.code,
+                            'nombre': oCoun.name,
+                            'activo': oCoun.active,
+                        }
+                        mensaje = 'Se ha actualizado el registro.'
+                        data = {
+                            'puesto': country, 'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = "No existe el registro."
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "Complete los campos requeridos."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def eliminar_pais(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oC = Country.objects.get(pk=reg_id)
+                    totReg = Employee.objects.filter(homeCountry__id=reg_id).count()
+                    totReg += Employee.objects.filter(workCountry__id=reg_id).count()
+                    totReg += Employee.objects.filter(birthCountry__id=reg_id).count()
+                    totReg += Employee.objects.filter(citizenship__id=reg_id).count()
+                    if oC:
+                        if totReg == 0:
+                            oC.delete()
+                            mensaje = 'Se ha eliminado el registro.'
+                            data = {
+                                'mensaje': mensaje, 'error': False
+                            }
+                        else:
+                            mensaje = 'El registro tiene datos asociados.'
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
                     data = {
                         'mensaje': mensaje, 'error': True
                     }
