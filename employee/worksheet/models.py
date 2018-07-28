@@ -114,8 +114,7 @@ class TermReason(models.Model):
         return self.name
 
 class Sex(models.Model):
-    name = models.CharField(max_length=25)
-    description = models.TextField()
+    description = models.CharField(max_length=25)
     user_reg = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name="sex_usermod", related_query_name="sex_usermod",)
@@ -289,6 +288,18 @@ class CentrosCostos(models.Model):
     user_reg = models.ForeignKey(User)
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='cc_usermod', related_query_name='cc_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.BooleanField()
+
+    def __unicode__(self):
+        return self.descripcion
+
+class Ciudad(models.Model):
+    ID_ciudad = models.CharField(max_length=5, blank=True, null=True)
+    nombre = models.CharField(max_length=150)
+    user_reg = models.ForeignKey(User)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='cdd_usermod', related_query_name='cdd_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField()
 

@@ -52,6 +52,13 @@ urlpatterns = [
     url(r'^deptos-estados/$', views.deptos_pais, name="deptos_pais"),
     url(r'^editar/deptos-pais/(?P<id>\w+)/$', views.deptos_pais_editar, name="deptos_pais_editar"),
     url(r'^listar/deptos-estados/$', views.deptos_pais_listado, name="listado_deptos"),
+    url(r'^ciudad/$', views.ciudad, name="ciudad"),
+    url(r'^editar/ciudad/(?P<id>\w+)/$', views.ciudad_editar, name="ciudad_editar"),
+    url(r'^listar/ciudades/$', views.ciudades_listado, name="ciudades_listado"),
+    url(r'^genero/$', views.genero, name="genero"),
+    url(r'^editar/genero/(?P<id>\w+)/$', views.genero_editar, name="genero_editar"),
+    url(r'^listar/generos/$', views.generos_listado, name="generos_listado"),
+
 
     #----------------->>>AJAX<<<------------------
     url(r'^guardar/empleado/$', views.guardar_empleado, name='guardar_empleado'),
@@ -64,6 +71,8 @@ urlpatterns = [
     url(r'^guardar/centro-costo/$', views.guardar_ccosto, name='guardar_ccosto'),
     url(r'^guardar/pais/$', views.guardar_pais, name='guardar_pais'),
     url(r'^guardar/depto-pais/$', views.guardar_deptos, name='guardar_deptos'),
+    url(r'^guardar/ciudad/$', views.guardar_ciudades, name='guardar_ciudades'),
+    url(r'^guardar/genero/$', views.guardar_genero, name='guardar_genero'),
 
     url(r'^actualizar/corporativo/$', views.actualizar_corporativo, name='actualizar_corporativo'),
     url(r'^actualizar/empresa/$', views.actualizar_empresa, name='actualizar_empresa'),
@@ -74,6 +83,8 @@ urlpatterns = [
     url(r'^actualizar/centro-costo/$', views.actualizar_ccosto, name='actualizar_ccosto'),
     url(r'^actualizar/pais/$', views.actualizar_pais, name='actualizar_pais'),
     url(r'^actualizar/deptos-pais/$', views.actualizar_deptos, name='actualizar_deptos'),
+    url(r'^actualizar/ciudad/$', views.actualizar_ciudad, name='actualizar_ciudad'),
+    url(r'^actualizar/genero/$', views.actualizar_genero, name='actualizar_genero'),
 
     url(r'^eliminar/corporativo/$', views.eliminar_corporativo, name='eliminar_corporativo'),
     url(r'^eliminar/empresa/$', views.eliminar_empresa, name='eliminar_empresa'),
@@ -84,6 +95,8 @@ urlpatterns = [
     url(r'^eliminar/centro-costo/$', views.eliminar_ccosto, name='eliminar_ccosto'),
     url(r'^eliminar/pais/$', views.eliminar_pais, name='eliminar_pais'),
     url(r'^eliminar/depto-pais/$', views.eliminar_depto, name='eliminar_depto'),
+    url(r'^eliminar/ciudad/$', views.eliminar_ciudad, name='eliminar_ciudad'),
+    url(r'^eliminar/genero/$', views.eliminar_genero, name='eliminar_genero'),
     #------------------>>>AJAX<<<-------------------
 
     url(r'^seguridad/', include('django.contrib.auth.urls')),

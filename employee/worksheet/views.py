@@ -137,6 +137,28 @@ def deptos_pais_listado(request):
     deptos = State.objects.all()
     return render(request, 'deptos-pais-listado.html', {'deptos': deptos})
 
+def ciudad(request):
+    return render(request, 'ciudad.html')
+
+def ciudad_editar(request, id):
+    dato = Ciudad.objects.get(pk=id)
+    return render(request, 'ciudad.html', {'editar':True, 'dato':dato})
+
+def ciudades_listado(request):
+    ciudades = Ciudad.objects.all()
+    return render(request, 'ciudades-listado.html', {'ciudades':ciudades})
+
+def genero(request):
+    return render(request, 'genero.html')
+
+def genero_editar(request, id):
+    dato = Sex.objects.get(pk=id)
+    return render(request, 'genero.html', {'editar':True, 'dato':dato})
+
+def generos_listado(request):
+    generos = Sex.objects.all()
+    return render(request, 'genero-listado.html', {'generos':generos})
+
 
 
 #---------------------------->>>> VISTAS AJAX <<<<----------------------------#
@@ -1758,6 +1780,319 @@ def eliminar_depto(request):
                             mensaje = 'El registro tiene datos asociados.'
                             data = {
                                 'mensaje': mensaje, 'error': True
+                            }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def guardar_ciudades(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                ID = request.POST['ID']
+                nombre = request.POST['nombre']
+                activo = int(request.POST['activo'])
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                if len(nombre) > 0 and len(ID) > 0:
+                    oCdd = Ciudad(
+                        ID_ciudad = ID,
+                        nombre = nombre,
+                        active=activo,
+                        user_reg=request.user,
+                    )
+                    oCdd.save()
+                    ciudad = {
+                        'pk': oCdd.pk,
+                        'ID': oCdd.ID_ciudad,
+                        'nombre': oCdd.nombre,
+                        'activo': oCdd.active,
+                    }
+                    mensaje = 'Se ha guardado el registro'
+                    data = {
+                        'grupo': ciudad, 'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "Complete los campos requeridos."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def actualizar_ciudad(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                ID = request.POST['ID']
+                nombre = request.POST['nombre']
+                activo = int(request.POST['activo'])
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+                
+                if len(ID) > 0 and len(nombre) > 0:
+                    oCdd = Ciudad.objects.get(pk=id)
+                    if oCdd:
+                        oCdd.ID_ciudad = ID
+                        oCdd.nombre = nombre
+                        oCdd.active = activo
+                        oCdd.user_mod = request.user
+                        oCdd.date_mod = datetime.datetime.now()
+                        oCdd.save()
+                        ciudad = {
+                            'pk': oCdd.pk,
+                            'ID':oCdd.ID_ciudad,
+                            'nombre': oCdd.nombre,
+                            'activo': oCdd.active,
+                        }
+                        mensaje = 'Se ha actualizado el registro.'
+                        data = {
+                            'ciudad': ciudad, 'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = "No existe el registro."
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "Complete los campos requeridos."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def eliminar_ciudad(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oCdd = Ciudad.objects.get(pk=reg_id)
+                    if oCdd:
+                        oCdd.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def guardar_genero(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                desc = request.POST['desc']
+                activo = int(request.POST['activo'])
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                if len(desc) > 0:
+                    oGnr = Sex(
+                        description = desc,
+                        active=activo,
+                        user_reg=request.user,
+                    )
+                    oGnr.save()
+                    genero = {
+                        'pk': oGnr.pk,
+                        'desc': oGnr.description,
+                        'activo': oGnr.active,
+                    }
+                    mensaje = 'Se ha guardado el registro'
+                    data = {
+                        'generos': genero, 'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "Complete los campos requeridos."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def actualizar_genero(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                desc = request.POST['desc']
+                activo = int(request.POST['activo'])
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+                
+                if len(desc) > 0:
+                    oGnr = Sex.objects.get(pk=id)
+                    if oGnr:
+                        oGnr.description = desc
+                        oGnr.active = activo
+                        oGnr.user_mod = request.user
+                        oGnr.date_mod = datetime.datetime.now()
+                        oGnr.save()
+                        genero = {
+                            'pk': oGnr.pk,
+                            'desc': oGnr.description,
+                            'activo': oGnr.active,
+                        }
+                        mensaje = 'Se ha actualizado el registro.'
+                        data = {
+                            'ciudad': genero, 'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = "No existe el registro."
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "Complete los campos requeridos."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def eliminar_genero(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oGnr = Sex.objects.get(pk=reg_id)
+                    if oGnr:
+                        totReg = Employee.objects.filter(sex__id=reg_id).count()
+                        if totReg == 0:
+                            oGnr.delete()
+                            mensaje = 'Se ha eliminado el registro.'
+                            data = {
+                                'mensaje': mensaje, 'error': False
+                            }
+                        else:
+                            mensaje = 'El registro tiene datos asociados.'
+                            data = {
+                                'mensaje': mensaje, 'error': False
                             }
                     else:
                         mensaje = 'No existe el registro.'

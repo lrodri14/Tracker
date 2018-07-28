@@ -321,6 +321,160 @@ $(document).on('ready', () => {
 
 //#endregion
 
+//#region Código para registro de Ciudades
+
+//#region Variables
+    var cdd_ID = $('input[name="cdd_ID"]');
+    var cdd_nombre = $('input[name="cdd_nombre"]');
+    var cdd_activo = $('input[name="cdd_activo"]');
+//#endregion
+
+//#region Eventos Controles
+
+    $('#btncddGuardar').on('click', (e) => {
+        e.preventDefault();
+        url = '/guardar/ciudad/';
+        metodo = 'POST';
+        if (validarcddDatos() != false) {
+            if (cdd_activo.is(":checked")) {
+                vActivo = 1;
+            } else {
+                vActivo = 0;
+            }
+            data = {
+                'ID': cdd_ID.val(),
+                'nombre': cdd_nombre.val(),
+                'activo': vActivo,
+                'csrfmiddlewaretoken': token.val(),
+            };
+            GuardarRegistro(url, metodo, data, "Ciudades");
+        }
+    });
+
+    $('#btncddActualizar').on('click', function(e) {
+        e.preventDefault();
+        url = '/actualizar/ciudad/';
+        metodo = 'POST';
+        if (validarcddDatos() != false) {
+            if (cdd_activo.is(":checked")) {
+                vActivo = 1;
+            } else {
+                vActivo = 0;
+            }
+            data = {
+                'id': id.val(),
+                'ID': cdd_ID.val(),
+                'nombre': cdd_nombre.val(),
+                'activo': vActivo,
+                'csrfmiddlewaretoken': token.val(),
+            };
+            GuardarRegistro(url, metodo, data, "Ciudades", true, "/listar/ciudades/");
+        }
+    });
+
+    $('#btncddCancelar').on('click', (e) => {
+        e.preventDefault();
+        window.location.replace(dns + "/listar/ciudades/");
+    });
+
+//#endregion
+
+//#region Validación
+function validarcddDatos() {
+    $('div').removeClass('has-warning');
+    if (cdd_ID.val().length == 0) {
+        mensaje("Registro de Departamentos/Estado", "El campo 'Código' es obligatorio.", "warning");
+        return false;
+    }
+    if (cdd_nombre.val().length == 0) {
+        mensaje("Registro de Departamentos/Estado", "El campo 'Nombre' es obligatorio.", "warning");
+        return false;
+    }
+    if (cdd_ID.val().length > 5) {
+        mensaje("Registro de Departamentos/Estado", "El campo 'Código' solo es de 5 caracteres.", "warning");
+        return false;
+    }
+    if (cdd_nombre.val().length > 150) {
+        mensaje("Registro de Departamentos/Estado", "El campo 'Nombre' solo es de 5 caracteres.", "warning");
+        return false;
+    }
+    return true;
+}
+//#endregion
+
+//#endregion Código para registro de Ciudades
+
+//#region Código para registrar Géneros
+
+//#region Variables
+    var gnr_desc = $('input[name="gnr_desc"]');
+    var gnr_activo = $('input[name="gnr_activo"]');
+//#endregion
+
+//#region Eventos Controles
+
+    $('#btngnrGuardar').on('click', (e) => {
+        e.preventDefault();
+        url = '/guardar/genero/';
+        metodo = 'POST';
+        if (validargnrDatos() != false) {
+            if (gnr_activo.is(":checked")) {
+                vActivo = 1;
+            } else {
+                vActivo = 0;
+            }
+            data = {
+                'desc': gnr_desc.val(),
+                'activo': vActivo,
+                'csrfmiddlewaretoken': token.val(),
+            };
+            GuardarRegistro(url, metodo, data, "Géneros");
+        }
+    });
+
+    $('#btngnrActualizar').on('click', function(e) {
+        e.preventDefault();
+        url = '/actualizar/genero/';
+        metodo = 'POST';
+        if (validargnrDatos() != false) {
+            if (gnr_activo.is(":checked")) {
+                vActivo = 1;
+            } else {
+                vActivo = 0;
+            }
+            data = {
+                'id': id.val(),
+                'desc': gnr_desc.val(),
+                'activo': vActivo,
+                'csrfmiddlewaretoken': token.val(),
+            };
+            GuardarRegistro(url, metodo, data, "Géneros", true, "/listar/generos/");
+        }
+    });
+
+    $('#btngnrCancelar').on('click', (e) => {
+        e.preventDefault();
+        window.location.replace(dns + "/listar/generos/");
+    });
+
+//#endregion Eventos Controles
+
+//#region Validación
+function validargnrDatos() {
+    $('div').removeClass('has-warning');
+    if (gnr_desc.val().length == 0) {
+        mensaje("Registro de Géneros", "El campo 'Descripción' es obligatorio.", "warning");
+        return false;
+    }
+    if (gnr_desc.val().length > 25) {
+        mensaje("Registro de Géneros", "El campo 'Código' solo es de 5 caracteres.", "warning");
+        return false;
+    }
+    return true;
+}
+
+//#endregion Código para registrar Géneros
+
     //#region Funciones Generales
     function GuardarRegistro(url, metodo, data, encabezado, editar, urlRedirect) {
         var texto = 'Se ha creado un nuevo registro.';
