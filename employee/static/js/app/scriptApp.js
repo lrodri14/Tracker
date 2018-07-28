@@ -253,7 +253,7 @@ $(document).on('ready', () => {
         e.preventDefault();
         url = '/guardar/depto-pais/';
         metodo = 'POST';
-        if (validarpDatos() != false) {
+        if (validardeptDatos() != false) {
             if (dept_activo.is(":checked")) {
                 vActivo = 1;
             } else {
@@ -273,7 +273,7 @@ $(document).on('ready', () => {
         e.preventDefault();
         url = '/actualizar/deptos-pais/';
         metodo = 'POST';
-        if (validarpDatos() != false) {
+        if (validardeptDatos() != false) {
             if (dept_activo.is(":checked")) {
                 vActivo = 1;
             } else {
@@ -297,23 +297,22 @@ $(document).on('ready', () => {
 //#endregion
 
 //#region Validación
-    function validarpDatos() {
+    function validardeptDatos() {
         $('div').removeClass('has-warning');
-
         if (dept_codigo.val().length == 0) {
-            mensaje("Registro de Centro de Costos", "El campo 'Código' es obligatorio.", "warning");
+            mensaje("Registro de Departamentos/Estado", "El campo 'Código' es obligatorio.", "warning");
             return false;
         }
         if (dept_nombre.val().length == 0) {
-            mensaje("Registro de Centro de Costos", "El campo 'Nombre' es obligatorio.", "warning");
+            mensaje("Registro de Departamentos/Estado", "El campo 'Nombre' es obligatorio.", "warning");
             return false;
         }
         if (dept_codigo.val().length > 5) {
-            mensaje("Registro de Centro de Costos", "El campo 'Código' solo es de 5 caracteres.", "warning");
+            mensaje("Registro de Departamentos/Estado", "El campo 'Código' solo es de 5 caracteres.", "warning");
             return false;
         }
         if (dept_nombre.val().length > 150) {
-            mensaje("Registro de Centro de Costos", "El campo 'Nombre' solo es de 5 caracteres.", "warning");
+            mensaje("Registro de Departamentos/Estado", "El campo 'Nombre' solo es de 5 caracteres.", "warning");
             return false;
         }
         return true;
