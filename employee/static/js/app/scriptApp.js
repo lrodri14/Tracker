@@ -239,6 +239,89 @@ $(document).on('ready', () => {
 
 //#endregion Fin código para registro de Países
 
+//#region Código para registro de Departamentos / Estados
+
+//#region Variables
+    var dept_codigo = $('input[name="dept_codigo"]');
+    var dept_nombre = $('input[name="dept_nombre"]');
+    var dept_activo = $('input[name="dept_activo"]');
+//#endregion
+
+//#region Eventos Controles
+
+    $('#btndeptGuardar').on('click', (e) => {
+        e.preventDefault();
+        url = '/guardar/depto-pais/';
+        metodo = 'POST';
+        if (validarpDatos() != false) {
+            if (dept_activo.is(":checked")) {
+                vActivo = 1;
+            } else {
+                vActivo = 0;
+            }
+            data = {
+                'codigo': dept_codigo.val(),
+                'nombre': dept_nombre.val(),
+                'activo': vActivo,
+                'csrfmiddlewaretoken': token.val(),
+            };
+            GuardarRegistro(url, metodo, data, "Departamento/Estado");
+        }
+    });
+
+    $('#btndeptActualizar').on('click', function(e) {
+        e.preventDefault();
+        url = '/actualizar/deptos-pais/';
+        metodo = 'POST';
+        if (validarpDatos() != false) {
+            if (dept_activo.is(":checked")) {
+                vActivo = 1;
+            } else {
+                vActivo = 0;
+            }
+            data = {
+                'id': id.val(),
+                'codigo': dept_codigo.val(),
+                'nombre': dept_nombre.val(),
+                'activo': vActivo,
+                'csrfmiddlewaretoken': token.val(),
+            };
+            GuardarRegistro(url, metodo, data, "Departamento/Estado", true, "/listar/deptos-estados/");
+        }
+    });
+
+    $('#btndeptCancelar').on('click', (e) => {
+        e.preventDefault();
+        window.location.replace(dns + "/listar/deptos-estados/");
+    });
+//#endregion
+
+//#region Validación
+    function validarpDatos() {
+        $('div').removeClass('has-warning');
+
+        if (dept_codigo.val().length == 0) {
+            mensaje("Registro de Centro de Costos", "El campo 'Código' es obligatorio.", "warning");
+            return false;
+        }
+        if (dept_nombre.val().length == 0) {
+            mensaje("Registro de Centro de Costos", "El campo 'Nombre' es obligatorio.", "warning");
+            return false;
+        }
+        if (dept_codigo.val().length > 5) {
+            mensaje("Registro de Centro de Costos", "El campo 'Código' solo es de 5 caracteres.", "warning");
+            return false;
+        }
+        if (dept_nombre.val().length > 150) {
+            mensaje("Registro de Centro de Costos", "El campo 'Nombre' solo es de 5 caracteres.", "warning");
+            return false;
+        }
+        return true;
+    }
+//#endregion
+
+//#endregion
+
     //#region Funciones Generales
     function GuardarRegistro(url, metodo, data, encabezado, editar, urlRedirect) {
         var texto = 'Se ha creado un nuevo registro.';

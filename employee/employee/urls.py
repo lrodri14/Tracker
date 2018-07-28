@@ -49,6 +49,9 @@ urlpatterns = [
     url(r'^paises/$', views.paises, name="paises"),
     url(r'^editar/pais/(?P<id>\w+)/$', views.paises_editar, name="paises_editar"),
     url(r'^listar/paises/$', views.listadoPaises, name="listado_paises"),
+    url(r'^deptos-estados/$', views.deptos_pais, name="deptos_pais"),
+    url(r'^editar/deptos-pais/(?P<id>\w+)/$', views.deptos_pais_editar, name="deptos_pais_editar"),
+    url(r'^listar/deptos-estados/$', views.deptos_pais_listado, name="listado_deptos"),
 
     #----------------->>>AJAX<<<------------------
     url(r'^guardar/empleado/$', views.guardar_empleado, name='guardar_empleado'),
@@ -60,6 +63,7 @@ urlpatterns = [
     url(r'^guardar/puesto/$', views.guardar_puesto, name='guardar_puesto'),
     url(r'^guardar/centro-costo/$', views.guardar_ccosto, name='guardar_ccosto'),
     url(r'^guardar/pais/$', views.guardar_pais, name='guardar_pais'),
+    url(r'^guardar/depto-pais/$', views.guardar_deptos, name='guardar_deptos'),
 
     url(r'^actualizar/corporativo/$', views.actualizar_corporativo, name='actualizar_corporativo'),
     url(r'^actualizar/empresa/$', views.actualizar_empresa, name='actualizar_empresa'),
@@ -69,6 +73,7 @@ urlpatterns = [
     url(r'^actualizar/puesto/$', views.actualizar_puesto, name='actualizar_puesto'),
     url(r'^actualizar/centro-costo/$', views.actualizar_ccosto, name='actualizar_ccosto'),
     url(r'^actualizar/pais/$', views.actualizar_pais, name='actualizar_pais'),
+    url(r'^actualizar/deptos-pais/$', views.actualizar_deptos, name='actualizar_deptos'),
 
     url(r'^eliminar/corporativo/$', views.eliminar_corporativo, name='eliminar_corporativo'),
     url(r'^eliminar/empresa/$', views.eliminar_empresa, name='eliminar_empresa'),
@@ -78,6 +83,7 @@ urlpatterns = [
     url(r'^eliminar/puesto/$', views.eliminar_puesto, name='eliminar_puesto'),
     url(r'^eliminar/centro-costo/$', views.eliminar_ccosto, name='eliminar_ccosto'),
     url(r'^eliminar/pais/$', views.eliminar_pais, name='eliminar_pais'),
+    url(r'^eliminar/depto-pais/$', views.eliminar_depto, name='eliminar_depto'),
     #------------------>>>AJAX<<<-------------------
 
     url(r'^seguridad/', include('django.contrib.auth.urls')),
