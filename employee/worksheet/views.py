@@ -159,6 +159,95 @@ def generos_listado(request):
     generos = Sex.objects.all()
     return render(request, 'genero-listado.html', {'generos':generos})
 
+def estado_civil(request):
+    return render(request, 'estado-civil.html')
+
+def estado_civil_editar(request, id):
+    dato = CivilStatus.objects.get(pk=id)
+    return render(request, 'estado-civil.html', {'editar':True, 'dato':dato})
+
+def estado_civil_listado(request):
+    estados = CivilStatus.objects.all()
+    return render(request, 'estado-civil-listado.html', {'estados':estados})
+
+def parentesco(request):
+    return render(request, 'parentesco.html')
+
+def parentesco_editar(request, id):
+    dato = Parentesco.objects.get(pk=id)
+    return render(request, 'parentesco.html', {'editar':True, 'dato':dato})
+
+def parentesco_listado(request):
+    parentescos = Parentesco.objects.all()
+    return render(request, 'parentesco-listado.html', {'parentescos':parentescos})
+
+def funcion_trabajo(request):
+    return render(request, 'funciones-trabajo.html')
+
+def funcion_trabajo_editar(request, id):
+    funcion = FuncionesTrabajo.objects.get(pk=id)
+    return render(request, 'funciones-trabajo.html', {'dato':funcion, 'editar':True})
+
+def funcion_trab_listado(request):
+    funciones = FuncionesTrabajo.objects.all()
+    return render(request, 'funciones-trabajo-listado.html', {'funciones': funciones})
+
+def equipo_trabajo(request):
+    return render(request, 'equipo-trabajo.html' )
+
+def equipo_trabajo_editar(request, id):
+    dato = EquipoTrabajo.objects.get(pk=id)
+    return render(request, 'equipo-trabajo.html', {'editar':True, 'dato':dato})
+
+def equipo_trabajo_listado(request):
+    equipos = EquipoTrabajo.objects.all()
+    return render(request, 'equipo-trabajo-listado.html', {'equipos':equipos})
+
+def estado_empleado(request):
+    return render(request, 'estatus-empleado.html')
+
+def estado_empleado_editar(request, id):
+    dato = StatusEmp.objects.get(pk=id)
+    return render(request, 'estatus-empleado.html', {'editar':True, 'dato':dato})
+
+def estado_empleado_listado(request):
+    lista = StatusEmp.objects.all()
+    return render(request, 'estado-empleado-listado.html', {'lista':lista})
+
+def ausentismo(request):
+    empleados = Employee.objects.filter(active=True)
+    return render(request, 'ausentismo.html', {'empleados':empleados})
+
+def ausentismo_editar(request, id):
+    dato = Ausentismo.objects.get(pk=id)
+    empleados = Employee.objects.filter(active=True)
+    return render(request, 'ausentismo.html', {'editar':True, 'dato':dato, 'empleados':empleados})
+
+def ausentismo_listado(request):
+    lista = Ausentismo.objects.all().order_by('-desde')
+    return render(request, 'ausentismo-listado.html', {'lista':lista})
+
+def motivos_ausencia(request):
+    return render(request, 'motivos-ausencia.html')
+
+def motivos_ausencia_editar(request, id):
+    dato = MotivosAusencia.objects.get(pk=id)
+    return render(request, 'motivos-ausencia.html', {'editar':True, 'dato':dato})
+
+def motivos_ausencia_listado(request):
+    lista = MotivosAusencia.objects.all()
+    return render(request, 'motivos-ausencia-listado.html', {'lista':lista})
+
+def motivo_despido(request):
+    return render(request, 'motivos-despido.html')
+
+def motivo_despido_editar(request, id):
+    dato = MotivosDespido.objects.get(pk=id)
+    return render(request, 'motivos-despido.html', {'editar':True, 'dato':dato})
+
+def motivos_despido_listado(request):
+    lista = MotivosDespido.objects.all()
+    return render(request, 'motivos-despido-listado.html', {'lista':lista})
 
 
 #---------------------------->>>> VISTAS AJAX <<<<----------------------------#
@@ -2111,6 +2200,1370 @@ def eliminar_genero(request):
                 }
         else:
             mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def guardar_estado_civil(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                desc = request.POST['desc']
+                activo = int(request.POST['activo'])
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                if len(desc) > 0:
+                    oCv = CivilStatus(
+                        description = desc,
+                        active=activo,
+                        user_reg=request.user,
+                    )
+                    oCv.save()
+                    estado = {
+                        'pk': oCv.pk,
+                        'desc': oCv.description,
+                        'activo': oCv.active,
+                    }
+                    mensaje = 'Se ha guardado el registro'
+                    data = {
+                        'estado': estado, 'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "Complete los campos requeridos."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def actualizar_estado_civil(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                desc = request.POST['desc']
+                activo = int(request.POST['activo'])
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+                
+                if len(desc) > 0:
+                    oCV = CivilStatus.objects.get(pk=id)
+                    if oCV:
+                        oCV.description = desc
+                        oCV.active = activo
+                        oCV.user_mod = request.user
+                        oCV.date_mod = datetime.datetime.now()
+                        oCV.save()
+                        estado = {
+                            'pk': oCV.pk,
+                            'desc': oCV.description,
+                            'activo': oCV.active,
+                        }
+                        mensaje = 'Se ha actualizado el registro.'
+                        data = {
+                            'estado': estado, 'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = "No existe el registro."
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "Complete los campos requeridos."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def eliminar_estado_civil(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oCV = CivilStatus.objects.get(pk=reg_id)
+                    if oCV:
+                        totReg = Employee.objects.filter(marrStatus__id=reg_id).count()
+                        if totReg == 0:
+                            oCV.delete()
+                            mensaje = 'Se ha eliminado el registro.'
+                            data = {
+                                'mensaje': mensaje, 'error': False
+                            }
+                        else:
+                            mensaje = 'El registro tiene datos asociados.'
+                            data = {
+                                'mensaje': mensaje, 'error': False
+                            }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def guardar_parentesco(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                desc = request.POST['desc']
+                activo = int(request.POST['activo'])
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                if len(desc) > 0:
+                    oPr = Parentesco(
+                        descripcion = desc,
+                        active=activo,
+                        user_reg=request.user,
+                    )
+                    oPr.save()
+                    parentesco = {
+                        'pk': oPr.pk,
+                        'desc': oPr.descripcion,
+                        'activo': oPr.active,
+                    }
+                    mensaje = 'Se ha guardado el registro'
+                    data = {
+                        'parentesco': parentesco, 'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "Complete los campos requeridos."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def actualizar_parentesco(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                desc = request.POST['desc']
+                activo = int(request.POST['activo'])
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+                
+                if len(desc) > 0:
+                    oPr = Parentesco.objects.get(pk=id)
+                    if oPr:
+                        oPr.descripcion = desc
+                        oPr.active = activo
+                        oPr.user_mod = request.user
+                        oPr.date_mod = datetime.datetime.now()
+                        oPr.save()
+                        parentesco = {
+                            'pk': oPr.pk,
+                            'desc': oPr.descripcion,
+                            'activo': oPr.active,
+                        }
+                        mensaje = 'Se ha actualizado el registro.'
+                        data = {
+                            'parentesco': parentesco, 'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = "No existe el registro."
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "Complete los campos requeridos."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def eliminar_parentesco(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oPr = Parentesco.objects.get(pk=reg_id)
+                    if oPr:
+                        oPr.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def guardar_funciones(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                nombre = request.POST['nombre']
+                desc = request.POST['desc']
+                activo = int(request.POST['activo'])
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                if len(desc) > 0:
+                    oFn = FuncionesTrabajo(
+                        nombre = nombre,
+                        descripcion = desc,
+                        active=activo,
+                        user_reg=request.user,
+                    )
+                    oFn.save()
+                    funcion = {
+                        'pk': oFn.pk,
+                        'nombre': oFn.nombre,
+                        'desc': oFn.descripcion,
+                        'activo': oFn.active,
+                    }
+                    mensaje = 'Se ha guardado el registro'
+                    data = {
+                        'funcion': funcion, 'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "Complete los campos requeridos."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def actualizar_funcion(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                nombre = request.POST['nombre']
+                desc = request.POST['desc']
+                activo = int(request.POST['activo'])
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+                
+                if len(desc) > 0:
+                    oFn = FuncionesTrabajo.objects.get(pk=id)
+                    if oFn:
+                        oFn.nombre = nombre
+                        oFn.descripcion = desc
+                        oFn.active = activo
+                        oFn.user_mod = request.user
+                        oFn.date_mod = datetime.datetime.now()
+                        oFn.save()
+                        funcion = {
+                            'pk': oFn.pk,
+                            'nombre':oFn.nombre,
+                            'desc': oFn.descripcion,
+                            'activo': oFn.active,
+                        }
+                        mensaje = 'Se ha actualizado el registro.'
+                        data = {
+                            'funcion': funcion, 'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = "No existe el registro."
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "Complete los campos requeridos."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def eliminar_funcion_trabajo(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oFn = FuncionesTrabajo.objects.get(pk=reg_id)
+                    if oFn:
+                        oFn.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def guardar_equipos(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                nombre = request.POST['nombre']
+                desc = request.POST['desc']
+                activo = int(request.POST['activo'])
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                if len(desc) > 0 and len(nombre) > 0:
+                    oEq = EquipoTrabajo(
+                        nombre = nombre,
+                        descripcion = desc,
+                        active=activo,
+                        user_reg=request.user,
+                    )
+                    oEq.save()
+                    equipo = {
+                        'pk': oEq.pk,
+                        'nombre': oEq.nombre,
+                        'desc': oEq.descripcion,
+                        'activo': oEq.active,
+                    }
+                    mensaje = 'Se ha guardado el registro'
+                    data = {
+                        'equipo': equipo, 'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "Complete los campos requeridos."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def actualizar_equipos(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                nombre = request.POST['nombre']
+                desc = request.POST['desc']
+                activo = int(request.POST['activo'])
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+                
+                if len(desc) > 0:
+                    oMd = EquipoTrabajo.objects.get(pk=id)
+                    if oMd:
+                        oMd.nombre = nombre
+                        oMd.descripcion = desc
+                        oMd.active = activo
+                        oMd.user_mod = request.user
+                        oMd.date_mod = datetime.datetime.now()
+                        oMd.save()
+                        registro = {
+                            'pk': oMd.pk,
+                            'nombre':oMd.nombre,
+                            'desc': oMd.descripcion,
+                            'activo': oMd.active,
+                        }
+                        mensaje = 'Se ha actualizado el registro.'
+                        data = {
+                            'registro': registro, 'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = "No existe el registro."
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "Complete los campos requeridos."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def eliminar_equipo_trabajo(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oMd = EquipoTrabajo.objects.get(pk=reg_id)
+                    if oMd:
+                        oMd.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def guardar_estado_empleado(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                nombre = request.POST['nombre']
+                desc = request.POST['desc']
+                activo = int(request.POST['activo'])
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                if len(desc) > 0 and len(nombre) > 0:
+                    oMd = StatusEmp(
+                        name = nombre,
+                        description = desc,
+                        active=activo,
+                        user_reg=request.user,
+                    )
+                    oMd.save()
+                    registro = {
+                        'pk': oMd.pk,
+                        'nombre': oMd.name,
+                        'desc': oMd.description,
+                        'activo': oMd.active,
+                    }
+                    mensaje = 'Se ha guardado el registro'
+                    data = {
+                        'registro': registro, 'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "Complete los campos requeridos."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def actualizar_estatus_empleado(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                nombre = request.POST['nombre']
+                desc = request.POST['desc']
+                activo = int(request.POST['activo'])
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+                
+                if len(desc) > 0 and len(nombre) > 0:
+                    oMd = StatusEmp.objects.get(pk=id)
+                    if oMd:
+                        oMd.name = nombre
+                        oMd.description = desc
+                        oMd.active = activo
+                        oMd.user_mod = request.user
+                        oMd.date_mod = datetime.datetime.now()
+                        oMd.save()
+                        registro = {
+                            'pk': oMd.pk,
+                            'nombre':oMd.name,
+                            'desc': oMd.description,
+                            'activo': oMd.active,
+                        }
+                        mensaje = 'Se ha actualizado el registro.'
+                        data = {
+                            'registro': registro, 'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = "No existe el registro."
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "Complete los campos requeridos."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def eliminar_estatus_empleado(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oMd = StatusEmp.objects.get(pk=reg_id)
+                    if oMd:
+                        oMd.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def guardar_ausentismo(request):
+    oEmp = None
+    oAprobo = None
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                emp = request.POST['emp']
+                desde = request.POST['desde']
+                hasta = request.POST['hasta']
+                motivo = request.POST['motivo']
+                aprobo = request.POST['aprobo']
+                activo = request.POST['activo']
+                print "Activo: " + str(activo)
+                
+                if len(emp) == 0:
+                    mensaje = 'Seleccione un empleado.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+                else:
+                    if int(emp) > 0:
+                        oEmp = Employee.objects.get(pk=emp)
+                    else:
+                        mensaje = 'Seleccione un empleado.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                        return JsonResponse(data)
+
+                if len(desde) == 0:
+                    mensaje = "Ingrese una fecha válida en el campo 'Desde'."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(hasta) == 0:
+                    mensaje = "Ingrese una fecha válida en el campo 'Hasta'."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(motivo) == 0:
+                    if not validateDateEs(desde):
+                        mensaje = 'Ingrese un motivo del ausentismo.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                        return JsonResponse(data)
+
+                if len(aprobo) == 0:
+                    mensaje = 'Seleccione el empleado que Aprobó.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+                else:
+                    if int(aprobo) > 0:
+                        oAprobo = Employee.objects.get(pk=aprobo)
+
+                if int(emp) == int(aprobo):
+                    mensaje = 'El empleado debe ser distinto al usuario que apruebe.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+
+
+                if int(activo) == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                oMd = Ausentismo(
+                    empleado = oEmp,
+                    desde = desde,
+                    hasta = hasta,
+                    motivo = motivo,
+                    aprobado = oAprobo,
+                    active=activo,
+                    user_reg=request.user,
+                )
+                oMd.save()
+                registro = {
+                    'pk': oMd.pk,
+                    'empleado': oMd.empleado.pk,
+                    'desde': oMd.desde,
+                    'hasta': oMd.hasta,
+                    'motivo': oMd.motivo,
+                    'activo': oMd.active,
+                }
+                mensaje = 'Se ha guardado el registro'
+                data = {
+                    'registro': registro, 'mensaje': mensaje, 'error': False
+                }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def actualizar_ausentismo(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                emp = request.POST['emp']
+                desde = request.POST['desde']
+                hasta = request.POST['hasta']
+                motivo = request.POST['motivo']
+                aprobo = request.POST['aprobo']
+                activo = int(request.POST['activo'])
+                oEmp = Employee.objects.get(pk=emp)
+
+                if len(aprobo) > 0:
+                    if int(aprobo) > 0:
+                        oApro = Employee.objects.get(pk=aprobo)
+                    else:
+                        oApro = None
+                else:
+                    oApro = None
+
+                if not oEmp:
+                    mensaje = "Ingrese un valor válido como Empleado."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+                if len(desde) == 0:
+                    mensaje = "Ingrese un valor válido en campo 'Desde'."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+                
+                if len(hasta) == 0:
+                    mensaje = "Ingrese un valor válido en campo 'Hasta'."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(motivo) == 0:
+                    mensaje = "Agregue datos al campo 'Motivo'."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if int(emp) == int(aprobo):
+                    mensaje = 'El empleado debe ser distinto al usuario que apruebe.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                print oEmp
+                
+                oMd = Ausentismo.objects.get(pk=id)
+                if oMd:
+                    oMd.empleado = oEmp
+                    oMd.desde = desde
+                    oMd.hasta = hasta
+                    oMd.motivo = motivo
+                    oMd.aprobado = oApro
+                    oMd.active = activo
+                    oMd.user_mod = request.user
+                    oMd.date_mod = datetime.datetime.now()
+                    oMd.save()
+                    registro = {
+                        'pk': oMd.pk,
+                        'empleado':oMd.empleado.pk,
+                        'desde': oMd.desde,
+                        'hasta': oMd.hasta,
+                        'motivo': oMd.motivo,
+                        'activo': oMd.active,
+                    }
+                    mensaje = 'Se ha actualizado el registro.'
+                    data = {
+                        'registro': registro, 'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "No existe el registro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def eliminar_ausentismo(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oMd = Ausentismo.objects.get(pk=reg_id)
+                    if oMd:
+                        oMd.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def guardar_motivo_ausencia(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                desc = request.POST['desc']
+                pagado = request.POST['pagado']
+                activo = request.POST['activo']
+                
+                if len(desc) == 0:
+                    mensaje = 'Ingrese una descripción.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if int(pagado) == 1:
+                    pagado = True
+                else:
+                    pagado = False
+
+                if int(activo) == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                oMd = MotivosAusencia(
+                    descripcion = desc,
+                    pagado = pagado,
+                    active=activo,
+                    user_reg=request.user,
+                )
+                oMd.save()
+                registro = {
+                    'pk': oMd.pk,
+                    'desc': oMd.descripcion,
+                    'pagado': oMd.pagado,
+                    'activo': oMd.active,
+                }
+                mensaje = 'Se ha guardado el registro'
+                data = {
+                    'registro': registro, 'mensaje': mensaje, 'error': False
+                }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def actualizar_motivo_ausencia(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                desc = request.POST['desc']
+                pagado = request.POST['pagado']
+                activo = int(request.POST['activo'])
+
+                if int(pagado) == 1:
+                    pagado = True
+                else:
+                    pagado = False
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+                
+                if len(desc) > 0:
+                    oMd = MotivosAusencia.objects.get(pk=id)
+                    if oMd:
+                        oMd.descripcion = desc
+                        oMd.pagado = pagado
+                        oMd.active = activo
+                        oMd.user_mod = request.user
+                        oMd.date_mod = datetime.datetime.now()
+                        oMd.save()
+                        registro = {
+                            'pk': oMd.pk,
+                            'descripcion':oMd.descripcion,
+                            'pagado': oMd.pagado,
+                            'activo': oMd.active,
+                        }
+                        mensaje = 'Se ha actualizado el registro.'
+                        data = {
+                            'registro': registro, 'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = "No existe el registro."
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "Complete los campos requeridos."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def eliminar_motivo_ausencia(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oMd = MotivosAusencia.objects.get(pk=reg_id)
+                    if oMd:
+                        oMd.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def guardar_motivo_despido(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                desc = request.POST['desc']
+                nombre = request.POST['nombre']
+                activo = request.POST['activo']
+                
+                if len(nombre) == 0:
+                    mensaje = 'El campo "Nombre" es obligatorio.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if int(activo) == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                oMd = MotivosDespido(
+                    descripcion = desc,
+                    nombre = nombre,
+                    active=activo,
+                    user_reg=request.user,
+                )
+                oMd.save()
+                registro = {
+                    'pk': oMd.pk,
+                    'desc': oMd.descripcion,
+                    'nombre': oMd.nombre,
+                    'activo': oMd.active,
+                }
+                mensaje = 'Se ha guardado el registro'
+                data = {
+                    'registro': registro, 'mensaje': mensaje, 'error': False
+                }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def actualizar_motivo_despido(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                desc = request.POST['desc']
+                nombre = request.POST['nombre']
+                activo = int(request.POST['activo'])
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+                
+                if len(desc) > 0:
+                    oMd = MotivosDespido.objects.get(pk=id)
+                    if oMd:
+                        oMd.descripcion = desc
+                        oMd.nombre = nombre
+                        oMd.active = activo
+                        oMd.user_mod = request.user
+                        oMd.date_mod = datetime.datetime.now()
+                        oMd.save()
+                        registro = {
+                            'pk': oMd.pk,
+                            'descripcion':oMd.descripcion,
+                            'nombre': oMd.nombre,
+                            'activo': oMd.active,
+                        }
+                        mensaje = 'Se ha actualizado el registro.'
+                        data = {
+                            'registro': registro, 'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = "No existe el registro."
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "Complete los campos requeridos."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def eliminar_motivo_despido(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oMd = MotivosDespido.objects.get(pk=reg_id)
+                    if oMd:
+                        oMd.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
             data = {
                 'mensaje': mensaje, 'error': True
             }

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block titulo %}
-Departamentos/Estado
+Estatus de Empleado
 {% endblock titulo %}
 {% load static %}
 {% block contenido %}
@@ -8,8 +8,8 @@ Departamentos/Estado
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h2 class="text-bold"><i class="ti-user"></i>
-                    Registro de Departamentos/Estados</h2>
+                <h2 class="text-bold"><i class="ti-pencil-alt"></i>
+                    Estatus de Empleado</h2>
             </div>
             <div class="panel-wrapper">
                 <div class="panel-body">
@@ -18,23 +18,23 @@ Departamentos/Estado
                     <input type="hidden" value="{{dato.pk}}" name="id">
                     {% endif %}
                     <div class="col-md-6">
-                        <div class="col-md-12 margin-bottom-5px">
-                            <div class="form-group">
-                                <div class="col-md-5 text-right">
-                                    <label for="txtCodigo" class="control-label">Código :</label>
-                                </div>
-                                <div class="col-md-7">
-                                    <input type="text" name="dept_codigo" value="{{dato.code}}" id="txtCodigo" class="form-control input-sm input-sm-1">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-12 margin-bottom-5px">
+                        <div class="col-md-12 margin-bottom-5px">    
                             <div class="form-group">
                                 <div class="col-md-5 text-right">
                                     <label for="txtNombre" class="control-label">Nombre :</label>
                                 </div>
                                 <div class="col-md-7">
-                                    <input type="text" name="dept_nombre" value="{{dato.name}}" id="txtNombre" class="form-control input-sm input-sm-1">
+                                    <input type="text" name="estEm_nombre" value="{{dato.name}}" id="txtNombre" class="form-control input-sm input-sm-1">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 margin-bottom-5px">    
+                            <div class="form-group">
+                                <div class="col-md-5 text-right">
+                                    <label for="txtNombre" class="control-label">Descripción :</label>
+                                </div>
+                                <div class="col-md-7">
+                                    <input type="text" name="estEm_desc" value="{{dato.description}}" id="txtDescripcion" class="form-control input-sm input-sm-1">
                                 </div>
                             </div>
                         </div>
@@ -44,9 +44,9 @@ Departamentos/Estado
                                 <div class="col-md-7">
                                     <div class="checkbox checkbox-success">
                                         {% if dato.active %}
-                                        <input id="chkActivo" name="dept_activo" type="checkbox" checked class="input-sm">
+                                        <input id="chkActivo" name="estEm_activo" type="checkbox" checked class="input-sm">
                                         {% else %}
-                                        <input id="chkActivo" name="dept_activo" type="checkbox" class="input-sm">
+                                        <input id="chkActivo" name="estEm_activo" type="checkbox" class="input-sm">
                                         {% endif %}
                                         <label for="chkActivo" class="control-label"> Activo </label>
                                     </div>
@@ -56,11 +56,11 @@ Departamentos/Estado
                         <hr>
                         <div class="form-action col-md-12 text-right">
                             {% if editar %}
-                            <button id="btndeptActualizar" class="btn btn-success">Actualizar</button>
+                            <button id="btnestEmActualizar" class="btn btn-success">Actualizar</button>
                             {% else %}
-                            <button id="btndeptGuardar" class="btn btn-success">Guardar</button>
+                            <button id="btnestEmGuardar" class="btn btn-success">Guardar</button>
                             {% endif %}
-                            <button id="btndeptCancelar" class="btn btn-default">Cancelar</button>
+                            <button id="btnestEmCancelar" class="btn btn-default">Cancelar</button>
                         </div>
                     </div>
                 </div>
@@ -74,6 +74,6 @@ Departamentos/Estado
 <script>
     $('#side-menu a').removeClass('active');
     $('#aPersonal').addClass('active');
-    $('#aDept').addClass('active');
+    $('#aEsEm').addClass('active');
 </script>
 {% endblock scripts %}

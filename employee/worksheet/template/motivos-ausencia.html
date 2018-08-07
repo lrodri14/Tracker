@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block titulo %}
+Motivos Ausencia
+{% endblock titulo %}
+{% load static %}
+{% block contenido %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="text-bold"><i class="ti-pencil-alt"></i>
+                    Motivos de Ausencia</h2>
+            </div>
+            <div class="panel-wrapper">
+                <div class="panel-body">
+                    {% csrf_token %}
+                    {% if editar %}
+                    <input type="hidden" value="{{dato.pk}}" name="id">
+                    {% endif %}
+                    <div class="col-md-12">
+                        <div class="col-md-12 margin-bottom-5px">    
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label for="txtDescMAu" class="control-label">Descripción :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <input id="txtDescMAu" value='{{dato.descripcion}}' name="mau_desc" type="text" class="form-control input-sm-1">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6"></div>
+                        </div>
+                        <div class="col-md-12 margin-bottom-5px">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5">
+                                    </div>
+                                    <div class="col-md-7">
+                                        <div class="checkbox checkbox-success">
+                                            {% if dato.pagado %}
+                                            <input id="chkPagado" name="mau_pagado" type="checkbox" checked class="input-sm">
+                                            {% else %}
+                                            <input id="chkPagado" name="mau_pagado" type="checkbox" class="input-sm">
+                                            {% endif %}
+                                            <label for="chkPagado" class="control-label"> Pagado </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5"></div>
+                                    <div class="col-md-7">
+                                        <div class="checkbox checkbox-success">
+                                            {% if dato.active %}
+                                            <input id="chkActivo" name="mau_activo" type="checkbox" checked class="input-sm">
+                                            {% else %}
+                                            <input id="chkActivo" name="mau_activo" type="checkbox" class="input-sm">
+                                            {% endif %}
+                                            <label for="chkActivo" class="control-label"> Activo </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="form-action col-md-12 text-right">
+                            {% if editar %}
+                            <button id="btnmAuActualizar" class="btn btn-success">Actualizar</button>
+                            {% else %}
+                            <button id="btnmAuGuardar" class="btn btn-success">Guardar</button>
+                            {% endif %}
+                            <button id="btnmAuCancelar" class="btn btn-default">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contenido %}
+{% block scripts %}
+<script src="{% static 'js/app/scriptApp.js' %}"></script>
+<script>
+    $(".select2").select2();
+    $('#side-menu a').removeClass('active');
+    $('#aPersonal').addClass('active');
+    $('#aMAu').addClass('active');
+
+    jQuery('.mydatepicker, #datepicker').datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose:true,
+        todayHighlight: true,
+    });
+</script>
+{% endblock scripts %}

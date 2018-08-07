@@ -71,4 +71,10 @@ Ciudades
 {% endblock contenido %}
 {% block scripts %}
 <script src="{% static 'js/app/scriptApp.js' %}"></script>
+<script>
+    //#region Efectos en SideBar
+    $('#side-menu a').removeClass('active');
+    $('#aPersonal').addClass('active');
+    $('#aCiud').addClass('active');
+</script>
 {% endblock scripts %}

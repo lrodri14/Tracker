@@ -610,7 +610,7 @@
                                                                 <select class="form-control input-sm input-sm-1" name="sexo" id="cboSexo">
                                                                     <option value="0">Seleccionar...</option>
                                                                     {% for item in sexs %}
-                                                                    <option value="{{item.pk}}">{{item.name}}</option>
+                                                                    <option value="{{item.pk}}">{{item.description}}</option>
                                                                     {% endfor %}
                                                                 </select>
                                                             </div>
@@ -658,7 +658,7 @@
                                                                 <select class="form-control input-sm input-sm-1" name="estadoCivil" id="cboEstadoCivil">
                                                                     <option value="0">Seleccionar...</option>
                                                                     {% for item in civil_status %}
-                                                                    <option value="{{item.pk}}">{{item.name}}</option>
+                                                                    <option value="{{item.pk}}">{{item.description}}</option>
                                                                     {% endfor %}
                                                                 </select>
                                                             </div>

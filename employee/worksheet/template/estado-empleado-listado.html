@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block titulo %}
-Listado de Géneros
+Listado de Estado de Empleado
 {% endblock titulo %}
 {% load static %}
 {% block contenido %}
@@ -9,13 +9,13 @@ Listado de Géneros
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h2 class="text-bold"><i class="fa fa-list"></i>
-                    Listado de Géneros</h2>
+                    Listado de Estados de Empleado</h2>
             </div>
             <div class="panel-wrapper">
                 <div class="panel-body">
                     <div class="row text-right">
                         <div class="col-md-12">
-                            <a href="{% url 'genero' %}" class="btn btn-primary">Agregar</a>
+                            <a href="{% url 'estado_empleado' %}" class="btn btn-primary">Agregar</a>
                         </div>
                     </div>
                     <br>
@@ -24,14 +24,16 @@ Listado de Géneros
                             {% csrf_token %}
                             <thead>
                                 <tr>
+                                    <th>Nombre</th>
                                     <th>Descripción</th>
                                     <th>Estado Registro</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for item in generos %}
+                                {% for item in lista %}
                                 <tr>
+                                    <td>{{item.name}}</td>
                                     <td>{{item.description}}</td>
                                     <td>
                                     {% if item.active %}
@@ -41,7 +43,7 @@ Listado de Géneros
                                     {% endif %}
                                     </td>
                                     <td class="text-nowrap acciones">
-                                        <a href="{% url 'genero_editar' item.pk %}" data-toggle="tooltip" data-original-title="Edit">
+                                        <a href="{% url 'estado_empleado_editar' item.pk %}" data-toggle="tooltip" data-original-title="Edit">
                                             <i class="fa fa-pencil text-inverse m-r-10"></i>
                                         </a>
                                         <a href="#" class="btnEliminar" data="{{item.pk}}" data-toggle="tooltip" data-original-title="Close">
@@ -65,7 +67,7 @@ Listado de Géneros
     //#region Efectos en SideBar
     $('#side-menu a').removeClass('active');
     $('#aPersonal').addClass('active');
-    $('#aGenero').addClass('active');
+    $('#aEsEm').addClass('active');
     //#endregion
 
     //#region Eventos Controles
@@ -78,7 +80,8 @@ Listado de Géneros
 
     //#region Funciones
     function Eliminar(id) {
-        var url = "/eliminar/genero/"; // the script where you handle the form input.
+        var Encabezado = 'Equipos de Trabajo';
+        var url = "/eliminar/estatus-empleado/"; // the script where you handle the form input.
         $.ajax({
             type: "POST",
             url: url,
@@ -90,7 +93,7 @@ Listado de Géneros
             {
                 if(data.error == false){
                     $.toast({
-                        heading: 'Género',
+                        heading: Encabezado,
                         text: data.mensaje,
                         position: 'top-right',
                         loaderBg: '#ff6849',
@@ -103,7 +106,7 @@ Listado de Géneros
                     }, 2000);
                 }else{
                     $.toast({
-                        heading: 'Género',
+                        heading: Encabezado,
                         text: data.mensaje,
                         position: 'top-right',
                         loaderBg: '#ff6849',
@@ -116,7 +119,7 @@ Listado de Géneros
             error: function(data) {
                 console.log(data);
                 $.toast({
-                    heading: 'Género',
+                    heading: Encabezado,
                     text: data.status + ' - ' + data.statusText,
                     position: 'top-right',
                     loaderBg: '#ff6849',
