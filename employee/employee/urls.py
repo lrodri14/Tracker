@@ -82,6 +82,17 @@ urlpatterns = [
     url(r'^motivo-despido/$', views.motivo_despido, name="motivo_despido"),
     url(r'^editar/motivo-despido/(?P<id>\w+)/$', views.motivo_despido_editar, name="motivo_despido_editar"),
     url(r'^listar/motivos-despido/$', views.motivos_despido_listado, name="motivos_despido_listado"),
+    url(r'^motivo-renuncia/$', views.motivos_renuncia, name="motivos_renuncia"),
+    url(r'^editar/motivo-renuncia/(?P<id>\w+)/$', views.motivos_renuncia_editar, name="motivos_renuncia_editar"),
+    url(r'^listar/motivos-renuncia/$', views.motivos_renuncia_listado, name="motivos_renuncia_listado"),
+    url(r'^clases-educacion/$', views.clase_educacion, name="clase_educacion"),
+    url(r'^editar/clase-educacion/(?P<id>\w+)/$', views.clase_educacion_editar, name="clase_educacion_editar"),
+    url(r'^listar/clase-educacion/$', views.clase_educacion_listado, name="clase_educacion_listado"),
+    url(r'^educacion/$', views.educacion, name="educacion"),
+    url(r'^editar/educacion/(?P<id>\w+)/$', views.educacion_editar, name="educacion_editar"),
+    url(r'^listar/educacion/$', views.educacion_listar, name="educacion_listar"),
+    url(r'^evaluacion/$', views.evaluacion, name="evaluacion"),
+    url(r'^listar/evaluaciones/$', views.evaluacion_listar, name="evaluacion_listar"),
 
 
     #----------------->>>AJAX<<<------------------
@@ -105,6 +116,9 @@ urlpatterns = [
     url(r'^guardar/ausentismo/$', views.guardar_ausentismo, name='guardar_ausentismo'),
     url(r'^guardar/motivo-ausencia/$', views.guardar_motivo_ausencia, name='guardar_motivo_ausencia'),
     url(r'^guardar/motivo-despido/$', views.guardar_motivo_despido, name='guardar_motivo_despido'),
+    url(r'^guardar/motivo-renuncia/$', views.guardar_motivo_renuncia, name='guardar_motivo_renuncia'),
+    url(r'^guardar/clases-educacion/$', views.guardar_clase_educacion, name='guardar_clase_educacion'),
+    url(r'^guardar/educacion/$', views.guardar_educacion, name='guardar_educacion'),
 
     url(r'^actualizar/corporativo/$', views.actualizar_corporativo, name='actualizar_corporativo'),
     url(r'^actualizar/empresa/$', views.actualizar_empresa, name='actualizar_empresa'),
@@ -125,6 +139,9 @@ urlpatterns = [
     url(r'^actualizar/ausentismo/$', views.actualizar_ausentismo, name='actualizar_ausentismo'),
     url(r'^actualizar/motivo-ausencia/$', views.actualizar_motivo_ausencia, name='actualizar_motivo_ausencia'),
     url(r'^actualizar/motivo-despido/$', views.actualizar_motivo_despido, name='actualizar_motivo_despido'),
+    url(r'^actualizar/motivo-renuncia/$', views.actualizar_motivo_renuncia, name='actualizar_motivo_renuncia'),
+    url(r'^actualizar/clase-educacion/$', views.actualizar_clase_educacion, name='actualizar_clase_educacion'),
+    url(r'^actualizar/educacion/$', views.actualizar_educacion, name='actualizar_educacion'),
 
     url(r'^eliminar/corporativo/$', views.eliminar_corporativo, name='eliminar_corporativo'),
     url(r'^eliminar/empresa/$', views.eliminar_empresa, name='eliminar_empresa'),
@@ -145,6 +162,9 @@ urlpatterns = [
     url(r'^eliminar/ausentismo/$', views.eliminar_ausentismo, name='eliminar_ausentismo'),
     url(r'^eliminar/motivo-ausencia/$', views.eliminar_motivo_ausencia, name='eliminar_motivo_ausencia'),
     url(r'^eliminar/motivo-despido/$', views.eliminar_motivo_despido, name='eliminar_motivo_despido'),
+    url(r'^eliminar/motivo-renuncia/$', views.eliminar_motivo_renuncia, name='eliminar_motivo_renuncia'),
+    url(r'^eliminar/clase-educacion/$', views.eliminar_clase_educacion, name='eliminar_clase_educacion'),
+    url(r'^eliminar/educacion/$', views.eliminar_educacion, name='eliminar_educacion'),
     #------------------>>>AJAX<<<-------------------
 
     url(r'^seguridad/', include('django.contrib.auth.urls')),

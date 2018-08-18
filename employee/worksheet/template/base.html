@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'plugins/images/favicon.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon.ico' %}">
     <title>{% block titulo %}{% endblock titulo %}</title>
     <!-- Bootstrap Core CSS -->
     <link href="{% static 'bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
@@ -192,6 +192,22 @@
                                 <a href="{% url 'motivos_despido_listado' %}" id="aMDes" class="waves-effect">
                                     <i data-icon="" class="linea-icon linea-basic fa-fw"></i>
                                     <span class="hide-menu">Motivos de Despido</span>
+                                </a>
+                                <a href="{% url 'motivos_renuncia_listado' %}" id="aMRe" class="waves-effect">
+                                    <i data-icon="" class="linea-icon linea-basic fa-fw"></i>
+                                    <span class="hide-menu">Motivos de Renuncia</span>
+                                </a>
+                                <a href="{% url 'clase_educacion_listado' %}" id="aClsEdu" class="waves-effect">
+                                    <i data-icon="" class="linea-icon linea-basic fa-fw"></i>
+                                    <span class="hide-menu">Clases de Educación</span>
+                                </a>
+                                <a href="{% url 'educacion_listar' %}" id="aEdu" class="waves-effect">
+                                    <i data-icon="" class="linea-icon linea-basic fa-fw"></i>
+                                    <span class="hide-menu">Educación</span>
+                                </a>
+                                <a href="{% url 'evaluacion_listar' %}" id="aEv" class="waves-effect">
+                                    <i data-icon="" class="linea-icon linea-basic fa-fw"></i>
+                                    <span class="hide-menu">Evaluación</span>
                                 </a>     
                             </li>
                         </ul>
@@ -230,7 +246,16 @@
                 {% block contenido %}{% endblock contenido %}
             </div>
             <!-- /.container-fluid -->
-            <footer class="footer text-center"> 2017 &copy; Anonymous</footer>
+            
+            <footer class="footer text-center">
+                <div class="logo-izq col-xs-4 col-sm-4 col-md-4 text-left">
+                    <img id="" src="{% static 'images/tracker.png' %}" alt="">
+                </div>
+                <div class="col-xs-4 col-sm-4 col-md-4">
+                    2017 &copy; TELEMÁTICA
+                </div>
+                <div class="col-xs-4 col-sm-4 col-md-4 text-right"><img src="{% static 'images/logoTracker.png' %}" alt=""></div>
+            </footer>
         </div>
         <!-- /#page-wrapper -->
     </div>

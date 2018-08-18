@@ -12,3 +12,10 @@
 select.input-sm-1{
     height: 24px;
 }
+
+
+@media (min-width: 768px){
+    .logo-izq{
+        padding-left: 70px;
+    }
+}

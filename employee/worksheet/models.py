@@ -389,3 +389,50 @@ class MotivosRenuncia(models.Model):
 
     def __unicode__(self):
         return self.descripcion
+
+class ClaseEducacion(models.Model):
+    nombre = models.CharField(max_length=50, blank=True, null=True)
+    descripcion = models.TextField(blank=True, null=True)
+    user_reg = models.ForeignKey(User)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='clsEdu_usermod', related_query_name='clsEdu_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.BooleanField()
+
+    def __unicode__(self):
+        return self.nombre
+
+class Educacion(models.Model):
+    empleado = models.ForeignKey(Employee)
+    desde = models.DateField()
+    hasta = models.DateField()
+    clase_edu = models.ForeignKey(ClaseEducacion, blank=True, null=True, on_delete=models.SET_NULL)
+    entidad = models.CharField(max_length=100, blank=True, null=True)
+    asignatura_principal = models.CharField(max_length=100, blank=True, null=True)
+    titulo = models.CharField(max_length=100, blank=True, null=True)
+    user_reg = models.ForeignKey(User)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='edu_usermod', related_query_name='edu_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.BooleanField()
+
+    def __unicode__(self):
+        return self.empleado.firstName + ' ' + self.empleado.lastName + ' | ' + self.clase_edu.nombre
+
+class Evaluacion(models.Model):
+    empleado = models.ForeignKey(Employee)
+    fecha = models.DateField()
+    descripcion = models.TextField()
+    gerente = models.ForeignKey(Employee,  blank=True, null=True, on_delete=models.SET_NULL, related_name='eV_gerente', related_query_name="eV_gerente")
+    grupo_salarial = models.CharField(max_length=100)
+    comentario = models.TextField()
+    user_reg = models.ForeignKey(User)
+    date_reg = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='eV_usermod', related_query_name='eV_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.BooleanField(default=True)
+
+
+    def __unicode__(self):
+        return self.empleado.firstName + ' ' + self.empleado.lastName + ' | ' + str(self.fecha)
+

@@ -1099,7 +1099,255 @@ function validargnrDatos() {
 
 //#endregion Código para registrar Motivos de Despido
 
+//#region Código para registrar Motivos de Renuncia
 
+    //#region Variables
+    var mre_desc = $('textarea[name="mre_desc"]');
+    var mre_activo = $('input[name="mre_activo"]');
+    //#endregion
+
+     //#region Eventos Controles
+     $('#btnmReGuardar').on('click', function(e) {
+        e.preventDefault();
+        url = '/guardar/motivo-renuncia/';
+        metodo = 'POST';
+        if (validarmReDatos() != false) {
+            if (mre_activo.is(":checked")) {
+                vActivo = 1;
+            } else {
+                vActivo = 0;
+            }
+            data = {
+                'desc': mre_desc.val(),
+                'activo': vActivo,
+                'csrfmiddlewaretoken': token.val(),
+            };
+            GuardarRegistro(url, metodo, data, "Motivos de Renuncia");
+            
+        }
+    });
+
+    $('#btnmReActualizar').on('click', function(e) {
+        e.preventDefault();
+        url = '/actualizar/motivo-renuncia/';
+        metodo = 'POST';
+        if (validarmReDatos() != false) {
+            if (mre_activo.is(":checked")) {
+                vActivo = 1;
+            } else {
+                vActivo = 0;
+            }
+            data = {
+                'id': id.val(),
+                'desc': mre_desc.val(),
+                'activo': vActivo,
+                'csrfmiddlewaretoken': token.val(),
+            };
+            GuardarRegistro(url, metodo, data, "Motivo de Renuncia", true, "/listar/motivos-renuncia/");
+        }
+    });
+
+    $('#btnmReCancelar').on('click', function(e) {
+        e.preventDefault();
+        window.location.replace(dns + "/listar/motivos-renuncia/");
+    });
+    //#endregion
+
+     //#region Validación
+     function validarmReDatos() {
+        $('div').removeClass('has-warning');
+        if (mre_desc.val().length == 0) {
+            mensaje("Registro de Motivos de Renuncia", "El campo 'Descripción' es obligatorio.", "warning");
+            return false;
+        }
+        return true;
+    }
+    //#endregion
+
+//#endregion Código para registrar Motivos de Renuncia
+
+//#region Código para registrar Clases de Educación
+
+    //#region Variables
+    var clsEd_desc = $('textarea[name="clsEd_desc"]');
+    var clsEd_nombre = $('input[name="clsEd_nombre"]');
+    var clsEd_activo = $('input[name="clsEd_activo"]');
+    //#endregion
+
+    //#region Eventos Controles
+    $('#btnclsEdGuardar').on('click', function(e) {
+        e.preventDefault();
+        url = '/guardar/clases-educacion/';
+        metodo = 'POST';
+        if (validarClsEdDatos() != false) {
+            if (clsEd_activo.is(":checked")) {
+                vActivo = 1;
+            } else {
+                vActivo = 0;
+            }
+            data = {
+                'nombre': clsEd_nombre.val(),
+                'desc': clsEd_desc.val(),
+                'activo': vActivo,
+                'csrfmiddlewaretoken': token.val(),
+            };
+            GuardarRegistro(url, metodo, data, "Clase de Educación");
+            
+        }
+    });
+
+    $('#btnclsEdActualizar').on('click', function(e) {
+        e.preventDefault();
+        url = '/actualizar/clase-educacion/';
+        metodo = 'POST';
+        if (validarClsEdDatos() != false) {
+            if (clsEd_activo.is(":checked")) {
+                vActivo = 1;
+            } else {
+                vActivo = 0;
+            }
+            data = {
+                'id': id.val(),
+                'nombre': clsEd_nombre.val(),
+                'desc': clsEd_desc.val(),
+                'activo': vActivo,
+                'csrfmiddlewaretoken': token.val(),
+            };
+            GuardarRegistro(url, metodo, data, "Clase de Educación", true, "/listar/clase-educacion/");
+        }
+    });
+
+    $('#btnclsEdCancelar').on('click', function(e) {
+        e.preventDefault();
+        window.location.replace(dns + "/listar/clase-educacion/");
+    });
+    //#endregion
+
+    //#region Validación
+     function validarClsEdDatos() {
+        $('div').removeClass('has-warning');
+        if (clsEd_nombre.val().length == 0) {
+            mensaje("Registro de Clase de Educación", "El campo 'Nombre' es obligatorio.", "warning");
+            return false;
+        }
+        if (clsEd_desc.val().length == 0) {
+            mensaje("Registro de Clase de Educación", "El campo 'Descripción' es obligatorio.", "warning");
+            return false;
+        }
+        return true;
+    }
+    //#endregion
+
+//#endregion Código para registrar Clases de Educación
+
+//#region Código para registrar Educación del Empleado
+
+    //#region Variables
+    var ed_emp = $('select[name="ed_emp"]');
+    var ed_formacion = $('select[name="ed_clsEd"]');
+    var ed_desde = $('input[name="ed_desde"]');
+    var ed_hasta = $('input[name="ed_hasta"]');
+    var ed_entidad = $('input[name="ed_ent"]');
+    var ed_asignatura = $('input[name="ed_asig"]');
+    var ed_titulo = $('input[name="ed_titulo"]');
+    //#endregion
+
+    //#region Eventos Controles
+    $('#btnEdGuardar').on('click', function(e) {
+        e.preventDefault();
+        url = '/guardar/educacion/';
+        metodo = 'POST';
+        if (validarEdDatos() != false) {
+            data = {
+                'emp': ed_emp.val(),
+                'formacion': ed_formacion.val(),
+                'desde': ed_desde.val(),
+                'hasta': ed_hasta.val(),
+                'entidad': ed_entidad.val(),
+                'asignatura': ed_asignatura.val(),
+                'titulo': ed_titulo.val(),
+                'csrfmiddlewaretoken': token.val(),
+            };
+            GuardarRegistro(url, metodo, data, "Educación");
+        }
+    });
+
+    $('#btnEdActualizar').on('click', function(e) {
+        e.preventDefault();
+        url = '/actualizar/educacion/';
+        metodo = 'POST';
+        if (validarEdDatos() != false) {
+            data = {
+                'id': id.val(),
+                'emp': ed_emp.val(),
+                'formacion': ed_formacion.val(),
+                'desde': ed_desde.val(),
+                'hasta': ed_hasta.val(),
+                'entidad': ed_entidad.val(),
+                'asignatura': ed_asignatura.val(),
+                'titulo': ed_titulo.val(),
+                'csrfmiddlewaretoken': token.val(),
+            };
+            GuardarRegistro(url, metodo, data, "Educación", true, "/listar/educacion/");
+        }
+    });
+
+    $('#btnEdCancelar').on('click', function(e) {
+        e.preventDefault();
+        window.location.replace(dns + "/listar/educacion/");
+    });
+    //#endregion
+
+    //#region Validación
+    function validarEdDatos() {
+        $('div').removeClass('has-warning');
+        if (ed_emp.val() == 0) {
+            mensaje("Registro de Educación", "El campo 'Empleado' es obligatorio.", "warning");
+            return false;
+        }
+        if (ed_formacion.val() == 0) {
+            mensaje("Registro de Educación", "El campo 'Clase de Formación' es obligatorio.", "warning");
+            return false;
+        }
+        if (ed_desde.val().length == 0) {
+            mensaje("Registro de Educación", "El campo 'Desde' es obligatorio.", "warning");
+            return false;
+        }
+        if (ed_hasta.val().length == 0) {
+            mensaje("Registro de Educación", "El campo 'Hasta' es obligatorio.", "warning");
+            return false;
+        }
+        if (ed_entidad.val().length == 0) {
+            mensaje("Registro de Educación", "El campo 'Institución' es obligatorio.", "warning");
+            return false;
+        }
+        if (ed_asignatura.val().length == 0) {
+            mensaje("Registro de Educación", "El campo 'Asignatura Principal' es obligatorio.", "warning");
+            return false;
+        }
+        if (ed_titulo.val().length == 0) {
+            mensaje("Registro de Educación", "El campo 'Título' es obligatorio.", "warning");
+            return false;
+        }
+        return true;
+    }
+    //#endregion
+
+
+//#endregion Código para registrar Educación del Empleado
+
+//#region Código para registrar las Evaluaciones
+
+//#region Variables
+    var ev_emp = $('select[name="eV_emp"]');
+    var ev_gerente = $('select[name="eV_gerente"]');
+    var ev_fecha = $('input[name="eV_fecha"]');
+    var ev_grupo = $('input[name="eV_grpsal"]');
+    var ev_desc = $('input[name="eV_desc"]');
+    var ev_coment = $('input[name="ed_asig"]');
+//#endregion
+
+//#endregion Código para registrar Evaluaciones
 
     //#region Funciones Generales
     function GuardarRegistro(url, metodo, data, encabezado, editar, urlRedirect) {

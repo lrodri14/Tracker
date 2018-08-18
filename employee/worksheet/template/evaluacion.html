@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% block titulo %}
+Evaluación
+{% endblock titulo %}
+{% load static %}
+{% block contenido %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="text-bold"><i class="ti-pencil-alt"></i>
+                    Evaluación</h2>
+            </div>
+            <div class="panel-wrapper">
+                <div class="panel-body">
+                    {% csrf_token %}
+                    {% if editar %}
+                    <input type="hidden" value="{{dato.pk}}" name="id">
+                    {% endif %}
+                    <div class="col-md-12">
+                        <div class="col-md-12 margin-bottom-5px">    
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label for="cboAuEmp" class="control-label">Empleado :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <select class="form-control select2" name="eV_emp" id="cboEvEmp">
+                                            <option value="0">Seleccionar...</option>
+                                            {% for item in empleados %}
+                                                {% if editar %}
+                                                    {% if item == dato.empleado %}
+                                                    <option value="{{item.pk}}" selected>{{item.firstName}} {{item.middleName}} {{item.lastName}}</option>
+                                                    {% else %}
+                                                    <option value="{{item.pk}}">{{item.firstName}} {{item.middleName}} {{item.lastName}}</option>
+                                                    {% endif %}
+                                                {% else %}
+                                                <option value="{{item.pk}}">{{item.firstName}} {{item.middleName}} {{item.lastName}}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label for="txtEdDesde" class="control-label">Fecha :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <div class="input-group">
+                                            <input id="txtEdDesde" value='{{dato.desde|date:"Y-m-d"}}' name="eV_fecha" type="text" class="form-control mydatepicker " placeholder="yyyy-mm-dd"> <span class="input-group-addon"><i class="icon-calender"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 margin-bottom-5px">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label for="cboAuEmp" class="control-label">Gerente :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <select class="form-control select2" name="eV_gerente" id="cboEvGerente">
+                                            <option value="0">Seleccionar...</option>
+                                            {% for item in empleados %}
+                                                {% if editar %}
+                                                    {% if item == dato.empleado %}
+                                                    <option value="{{item.pk}}" selected>{{item.firstName}} {{item.middleName}} {{item.lastName}}</option>
+                                                    {% else %}
+                                                    <option value="{{item.pk}}">{{item.firstName}} {{item.middleName}} {{item.lastName}}</option>
+                                                    {% endif %}
+                                                {% else %}
+                                                <option value="{{item.pk}}">{{item.firstName}} {{item.middleName}} {{item.lastName}}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label for="txtEvGrpSal" class="control-label">Grupo salarial :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <input id="txtEvGrpSal" value='{{dato.grupo_salarial}}' name="eV_grpsal" type="text" class="form-control" placeholder="">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 margin-bottom-5px">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label for="txtDescEv" class="control-label">Descripción :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <textarea name="eV_desc" id="txtDescEv" rows="7" class="form-control">{{dato.descripcion}}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label for="txtComEv" class="control-label">Comentario :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <textarea name="ev_coment" id="txtComEv" rows="7" class="form-control">{{dato.comentario}}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="form-action col-md-12 text-right">
+                            {% if editar %}
+                            <button id="btnEvActualizar" class="btn btn-success">Actualizar</button>
+                            {% else %}
+                            <button id="btnEvGuardar" class="btn btn-success">Guardar</button>
+                            {% endif %}
+                            <button id="btnEvCancelar" class="btn btn-default">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contenido %}
+{% block scripts %}
+<script src="{% static 'js/app/scriptApp.js' %}"></script>
+<script>
+    $(".select2").select2();
+    $('#side-menu a').removeClass('active');
+    $('#aPersonal').addClass('active');
+    $('#aEv').addClass('active');
+
+    jQuery('.mydatepicker, #datepicker').datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose:true,
+        todayHighlight: true,
+    });
+</script>
+{% endblock scripts %}
