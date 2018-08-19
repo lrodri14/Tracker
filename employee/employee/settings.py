@@ -80,10 +80,10 @@ DATABASES = {
         'ENGINE': 'sql_server.pyodbc',
         'NAME': 'django',
         'USER': 'sa',
-        'PASSWORD': '12345',
-        #'PASSWORD': 'holaMundo2018',
-        'HOST': 'DESKTOP-O3RL0VG',
-        #'HOST': 'IT06',
+        #'PASSWORD': '12345',
+        'PASSWORD': 'holaMundo2018',
+        #'HOST': 'DESKTOP-O3RL0VG',
+        'HOST': 'IT06',
         'PORT': '',
     }
 }

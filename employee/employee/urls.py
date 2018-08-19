@@ -93,6 +93,10 @@ urlpatterns = [
     url(r'^listar/educacion/$', views.educacion_listar, name="educacion_listar"),
     url(r'^evaluacion/$', views.evaluacion, name="evaluacion"),
     url(r'^listar/evaluaciones/$', views.evaluacion_listar, name="evaluacion_listar"),
+    url(r'^editar/evaluacion/(?P<id>\w+)/$', views.evaluacion_editar, name="evaluacion_editar"),
+    url(r'^listar/motivos-aumento-sueldo/$', views.motivos_aumento_sueldo_listado,name="motivos_aumento_sueldo_listado"),
+    url(r'^motivos-aumento-sueldo/$', views.motivos_aumento_sueldo,name="motivos_aumento_sueldo"),
+    url(r'^editar/motivo-aumento-sueldo/(?P<id>\w+)/$',views.motivo_aumento_sueldo_editar, name="motivo_aumento_sueldo_editar"),
 
 
     #----------------->>>AJAX<<<------------------
@@ -119,6 +123,8 @@ urlpatterns = [
     url(r'^guardar/motivo-renuncia/$', views.guardar_motivo_renuncia, name='guardar_motivo_renuncia'),
     url(r'^guardar/clases-educacion/$', views.guardar_clase_educacion, name='guardar_clase_educacion'),
     url(r'^guardar/educacion/$', views.guardar_educacion, name='guardar_educacion'),
+    url(r'^guardar/evaluacion/$', views.guardar_evaluacion, name='guardar_evaluacion'),
+    url(r'^guardar/motivo-aumento-sueldo/$', views.guardar_motivo_aumento_sueldo, name='guardar_motivo_aumento_sueldo'),
 
     url(r'^actualizar/corporativo/$', views.actualizar_corporativo, name='actualizar_corporativo'),
     url(r'^actualizar/empresa/$', views.actualizar_empresa, name='actualizar_empresa'),
@@ -142,6 +148,8 @@ urlpatterns = [
     url(r'^actualizar/motivo-renuncia/$', views.actualizar_motivo_renuncia, name='actualizar_motivo_renuncia'),
     url(r'^actualizar/clase-educacion/$', views.actualizar_clase_educacion, name='actualizar_clase_educacion'),
     url(r'^actualizar/educacion/$', views.actualizar_educacion, name='actualizar_educacion'),
+    url(r'^actualizar/evaluacion/$', views.actualizar_evaluacion, name='actualizar_evaluacion'),
+    url(r'^actualizar/motivo-aumento-sueldo/$', views.actualizar_motivo_aumento_sueldo, name='actualizar_motivo_aumento_sueldo'),
 
     url(r'^eliminar/corporativo/$', views.eliminar_corporativo, name='eliminar_corporativo'),
     url(r'^eliminar/empresa/$', views.eliminar_empresa, name='eliminar_empresa'),
@@ -165,6 +173,8 @@ urlpatterns = [
     url(r'^eliminar/motivo-renuncia/$', views.eliminar_motivo_renuncia, name='eliminar_motivo_renuncia'),
     url(r'^eliminar/clase-educacion/$', views.eliminar_clase_educacion, name='eliminar_clase_educacion'),
     url(r'^eliminar/educacion/$', views.eliminar_educacion, name='eliminar_educacion'),
+    url(r'^eliminar/evaluacion/$', views.eliminar_evaluacion, name='eliminar_evaluacion'),
+    url(r'^eliminar/motivo-aumento-sueldo/$', views.eliminar_motivo_aumento_sueldo, name='eliminar_motivo_aumento_sueldo'),
     #------------------>>>AJAX<<<-------------------
 
     url(r'^seguridad/', include('django.contrib.auth.urls')),

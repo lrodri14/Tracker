@@ -49,7 +49,7 @@ Evaluación
                                     </div>
                                     <div class="col-md-7">
                                         <div class="input-group">
-                                            <input id="txtEdDesde" value='{{dato.desde|date:"Y-m-d"}}' name="eV_fecha" type="text" class="form-control mydatepicker " placeholder="yyyy-mm-dd"> <span class="input-group-addon"><i class="icon-calender"></i></span>
+                                            <input id="txteVFecha" value='{{dato.fecha|date:"Y-m-d"}}' name="eV_fecha" type="text" class="form-control mydatepicker " placeholder="yyyy-mm-dd"> <span class="input-group-addon"><i class="icon-calender"></i></span>
                                         </div>
                                     </div>
                                 </div>
@@ -66,7 +66,7 @@ Evaluación
                                             <option value="0">Seleccionar...</option>
                                             {% for item in empleados %}
                                                 {% if editar %}
-                                                    {% if item == dato.empleado %}
+                                                    {% if item == dato.gerente %}
                                                     <option value="{{item.pk}}" selected>{{item.firstName}} {{item.middleName}} {{item.lastName}}</option>
                                                     {% else %}
                                                     <option value="{{item.pk}}">{{item.firstName}} {{item.middleName}} {{item.lastName}}</option>
@@ -107,7 +107,7 @@ Evaluación
                                         <label for="txtComEv" class="control-label">Comentario :</label>
                                     </div>
                                     <div class="col-md-7">
-                                        <textarea name="ev_coment" id="txtComEv" rows="7" class="form-control">{{dato.comentario}}</textarea>
+                                        <textarea name="eV_coment" id="txtComEv" rows="7" class="form-control">{{dato.comentario}}</textarea>
                                     </div>
                                 </div>
                             </div>

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block titulo %}
-Datos de Evaluación
+Listado de Motivos para Aumento de Sueldo
 {% endblock titulo %}
 {% load static %}
 {% block contenido %}
@@ -9,42 +9,13 @@ Datos de Evaluación
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h2 class="text-bold"><i class="fa fa-list"></i>
-                    Datos de Evaluación</h2>
+                    Listado de Motivos para Aumento de Sueldo</h2>
             </div>
             <div class="panel-wrapper">
                 <div class="panel-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <form action="{% url 'evaluacion_listar' %}" method="GET">
-                                    <div class="col-md-3">
-                                        <label for="cboAuEmp" class="control-label">Empleado :</label>
-                                    </div>
-                                    <div class="col-md-7">
-                                        <select class="form-control select2 input-sm input-sm-1" name="empleado" id="cboAuEmp">
-                                            <option value="0">Seleccionar...</option>
-                                            {% for item in empleados %}
-                                                {% if busqueda %}
-                                                    {% if item.pk == busqueda %}
-                                                    <option value="{{item.pk}}" selected>{{item.firstName}} {{item.middleName}} {{item.lastName}}</option>
-                                                    {% else %}
-                                                    <option value="{{item.pk}}">{{item.firstName}} {{item.middleName}} {{item.lastName}}</option>
-                                                    {% endif %}
-                                                {% else %}
-                                                <option value="{{item.pk}}">{{item.firstName}} {{item.middleName}} {{item.lastName}}</option>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <input type="submit" class="btn btn-default" value="Buscar">
-                                        <!--button type="submit" class="btn btn-default">Buscar</button-->
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                        <div class="col-md-6 text-right">
-                            <a href="{% url 'evaluacion' %}" class="btn btn-primary">Agregar</a>
+                    <div class="row text-right">
+                        <div class="col-md-12">
+                            <a href="{% url 'motivos_aumento_sueldo' %}" class="btn btn-primary">Agregar</a>
                         </div>
                     </div>
                     <br>
@@ -53,28 +24,24 @@ Datos de Evaluación
                             {% csrf_token %}
                             <thead>
                                 <tr>
-                                    <th>Fecha</th>
                                     <th>Descripción</th>
-                                    <th>Gerente</th>
-                                    <th>Grupo Salarial</th>
-                                    <th>Comentario</th>
+                                    <th>Estado registro</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for item in datos %}
+                                {% for item in lista %}
                                 <tr>
-                                    <td>{{item.fecha|date:"d/m/Y"}}</td>
                                     <td>{{item.descripcion}}</td>
                                     <td>
-                                        {{item.gerente.firstName}} {{item.gerente.middleName}} {{item.gerente.lastName}}
-                                    </td>
-                                    <td>
-                                        {{item.grupo_salarial}}
-                                    </td>
-                                    <td>{{item.comentario}}</td>
+                                        {% if item.active %}
+                                        <span class="label label-success">Habilitado</span>
+                                        {% else %}
+                                        <span class="label label-danger">Inactivo</span>
+                                        {% endif %}
+                                    </td>                         
                                     <td class="text-nowrap acciones">
-                                        <a href="{% url 'evaluacion_editar' item.pk %}" data-toggle="tooltip" data-original-title="Edit">
+                                        <a href="{% url 'motivo_aumento_sueldo_editar' item.pk %}" data-toggle="tooltip" data-original-title="Edit">
                                             <i class="fa fa-pencil text-inverse m-r-10"></i>
                                         </a>
                                         <a href="#" class="btnEliminar" data="{{item.pk}}" data-toggle="tooltip" data-original-title="Close">
@@ -94,12 +61,11 @@ Datos de Evaluación
 {% endblock contenido %}
 {% block scripts %}
 <script>
-    $('.select2').select2();
     var token = $('input[name="csrfmiddlewaretoken"]');
     //#region Efectos en SideBar
     $('#side-menu a').removeClass('active');
     $('#aPersonal').addClass('active');
-    $('#aEv').addClass('active');
+    $('#aMas').addClass('active');
     //#endregion
 
     //#region Eventos Controles
@@ -112,8 +78,8 @@ Datos de Evaluación
 
     //#region Funciones
     function Eliminar(id) {
-        var Encabezado = 'Evaluación';
-        var url = "/eliminar/evaluacion/"; // the script where you handle the form input.
+        var Encabezado = 'Motivos para Aumento de Sueldo';
+        var url = "/eliminar/motivo-aumento-sueldo/"; // the script where you handle the form input.
         $.ajax({
             type: "POST",
             url: url,

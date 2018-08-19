@@ -436,3 +436,15 @@ class Evaluacion(models.Model):
     def __unicode__(self):
         return self.empleado.firstName + ' ' + self.empleado.lastName + ' | ' + str(self.fecha)
 
+
+class MotivoAumentoSueldo(models.Model):
+    descripcion = models.CharField(max_length=150)
+    user_reg = models.ForeignKey(User)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL,
+                                 related_name='mAuSal_usermod', related_query_name='mAuSal_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.BooleanField()
+
+    def __unicode__(self):
+        return self.descripcion

@@ -7,6 +7,8 @@ from worksheet.models import *
 import datetime
 from django.contrib.auth.decorators import login_required
 import datetime
+from django.core.serializers import serialize
+import json
 
 # Create your views here.
 @login_required(login_url='/seguridad/login/')
@@ -271,6 +273,17 @@ def clase_educacion_listado(request):
     lista = ClaseEducacion.objects.all()
     return render(request, 'clase-educacion-listado.html',{'lista':lista})
 
+def motivos_aumento_sueldo(request):
+    return render(request, 'motivos-aumento-sueldo.html')
+
+def motivos_aumento_sueldo_listado(request):
+    lista = MotivoAumentoSueldo.objects.all()
+    return render(request, 'motivos-aumento-sueldo-listado.html', {'lista': lista})
+
+def motivo_aumento_sueldo_editar(request, id):
+    dato = MotivoAumentoSueldo.objects.get(pk=id)
+    return render(request, 'motivos-aumento-sueldo.html', {'editar': True, 'dato': dato})
+
 def educacion(request):
     empleados = Employee.objects.filter(active=True)
     clases_educacion = ClaseEducacion.objects.filter(active=True)
@@ -309,6 +322,11 @@ def evaluacion_listar(request):
                 busqueda = int(emp)
                 datos = Evaluacion.objects.filter(empleado__pk=emp)
     return render(request, 'evaluaciones-listado.html', {'datos':datos, 'empleados':empleados, 'busqueda': busqueda})
+
+def evaluacion_editar(request, id):
+    empleados = Employee.objects.filter(active=True)
+    dato = Evaluacion.objects.get(pk=id)
+    return render(request, 'evaluacion.html', {'editar': True, 'dato': dato, 'empleados': empleados})
 
 
 
@@ -4159,6 +4177,7 @@ def actualizar_educacion(request):
                     return JsonResponse(data)
                 
                 oMd = Educacion.objects.get(pk=id)
+                print "Valor empleado en educacion: " + str(oEmp)
                 if oMd:
                     oMd.empleado = oEmp
                     oMd.clase_edu = oClsEdu
@@ -4214,6 +4233,411 @@ def eliminar_educacion(request):
                 reg_id = request.POST['id']
                 if int(reg_id) > 0:
                     oMd = Educacion.objects.get(pk=reg_id)
+                    if oMd:
+                        oMd.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def guardar_evaluacion(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                emp = request.POST['emp']
+                gerente = request.POST['gerente']
+                fecha = request.POST['fecha']
+                grupo_asal = request.POST['grupo_asal']
+                desc = request.POST['desc']
+                coment = request.POST['coment']
+                oGerente = None
+
+                if len(emp) == 0:
+                    mensaje = 'Seleccione un empleado.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+                else:
+                    if int(emp) > 0:
+                        oEmp = Employee.objects.get(pk=emp)
+                    elif int(emp) == 0:
+                        mensaje = 'Seleccione un empleado.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                        return JsonResponse(data)
+                    else:
+                        mensaje = 'Empleado no existe.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                        return JsonResponse(data)
+
+                if len(gerente) > 0:
+                    if int(gerente) > 0:
+                        oGerente = Employee.objects.get(pk=gerente)
+
+                if int(emp) == int(gerente):
+                    data = {
+                        'mensaje':'El campo empleado no puede ser la misma opción que el gerente.',
+                        'error':True,
+                    }
+                    return JsonResponse(data)
+
+
+                if len(fecha) == 0:
+                    mensaje = 'El campo "Fecha" es obligatorio.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(grupo_asal) == 0:
+                    mensaje = 'El campo "Grupo asalariado" es obligatorio.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(desc) == 0:
+                    mensaje = 'El campo "Descripción" es obligatorio.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(coment) == 0:
+                    mensaje = 'El campo "Comentario" es obligatorio.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+
+                oMd = Evaluacion(
+                    empleado=oEmp,
+                    gerente=oGerente,
+                    fecha=fecha,
+                    grupo_salarial=grupo_asal,
+                    descripcion=desc,
+                    comentario=coment,
+                    active=True,
+                    user_reg=request.user,
+                )
+                oMd.save()
+                mensaje = 'Se ha guardado el registro'
+                data = {
+                    'mensaje': mensaje, 'error': False
+                }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def actualizar_evaluacion(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                emp = request.POST['emp']
+                gerente = request.POST['gerente']
+                fecha = request.POST['fecha']
+                grupo_asal = request.POST['grupo_asal']
+                desc = request.POST['desc']
+                coment = request.POST['coment']
+
+                if len(emp) == 0:
+                    mensaje = 'Seleccione un empleado.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+                else:
+                    if int(emp) > 0:
+                        oEmp = Employee.objects.get(pk=emp)
+                    elif int(emp) == 0:
+                        mensaje = 'Seleccione un empleado.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                        return JsonResponse(data)
+                    else:
+                        mensaje = 'Empleado no existe.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                        return JsonResponse(data)
+
+                if len(gerente) > 0:
+                    if int(gerente) > 0:
+                        oGerente = Employee.objects.get(pk=gerente)
+
+                if int(emp) == int(gerente):
+                    data = {
+                        'mensaje': 'El campo empleado no puede ser la misma opción que el gerente.',
+                        'error': True,
+                    }
+                    return JsonResponse(data)
+
+                if len(fecha) == 0:
+                    mensaje = 'El campo "Fecha" es obligatorio.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(grupo_asal) == 0:
+                    mensaje = 'El campo "Grupo asalariado" es obligatorio.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(desc) == 0:
+                    mensaje = 'El campo "Descripción" es obligatorio.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(coment) == 0:
+                    mensaje = 'El campo "Comentario" es obligatorio.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                oEmple = Employee.objects.get(pk=emp)
+                oGerent = Employee.objects.get(pk=gerente)
+                oMd = Evaluacion.objects.get(pk=id)
+                print "Valor empleado: " + str(oEmple)
+                if oMd:
+                    oMd.empleado = oEmple,
+                    oMd.gerente = oGerent,
+                    oMd.fecha = fecha,
+                    oMd.grupo_salarial = grupo_asal,
+                    oMd.descripcion = desc,
+                    oMd.comentario = coment,
+                    oMd.active = True,
+                    oMd.user_mod = request.user
+                    oMd.date_mod = datetime.datetime.now()
+                    oMd.save()
+                    mensaje = 'Se ha actualizado el registro.'
+                    data = {
+                        'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "No existe el registro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def eliminar_evaluacion(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oMd = Evaluacion.objects.get(pk=reg_id)
+                    if oMd:
+                        oMd.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def guardar_motivo_aumento_sueldo(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                desc = request.POST['desc']
+                activo = request.POST['activo']
+
+                if len(desc) == 0:
+                    mensaje = 'El campo "Descripción" es obligatorio.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if int(activo) == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                oMd = MotivoAumentoSueldo(
+                    descripcion=desc,
+                    active=activo,
+                    user_reg=request.user,
+                )
+                oMd.save()
+                mensaje = 'Se ha guardado el registro'
+                data = {
+                    'mensaje': mensaje, 'error': False
+                }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def actualizar_motivo_aumento_sueldo(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                desc = request.POST['desc']
+                activo = int(request.POST['activo'])
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                if len(desc) > 0:
+                    oMd = MotivoAumentoSueldo.objects.get(pk=id)
+                    if oMd:
+                        oMd.descripcion = desc
+                        oMd.active = activo
+                        oMd.user_mod = request.user
+                        oMd.date_mod = datetime.datetime.now()
+                        oMd.save()
+                        mensaje = 'Se ha actualizado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = "No existe el registro."
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "Complete los campos requeridos."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def eliminar_motivo_aumento_sueldo(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oMd = MotivoAumentoSueldo.objects.get(pk=reg_id)
                     if oMd:
                         oMd.delete()
                         mensaje = 'Se ha eliminado el registro.'

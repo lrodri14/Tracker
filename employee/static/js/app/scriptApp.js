@@ -1343,11 +1343,145 @@ function validargnrDatos() {
     var ev_gerente = $('select[name="eV_gerente"]');
     var ev_fecha = $('input[name="eV_fecha"]');
     var ev_grupo = $('input[name="eV_grpsal"]');
-    var ev_desc = $('input[name="eV_desc"]');
-    var ev_coment = $('input[name="ed_asig"]');
+    var ev_desc = $('textarea[name="eV_desc"]');
+    var ev_coment = $('textarea[name="eV_coment"]');
 //#endregion
 
+    //#region Eventos Controles
+    $('#btnEvGuardar').on('click', function (e) {
+        e.preventDefault();
+        url = '/guardar/evaluacion/';
+        metodo = 'POST';
+        //if (validarEvDatos() != false) {
+        data = {
+            'emp': ev_emp.val(),
+            'gerente': ev_gerente.val(),
+            'fecha': ev_fecha.val(),
+            'grupo_asal': ev_grupo.val(),
+            'desc': ev_desc.val(),
+            'coment': ev_coment.val(),
+            'csrfmiddlewaretoken': token.val(),
+        };     
+        GuardarRegistro(url, metodo, data, "Evaluación");
+        //}
+    });
+
+    $('#btnEvActualizar').on('click', function (e) {
+        e.preventDefault();
+        url = '/actualizar/evaluacion/';
+        metodo = 'POST';
+        //if (validarEvDatos() != false) {
+        data = {
+            'id': id.val(),
+            'emp': ev_emp.val(),
+            'gerente': ev_gerente.val(),
+            'fecha': ev_fecha.val(),
+            'grupo_asal': ev_grupo.val(),
+            'desc': ev_desc.val(),
+            'coment': ev_coment.val(),
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Evaluación", true, "/listar/evaluaciones/");
+        //}
+    });
+
+    $('#btnEvCancelar').on('click', function (e) {
+        e.preventDefault();
+        window.location.replace(dns + "/listar/evaluaciones/");
+    });
+    //#endregion
+
+    //#region Validación
+    function validarEvDatos() {
+        $('div').removeClass('has-warning');
+        if (ed_emp.val() == 0) {
+            mensaje("Registro de Educación", "El campo 'Empleado' es obligatorio.", "warning");
+            return false;
+        }
+        if (ed_formacion.val() == 0) {
+            mensaje("Registro de Educación", "El campo 'Clase de Formación' es obligatorio.", "warning");
+            return false;
+        }
+        if (ed_desde.val().length == 0) {
+            mensaje("Registro de Educación", "El campo 'Desde' es obligatorio.", "warning");
+            return false;
+        }
+        if (ed_hasta.val().length == 0) {
+            mensaje("Registro de Educación", "El campo 'Hasta' es obligatorio.", "warning");
+            return false;
+        }
+        if (ed_entidad.val().length == 0) {
+            mensaje("Registro de Educación", "El campo 'Institución' es obligatorio.", "warning");
+            return false;
+        }
+        if (ed_asignatura.val().length == 0) {
+            mensaje("Registro de Educación", "El campo 'Asignatura Principal' es obligatorio.", "warning");
+            return false;
+        }
+        if (ed_titulo.val().length == 0) {
+            mensaje("Registro de Educación", "El campo 'Título' es obligatorio.", "warning");
+            return false;
+        }
+        return true;
+    }
+    //#endregion
+
 //#endregion Código para registrar Evaluaciones
+
+//#region Código para registrar Motivos para Aumento de Sueldo
+
+    //#region Variables
+    var mas_desc = $('textarea[name="mAuSal_desc"]');
+    var mas_activo = $('input[name="mas_activo"]');
+    //#endregion
+
+    //#region Eventos Controles
+    $('#btnmasGuardar').on('click', function (e) {
+        e.preventDefault();
+        url = '/guardar/motivo-aumento-sueldo/';
+        metodo = 'POST';
+        if (mas_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
+        }
+        //if (validarEvDatos() != false) {
+        data = {
+            'desc': mas_desc.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Motivos para Aumento de Sueldo");
+        //}
+    });
+
+    $('#btnmasActualizar').on('click', function (e) {
+        e.preventDefault();
+        url = '/actualizar/motivo-aumento-sueldo/';
+        metodo = 'POST';
+        if (mas_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
+        }
+        //if (validarEvDatos() != false) {
+        data = {
+            'id': id.val(),
+            'desc': mas_desc.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Motivos para Aumento de Sueldo", true, "/listar/motivos-aumento-sueldo/");
+        //}
+    });
+
+    $('#btnmasCancelar').on('click', function (e) {
+        e.preventDefault();
+        window.location.replace(dns + "/listar/motivos-aumento-sueldo/");
+    });
+    //#endregion
+
+//#endregion Código para registrar Motivos para Aumento de Sueldo
 
     //#region Funciones Generales
     function GuardarRegistro(url, metodo, data, encabezado, editar, urlRedirect) {
