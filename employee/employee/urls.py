@@ -97,6 +97,9 @@ urlpatterns = [
     url(r'^listar/motivos-aumento-sueldo/$', views.motivos_aumento_sueldo_listado,name="motivos_aumento_sueldo_listado"),
     url(r'^motivos-aumento-sueldo/$', views.motivos_aumento_sueldo,name="motivos_aumento_sueldo"),
     url(r'^editar/motivo-aumento-sueldo/(?P<id>\w+)/$',views.motivo_aumento_sueldo_editar, name="motivo_aumento_sueldo_editar"),
+    url(r'^empleo-anterior/$', views.empleo_anterior_form, name="empleo_anterior_form"),
+    url(r'^editar/empleo-anterior/(?P<id>\w+)/$', views.empleo_anterior_editar, name="empleo_anterior_editar"),
+    url(r'^listar/empleo-anterior/$', views.empleo_anterior_listar,name="empleo_anterior_listar"),
 
 
     #----------------->>>AJAX<<<------------------
@@ -125,6 +128,7 @@ urlpatterns = [
     url(r'^guardar/educacion/$', views.guardar_educacion, name='guardar_educacion'),
     url(r'^guardar/evaluacion/$', views.guardar_evaluacion, name='guardar_evaluacion'),
     url(r'^guardar/motivo-aumento-sueldo/$', views.guardar_motivo_aumento_sueldo, name='guardar_motivo_aumento_sueldo'),
+    url(r'^guardar/empleo-anterior/$', views.guardar_empleo_anterior, name='guardar_empleo_anterior'),
 
     url(r'^actualizar/corporativo/$', views.actualizar_corporativo, name='actualizar_corporativo'),
     url(r'^actualizar/empresa/$', views.actualizar_empresa, name='actualizar_empresa'),
@@ -150,6 +154,7 @@ urlpatterns = [
     url(r'^actualizar/educacion/$', views.actualizar_educacion, name='actualizar_educacion'),
     url(r'^actualizar/evaluacion/$', views.actualizar_evaluacion, name='actualizar_evaluacion'),
     url(r'^actualizar/motivo-aumento-sueldo/$', views.actualizar_motivo_aumento_sueldo, name='actualizar_motivo_aumento_sueldo'),
+    url(r'^actualizar/empleo-anterior/$', views.actualizar_empleo_anterior, name='actualizar_empleo_anterior'),
 
     url(r'^eliminar/corporativo/$', views.eliminar_corporativo, name='eliminar_corporativo'),
     url(r'^eliminar/empresa/$', views.eliminar_empresa, name='eliminar_empresa'),

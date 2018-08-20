@@ -1483,6 +1483,63 @@ function validargnrDatos() {
 
 //#endregion Código para registrar Motivos para Aumento de Sueldo
 
+//#region Código para registar empleos anteriores
+
+    //#region Variables
+    var empAnt_emp = $('select[name="empAnt_emp"]');
+    var empAnt_desde = $('input[name="empAnt_desde"]');
+    var empAnt_hasta = $('input[name="empAnt_hasta"]');
+    var empAnt_empresa = $('input[name="empAnt_empresa"]');
+    var empAnt_posicion = $('input[name="empAnt_pos"]');
+    var empAnt_comentario = $('textarea[name="empAnt_com"]');
+    //#endregion
+
+    //#region Eventos Controles
+    $('#btnempAntGuardar').on('click', function (e) {
+        e.preventDefault();
+        url = '/guardar/empleo-anterior/';
+        metodo = 'POST';
+        //if (validarEvDatos() != false) {
+        data = {
+            'emp': empAnt_emp.val(),
+            'desde': empAnt_desde.val(),
+            'hasta': empAnt_hasta.val(),
+            'empresa': empAnt_empresa.val(),
+            'posicion': empAnt_posicion.val(),
+            'comentario': empAnt_comentario.val(),
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Empleo Anterior");
+        //}
+    });
+
+    $('#btnempAntActualizar').on('click', function (e) {
+        e.preventDefault();
+        url = '/actualizar/empleo-anterior/';
+        metodo = 'POST';
+        //if (validarEvDatos() != false) {
+        data = {
+            'id': id.val(),
+            'emp': empAnt_emp.val(),
+            'desde': empAnt_desde.val(),
+            'hasta': empAnt_hasta.val(),
+            'empresa': empAnt_empresa.val(),
+            'posicion': empAnt_posicion.val(),
+            'comentario': empAnt_comentario.val(),
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Empleo Anterior", true, "/listar/empleo-anterior/");
+        //}
+    });
+
+    $('#btnempAntCancelar').on('click', function (e) {
+        e.preventDefault();
+        window.location.replace(dns + "/listar/empleo-anterior/");
+    });
+    //#endregion
+
+//#endregion Códigp para registrar empleos anteriores
+
     //#region Funciones Generales
     function GuardarRegistro(url, metodo, data, encabezado, editar, urlRedirect) {
         var texto = 'Se ha creado un nuevo registro.';

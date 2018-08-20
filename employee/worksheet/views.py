@@ -328,6 +328,27 @@ def evaluacion_editar(request, id):
     dato = Evaluacion.objects.get(pk=id)
     return render(request, 'evaluacion.html', {'editar': True, 'dato': dato, 'empleados': empleados})
 
+def empleo_anterior_form(request):
+    empleados = Employee.objects.filter(active=True)
+    return render(request, 'empleos-anteriores.html', {'empleados':empleados})
+
+def empleo_anterior_editar(request, id):
+    empleados = Employee.objects.filter(active=True)
+    dato = EmpleosAnteriores.objects.get(pk=id)
+    return render(request, 'empleos-anteriores.html', {'editar': True, 'dato': dato, 'empleados': empleados})
+
+def empleo_anterior_listar(request):
+    datos = []
+    busqueda = None
+    empleados = Employee.objects.all()
+    if 'empleado' in request.GET:
+        emp = request.GET.get("empleado")
+        if len(emp) > 0:
+            if int(emp) > 0:
+                busqueda = int(emp)
+                datos = EmpleosAnteriores.objects.filter(empleado__pk=emp)
+    return render(request, 'empleos-anteriores-listado.html', {'datos':datos, 'empleados':empleados, 'busqueda':busqueda})
+
 
 
 #---------------------------->>>> VISTAS AJAX <<<<----------------------------#
@@ -4661,6 +4682,201 @@ def eliminar_motivo_aumento_sueldo(request):
                 }
         else:
             mensaje = "Tipo de petición no permitido."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def guardar_empleo_anterior(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                emp = request.POST['emp']
+                desde = request.POST['desde']
+                hasta = request.POST['hasta']
+                empresa = request.POST['empresa']
+                posicion = request.POST['posicion']
+                comentario = request.POST['comentario']
+
+                if len(emp) == 0:
+                    mensaje = 'Seleccione un empleado.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+                else:
+                    if int(emp) > 0:
+                        oEmp = Employee.objects.get(pk=emp)
+                    elif int(emp) == 0:
+                        mensaje = 'Seleccione un empleado.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                        return JsonResponse(data)
+                    else:
+                        mensaje = 'Empleado no existe.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                        return JsonResponse(data)
+
+                if len(desde) == 0:
+                    mensaje = 'El campo "Desde" es obligatorio.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(hasta) == 0:
+                    mensaje = 'El campo "Hasta" es obligatorio.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(empresa) == 0:
+                    mensaje = 'El campo "Empresa" es obligatorio.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(posicion) == 0:
+                    mensaje = 'El campo "Posición" es obligatorio.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                oMd = EmpleosAnteriores(
+                    empleado = oEmp,
+                    desde = desde,
+                    hasta = hasta,
+                    empresa = empresa,
+                    posicion = posicion,
+                    comentario = comentario,
+                    user_reg=request.user,
+                    active= True,
+                )
+                oMd.save()
+                mensaje = 'Se ha guardado el registro'
+                data = {
+                    'mensaje': mensaje, 'error': False
+                }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def actualizar_empleo_anterior(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                emp = request.POST['emp']
+                desde = request.POST['desde']
+                hasta = request.POST['hasta']
+                empresa = request.POST['empresa']
+                posicion = request.POST['posicion']
+                comentario = request.POST['comentario']
+
+                if len(emp) == 0:
+                    mensaje = 'Seleccione un empleado.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+                else:
+                    if int(emp) > 0:
+                        oEmp = Employee.objects.get(pk=emp)
+                    elif int(emp) == 0:
+                        mensaje = 'Seleccione un empleado.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                        return JsonResponse(data)
+                    else:
+                        mensaje = 'Empleado no existe.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                        return JsonResponse(data)
+
+                if len(desde) == 0:
+                    mensaje = 'El campo "Desde" es obligatorio.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(hasta) == 0:
+                    mensaje = 'El campo "Hasta" es obligatorio.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(empresa) == 0:
+                    mensaje = 'El campo "Empresa" es obligatorio.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(posicion) == 0:
+                    mensaje = 'El campo "Posición" es obligatorio.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                oMd = EmpleosAnteriores.objects.get(pk=id)
+                if oMd:
+                    oMd.empleado = oEmp,
+                    oMd.desde = desde,
+                    oMd.hasta = hasta,
+                    oMd.empresa = empresa,
+                    oMd.posicion = posicion,
+                    oMd.comentario = comentario,
+                    oMd.active = True,
+                    oMd.user_mod = request.user
+                    oMd.date_mod = datetime.datetime.now()
+                    oMd.save()
+                    mensaje = 'Se ha actualizado el registro.'
+                    data = {
+                        'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "No existe el registro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
             data = {
                 'mensaje': mensaje, 'error': True
             }

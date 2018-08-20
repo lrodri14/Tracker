@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% block titulo %}
+Empleos Anteriores
+{% endblock titulo %}
+{% load static %}
+{% block contenido %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="text-bold"><i class="ti-pencil-alt"></i>
+                    Empleos Anteriores</h2>
+            </div>
+            <div class="panel-wrapper">
+                <div class="panel-body">
+                    {% csrf_token %}
+                    {% if editar %}
+                    <input type="hidden" value="{{dato.pk}}" name="id">
+                    {% endif %}
+                    <div class="col-md-12">
+                        <div class="col-md-12 margin-bottom-5px">    
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label for="cboempAnt_emp" class="control-label">Empleado :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <select class="form-control select2 input-sm" name="empAnt_emp" id="cboempAnt_emp">
+                                            <option value="0">Seleccionar...</option>
+                                            {% for item in empleados %}
+                                                {% if editar %}
+                                                    {% if item == dato.empleado %}
+                                                    <option value="{{item.pk}}" selected>{{item.firstName}} {{item.middleName}} {{item.lastName}}</option>
+                                                    {% else %}
+                                                    <option value="{{item.pk}}">{{item.firstName}} {{item.middleName}} {{item.lastName}}</option>
+                                                    {% endif %}
+                                                {% else %}
+                                                <option value="{{item.pk}}">{{item.firstName}} {{item.middleName}} {{item.lastName}}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6"></div>
+                        </div>
+                        <div class="col-md-12 margin-bottom-5px">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label for="txtempAntDesde" class="control-label">Desde :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <div class="input-group">
+                                            <input id="txtempAntDesde" value='{{dato.desde|date:"Y-m-d"}}' name="empAnt_desde" type="text" class="form-control mydatepicker" placeholder="yyyy-mm-dd"> <span class="input-group-addon"><i class="icon-calender"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label for="txtempAntHasta" class="control-label">Hasta :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <div class="input-group">
+                                            <input id="txtempAntHasta" value='{{dato.hasta|date:"Y-m-d"}}' name="empAnt_hasta" type="text" class="form-control mydatepicker" placeholder="yyyy-mm-dd"> <span class="input-group-addon"><i class="icon-calender"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 margin-bottom-5px">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label for="txtEdEnt" class="control-label">Empresa :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <input type="text" name="empAnt_empresa" value="{{dato.empresa}}" id="txtempAnt_empresa" class="form-control input-sm" maxlength="100">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label for="txtempAnt_pos" class="control-label">Posición :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <input type="text" name="empAnt_pos" value="{{dato.posicion}}" id="txtempAnt_pos" class="form-control input-sm" maxlength="100">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label for="txtempAnt_com" class="control-label">Comentario :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <textarea name="empAnt_com" id="txtempAnt_com" rows="7" class="form-control" maxlength="150">{{dato.comentario}}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6"></div>
+                        </div>
+                        <hr>
+                        <div class="form-action col-md-12 text-right">
+                            {% if editar %}
+                            <button id="btnempAntActualizar" class="btn btn-success">Actualizar</button>
+                            {% else %}
+                            <button id="btnempAntGuardar" class="btn btn-success">Guardar</button>
+                            {% endif %}
+                            <button id="btnempAntCancelar" class="btn btn-default">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contenido %}
+{% block scripts %}
+<script src="{% static 'js/app/scriptApp.js' %}"></script>
+<script>
+    $(".select2").select2();
+    $('#side-menu a').removeClass('active');
+    $('#aPersonal').addClass('active');
+    $('#empAnt').addClass('active');
+
+    jQuery('.mydatepicker, #datepicker').datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose:true,
+        todayHighlight: true,
+    });
+</script>
+{% endblock scripts %}

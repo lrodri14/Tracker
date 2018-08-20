@@ -448,3 +448,31 @@ class MotivoAumentoSueldo(models.Model):
 
     def __unicode__(self):
         return self.descripcion
+
+class EmpleosAnteriores(models.Model):
+    empleado = models.ForeignKey(Employee)
+    desde = models.DateField()
+    hasta = models.DateField()
+    empresa = models.CharField(max_length=100, blank=True, null=True)
+    posicion = models.CharField(max_length=100, blank=True, null=True)
+    comentario = models.TextField(blank=True, null=True)
+    user_reg = models.ForeignKey(User)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='empAnt_usermod', related_query_name='empAnt_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.BooleanField()
+
+    def __unicode__(self):
+        return self.empleado.firstName + ' ' + self.empleado.middleName + ' ' + self.empleado.lastName
+
+class Banco(models.Model):
+    pais = models.ForeignKey(Country)
+    codigo = models.CharField(max_length=15)
+    nombre = models.CharField(max_length=100)
+    bic_swift = models.CharField(max_length=100, blank=True, null=True)
+    of_postal = models.BooleanField()
+    cuenta_bancaria = models.CharField(max_length=100)
+    sucursal = models.CharField(max_length=100)
+
+    def __unicode__(self):
+        return self.codigo + ' ' + self.nombre + ' ' self.pais.name
