@@ -349,6 +349,24 @@ def empleo_anterior_listar(request):
                 datos = EmpleosAnteriores.objects.filter(empleado__pk=emp)
     return render(request, 'empleos-anteriores-listado.html', {'datos':datos, 'empleados':empleados, 'busqueda':busqueda})
 
+def grupo_comision(request):
+    return render(request, 'grupo-comisiones.html')
+
+def grupo_comision_ditar(request, id):
+    dato = GrupoComisiones.objects.get(pk=id)
+    return render(request, 'grupo-comisiones.html', {'editar': True, 'dato': dato})
+
+def grupo_comisiones_listar(request):
+    datos = GrupoComisiones.objects.all()
+    return render(request, 'grupo-comisiones-listado.html', {'datos':datos})
+
+def vendedor_form(request):
+    return render(request, 'vendedor.html')
+
+def vendedor_listar(request):
+    datos = Vendedor.objects.all()
+    return render(request, 'vendedor-listado.html', {'datos':datos})
+
 
 
 #---------------------------->>>> VISTAS AJAX <<<<----------------------------#
@@ -3099,7 +3117,6 @@ def guardar_ausentismo(request):
                 motivo = request.POST['motivo']
                 aprobo = request.POST['aprobo']
                 activo = request.POST['activo']
-                print "Activo: " + str(activo)
                 
                 if len(emp) == 0:
                     mensaje = 'Seleccione un empleado.'
@@ -3132,12 +3149,11 @@ def guardar_ausentismo(request):
                     return JsonResponse(data)
 
                 if len(motivo) == 0:
-                    if not validateDateEs(desde):
-                        mensaje = 'Ingrese un motivo del ausentismo.'
-                        data = {
-                            'mensaje': mensaje, 'error': True
-                        }
-                        return JsonResponse(data)
+                    mensaje = 'Ingrese un motivo del ausentismo.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
 
                 if len(aprobo) == 0:
                     mensaje = 'Seleccione el empleado que Aprobó.'
@@ -4887,3 +4903,149 @@ def actualizar_empleo_anterior(request):
             'mensaje': 'error',
         }
     return JsonResponse(data)
+
+def guardar_grupo_comision(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                desc = request.POST['desc']
+                activo = request.POST['activo']
+
+                if len(desc) == 0:
+                    mensaje = 'El campo "Descripción" es obligatorio.'
+                    data = {
+                        'mensaje': mensaje, 
+                        'error':False,
+                    }
+
+                if int(activo) == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                oMd = GrupoComisiones(
+                    descripcion=desc,
+                    #active=True,
+                    user_reg=request.user,
+                )
+                oMd.save()
+                mensaje = 'Se ha guardado el registro'
+                data = {
+                    'mensaje': mensaje, 'error': False
+                }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def actualizar_grupo_comision(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                desc1 = request.POST['desc']
+                activo1 = request.POST['activo']
+                acti = False
+
+                if len(desc1) == 0:
+                    mensaje = 'El campo "Descripción" es obligatorio.'
+                    data = {
+                        'mensaje': mensaje,
+                        'error': False,
+                    }
+
+                if int(activo1) == 1:
+                    acti = True
+                else:
+                    acti = False
+                
+
+                oMd = GrupoComisiones.objects.get(pk=id)
+                if oMd:
+                    oMd.descripcion = desc1,
+                    oMd.user_mod = request.user
+                    oMd.date_mod = datetime.datetime.now()
+                    oMd.active = acti,
+                    oMd.save()
+                    mensaje = 'Se ha actualizado el registro.'
+                    data = {
+                        'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "No existe el registro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def eliminar_grupo_comision(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oMd = GrupoComisiones.objects.get(pk=reg_id)
+                    if oMd:
+                        oMd.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+

@@ -100,6 +100,11 @@ urlpatterns = [
     url(r'^empleo-anterior/$', views.empleo_anterior_form, name="empleo_anterior_form"),
     url(r'^editar/empleo-anterior/(?P<id>\w+)/$', views.empleo_anterior_editar, name="empleo_anterior_editar"),
     url(r'^listar/empleo-anterior/$', views.empleo_anterior_listar,name="empleo_anterior_listar"),
+    url(r'^grupo-comision/$', views.grupo_comision, name="grupo_comision"),
+    url(r'^editar/grupo-comision/(?P<id>\w+)/$', views.grupo_comision_ditar, name="grupo_comision_ditar"),
+    url(r'^listar/grupo-comision/$', views.grupo_comisiones_listar,name="grupo_comisiones_listar"),
+    url(r'^listar/vendedor/$', views.vendedor_listar, name="vendedor_listar"),
+
 
 
     #----------------->>>AJAX<<<------------------
@@ -129,6 +134,7 @@ urlpatterns = [
     url(r'^guardar/evaluacion/$', views.guardar_evaluacion, name='guardar_evaluacion'),
     url(r'^guardar/motivo-aumento-sueldo/$', views.guardar_motivo_aumento_sueldo, name='guardar_motivo_aumento_sueldo'),
     url(r'^guardar/empleo-anterior/$', views.guardar_empleo_anterior, name='guardar_empleo_anterior'),
+    url(r'^guardar/grupo-comision/$', views.guardar_grupo_comision, name='guardar_grupo_comision'),
 
     url(r'^actualizar/corporativo/$', views.actualizar_corporativo, name='actualizar_corporativo'),
     url(r'^actualizar/empresa/$', views.actualizar_empresa, name='actualizar_empresa'),
@@ -155,6 +161,7 @@ urlpatterns = [
     url(r'^actualizar/evaluacion/$', views.actualizar_evaluacion, name='actualizar_evaluacion'),
     url(r'^actualizar/motivo-aumento-sueldo/$', views.actualizar_motivo_aumento_sueldo, name='actualizar_motivo_aumento_sueldo'),
     url(r'^actualizar/empleo-anterior/$', views.actualizar_empleo_anterior, name='actualizar_empleo_anterior'),
+    url(r'^actualizar/grupo-comision/$', views.actualizar_grupo_comision, name='actualizar_grupo_comision'),
 
     url(r'^eliminar/corporativo/$', views.eliminar_corporativo, name='eliminar_corporativo'),
     url(r'^eliminar/empresa/$', views.eliminar_empresa, name='eliminar_empresa'),
@@ -180,6 +187,7 @@ urlpatterns = [
     url(r'^eliminar/educacion/$', views.eliminar_educacion, name='eliminar_educacion'),
     url(r'^eliminar/evaluacion/$', views.eliminar_evaluacion, name='eliminar_evaluacion'),
     url(r'^eliminar/motivo-aumento-sueldo/$', views.eliminar_motivo_aumento_sueldo, name='eliminar_motivo_aumento_sueldo'),
+    url(r'^eliminar/grupo-comision/$', views.eliminar_grupo_comision, name='eliminar_grupo_comision'),
     #------------------>>>AJAX<<<-------------------
 
     url(r'^seguridad/', include('django.contrib.auth.urls')),

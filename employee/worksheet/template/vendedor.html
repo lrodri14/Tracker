@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block titulo %}
+Grupo Corporativo
+{% endblock titulo %}
+{% load static %}
+{% block contenido %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="text-bold"><i class="ti-user"></i>
+                    Grupo Corporativo</h2>
+            </div>
+            <div class="panel-wrapper">
+                <div class="panel-body">
+                    {% csrf_token %}
+                    <input type="hidden" name="id_org" value="{{dato.pk}}">
+                    <div class="col-md-6">
+                        <div class="col-md-12 margin-bottom-5px">
+                            <div class="form-group">
+                                <div class="col-md-5 col-sm-5 text-right">
+                                    <label for="txtRazonSocial" class="control-label">Razón social :</label>
+                                </div>
+                                <div class="col-md-7 col-sm-7">
+                                    <input type="text" name="razonSocial" value="{{dato.razonSocial}}" id="txtRazonSocial" class="form-control input-sm input-sm-1">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 margin-bottom-5px">
+                            <div class="form-group">
+                                <div class="col-md-5 col-sm-5 text-right">
+                                    <label for="txtNombreComercial" class="control-label">Nombre comercial :</label>
+                                </div>
+                                <div class="col-md-7 col-sm-7">
+                                    <input type="text" name="nombreComercial" value="{{dato.nombreComercial}}" id="txtNombreComercial" class="form-control input-sm input-sm-1">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <div class="col-md-5 col-sm-5"></div>
+                                <div class="col-md-7 col-sm-7">
+                                    <div class="checkbox checkbox-success">
+                                        {% if dato.active %}
+                                        <input id="chkActivo" name="activo" type="checkbox" checked class="input-sm">
+                                        {% else %}
+                                        <input id="chkActivo" name="activo" type="checkbox" class="input-sm">
+                                        {% endif %}
+                                        <label for="chkActivo" class="control-label"> Activo </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="form-action col-md-12 text-right">
+                            {% if editar %}
+                            <button id="btnActualizar" class="btn btn-success">Actualizar</button>
+                            {% else %}
+                            <button id="btnGuardar" class="btn btn-success">Guardar</button>
+                            {% endif %}
+                            <button id="btnCancelar" class="btn btn-default">Cancelar</button>
+                            <a href="{% url 'listado_corporativos' %}" class="btn btn-primary">Ver Registros</a>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contenido %}
+{% block scripts %}
+<script src="{% static 'js/app/frmCorporativo.js' %}"></script>
+{% endblock scripts %}

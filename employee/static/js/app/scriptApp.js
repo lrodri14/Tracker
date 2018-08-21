@@ -412,7 +412,6 @@ function validarcddDatos() {
 //#endregion
 
 //#region Eventos Controles
-
     $('#btngnrGuardar').on('click', (e) => {
         e.preventDefault();
         url = '/guardar/genero/';
@@ -472,6 +471,7 @@ function validargnrDatos() {
     }
     return true;
 }
+//#endregion
 
 //#endregion Código para registrar Géneros
 
@@ -1540,7 +1540,61 @@ function validargnrDatos() {
 
 //#endregion Códigp para registrar empleos anteriores
 
-    //#region Funciones Generales
+//#region Código para registrar Grupo de Comisiones
+
+    //#region Variables
+    var grpCom_id = $("input[name='grpCom_id'");
+    var grpCom_desc = $('textarea[name="grpCom_desc"]');
+    var grpCom_activo = $('input[name="grpCom_activo"]');
+    //#endregion
+
+    //#region Eventos Controles
+    $('#btngrpcomGuardar').on('click', function (e) {
+        e.preventDefault();
+        url = '/guardar/grupo-comision/';
+        metodo = 'POST';
+        if (grpCom_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
+        }
+        data = {
+            'desc': grpCom_desc.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Grupo de Comisión");
+    });
+
+    $('#btngrpcomActualizar').on('click', function (e) {
+        e.preventDefault();
+        url = '/actualizar/grupo-comision/';
+        metodo = 'POST';
+        //if (validarestEmDatos() != false) {
+        if (grpCom_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
+        }
+        data = {
+            'id': grpCom_id.val(),
+            'desc': grpCom_desc.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Grupo de Comisión", true, "/listar/grupo-comision/");
+        //}
+    });
+
+    $('#btngrpcomCancelar').on('click', function(e) {
+        e.preventDefault();
+        window.location.replace(dns + "/listar/grupo-comision/");
+    });
+    //#endregion
+
+//#endregion Código para registrar Grupo de Comisiones
+
+//#region Funciones Generales
     function GuardarRegistro(url, metodo, data, encabezado, editar, urlRedirect) {
         var texto = 'Se ha creado un nuevo registro.';
         var tiempo = 3500;
