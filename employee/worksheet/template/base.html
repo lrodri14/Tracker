@@ -221,9 +221,21 @@
                                     <i data-icon="" class="linea-icon linea-basic fa-fw"></i>
                                     <span class="hide-menu">Grupo de Comisiones</span>
                                 </a>
-                                <a href="{% url 'vendedor_listar' %}" id="grpCom" class="waves-effect">
+                                <a href="{% url 'vendedor_listar' %}" id="Vend" class="waves-effect">
                                     <i data-icon="" class="linea-icon linea-basic fa-fw"></i>
                                     <span class="hide-menu">Vendedores</span>
+                                </a>
+                                <a href="{% url 'feriado_listar' %}" id="Fer" class="waves-effect">
+                                    <i data-icon="" class="linea-icon linea-basic fa-fw"></i>
+                                    <span class="hide-menu">Feriados</span>
+                                </a>
+                                <a href="{% url 'articulos_asignados_listar' %}" id="actAsig" class="waves-effect">
+                                    <i data-icon="" class="linea-icon linea-basic fa-fw"></i>
+                                    <span class="hide-menu">Activo Asignados</span>
+                                </a>
+                                <a href="{% url 'empleados-listado' %}" id="Emp" class="waves-effect">
+                                    <i data-icon="" class="linea-icon linea-basic fa-fw"></i>
+                                    <span class="hide-menu">Empleado</span>
                                 </a>
                             </li>
                         </ul>
@@ -244,13 +256,13 @@
                             </li>
                         </ul>
                     </li>
-                    {% endcomment %}
                     <li><a id="aEmp" href="javascript:void(0)" class="waves-effect"><i data-icon="6" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Empleados <span class="fa arrow"></span></a>
                         <ul class="nav nav-second-level">
-                                <li><a id="saEmpFrm" href="{% url 'empleados-form' %}"><i data-icon="/" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Nuevo Empleado</span></a></li>
-                                <li><a id="saEmpLst" href="{% url 'empleados-listado' %}"><i class="mdi mdi-format-list-bulleted"></i> <span class="hide-menu">Lista de Empleados</span></a></li>
+                            <li><a id="saEmpFrm" href="{% url 'empleados-form' %}"><i data-icon="/" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Nuevo Empleado</span></a></li>
+                            <li><a id="saEmpLst" href="{% url 'empleados-listado' %}"><i class="mdi mdi-format-list-bulleted"></i> <span class="hide-menu">Lista de Empleados</span></a></li>
                         </ul>
                     </li>
+                    {% endcomment %}
                 </ul>
             </div>
         </div>

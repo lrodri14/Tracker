@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block titulo %}
-Datos de Empleos Anteriores
+Empleos anteriores
 {% endblock titulo %}
 {% load static %}
 {% block contenido %}
@@ -9,10 +9,11 @@ Datos de Empleos Anteriores
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h2 class="text-bold"><i class="fa fa-list"></i>
-                    Datos de Empleos Anteriores</h2>
+                    Empleos anteriores</h2>
             </div>
             <div class="panel-wrapper">
                 <div class="panel-body">
+
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
@@ -23,17 +24,13 @@ Datos de Empleos Anteriores
                                     <div class="col-md-7">
                                         <select class="form-control select2 input-sm input-sm-1" name="empleado" id="cboAuEmp">
                                             <option value="0">Seleccionar...</option>
-                                            {% for item in empleados %}
-                                                {% if busqueda %}
-                                                    {% if item.pk == busqueda %}
-                                                    <option value="{{item.pk}}" selected>{{item.firstName}} {{item.middleName}} {{item.lastName}}</option>
-                                                    {% else %}
-                                                    <option value="{{item.pk}}">{{item.firstName}} {{item.middleName}} {{item.lastName}}</option>
-                                                    {% endif %}
-                                                {% else %}
-                                                <option value="{{item.pk}}">{{item.firstName}} {{item.middleName}} {{item.lastName}}</option>
-                                                {% endif %}
-                                            {% endfor %}
+                                            {% for item in empleados %} {% if busqueda %} {% if item.pk == busqueda %}
+                                            <option value="{{item.pk}}" selected>{{item.firstName}} {{item.middleName}} {{item.lastName}}</option>
+                                            {% else %}
+                                            <option value="{{item.pk}}">{{item.firstName}} {{item.middleName}} {{item.lastName}}</option>
+                                            {% endif %} {% else %}
+                                            <option value="{{item.pk}}">{{item.firstName}} {{item.middleName}} {{item.lastName}}</option>
+                                            {% endif %} {% endfor %}
                                         </select>
                                     </div>
                                     <div class="col-md-2">
@@ -53,10 +50,11 @@ Datos de Empleos Anteriores
                             {% csrf_token %}
                             <thead>
                                 <tr>
+                                    <th>Empleado</th>
                                     <th>Desde</th>
                                     <th>Hasta</th>
                                     <th>Empresa</th>
-                                    <th>Posición</th>
+                                    <th>Posicion</th>
                                     <th>Comentario</th>
                                     <th>Acciones</th>
                                 </tr>
@@ -64,21 +62,23 @@ Datos de Empleos Anteriores
                             <tbody>
                                 {% for item in datos %}
                                 <tr>
+                                    <td>{{item.empleado.firstName}} {{item.empleado.middleName}} {{item.empleado.lastName}}</td>
                                     <td>{{item.desde|date:"d/m/Y"}}</td>
                                     <td>{{item.hasta|date:"d/m/Y"}}</td>
-                                    <td>
-                                        {{item.empresa}}
-                                    </td>
-                                    <td>
-                                        {{item.posicion}}
-                                    </td>
-                                    <td>
-                                        {{item.comentario}}
-                                    </td>
+                                    <td>{{item.empresa}}</td>
+                                    <td>{{item.posicion}}</td>
+                                    <td>{{item.comentario}}</td>
+                                    <!--td>
+                                    {% if item.active %}
+                                    <span class="label label-success">Habilitado</span>
+                                    {% else %}
+                                    <span class="label label-danger">Inactivo</span>
+                                    {% endif %}
+                                    </td-->
                                     <td class="text-nowrap acciones">
-                                        <!--a href="{% url 'empleo_anterior_editar' item.pk %}" data-toggle="tooltip" data-original-title="Edit">
+                                        <a href="{% url 'empleo_anterior_editar' item.pk %}" data-toggle="tooltip" data-original-title="Editar">
                                             <i class="fa fa-pencil text-inverse m-r-10"></i>
-                                        </a-->
+                                        </a>
                                         <a href="#" class="btnEliminar" data="{{item.pk}}" data-toggle="tooltip" data-original-title="Eliminar">
                                             <i class="fa fa-close text-danger"></i>
                                         </a>
@@ -113,7 +113,6 @@ Datos de Empleos Anteriores
 
     //#region Funciones
     function Eliminar(id) {
-        var Encabezado = 'Empleo Anterior';
         var url = "/eliminar/empleo-anterior/"; // the script where you handle the form input.
         $.ajax({
             type: "POST",
@@ -126,7 +125,7 @@ Datos de Empleos Anteriores
             {
                 if(data.error == false){
                     $.toast({
-                        heading: Encabezado,
+                        heading: 'Empleo Anterior',
                         text: data.mensaje,
                         position: 'top-right',
                         loaderBg: '#ff6849',
@@ -139,7 +138,7 @@ Datos de Empleos Anteriores
                     }, 2000);
                 }else{
                     $.toast({
-                        heading: Encabezado,
+                        heading: 'Empleo Anterior',
                         text: data.mensaje,
                         position: 'top-right',
                         loaderBg: '#ff6849',
@@ -152,7 +151,7 @@ Datos de Empleos Anteriores
             error: function(data) {
                 console.log(data);
                 $.toast({
-                    heading: Encabezado,
+                    heading: 'Empleo Anterior',
                     text: data.status + ' - ' + data.statusText,
                     position: 'top-right',
                     loaderBg: '#ff6849',

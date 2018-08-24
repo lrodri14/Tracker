@@ -1486,12 +1486,14 @@ function validargnrDatos() {
 //#region Código para registar empleos anteriores
 
     //#region Variables
+    var empAnt_id = $('input[name="empAnt_id"]');
     var empAnt_emp = $('select[name="empAnt_emp"]');
     var empAnt_desde = $('input[name="empAnt_desde"]');
     var empAnt_hasta = $('input[name="empAnt_hasta"]');
-    var empAnt_empresa = $('input[name="empAnt_empresa"]');
+    var empAnt_empresa = $('input[name="empAnt_empr"]');
     var empAnt_posicion = $('input[name="empAnt_pos"]');
     var empAnt_comentario = $('textarea[name="empAnt_com"]');
+    var empAnt_activo = $('input[name="empAnt_activo"]');
     //#endregion
 
     //#region Eventos Controles
@@ -1499,7 +1501,11 @@ function validargnrDatos() {
         e.preventDefault();
         url = '/guardar/empleo-anterior/';
         metodo = 'POST';
-        //if (validarEvDatos() != false) {
+        if (empAnt_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
+        }
         data = {
             'emp': empAnt_emp.val(),
             'desde': empAnt_desde.val(),
@@ -1507,10 +1513,10 @@ function validargnrDatos() {
             'empresa': empAnt_empresa.val(),
             'posicion': empAnt_posicion.val(),
             'comentario': empAnt_comentario.val(),
+            'activo': vActivo,
             'csrfmiddlewaretoken': token.val(),
         };
         GuardarRegistro(url, metodo, data, "Empleo Anterior");
-        //}
     });
 
     $('#btnempAntActualizar').on('click', function (e) {
@@ -1518,14 +1524,20 @@ function validargnrDatos() {
         url = '/actualizar/empleo-anterior/';
         metodo = 'POST';
         //if (validarEvDatos() != false) {
+        if (empAnt_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
+        }
         data = {
-            'id': id.val(),
+            'id': empAnt_id.val(),
             'emp': empAnt_emp.val(),
             'desde': empAnt_desde.val(),
             'hasta': empAnt_hasta.val(),
             'empresa': empAnt_empresa.val(),
             'posicion': empAnt_posicion.val(),
             'comentario': empAnt_comentario.val(),
+            'activo': vActivo,
             'csrfmiddlewaretoken': token.val(),
         };
         GuardarRegistro(url, metodo, data, "Empleo Anterior", true, "/listar/empleo-anterior/");
@@ -1593,6 +1605,203 @@ function validargnrDatos() {
     //#endregion
 
 //#endregion Código para registrar Grupo de Comisiones
+
+//#region Código para registrar Vendedor
+
+    //#region Variables
+    var vnd_id = $("input[name='vnd_id'");
+    var vnd_nombre = $("input[name='ven_nombre'");
+    var vnd_grpcom = $('select[name="vend_grpcom"]');
+    var vnd_porcen = $('input[name="ven_porc"]');
+    var vnd_emplea = $('select[name="vend_emp"]');
+    var vnd_telefo = $('input[name="vend_tel"]');
+    var vnd_telmov = $('input[name="vend_movil"]');
+    var vnd_correo = $('input[name="vend_correo"]');
+    var vnd_coment = $('textarea[name="vend_com"]');
+    var vnd_activo = $('input[name="vend_activo"]');
+    //#endregion
+
+    //#region Eventos Controles
+
+    $('#btnVendGuardar').on('click', function(e) {
+        e.preventDefault();
+        url = '/guardar/vendedor/';
+        metodo = 'POST';
+        //if (validarcddDatos() != false) {
+        if (vnd_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
+        }
+        data = {
+            'nombre': vnd_nombre.val(),
+            'grupo_com': vnd_grpcom.val(),
+            'porcentaje': vnd_porcen.val(),
+            'emp': vnd_emplea.val(),
+            'tel': vnd_telefo.val(),
+            'movil':vnd_telmov.val(),
+            'correo': vnd_correo.val(),
+            'coment':vnd_coment.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Vendedor");
+        //}
+    });
+
+    $('#btnVendActualizar').on('click', function (e) {
+        e.preventDefault();
+        url = '/actualizar/vendedor/';
+        metodo = 'POST';
+        //if (validarcddDatos() != false) {
+        if (vnd_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
+        }
+        data = {
+            'id': vnd_id.val(),
+            'nombre': vnd_nombre.val(),
+            'grupo_com': vnd_grpcom.val(),
+            'porcentaje': vnd_porcen.val(),
+            'emp': vnd_emplea.val(),
+            'tel': vnd_telefo.val(),
+            'movil': vnd_telmov.val(),
+            'correo': vnd_correo.val(),
+            'coment': vnd_coment.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Vendedor", true, "/listar/vendedor/");
+        //}
+    });
+
+    $('#btnVendCancelar').on('click', function(e) {
+        e.preventDefault();
+        window.location.replace(dns + "/listar/vendedor/");
+    });
+
+//#endregion
+
+//#endregion Código para registrar Vendedor
+
+//#region Código para registrar Feriado.
+
+    //#region Variables
+    var fer_id = $("input[name='fer_id'");
+    var fer_fecha = $("input[name='fer_fecha'");
+    var fer_rate = $('input[name="fer_rate"]');
+    var fer_comment = $('textarea[name="fer_coment"]');
+    var fer_activo = $('input[name="fer_activo"]');
+    //#endregion
+
+    //#region Eventos Controles
+    $('#btnFerGuardar').on('click', function (e) {
+        e.preventDefault();
+        url = '/guardar/feriado/';
+        metodo = 'POST';
+        //if (validarEdDatos() != false) {
+        if (fer_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
+        }
+        data = {
+            'fecha': fer_fecha.val(),
+            'rate': fer_rate.val(),
+            'comentario': fer_comment.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Feriado");
+        //}
+    });
+
+    $('#btnFerActualizar').on('click', function (e) {
+        e.preventDefault();
+        url = '/actualizar/feriado/';
+        metodo = 'POST';
+        if (fer_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
+        }
+        //if (validarEdDatos() != false) {
+        data = {
+            'id': fer_id.val(),
+            'fecha': fer_fecha.val(),
+            'rate': fer_rate.val(),
+            'comentario': fer_comment.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Feriado", true, "/listar/feriado/");
+        //}
+    });
+
+    $('#btnFerCancelar').on('click', function (e) {
+        e.preventDefault();
+        window.location.replace(dns + "/listar/feriado/");
+    });
+    //#endregion
+
+//#endregion Código para registrar Feriado.
+
+//#region Código para registrar Activos Asignados
+
+    //#region Variables
+    var act_asig_id = $("input[name='act_asig_id'");
+    var act_asig_desc = $("textarea[name='act_asig_desc'");
+    var act_asig_activo = $('input[name="act_asig_activo"]');
+    //#endregion
+
+    //#region Eventos Controles
+    $('#btnActAsignGuardar').on('click', function (e) {
+        e.preventDefault();
+        url = '/guardar/activo-asignado/';
+        metodo = 'POST';
+        //if (validarEdDatos() != false) {
+        if (act_asig_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
+        }
+        data = {
+            'desc': act_asig_desc.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Activo Asignado");
+        //}
+    });
+
+    $('#btnActAsignActualizar').on('click', function (e) {
+        e.preventDefault();
+        url = '/actualizar/activo-asignado/';
+        metodo = 'POST';
+        if (act_asig_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
+        }
+        //if (validarEdDatos() != false) {
+        data = {
+            'id': act_asig_id.val(),
+            'desc': act_asig_desc.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Activo Asignado", true, "/listar/activo-asignado/");
+        //}
+    });
+
+    $('#btnActAsignCancelar').on('click', function (e) {
+        e.preventDefault();
+        window.location.replace(dns + "/listar/activo-asignado/");
+    });
+    //#endregion
+
+//#endregion Código para registra Activos Asignados
 
 //#region Funciones Generales
     function GuardarRegistro(url, metodo, data, encabezado, editar, urlRedirect) {

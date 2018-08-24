@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block titulo %}
-Listado de Vendedores
+Listado de Activos Asignados
 {% endblock titulo %}
 {% load static %}
 {% block contenido %}
@@ -8,14 +8,14 @@ Listado de Vendedores
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h2 class="text-bold"><i class="ti-user"></i>
-                    Listado de Vendedores</h2>
+                <h2 class="text-bold"><i class="fa fa-list"></i>
+                    Listado de Activos Asignados</h2>
             </div>
             <div class="panel-wrapper">
                 <div class="panel-body">
                     <div class="row text-right">
                         <div class="col-md-12">
-                            <a href="{% url 'grupo_comision' %}" class="btn btn-primary">Agregar</a>
+                            <a href="{% url 'articulo_asignado_form' %}" class="btn btn-primary">Agregar</a>
                         </div>
                     </div>
                     <br>
@@ -34,15 +34,19 @@ Listado de Vendedores
                                 <tr>
                                     <td>{{item.descripcion}}</td>
                                     <td>
-                                        {% if item.active %}
-                                        <span class="label label-success">Habilitado</span>
-                                        {% else %}
-                                        <span class="label label-danger">Inactivo</span>
-                                        {% endif %}
+                                    {% if item.active %}
+                                    <span class="label label-success">Habilitado</span>
+                                    {% else %}
+                                    <span class="label label-danger">Inactivo</span>
+                                    {% endif %}
                                     </td>
                                     <td class="text-nowrap acciones">
-                                        <a href="{% url 'grupo_comision_ditar' item.pk %}" data-toggle="tooltip" data-original-title="Edit"> <i class="fa fa-pencil text-inverse m-r-10"></i> </a>
-                                        <a href="#" id="{{item.pk}}" data="{{item.pk}}" class="btnEliminar"  data-toggle="tooltip" data-original-title="Eliminar"> <i class="fa fa-close text-danger"></i> </a>
+                                        <a href="{% url 'articulo_asignado_editar' item.pk %}" data-toggle="tooltip" data-original-title="Editar">
+                                            <i class="fa fa-pencil text-inverse m-r-10"></i>
+                                        </a>
+                                        <a href="#" class="btnEliminar" data="{{item.pk}}" data-toggle="tooltip" data-original-title="Eliminar">
+                                            <i class="fa fa-close text-danger"></i>
+                                        </a>
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -61,11 +65,11 @@ Listado de Vendedores
     //#region Efectos en SideBar
     $('#side-menu a').removeClass('active');
     $('#aPersonal').addClass('active');
-    $('#grpCom').addClass('active');
+    $('#actAsig').addClass('active');
     //#endregion
 
     //#region Eventos Controles
-    $('.acciones .btnEliminar').on('click', function (e) {
+    $('.acciones .btnEliminar').on('click', function(e) {
         e.preventDefault();
         var id = $(this).attr('data');
         Eliminar(id);
@@ -74,8 +78,7 @@ Listado de Vendedores
 
     //#region Funciones
     function Eliminar(id) {
-        var Encabezado = 'Grupo de Comisiones';
-        var url = "/eliminar/grupo-comision/"; // the script where you handle the form input.
+        var url = "/eliminar/activo-asignado/"; // the script where you handle the form input.
         $.ajax({
             type: "POST",
             url: url,
@@ -83,10 +86,11 @@ Listado de Vendedores
                 'id': id,
                 'csrfmiddlewaretoken': token.val(),
             }, // serializes the form's elements.
-            success: function (data) {
-                if (data.error == false) {
+            success: function(data)
+            {
+                if(data.error == false){
                     $.toast({
-                        heading: Encabezado,
+                        heading: 'Activo Asignado',
                         text: data.mensaje,
                         position: 'top-right',
                         loaderBg: '#ff6849',
@@ -97,9 +101,9 @@ Listado de Vendedores
                     setTimeout(function () {
                         location.reload();
                     }, 2000);
-                } else {
+                }else{
                     $.toast({
-                        heading: Encabezado,
+                        heading: 'Activo Asignado',
                         text: data.mensaje,
                         position: 'top-right',
                         loaderBg: '#ff6849',
@@ -109,10 +113,10 @@ Listado de Vendedores
                     });
                 }
             },
-            error: function (data) {
+            error: function(data) {
                 console.log(data);
                 $.toast({
-                    heading: Encabezado,
+                    heading: 'Activo Asignado',
                     text: data.status + ' - ' + data.statusText,
                     position: 'top-right',
                     loaderBg: '#ff6849',

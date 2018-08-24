@@ -78,7 +78,7 @@ $(document).on('ready', () => {
     //#endregion
 
     //#region Eventos Botones
-    $('#btnGuardar').on('click', (e) => {
+    $('#btnGuardar').on('click', function(e) {
         e.preventDefault();
         GuardarEmpleado();
     });
@@ -164,7 +164,7 @@ $(document).on('ready', () => {
                 {
                     if(data.error == false){
                         $.toast({
-                            heading: 'Empleados',
+                            heading: 'Empleado',
                             text: 'Se ha registrado un nuevo empleado.',
                             position: 'top-right',
                             loaderBg: '#ff6849',
@@ -175,7 +175,7 @@ $(document).on('ready', () => {
                         LimpiarControles();
                     }else{
                         $.toast({
-                            heading: 'Empleados',
+                            heading: 'Empleado',
                             text: data.mensaje,
                             position: 'top-right',
                             loaderBg: '#ff6849',
@@ -188,7 +188,7 @@ $(document).on('ready', () => {
                 error: function(data) {
                     console.log(data);
                     $.toast({
-                        heading: 'Empleados',
+                        heading: 'Empleado',
                         text: data.status + ' - ' + data.statusText,
                         position: 'top-right',
                         loaderBg: '#ff6849',
@@ -213,26 +213,26 @@ $(document).on('ready', () => {
     function validarDatos(){
         $('div').removeClass('has-warning');
 
-        if(pNombre.val().length == 0){
-            pNombre.parent().addClass('has-warning');
-            return false;
-        }
-        if (numExt.val().length == 0) {
-            numExt.parent().addClass('has-warning');
-            return false;
-        }
-        if (apellido.val().length == 0) {
-            apellido.parent().addClass('has-warning');
-            return false;
-        }
-        if (puesto.val().length == 0) {
-            puesto.parent().addClass('has-warning');
-            return false;
-        }
-        if (cantHijos.val().length == 0) {
-            cantHijos.parent('.form-group').addClass('has-warning');
-            return false;
-        }
+        // if(pNombre.val().length == 0){
+        //     pNombre.parent().addClass('has-warning');
+        //     return false;
+        // }
+        // if (numExt.val().length == 0) {
+        //     numExt.parent().addClass('has-warning');
+        //     return false;
+        // }
+        // if (apellido.val().length == 0) {
+        //     apellido.parent().addClass('has-warning');
+        //     return false;
+        // }
+        // if (puesto.val().length == 0) {
+        //     puesto.parent().addClass('has-warning');
+        //     return false;
+        // }
+        // if (cantHijos.val().length == 0) {
+        //     cantHijos.parent('.form-group').addClass('has-warning');
+        //     return false;
+        // }
         return true;
     }
     //#endregion

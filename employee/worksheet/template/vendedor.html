@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block titulo %}
-Grupo Corporativo
+Vendedor
 {% endblock titulo %}
 {% load static %}
 {% block contenido %}
@@ -8,45 +8,138 @@ Grupo Corporativo
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h2 class="text-bold"><i class="ti-user"></i>
-                    Grupo Corporativo</h2>
+                <h2 class="text-bold"><i class="ti-pencil-alt"></i>Vendedor</h2>
             </div>
             <div class="panel-wrapper">
                 <div class="panel-body">
                     {% csrf_token %}
-                    <input type="hidden" name="id_org" value="{{dato.pk}}">
-                    <div class="col-md-6">
-                        <div class="col-md-12 margin-bottom-5px">
-                            <div class="form-group">
-                                <div class="col-md-5 col-sm-5 text-right">
-                                    <label for="txtRazonSocial" class="control-label">Razón social :</label>
+                    {% if editar %}
+                    <input type="hidden" value="{{dato.pk}}" name="vnd_id">
+                    {% endif %}
+                    <div class="col-md-12">
+                        <div class="col-md-12 margin-bottom-5px">    
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label for="txtVenNombre" class="control-label">Nombre :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <input id="txtVenNombre" value='{{dato.nombre}}' name="ven_nombre" type="text" class="form-control">
+                                    </div>
                                 </div>
-                                <div class="col-md-7 col-sm-7">
-                                    <input type="text" name="razonSocial" value="{{dato.razonSocial}}" id="txtRazonSocial" class="form-control input-sm input-sm-1">
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label for="cboVendGrpCom" class="control-label">Grupo comisión :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <select class="form-control select2" name="vend_grpcom" id="cboVendGrpCom">
+                                            <option value="0">Seleccionar...</option>
+                                            {% for item in grp_com %} 
+                                                {% if editar %}
+                                                    {% if item == dato.grupo_comisiones %}
+                                                        <option value="{{item.pk}}" selected>{{item.descripcion}}</option>
+                                                    {% else %}
+                                                        <option value="{{item.pk}}">{{item.descripcion}}</option>
+                                                    {% endif %} 
+                                                {% else %}
+                                                    <option value="{{item.pk}}">{{item.descripcion}}</option>
+                                                {% endif %} 
+                                            {% endfor %}
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-12 margin-bottom-5px">
-                            <div class="form-group">
-                                <div class="col-md-5 col-sm-5 text-right">
-                                    <label for="txtNombreComercial" class="control-label">Nombre comercial :</label>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label class="control-label">Porcentaje comisión :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <input value='{{dato.porcentaje_comision}}' name="ven_porc" maxlength="12" type="text" class="form-control">
+                                    </div>
                                 </div>
-                                <div class="col-md-7 col-sm-7">
-                                    <input type="text" name="nombreComercial" value="{{dato.nombreComercial}}" id="txtNombreComercial" class="form-control input-sm input-sm-1">
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label for="cboVendGrpCom" class="control-label">Empleado :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <select class="form-control select2" name="vend_emp" id="cboVendGrpCom">
+                                            <option value="0">Seleccionar...</option>
+                                            {% for item in empleados %} {% if editar %} {% if item == dato.empleado %}
+                                            <option value="{{item.pk}}" selected>{{item.firstName}} {{item.middleName}} {{item.lastName}}</option>
+                                            {% else %}
+                                            <option value="{{item.pk}}">{{item.firstName}} {{item.middleName}} {{item.lastName}}</option>
+                                            {% endif %} {% else %}
+                                            <option value="{{item.pk}}">{{item.firstName}} {{item.middleName}} {{item.lastName}}</option>
+                                            {% endif %} {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 margin-bottom-5px">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label class="control-label">Teléfono :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <input value='{{dato.telefono}}' name="vend_tel" maxlength="25" type="text" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label class="control-label">Teléfono Movil :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <input value='{{dato.tel_movil}}' name="vend_movil" maxlength="25" type="text" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 margin-bottom-5px">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label class="control-label">Comentario :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <textarea name="vend_com" rows="7" class="form-control">{{dato.descripcion}}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label class="control-label">E-mail :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <input value='{{dato.correo}}' name="vend_correo" maxlength="150" type="text" class="form-control">
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-12">
-                            <div class="form-group">
-                                <div class="col-md-5 col-sm-5"></div>
-                                <div class="col-md-7 col-sm-7">
-                                    <div class="checkbox checkbox-success">
-                                        {% if dato.active %}
-                                        <input id="chkActivo" name="activo" type="checkbox" checked class="input-sm">
-                                        {% else %}
-                                        <input id="chkActivo" name="activo" type="checkbox" class="input-sm">
-                                        {% endif %}
-                                        <label for="chkActivo" class="control-label"> Activo </label>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5"></div>
+                                    <div class="col-md-7">
+                                        <div class="checkbox checkbox-success">
+                                            {% if dato.active %}
+                                            <input id="chkActivo" name="vend_activo" type="checkbox" checked class="input-sm">
+                                            {% else %}
+                                            <input id="chkActivo" name="vend_activo" type="checkbox" class="input-sm">
+                                            {% endif %}
+                                            <label for="chkActivo" class="control-label"> Activo </label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -54,16 +147,12 @@ Grupo Corporativo
                         <hr>
                         <div class="form-action col-md-12 text-right">
                             {% if editar %}
-                            <button id="btnActualizar" class="btn btn-success">Actualizar</button>
+                            <button id="btnVendActualizar" class="btn btn-success">Actualizar</button>
                             {% else %}
-                            <button id="btnGuardar" class="btn btn-success">Guardar</button>
+                            <button id="btnVendGuardar" class="btn btn-success">Guardar</button>
                             {% endif %}
-                            <button id="btnCancelar" class="btn btn-default">Cancelar</button>
-                            <a href="{% url 'listado_corporativos' %}" class="btn btn-primary">Ver Registros</a>
+                            <button id="btnVendCancelar" class="btn btn-default">Cancelar</button>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        
                     </div>
                 </div>
             </div>
@@ -72,5 +161,11 @@ Grupo Corporativo
 </div>
 {% endblock contenido %}
 {% block scripts %}
-<script src="{% static 'js/app/frmCorporativo.js' %}"></script>
+<script src="{% static 'js/app/scriptApp.js' %}"></script>
+<script>
+    //$('.select2').select2();
+    $('#side-menu a').removeClass('active');
+    $('#aPersonal').addClass('active');
+    $('#Vend').addClass('active');
+</script>
 {% endblock scripts %}

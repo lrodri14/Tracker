@@ -177,7 +177,7 @@ class Employee(models.Model):
     firstName = models.CharField(max_length=50)
     middleName = models.CharField(max_length=50, blank=True, null=True)
     lastName = models.CharField(max_length=50)
-    extEmpNo = models.CharField(max_length=15)
+    extEmpNo = models.CharField(max_length=15, blank=True, null=True)
     jobTitle = models.CharField(max_length=50)
     position = models.ForeignKey(Position, help_text="Posición del empleado", verbose_name="Posicion", blank=True, null=True)
     dept = models.ForeignKey(Department, blank=True, null=True)
@@ -219,7 +219,7 @@ class Employee(models.Model):
     birthDate = models.DateField(blank=True, null=True)
     birthCountry = models.ForeignKey(Country, blank=True, null=True)
     marrStatus = models.ForeignKey(CivilStatus, blank=True, null=True)
-    nChildren = models.IntegerField(blank=True, null=True)
+    nChildren = models.CharField(max_length=12 ,blank=True, null=True)
     govID = models.CharField(max_length=50, blank=True, null=True)
     citizenship = models.ForeignKey(Country, blank=True, null=True, related_name='citizenship', related_query_name='citizenship')
     passportNo = models.CharField(max_length=50, blank=True, null=True)
@@ -227,9 +227,9 @@ class Employee(models.Model):
     passIssue = models.DateField(blank=True, null=True)
     passIssuer = models.CharField(max_length=150, blank=True, null=True)
 
-    salary = models.DecimalField(decimal_places=2, max_digits=12, blank=True, null=True)
+    salary = models.CharField(max_length=20, blank=True, null=True)
     salaryUnits = models.ForeignKey(SalaryUnit, blank=True, null=True)
-    empCost = models.DecimalField(decimal_places=2, max_digits=12, blank=True, null=True)
+    empCost = models.CharField(max_length=20, blank=True, null=True)
     empCostUnit = models.ForeignKey(CostUnit, blank=True, null=True)
     bankCode = models.ForeignKey(Bank, blank=True, null=True)
     bankAccount = models.CharField(max_length=50, blank=True, null=True)
@@ -463,7 +463,7 @@ class EmpleosAnteriores(models.Model):
     active = models.BooleanField()
 
     def __unicode__(self):
-        return self.empleado.firstName + ' ' + self.empleado.middleName + ' ' + self.empleado.lastName
+        return self.empleado.firstName
 
 class Banco(models.Model):
     pais = models.ForeignKey(Country)
@@ -491,7 +491,7 @@ class GrupoComisiones(models.Model):
 class Vendedor(models.Model):
     nombre = models.CharField(max_length=150)
     grupo_comisiones = models.ForeignKey(GrupoComisiones)
-    porcentaje_comision = models.DecimalField(decimal_places=2, max_digits=12, blank=True, null=True)
+    porcentaje_comision = models.CharField(max_length=15, blank=True, null=True)
     empleado = models.ForeignKey(Employee)
     telefono = models.CharField(max_length=25, blank=True, null=True)
     tel_movil = models.CharField(max_length=25)
@@ -506,3 +506,27 @@ class Vendedor(models.Model):
     def __unicode__(self):
         return self.nombre
 
+class Feriado(models.Model):
+    fecha = models.DateField()
+    rate = models.CharField(max_length=10)
+    descripcion = models.CharField(max_length=150)
+    user_reg = models.ForeignKey(User)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='fer_usermod', related_query_name='fer_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.BooleanField()
+
+    def __unicode__(self):
+        return str(self.fecha)
+
+class ActivoAsignado(models.Model):
+    descripcion = models.CharField(max_length=150)
+    user_reg = models.ForeignKey(User)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='actasig_usermod', related_query_name='actasig_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.NullBooleanField(blank=True, null=True)
+
+    def __unicode__(self):
+        return self.descripcion
+    

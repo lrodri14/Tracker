@@ -33,6 +33,10 @@ def empleado_form(request):
     banks = Bank.objects.filter(active=True)
     return render(request, 'empleado-form.html', {'banks':banks, 'costs_units': costs_units, 'salary_units': salary_units, 'civil_status':civil_status, 'citizenships':citizenships, 'positions':positions, 'departments':departments, 'branches':branches, 'salesPersons':salesPersons, 'states':states, 'countries':countries, 'stats':estados_emp, 'terms':terms, 'sexs':sexos})
 
+def empleado_editar(request, id):
+    dato = Employee.objects.get(pk=id)
+    return render(request, 'empleado-form.html', {'editar':True, 'dato':dato})
+
 def empleado_listado(request):
     empleados = Employee.objects.all()
     return render(request, 'empleado-listado.html', {'empleados':empleados})
@@ -361,29 +365,64 @@ def grupo_comisiones_listar(request):
     return render(request, 'grupo-comisiones-listado.html', {'datos':datos})
 
 def vendedor_form(request):
-    return render(request, 'vendedor.html')
+    grp_com = GrupoComisiones.objects.all()
+    empleados = Employee.objects.filter(active=True)
+    return render(request, 'vendedor.html', {'grp_com':grp_com, 'empleados':empleados, 'editar':False})
+
+def vendedor_editar(request, id):
+    empleados = Employee.objects.filter(active=True)
+    grp_com = GrupoComisiones.objects.all()
+    dato = Vendedor.objects.get(pk=id)
+    return render(request, 'vendedor.html', {'editar': True, 'dato': dato, 'empleados': empleados, 'grp_com': grp_com})
 
 def vendedor_listar(request):
     datos = Vendedor.objects.all()
     return render(request, 'vendedor-listado.html', {'datos':datos})
+
+def feriado_form(request):
+    return render(request, 'feriado.html')
+
+def feriado_editar(request, id):
+    dato = Feriado.objects.get(pk=id)
+    return render(request, 'feriado.html', {'editar': True, 'dato': dato})
+
+def feriado_listar(request):
+    datos = Feriado.objects.all()
+    return render(request, 'feriado-listado.html', {'datos':datos})
+
+def articulo_asignado_form(request):
+    return render(request, 'activo-asignado.html')
+
+def articulo_asignado_editar(request, id):
+    dato = ActivoAsignado.objects.get(pk=id)
+    return render(request, 'activo-asignado.html', {'editar': True, 'dato': dato})
+
+def articulos_asignados_listar(request):
+    datos = ActivoAsignado.objects.all()
+    return render(request, 'activos-asignados-listado.html', {'datos':datos})
 
 
 
 #---------------------------->>>> VISTAS AJAX <<<<----------------------------#
 def guardar_empleado(request):
     mensaje = ""
-    emp = {}
-    oslsPer = None
-    obpos = None
-    odep = None
-    oStatus = None
-    oslsPer = None
-    obranch = None
-    oState = None
-    oCountry = None
-    oWState = None
-    oTermRea = None
-    oWCountry = None
+    vSegundoNombre = None
+    vExtEmpNo = None
+    oPosicion = None
+    oDepartamento = None
+    oSucursal = None
+    oEmpVentas = None
+    telefono_oficina = None
+    telefono_extension = None
+    telefono_casa = None
+    celular = None
+    pager = None
+    oEstado = None
+    oPais = None
+    oEstadoTrabajo = None
+    oPaisTrabajo = None
+    oEstadoEmpleado = None
+    oTerminoRescision = None
     oSex = None
     oBirthCountry = None
     oCivilStatus = None
@@ -399,15 +438,15 @@ def guardar_empleado(request):
                 apellido = request.POST['apellido']
                 puesto = request.POST['puesto']
                 no_ext = request.POST['numExt']
-                activo = int(request.POST['activo'])
-                pos = int(request.POST['pos'])
+                activo = request.POST['activo']
+                pos = request.POST['pos']
                 telOf = request.POST['telOf']
-                dept = int(request.POST['dept'])
+                dept = request.POST['dept']
                 telExt = request.POST['telExt']
-                suc = int(request.POST['suc'])
+                suc = request.POST['suc']
                 telMov = request.POST['telMov']
                 pag = request.POST['pag']
-                slsP = int(request.POST['slsP'])
+                slsP = request.POST['slsP']
                 fax = request.POST['fax']
                 email = request.POST['email']
                 telCasa = request.POST['telCasa']
@@ -418,8 +457,8 @@ def guardar_empleado(request):
                 codPos = request.POST['codPos']
                 ciudad = request.POST['ciudad']
                 condado = request.POST['condado']
-                hdept = int(request.POST['hdept'])
-                hpais = int(request.POST['hpais'])
+                hdept = request.POST['hdept']
+                hpais = request.POST['hpais']
                 wcalle = request.POST['wcalle']
                 wncalle = request.POST['wncalle']
                 wbloque = request.POST['wbloque']
@@ -427,165 +466,395 @@ def guardar_empleado(request):
                 wcodPos = request.POST['wcodPost']
                 wciudad = request.POST['wciudad']
                 wcondado = request.POST['wcondado']
-                wdept = int(request.POST['wdept'])
-                wpais = int(request.POST['wpais'])
+                wdept = request.POST['wdept']
+                wpais = request.POST['wpais']
                 fechaCont = request.POST['fechaCont']
-                estEmp = int(request.POST['estEmp'])
+                estEmp = request.POST['estEmp']
                 fechaRes = request.POST['fechaRES']
-                term = int(request.POST['term'])
-                sexo = int(request.POST['sexo'])
+                term = request.POST['term']
+                sexo = request.POST['sexo']
                 fecNac = request.POST['fecNac']
-                lugNac = int(request.POST['lugNac'])
-                estCivil = int(request.POST['estCivil'])
-                cantHijos = int(request.POST['cantHijos'])
+                lugNac = request.POST['lugNac']
+                estCivil = request.POST['estCivil']
+                cantHijos = request.POST['cantHijos']
                 govID = request.POST['numID']
-                citiz = int(request.POST['citiz'])
+                citiz = request.POST['citiz']
                 numPass = request.POST['numPass']
                 fecPassExt = request.POST['fecPassExt']
                 fecEmis = request.POST['fecEmis']
                 emisor = request.POST['emisor']
-                salary = float(request.POST['salario'])
-                salaryUnits = int(request.POST['salarioUnd'])
-                empCost = float(request.POST['costEmp'])
-                empCostUnit = int(request.POST['costEmpUni'])
-                banco = int(request.POST['banco'])
+                salary = request.POST['salario']
+                salaryUnits = request.POST['salarioUnd']
+                empCost = request.POST['costEmp']
+                empCostUnit = request.POST['costEmpUni']
+                banco = request.POST['banco']
                 numCuenta = request.POST['numCuenta']
                 branchBank = request.POST['bankSucursal']
                 remark = request.POST['comentarios']
 
-                if activo == 1:
+                if len(pNom) == 0:
+                    mensaje = "El campo 'Primer Nombre' es obligatorio."
+                    data = {
+                        'mensaje':mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(sNom) > 0:
+                    vSegundoNombre = sNom
+
+                if len(apellido) == 0:
+                    mensaje = "El campo 'Apellido' es obligatorio."
+                    data = {
+                        'mensaje':mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(puesto) == 0:
+                    mensaje = "El campo 'Puesto de trabajo' es obligatorio."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(no_ext) > 0:
+                    vExtEmpNo = no_ext
+
+                if len(pos) > 0:
+                    if int(pos) > 0:
+                        oPosicion = Position.objects.get(pk=pos)
+                        if not oPosicion:
+                            mensaje = "El 'Puesto de trabajo' no existe."
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                            return JsonResponse(data)
+
+                if len(dept) > 0:
+                    if int(dept) > 0:
+                        oDepartamento = Department.objects.get(pk=dept)
+                        if not oDepartamento:
+                            mensaje = "El 'Departamento' no existe."
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                            return JsonResponse(data)
+
+                if len(suc) > 0:
+                    if int(suc) > 0:
+                        oSucursal = Branch.objects.get(pk=suc)
+                        if not oSucursal:
+                            mensaje = "El 'Sucursal' no existe."
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                            return JsonResponse(data)
+
+                if len(slsP) > 0:
+                    if int(slsP) > 0:
+                        oEmpVentas = SalesPerson.objects.get(pk=slsP)
+                        if not oSucursal:
+                            mensaje = "El 'empleado de ventas' no existe."
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                            return JsonResponse(data)
+
+                if len(telOf) > 0:
+                    telefono_oficina = telOf
+
+                if len(telExt) > 0:
+                    telefono_extension = telExt
+
+                if len(telMov) > 0:
+                    celular = telMov
+
+                if len(pag) > 0:
+                    pager = pag
+
+                if len(telCasa) > 0:
+                    telefono_casa = telCasa
+
+                if len(fax) == 0:
+                    fax = None
+
+                if len(email) == 0:
+                    email = None
+
+                if len(calle) == 0:
+                    calle = None
+
+                if len(ncalle) == 0:
+                    ncalle = None
+
+                if len(edif) == 0:
+                    edif = None
+
+                if len(bloque) == 0:
+                    bloque = None
+
+                if len(codPos) == 0:
+                    codPos = None
+
+                if len(ciudad) == 0:
+                    ciudad = None
+
+                if len(condado) == 0:
+                    condado = None
+                
+                
+
+                if len(hdept) > 0:
+                    if int(hdept) > 0:
+                        oEstado = State.objects.get(pk=hdept)
+                        if not oEstado:
+                            mensaje = "El 'Estado/Departamento' no existe."
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                            return JsonResponse(data)
+
+                if len(hpais) > 0:
+                    if int(hpais) > 0:
+                        oPais = Country.objects.get(pk=hpais)
+                        if not oPais:
+                            mensaje = "El pais no existe en la base de datos."
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                            return JsonResponse(data)
+                
+
+                if len(wcalle) == 0:
+                    wcalle = None
+
+                if len(wncalle) == 0:
+                    wncalle = None
+
+                if len(wbloque) == 0:
+                    wbloque = None
+
+                if len(wedif) == 0:
+                    wedif = None
+
+                if len(wcodPos) == 0:
+                    wcodPos = None
+
+                if len(wciudad) == 0:
+                    wciudad = None
+
+                if len(wcondado) == 0:
+                    wcondado = None
+
+                if len(wdept) > 0:
+                    if int(wdept) > 0:
+                        oEstadoTrabajo = State.objects.get(pk=wdept)
+                        if not oEstadoTrabajo:
+                            mensaje = "El estado de trabajo no existe en la base de datos."
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                            return JsonResponse(data)
+
+                if len(wpais) > 0:
+                    if int(wpais) > 0:
+                        oPaisTrabajo = Country.objects.get(pk=wpais)
+                        if not oPaisTrabajo:
+                            mensaje = "El país de trabajo no existe en la base de datos."
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                            return JsonResponse(data)
+
+                if len(fechaCont) == 0:
+                    fechaCont = None
+
+                if len(estEmp) > 0:
+                    if int(estEmp) > 0:
+                        oEstadoEmpleado = StatusEmp.objects.get(pk=estEmp)
+                        if not oEstadoEmpleado:
+                            mensaje = "El estado de empleado no existe en la base de datos."
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                            return JsonResponse(data)
+
+                if len(fechaRes) == 0:
+                    fechaRes = None
+
+                if len(term) > 0:
+                    if int(term) > 0:
+                        oTerminoRescision = TermReason.objects.get(pk=term)
+                        if not oTerminoRescision:
+                            mensaje = "El término de rescisión no existe en la base de datos."
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                            return JsonResponse(data)
+
+                if len(sexo) > 0:
+                    if int(sexo) > 0:
+                        oSex = Sex.objects.get(pk=sexo)
+                        if not oSex:
+                            mensaje = "El sexo no existe en la base de datos."
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                            return JsonResponse(data)
+
+                if len(fecNac) == 0:
+                    fecNac = None
+
+                if len(lugNac) > 0:
+                    if int(lugNac) > 0:
+                        oBirthCountry = Country.objects.get(pk=lugNac)
+                        if not oBirthCountry:
+                            mensaje = "El lugar de nacimiento no existe en la base de datos."
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                            return JsonResponse(data)
+
+                if len(estCivil) > 0:
+                    if int(estCivil) > 0:
+                        oCivilStatus = CivilStatus.objects.get(pk=estCivil)
+                        if not oCivilStatus:
+                            mensaje = "El estado civil no existe en la base de datos."
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                            return JsonResponse(data)
+
+                if len(citiz) > 0:
+                    if int(citiz) > 0:
+                        oCitizenShip = Country.objects.get(pk=citiz)
+                        if not oCitizenShip:
+                            mensaje = "La nacionalidad no existe en la base de datos."
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                            return JsonResponse(data)
+
+                if int(activo) == 1:
                     activo = True
                 else:
                     activo = False
-
-                if pos > 0:
-                    obpos = Position.objects.get(pk=pos)
-                if dept > 0:
-                    odep = Department.objects.get(pk=dept)
-                if suc > 0:
-                    obranch = Branch.objects.get(pk=suc)
-                if slsP > 0:
-                    oslsPer = SalesPerson.objects.get(pk=slsP)
-                if hdept > 0:
-                    oState = State.objects.get(pk=hdept)
-                if hpais > 0:
-                    oCountry = Country.objects.get(pk=hpais)
-                if wdept > 0:
-                    oWState = State.objects.get(pk=wdept)
-                if wpais > 0:
-                    oWCountry = Country.objects.get(pk=wpais)
-                if estEmp > 0:
-                    oStatus = StatusEmp.objects.get(pk=estEmp)
-                if len(fechaCont) == 0:
-                    fechaCont = None
-                if len(fechaRes) == 0:
-                    fechaRes = None
-                if term > 0:
-                    oTermRea = TermReason.objects.get(pk=term)
-                if sexo > 0:
-                    oSex = Sex.objects.get(pk=sexo)
-                if len(fecNac) == 0:
-                    fecNac = None
-                if lugNac > 0:
-                    oBirthCountry = Country.objects.get(pk=lugNac)
-                if estCivil > 0:
-                    oCivilStatus = CivilStatus.objects.get(pk=estCivil)
-                if citiz > 0:
-                    oCitizenShip = Country.objects.get(pk=citiz)
+                
                 if len(fecPassExt) == 0:
                     fecPassExt = None
+
                 if len(fecEmis) == 0:
                     fecEmis = None
-                if salaryUnits > 0:
-                    oSalaryUnits = SalaryUnit.objects.get(pk=salaryUnits)
-                if empCostUnit > 0:
-                    oEmpCostUnit = CostUnit.objects.get(pk=empCostUnit)
-                if banco > 0:
-                    oBankCode = Bank.objects.get(pk=banco)
+
+                if len(salaryUnits) > 0:
+                    if int(salaryUnits) > 0:
+                        oSalaryUnits = SalaryUnit.objects.get(pk=salaryUnits)
+                        if not oSalaryUnits:
+                            mensaje = "El tipo de salario no existe en la base de datos."
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                            return JsonResponse(data)
+
+                if len(empCostUnit) > 0:
+                    if int(empCostUnit) > 0:
+                        oEmpCostUnit = CostUnit.objects.get(pk=empCostUnit)
+                        if not oEmpCostUnit:
+                            mensaje = "El tipo de costo de empleado no existe en la base de datos."
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                            return JsonResponse(data)
+
+                if len(banco) > 0:
+                    if int(banco) > 0:
+                        print "LLego aqui"
+                        oBankCode = Bank.objects.get(pk=banco)
+                        
+                        if not oBankCode:
+                            mensaje = "El banco no existe en la base de datos."
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                            return JsonResponse(data)
+
+                if len(empCost) == 0:
+                    empCost = None
+            
+                if len(salary) == 0:
+                    salary = None
                 
-                if len(pNom) > 0 and len(apellido) > 0 and len(puesto) > 0 and len(no_ext) > 0:
-                    oEmpleado = Employee(
-                        firstName=pNom,
-                        middleName = sNom,
-                        lastName=apellido,
-                        extEmpNo=no_ext,
-                        jobTitle=puesto,
-                        user_reg=request.user,
-                        active = activo,
-                        position = obpos,
-                        officeTel = telOf,
-                        dept = odep,
-                        officeExt = telExt,
-                        branch = obranch,
-                        mobile = telMov,
-                        pager = pag,
-                        slsPerson = oslsPer,
-                        fax = fax,
-                        email = email,
-                        homeTel = telCasa,
-                        homeStreet = calle,
-                        streetNoH = ncalle,
-                        homeBlock = bloque,
-                        homeBuild = edif,
-                        homeZip = codPos,
-                        homeCity = ciudad,
-                        homeCounty = condado,
-                        homeState = oState,
-                        homeCountry = oCountry,
-                        workStreet = wcalle,
-                        streetNoW = wncalle,
-                        workBlock = wbloque,
-                        workBuild = wedif,
-                        workZip = wcodPos,
-                        workCity = wciudad,
-                        workCounty = wcondado,
-                        workState = oWState,
-                        workCountry = oWCountry,
-                        startDate = fechaCont,
-                        status = oStatus,
-                        termDate = fechaRes,
-                        termReason = oTermRea,
-                        sex = oSex,
-                        birthDate = fecNac,
-                        birthCountry = oBirthCountry,
-                        marrStatus = oCivilStatus,
-                        nChildren = cantHijos,
-                        govID = govID,
-                        citizenship = oCitizenShip,
-                        passportNo = numPass,
-                        passportExt = fecPassExt,
-                        passIssue = fecEmis,
-                        passIssuer = emisor,
-                        salary = salary,
-                        salaryUnits = oSalaryUnits,
-                        empCost = empCost,
-                        empCostUnit = oEmpCostUnit,
-                        bankCode = oBankCode,
-                        bankAccount = numCuenta,
-                        branchBank = branchBank,
-                        remark = remark,
-                    )
-                    oEmpleado.save()
-                    emp = {
-                        'firstName': oEmpleado.firstName,
-                        'lastName': oEmpleado.lastName,
-                        'extEmpNo': oEmpleado.extEmpNo,
-                        'jobTitel': oEmpleado.jobTitle,
-                    }
-                    mensaje = 'Se ha guardado el registro del empleado'
-                    data = {
-                        'empleado':emp, 'mensaje':mensaje, 'error': False
-                    }
-                else:
-                    mensaje = "Complete los campos requeridos."
-                    data = {
-                        'empleado':emp, 'mensaje':mensaje, 'error': True
-                    }
+                oEmpleado = Employee(
+                    firstName=pNom,
+                    middleName = vSegundoNombre,
+                    lastName=apellido,
+                    extEmpNo=vExtEmpNo,
+                    jobTitle=puesto,
+                    user_reg=request.user,
+                    active = activo,
+                    position = oPosicion,
+                    officeTel = telefono_oficina,
+                    dept = oDepartamento,
+                    officeExt = telefono_extension,
+                    branch = oSucursal,
+                    mobile=celular,
+                    pager = pager,
+                    slsPerson = oEmpVentas,
+                    fax = fax,
+                    email = email,
+                    homeTel = telefono_casa,
+                    homeStreet = calle,
+                    streetNoH = ncalle,
+                    homeBlock = bloque,
+                    homeBuild = edif,
+                    homeZip = codPos,
+                    homeCity = ciudad,
+                    homeCounty = condado,
+                    homeState = oEstado,
+                    homeCountry = oPais,
+                    workStreet = wcalle,
+                    streetNoW = wncalle,
+                    workBlock = wbloque,
+                    workBuild = wedif,
+                    workZip = wcodPos,
+                    workCity = wciudad,
+                    workCounty = wcondado,
+                    workState = oEstadoTrabajo,
+                    workCountry = oPaisTrabajo,
+                    startDate = fechaCont,
+                    status = oEstadoEmpleado,
+                    termDate = fechaRes,
+                    termReason = oTerminoRescision,
+                    sex = oSex,
+                    birthDate = fecNac,
+                    birthCountry = oBirthCountry,
+                    marrStatus = oCivilStatus,
+                    nChildren = cantHijos,
+                    govID = govID,
+                    citizenship = oCitizenShip,
+                    passportNo = numPass,
+                    passportExt = fecPassExt,
+                    passIssue = fecEmis,
+                    passIssuer = emisor,
+                    salary = salary,
+                    salaryUnits = oSalaryUnits,
+                    empCost = empCost,
+                    empCostUnit = oEmpCostUnit,
+                    bankCode = oBankCode,
+                    bankAccount = numCuenta,
+                    branchBank = branchBank,
+                    remark = remark,
+                )
+                oEmpleado.save()
+                
+                mensaje = 'Se ha guardado el registro del empleado'
+                data = {
+                    'mensaje':mensaje, 'error': False
+                }
                 return JsonResponse(data)
     except Exception as ex:
         data = {
             'error':True,
-            'mensaje': 'error',
+            'mensaje': 'Error: ' + ex.message,
         }
         print ex
         return JsonResponse(data)
@@ -4719,6 +4988,7 @@ def guardar_empleo_anterior(request):
                 empresa = request.POST['empresa']
                 posicion = request.POST['posicion']
                 comentario = request.POST['comentario']
+                activo = request.POST['activo']
 
                 if len(emp) == 0:
                     mensaje = 'Seleccione un empleado.'
@@ -4770,6 +5040,11 @@ def guardar_empleo_anterior(request):
                     }
                     return JsonResponse(data)
 
+                if int(activo) == 1:
+                    activo = True
+                else:
+                    activo = False
+
                 oMd = EmpleosAnteriores(
                     empleado = oEmp,
                     desde = desde,
@@ -4778,7 +5053,7 @@ def guardar_empleo_anterior(request):
                     posicion = posicion,
                     comentario = comentario,
                     user_reg=request.user,
-                    active= True,
+                    active= activo,
                 )
                 oMd.save()
                 mensaje = 'Se ha guardado el registro'
@@ -4814,6 +5089,8 @@ def actualizar_empleo_anterior(request):
                 empresa = request.POST['empresa']
                 posicion = request.POST['posicion']
                 comentario = request.POST['comentario']
+                activo = request.POST['activo']
+                oEmp = None
 
                 if len(emp) == 0:
                     mensaje = 'Seleccione un empleado.'
@@ -4865,15 +5142,20 @@ def actualizar_empleo_anterior(request):
                     }
                     return JsonResponse(data)
 
+                if int(activo) == 1:
+                    activo = True
+                else:
+                    activo = False
+
                 oMd = EmpleosAnteriores.objects.get(pk=id)
                 if oMd:
-                    oMd.empleado = oEmp,
-                    oMd.desde = desde,
-                    oMd.hasta = hasta,
-                    oMd.empresa = empresa,
-                    oMd.posicion = posicion,
-                    oMd.comentario = comentario,
-                    oMd.active = True,
+                    oMd.empleado = oEmp
+                    oMd.desde = desde
+                    oMd.hasta = hasta
+                    oMd.empresa = empresa
+                    oMd.posicion = posicion
+                    oMd.comentario = comentario
+                    oMd.active = activo
                     oMd.user_mod = request.user
                     oMd.date_mod = datetime.datetime.now()
                     oMd.save()
@@ -4893,6 +5175,47 @@ def actualizar_empleo_anterior(request):
                 }
         else:
             mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def eliminar_empleo_anterior(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oMd = EmpleosAnteriores.objects.get(pk=reg_id)
+                    if oMd:
+                        oMd.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
             data = {
                 'mensaje': mensaje, 'error': True
             }
@@ -4972,13 +5295,12 @@ def actualizar_grupo_comision(request):
                 else:
                     acti = False
                 
-
                 oMd = GrupoComisiones.objects.get(pk=id)
                 if oMd:
-                    oMd.descripcion = desc1,
+                    oMd.descripcion = desc1
                     oMd.user_mod = request.user
                     oMd.date_mod = datetime.datetime.now()
-                    oMd.active = acti,
+                    oMd.active = acti
                     oMd.save()
                     mensaje = 'Se ha actualizado el registro.'
                     data = {
@@ -5048,4 +5370,540 @@ def eliminar_grupo_comision(request):
         }
     return JsonResponse(data)
 
+def guardar_vendedor(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                nombre = request.POST['nombre']
+                grp_com = request.POST['grupo_com']
+                porcent = request.POST['porcentaje']
+                emp = request.POST['emp']
+                tel = request.POST['tel']
+                movil = request.POST['movil']
+                correo = request.POST['correo']
+                coment = request.POST['coment']
+                activo = int(request.POST['activo'])
+                oGrpCom = None
+                vPorcentajeComision = 0
 
+                if len(nombre) == 0:
+                    mensaje = "El campo 'Nombre' es obligatorio."
+                    data = {'error':True, 'mensaje':mensaje}
+                    return JsonResponse(data)
+
+                if len(grp_com) == 0:
+                    mensaje = "El campo 'Grupo de Comisión' es obligatorio."
+                    data = {'error':True, 'mensaje':mensaje}
+                    return JsonResponse(data)
+                else:
+                    if int(grp_com) > 0:
+                        oGrpCom = GrupoComisiones.objects.get(pk=grp_com)
+
+                if len(porcent) > 0:
+                    vPorcentajeComision = porcent
+
+                if len(emp) == 0:
+                    mensaje = 'Seleccione un empleado.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+                else:
+                    if int(emp) > 0:
+                        oEmp = Employee.objects.get(pk=emp)
+                    elif int(emp) == 0:
+                        mensaje = 'Seleccione un empleado.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                        return JsonResponse(data)
+                    else:
+                        mensaje = 'Empleado no existe.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                        return JsonResponse(data)
+
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                oMd = Vendedor(
+                    nombre=nombre,
+                    grupo_comisiones=oGrpCom,
+                    porcentaje_comision=float(vPorcentajeComision),
+                    empleado=oEmp,
+                    telefono = tel,
+                    tel_movil = movil,
+                    correo = correo,
+                    comentario = coment,
+                    active=activo,
+                    user_reg=request.user,
+                )
+                oMd.save()
+                mensaje = 'Se ha guardado el registro'
+                data = {
+                    'mensaje': mensaje, 'error': False
+                }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def actualizar_vendedor(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                nombre = request.POST['nombre']
+                grp_com = request.POST['grupo_com']
+                porcent = request.POST['porcentaje']
+                emp = request.POST['emp']
+                tel = request.POST['tel']
+                movil = request.POST['movil']
+                correo = request.POST['correo']
+                coment = request.POST['coment']
+                activo = int(request.POST['activo'])
+                vPorcentajeComision = 0.00
+
+                if len(nombre) == 0:
+                    mensaje = "El campo 'Nombre' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(grp_com) == 0:
+                    mensaje = "El campo 'Grupo de Comisión' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+                else:
+                    if int(grp_com) > 0:
+                        oGrpCom = GrupoComisiones.objects.get(pk=grp_com)
+
+                if len(porcent) > 0:
+                    vPorcentajeComision = porcent
+
+                if len(emp) == 0:
+                    mensaje = 'Seleccione un empleado.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+                else:
+                    if int(emp) > 0:
+                        oEmp = Employee.objects.get(pk=emp)
+                    elif int(emp) == 0:
+                        mensaje = 'Seleccione un empleado.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                        return JsonResponse(data)
+                    else:
+                        mensaje = 'Empleado no existe.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                        return JsonResponse(data)
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                oMd = Vendedor.objects.get(pk=id)
+                if oMd:
+                    oMd.nombre = nombre
+                    oMd.grupo_com = oGrpCom
+                    oMd.porcentaje_comision = vPorcentajeComision
+                    oMd.empleado = oEmp
+                    oMd.grupo_comision = oGrpCom
+                    oMd.telefono = tel
+                    oMd.tel_movil = movil
+                    oMd.correo = correo
+                    oMd.comentario = coment
+                    oMd.active = activo
+                    oMd.user_mod = request.user
+                    oMd.date_mod = datetime.datetime.now()
+                    oMd.save()
+                    mensaje = 'Se ha actualizado el registro.'
+                    data = {
+                        'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "No existe el registro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def eliminar_vendedor(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oMd = Vendedor.objects.get(pk=reg_id)
+                    if oMd:
+                        oMd.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def guardar_feriado(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                fecha = request.POST['fecha']
+                rate = request.POST['rate']
+                comentario = request.POST['comentario']
+                activo = int(request.POST['activo'])
+
+                if len(fecha) == 0:
+                    mensaje = "El campo 'Fecha' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(rate) == 0:
+                    mensaje = "El campo 'Grupo de Comisión' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                oMd = Feriado(
+                    fecha=fecha,
+                    rate=rate,
+                    descripcion=comentario,
+                    active=activo,
+                    user_reg=request.user,
+                )
+                oMd.save()
+                mensaje = 'Se ha guardado el registro'
+                data = {
+                    'mensaje': mensaje, 'error': False
+                }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def actualizar_feriado(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                fecha = request.POST['fecha']
+                rate = request.POST['rate']
+                comentario = request.POST['comentario']
+                activo = int(request.POST['activo'])
+
+                if len(fecha) == 0:
+                    mensaje = "El campo 'Fecha' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(rate) == 0:
+                    mensaje = "El campo 'Rate' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(comentario) == 0:
+                    mensaje = "El campo 'Comentario' es obligatorio."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+               
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                oMd = Feriado.objects.get(pk=id)
+                if oMd:
+                    oMd.fecha = fecha
+                    oMd.rate = rate
+                    oMd.comentario = comentario
+                    oMd.active = activo
+                    oMd.user_mod = request.user
+                    oMd.date_mod = datetime.datetime.now()
+                    oMd.save()
+                    mensaje = 'Se ha actualizado el registro.'
+                    data = {
+                        'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "No existe el registro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def eliminar_feriado(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oMd = Feriado.objects.get(pk=reg_id)
+                    if oMd:
+                        oMd.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def guardar_activo_asignado(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                desc = request.POST['desc']
+                activo = int(request.POST['activo'])
+
+                if len(desc) == 0:
+                    mensaje = "El campo 'Descripción' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                oMd = ActivoAsignado(
+                    descripcion=desc,
+                    active=activo,
+                    user_reg=request.user,
+                )
+                oMd.save()
+                mensaje = 'Se ha guardado el registro'
+                data = {
+                    'mensaje': mensaje, 'error': False
+                }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def actualizar_activo_asignado(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                desc = request.POST['desc']
+                activo = int(request.POST['activo'])
+
+                if len(desc) == 0:
+                    mensaje = "El campo 'Descripción' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                oMd = ActivoAsignado.objects.get(pk=id)
+                if oMd:
+                    oMd.descripcion = desc
+                    oMd.active = activo
+                    oMd.user_mod = request.user
+                    oMd.date_mod = datetime.datetime.now()
+                    oMd.save()
+                    mensaje = 'Se ha actualizado el registro.'
+                    data = {
+                        'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "No existe el registro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def eliminar_activo_asignado(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oMd = ActivoAsignado.objects.get(pk=reg_id)
+                    if oMd:
+                        oMd.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)

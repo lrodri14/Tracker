@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', views.home, name='home'),
     url(r'^forms/empleado/$', views.empleado_form, name="empleados-form"),
+    url(r'^editar/empleado/(?P<id>\w+)/$', views.empleado_editar, name="empleado_editar"),
     url(r'^perfil/empleado/$', views.empleado_perfil, name="empleado-perfil"),
     url(r'^listar/empleados/$', views.empleado_listado, name="empleados-listado"),
     url(r'^corporativo/$', views.corporativo, name="corporativo"),
@@ -103,9 +104,15 @@ urlpatterns = [
     url(r'^grupo-comision/$', views.grupo_comision, name="grupo_comision"),
     url(r'^editar/grupo-comision/(?P<id>\w+)/$', views.grupo_comision_ditar, name="grupo_comision_ditar"),
     url(r'^listar/grupo-comision/$', views.grupo_comisiones_listar,name="grupo_comisiones_listar"),
+    url(r'^form/vendedor/$', views.vendedor_form, name="vendedor_form"),
+    url(r'^editar/vendedor/(?P<id>\w+)/$', views.vendedor_editar, name="vendedor_editar"),
     url(r'^listar/vendedor/$', views.vendedor_listar, name="vendedor_listar"),
-
-
+    url(r'^form/feriado/$', views.feriado_form, name="feriado_form"),
+    url(r'^editar/feriado/(?P<id>\w+)/$', views.feriado_editar, name="feriado_editar"),
+    url(r'^listar/feriado/$', views.feriado_listar, name="feriado_listar"),
+    url(r'^form/activo-asignado/$', views.articulo_asignado_form, name="articulo_asignado_form"),
+    url(r'^editar/activo-asignado/(?P<id>\w+)/$', views.articulo_asignado_editar, name="articulo_asignado_editar"),
+    url(r'^listar/activo-asignado/$', views.articulos_asignados_listar, name="articulos_asignados_listar"),
 
     #----------------->>>AJAX<<<------------------
     url(r'^guardar/empleado/$', views.guardar_empleado, name='guardar_empleado'),
@@ -135,6 +142,9 @@ urlpatterns = [
     url(r'^guardar/motivo-aumento-sueldo/$', views.guardar_motivo_aumento_sueldo, name='guardar_motivo_aumento_sueldo'),
     url(r'^guardar/empleo-anterior/$', views.guardar_empleo_anterior, name='guardar_empleo_anterior'),
     url(r'^guardar/grupo-comision/$', views.guardar_grupo_comision, name='guardar_grupo_comision'),
+    url(r'^guardar/vendedor/$', views.guardar_vendedor, name='guardar_vendedor'),
+    url(r'^guardar/feriado/$', views.guardar_feriado, name='guardar_feriado'),
+    url(r'^guardar/activo-asignado/$', views.guardar_activo_asignado, name='guardar_activo_asignado'),
 
     url(r'^actualizar/corporativo/$', views.actualizar_corporativo, name='actualizar_corporativo'),
     url(r'^actualizar/empresa/$', views.actualizar_empresa, name='actualizar_empresa'),
@@ -162,6 +172,9 @@ urlpatterns = [
     url(r'^actualizar/motivo-aumento-sueldo/$', views.actualizar_motivo_aumento_sueldo, name='actualizar_motivo_aumento_sueldo'),
     url(r'^actualizar/empleo-anterior/$', views.actualizar_empleo_anterior, name='actualizar_empleo_anterior'),
     url(r'^actualizar/grupo-comision/$', views.actualizar_grupo_comision, name='actualizar_grupo_comision'),
+    url(r'^actualizar/vendedor/$', views.actualizar_vendedor, name='actualizar_vendedor'),
+    url(r'^actualizar/feriado/$', views.actualizar_feriado, name='actualizar_feriado'),
+    url(r'^actualizar/activo-asignado/$', views.actualizar_activo_asignado, name='actualizar_activo_asignado'),
 
     url(r'^eliminar/corporativo/$', views.eliminar_corporativo, name='eliminar_corporativo'),
     url(r'^eliminar/empresa/$', views.eliminar_empresa, name='eliminar_empresa'),
@@ -188,6 +201,10 @@ urlpatterns = [
     url(r'^eliminar/evaluacion/$', views.eliminar_evaluacion, name='eliminar_evaluacion'),
     url(r'^eliminar/motivo-aumento-sueldo/$', views.eliminar_motivo_aumento_sueldo, name='eliminar_motivo_aumento_sueldo'),
     url(r'^eliminar/grupo-comision/$', views.eliminar_grupo_comision, name='eliminar_grupo_comision'),
+    url(r'^eliminar/vendedor/$', views.eliminar_vendedor, name='eliminar_vendedor'),
+    url(r'^eliminar/feriado/$', views.eliminar_feriado, name='eliminar_feriado'),
+    url(r'^eliminar/activo-asignado/$', views.eliminar_activo_asignado, name='eliminar_activo_asignado'),
+    url(r'^eliminar/empleo-anterior/$', views.eliminar_empleo_anterior, name='eliminar_empleo_anterior'),
     #------------------>>>AJAX<<<-------------------
 
     url(r'^seguridad/', include('django.contrib.auth.urls')),
