@@ -340,11 +340,25 @@ class EquipoTrabajo(models.Model):
     def __unicode__(self):
         return self.nombre
 
+
+class MotivosAusencia(models.Model):
+    descripcion = models.CharField(max_length=150)
+    pagado = models.BooleanField()
+    user_reg = models.ForeignKey(User)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL,
+                                 related_name='catIng_usermod', related_query_name='catIng_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.BooleanField()
+
+    def __unicode__(self):
+        return self.descripcion
+
 class Ausentismo(models.Model):
     empleado = models.ForeignKey(Employee)
     desde = models.DateField(blank=True, null=True)
     hasta = models.DateField(blank=True, null=True)
-    motivo = models.TextField(blank=True, null=True)
+    motivo = models.ForeignKey(MotivosAusencia, blank=True, null=True, on_delete=models.DO_NOTHING)
     aprobado = models.ForeignKey(Employee, related_name='au_emp', related_query_name='au_emp', blank=True, null=True)
     user_reg = models.ForeignKey(User)
     date_reg = models.DateTimeField(auto_now_add=True)
@@ -354,18 +368,6 @@ class Ausentismo(models.Model):
 
     def __unicode__(self):
         return self.empleado.firstName + ' ' + self.empleado.lastName + ' - ' + str(self.desde) + ' | ' + str(self.hasta)
-
-class MotivosAusencia(models.Model):
-    descripcion = models.CharField(max_length=150)
-    pagado = models.BooleanField()
-    user_reg = models.ForeignKey(User)
-    date_reg = models.DateTimeField(auto_now_add=True)
-    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='catIng_usermod', related_query_name='catIng_usermod')
-    date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.BooleanField()
-
-    def __unicode__(self):
-        return self.descripcion
 
 class MotivosDespido(models.Model):
     nombre = models.CharField(max_length=50, blank=True, null=True)

@@ -3,6 +3,17 @@
 Ausentismo
 {% endblock titulo %}
 {% load static %}
+{% block estilo %}
+<style>
+    .checkbox {
+        font-weight: 500;
+    }
+
+    .checkbox label {
+        font-weight: 500;
+    }
+</style>
+{% endblock estilo %}
 {% block contenido %}
 <div class="row">
     <div class="col-md-12">
@@ -25,7 +36,7 @@ Ausentismo
                                         <label for="txtNombre" class="control-label">Empleado :</label>
                                     </div>
                                     <div class="col-md-7">
-                                        <select class="form-control select2 input-sm input-sm-1" name="au_emp" id="cboAuEmp">
+                                        <select class="form-control select2 input" name="au_emp" id="cboAuEmp">
                                             <option value="0">Seleccionar...</option>
                                             {% for item in empleados %}
                                                 {% if editar %}
@@ -52,7 +63,7 @@ Ausentismo
                                     </div>
                                     <div class="col-md-7">
                                         <div class="input-group">
-                                            <input id="txtFechaVencPasaporte" value='{{dato.desde|date:"Y-m-d"}}' name="au_desde" type="text" class="form-control mydatepicker input-sm-1" placeholder="yyyy-mm-dd"> <span class="input-group-addon"><i class="icon-calender"></i></span>
+                                            <input id="txtFechaVencPasaporte" value='{{dato.desde|date:"Y-m-d"}}' name="au_desde" type="text" class="form-control mydatepicker" placeholder="yyyy-mm-dd"> <span class="input-group-addon"><i class="icon-calender"></i></span>
                                         </div>
                                     </div>
                                 </div>
@@ -64,7 +75,7 @@ Ausentismo
                                         </div>
                                         <div class="col-md-7">
                                             <div class="input-group">
-                                                <input id="txtFechaVencPasaporte" value='{{dato.hasta|date:"Y-m-d"}}' name="au_hasta" type="text" class="form-control mydatepicker input-sm-1" placeholder="yyyy-mm-dd"> <span class="input-group-addon"><i class="icon-calender"></i></span>
+                                                <input id="txtFechaVencPasaporte" value='{{dato.hasta|date:"Y-m-d"}}' name="au_hasta" type="text" class="form-control mydatepicker" placeholder="yyyy-mm-dd"> <span class="input-group-addon"><i class="icon-calender"></i></span>
                                             </div>
                                         </div>
                                     </div>
@@ -77,7 +88,16 @@ Ausentismo
                                         <label for="txtNombre" class="control-label">Motivo :</label>
                                     </div>
                                     <div class="col-md-7">
-                                            <textarea name="au_motivos" id="txtComentarios" rows="7" class="form-control">{{dato.motivo}}</textarea>
+                                        <select class="form-control select2 input" name="au_emp" id="cboAuEmp">
+                                            <option value="0">Seleccionar...</option>
+                                            {% for item in motivos %} {% if editar %} {% if item == dato.empleado %}
+                                            <option value="{{item.pk}}" selected>{{item.descripcion}}</option>
+                                            {% else %}
+                                            <option value="{{item.pk}}">{{item.descripcion}}</option>
+                                            {% endif %} {% else %}
+                                            <option value="{{item.pk}}">{{item.descripcion}}</option>
+                                            {% endif %} {% endfor %}
+                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -87,7 +107,7 @@ Ausentismo
                                         <label for="txtNombre" class="control-label">Aprobó :</label>
                                     </div>
                                     <div class="col-md-7">
-                                        <select class="form-control select2 input-sm input-sm-1" name="au_aprobo" id="cboAuAp">
+                                        <select class="form-control select2 input" name="au_aprobo" id="cboAuAp">
                                             <option value="0">Seleccionar...</option>
                                             {% for item in empleados %}
                                                 {% if editar %}
@@ -112,9 +132,9 @@ Ausentismo
                                     <div class="col-md-7">
                                         <div class="checkbox checkbox-success">
                                             {% if dato.active %}
-                                            <input id="chkActivo" name="au_activo" type="checkbox" checked class="input-sm">
+                                            <input id="chkActivo" name="au_activo" type="checkbox" checked class="input">
                                             {% else %}
-                                            <input id="chkActivo" name="au_activo" type="checkbox" class="input-sm">
+                                            <input id="chkActivo" name="au_activo" type="checkbox" class="input">
                                             {% endif %}
                                             <label for="chkActivo" class="control-label"> Activo </label>
                                         </div>

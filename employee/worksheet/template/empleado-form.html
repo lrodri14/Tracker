@@ -23,6 +23,9 @@
                 <div class="panel-body">
                     <form class="">
                         {% csrf_token %}
+                        {% if editar %}
+                            <input type="hidden" value="{{dato.pk}}" name="emp_id">
+                        {% endif %}
                         <div class="form-body">
                             <div class="row">
                                 <div class="col-md-12 margin-bottom-5px">
@@ -42,7 +45,7 @@
                                                 <label for="" class="control-label">No. de empleado Ext. :</label>
                                             </div>
                                             <div class="col-md-7">
-                                                <input type="text" name="noEmpExt" value="{% if dato.extEmpNo %}{{dato.middleName}}{% endif %}" id="txtNoEmpExt" class="form-control input-sm input-sm-1">
+                                                <input type="text" name="noEmpExt" value="{% if dato.extEmpNo %}{{dato.extEmpNo}}{% endif %}" id="txtNoEmpExt" class="form-control input-sm input-sm-1">
                                             </div>
                                         </div>
                                     </div>
@@ -73,7 +76,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <div class="checkbox checkbox-success">
-                                                <input id="chkActivo" type="checkbox" {% if dato.active %}selected{% endif %} class="input-sm">
+                                                <input id="chkActivo" type="checkbox" {% if dato.active %}checked{% endif %} class="input-sm">
                                                 <label for="chkActivo" class="control-label"> Activo </label>
                                             </div>
                                         </div>
@@ -86,7 +89,7 @@
                                                 <label for="" class="control-label">Denominación de función :</label>
                                             </div>
                                             <div class="col-md-7">
-                                                <input type="text" name="jobTitle" id="txtJobTitle" class="form-control input-sm input-sm-1">
+                                                <input type="text" value="{% if dato.jobTitle %}{{dato.jobTitle}}{% endif %}" name="jobTitle" id="txtJobTitle" class="form-control input-sm input-sm-1">
                                             </div>
                                         </div>
                                     </div>
@@ -101,7 +104,15 @@
                                                 <select class="form-control input-sm input-sm-1" name="position" id="cboPosicion">
                                                     <option value="0">Seleccionar</option>
                                                     {% for position in positions %}
-                                                    <option value="{{position.pk}}">{{position.name}}</option>
+                                                    {% if editar %}
+                                                        {% if dato.position == position %}
+                                                            <option value="{{position.pk}}" selected>{{position.name}}</option>
+                                                        {% else %}
+                                                            <option value="{{position.pk}}">{{position.name}}</option>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        <option value="{{position.pk}}">{{position.name}}</option>
+                                                    {% endif %}
                                                     {% endfor %}
                                                 </select>
                                             </div>
@@ -113,7 +124,7 @@
                                                 <label for="txtTelefonoOficina" class="control-label"> Teléfono de la oficina :</label>
                                             </div>
                                             <div class="col-md-7">
-                                                <input id="txtTelefonoOficina" name="tel_ofi" type="text" class="form-control input-sm input-sm-1">
+                                                <input id="txtTelefonoOficina" name="tel_ofi" value="{% if dato.officeTel %}{{dato.officeTel}}{% endif %}" type="text" class="form-control input-sm input-sm-1">
                                             </div>
                                         </div>
                                     </div>
@@ -858,7 +869,11 @@
                         <hr>
                         <!-- Botones del formulario -->
                         <div class="form-action">
-                            <button id="btnGuardar" class="btn btn-success">Guardar</button>
+                            {% if editar %}
+                                <button id="btnActualizar" class="btn btn-success">Actualizar</button>
+                            {% else %}
+                                <button id="btnGuardar" class="btn btn-success">Guardar</button>
+                            {% endif %}
                             <button id="btnCancelar" class="btn btn-default">Cancelar</button>
                         </div>
                     </form>

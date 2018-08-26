@@ -35,7 +35,8 @@ def empleado_form(request):
 
 def empleado_editar(request, id):
     dato = Employee.objects.get(pk=id)
-    return render(request, 'empleado-form.html', {'editar':True, 'dato':dato})
+    positions = Position.objects.filter(active=True)
+    return render(request, 'empleado-form.html', {'editar':True, 'dato':dato, 'positions':positions})
 
 def empleado_listado(request):
     empleados = Employee.objects.all()
@@ -222,7 +223,8 @@ def estado_empleado_listado(request):
 
 def ausentismo(request):
     empleados = Employee.objects.filter(active=True)
-    return render(request, 'ausentismo.html', {'empleados':empleados})
+    motivos = MotivosAusencia.objects.filter(active=True)
+    return render(request, 'ausentismo.html', {'empleados':empleados, 'motivos':motivos})
 
 def ausentismo_editar(request, id):
     dato = Ausentismo.objects.get(pk=id)
@@ -400,6 +402,13 @@ def articulo_asignado_editar(request, id):
 def articulos_asignados_listar(request):
     datos = ActivoAsignado.objects.all()
     return render(request, 'activos-asignados-listado.html', {'datos':datos})
+
+def motivo_rescision_contrato_form(request):
+    return render(request, 'motivos-rescision-contrato-form.html')
+
+def motivo_rescicion_contrato_listar(request):
+    lista = TermReason.objects.all()
+    return render(request, 'motivo-rescision-contrato-listado.html', {'lista':lista})
 
 
 
@@ -858,6 +867,498 @@ def guardar_empleado(request):
         }
         print ex
         return JsonResponse(data)
+
+def actualizar_empleado(request):
+    mensaje = ""
+    oPosicion = None
+    oDepartamento = None
+    oSucursal = None
+    oEmpVentas = None
+    oEstado = None
+    oPais = None
+    oEstadoTrabajo = None
+    oPaisTrabajo = None
+    oEstadoEmpleado = None
+    oTerminoRescision = None
+    oSex = None
+    oBirthCountry = None
+    oCivilStatus = None
+    oCitizenShip = None
+    oSalaryUnits = None
+    oEmpCostUnit = None
+    oBankCode = None
+    try:
+        if  request.is_ajax():
+            if request.method == 'POST':
+                id = request.POST['id']
+                pNom = request.POST['pNom']
+                sNom = request.POST['sNom']
+                apellido = request.POST['apellido']
+                puesto = request.POST['puesto']
+                no_ext = request.POST['numExt']
+                activo = request.POST['activo']
+                pos = request.POST['pos']
+                telOf = request.POST['telOf']
+                dept = request.POST['dept']
+                telExt = request.POST['telExt']
+                suc = request.POST['suc']
+                telMov = request.POST['telMov']
+                pag = request.POST['pag']
+                slsP = request.POST['slsP']
+                fax = request.POST['fax']
+                email = request.POST['email']
+                telCasa = request.POST['telCasa']
+                calle = request.POST['calle']
+                ncalle = request.POST['nCalle']
+                bloque = request.POST['bloque']
+                edif = request.POST['edif']
+                codPos = request.POST['codPos']
+                ciudad = request.POST['ciudad']
+                condado = request.POST['condado']
+                hdept = request.POST['hdept']
+                hpais = request.POST['hpais']
+                wcalle = request.POST['wcalle']
+                wncalle = request.POST['wncalle']
+                wbloque = request.POST['wbloque']
+                wedif = request.POST['wedif']
+                wcodPos = request.POST['wcodPost']
+                wciudad = request.POST['wciudad']
+                wcondado = request.POST['wcondado']
+                wdept = request.POST['wdept']
+                wpais = request.POST['wpais']
+                fechaCont = request.POST['fechaCont']
+                estEmp = request.POST['estEmp']
+                fechaRes = request.POST['fechaRES']
+                term = request.POST['term']
+                sexo = request.POST['sexo']
+                fecNac = request.POST['fecNac']
+                lugNac = request.POST['lugNac']
+                estCivil = request.POST['estCivil']
+                cantHijos = request.POST['cantHijos']
+                govID = request.POST['numID']
+                citiz = request.POST['citiz']
+                numPass = request.POST['numPass']
+                fecPassExt = request.POST['fecPassExt']
+                fecEmis = request.POST['fecEmis']
+                emisor = request.POST['emisor']
+                salary = request.POST['salario']
+                salaryUnits = request.POST['salarioUnd']
+                empCost = request.POST['costEmp']
+                empCostUnit = request.POST['costEmpUni']
+                banco = request.POST['banco']
+                numCuenta = request.POST['numCuenta']
+                branchBank = request.POST['bankSucursal']
+                remark = request.POST['comentarios']
+
+                if len(pNom) == 0:
+                    mensaje = "El campo 'Primer Nombre' es obligatorio."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(sNom) == 0:
+                    sNom = None
+
+                if len(apellido) == 0:
+                    mensaje = "El campo 'Apellido' es obligatorio."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(puesto) == 0:
+                    mensaje = "El campo 'Puesto de trabajo' es obligatorio."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(no_ext) == 0:
+                    no_ext = None
+
+                if len(pos) > 0:
+                    if int(pos) > 0:
+                        oPosicion = Position.objects.get(pk=pos)
+                        if not oPosicion:
+                            mensaje = "El 'Puesto de trabajo' no existe."
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                            return JsonResponse(data)
+
+                if len(dept) > 0:
+                    if int(dept) > 0:
+                        oDepartamento = Department.objects.get(pk=dept)
+                        if not oDepartamento:
+                            mensaje = "El 'Departamento' no existe."
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                            return JsonResponse(data)
+
+                if len(suc) > 0:
+                    if int(suc) > 0:
+                        oSucursal = Branch.objects.get(pk=suc)
+                        if not oSucursal:
+                            mensaje = "El 'Sucursal' no existe."
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                            return JsonResponse(data)
+
+                if len(slsP) > 0:
+                    if int(slsP) > 0:
+                        oEmpVentas = SalesPerson.objects.get(pk=slsP)
+                        if not oSucursal:
+                            mensaje = "El 'empleado de ventas' no existe."
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                            return JsonResponse(data)
+
+                if len(telOf) == 0:
+                    telOf = None
+
+                if len(telExt) == 0:
+                    telExt = None
+
+                if len(telMov) == 0:
+                    telMov = None
+
+                if len(pag) == 0:
+                    pag = None
+
+                if len(telCasa) == 0:
+                    telCasa = None
+
+                if len(fax) == 0:
+                    fax = None
+
+                if len(email) == 0:
+                    email = None
+
+                if len(calle) == 0:
+                    calle = None
+
+                if len(ncalle) == 0:
+                    ncalle = None
+
+                if len(edif) == 0:
+                    edif = None
+
+                if len(bloque) == 0:
+                    bloque = None
+
+                if len(codPos) == 0:
+                    codPos = None
+
+                if len(ciudad) == 0:
+                    ciudad = None
+
+                if len(condado) == 0:
+                    condado = None
+
+                if len(hdept) > 0:
+                    if int(hdept) > 0:
+                        oEstado = State.objects.get(pk=hdept)
+                        if not oEstado:
+                            mensaje = "El 'Estado/Departamento' no existe."
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                            return JsonResponse(data)
+
+                if len(hpais) > 0:
+                    if int(hpais) > 0:
+                        oPais = Country.objects.get(pk=hpais)
+                        if not oPais:
+                            mensaje = "El pais no existe en la base de datos."
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                            return JsonResponse(data)
+
+                if len(wcalle) == 0:
+                    wcalle = None
+
+                if len(wncalle) == 0:
+                    wncalle = None
+
+                if len(wbloque) == 0:
+                    wbloque = None
+
+                if len(wedif) == 0:
+                    wedif = None
+
+                if len(wcodPos) == 0:
+                    wcodPos = None
+
+                if len(wciudad) == 0:
+                    wciudad = None
+
+                if len(wcondado) == 0:
+                    wcondado = None
+
+                if len(wdept) > 0:
+                    if int(wdept) > 0:
+                        oEstadoTrabajo = State.objects.get(pk=wdept)
+                        if not oEstadoTrabajo:
+                            mensaje = "El estado de trabajo no existe en la base de datos."
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                            return JsonResponse(data)
+
+                if len(wpais) > 0:
+                    if int(wpais) > 0:
+                        oPaisTrabajo = Country.objects.get(pk=wpais)
+                        if not oPaisTrabajo:
+                            mensaje = "El país de trabajo no existe en la base de datos."
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                            return JsonResponse(data)
+
+                if len(fechaCont) == 0:
+                    fechaCont = None
+
+                if len(estEmp) > 0:
+                    if int(estEmp) > 0:
+                        oEstadoEmpleado = StatusEmp.objects.get(pk=estEmp)
+                        if not oEstadoEmpleado:
+                            mensaje = "El estado de empleado no existe en la base de datos."
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                            return JsonResponse(data)
+
+                if len(fechaRes) == 0:
+                    fechaRes = None
+
+                if len(term) > 0:
+                    if int(term) > 0:
+                        oTerminoRescision = TermReason.objects.get(pk=term)
+                        if not oTerminoRescision:
+                            mensaje = "El término de rescisión no existe en la base de datos."
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                            return JsonResponse(data)
+
+                if len(sexo) > 0:
+                    if int(sexo) > 0:
+                        oSex = Sex.objects.get(pk=sexo)
+                        if not oSex:
+                            mensaje = "El sexo no existe en la base de datos."
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                            return JsonResponse(data)
+
+                if len(fecNac) == 0:
+                    fecNac = None
+
+                if len(lugNac) > 0:
+                    if int(lugNac) > 0:
+                        oBirthCountry = Country.objects.get(pk=lugNac)
+                        if not oBirthCountry:
+                            mensaje = "El lugar de nacimiento no existe en la base de datos."
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                            return JsonResponse(data)
+
+                if len(estCivil) > 0:
+                    if int(estCivil) > 0:
+                        oCivilStatus = CivilStatus.objects.get(pk=estCivil)
+                        if not oCivilStatus:
+                            mensaje = "El estado civil no existe en la base de datos."
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                            return JsonResponse(data)
+
+                if len(citiz) > 0:
+                    if int(citiz) > 0:
+                        oCitizenShip = Country.objects.get(pk=citiz)
+                        if not oCitizenShip:
+                            mensaje = "La nacionalidad no existe en la base de datos."
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                            return JsonResponse(data)
+
+                if int(activo) == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                if len(fecPassExt) == 0:
+                    fecPassExt = None
+
+                if len(fecEmis) == 0:
+                    fecEmis = None
+
+                if len(salaryUnits) > 0:
+                    if int(salaryUnits) > 0:
+                        oSalaryUnits = SalaryUnit.objects.get(pk=salaryUnits)
+                        if not oSalaryUnits:
+                            mensaje = "El tipo de salario no existe en la base de datos."
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                            return JsonResponse(data)
+
+                if len(empCostUnit) > 0:
+                    if int(empCostUnit) > 0:
+                        oEmpCostUnit = CostUnit.objects.get(pk=empCostUnit)
+                        if not oEmpCostUnit:
+                            mensaje = "El tipo de costo de empleado no existe en la base de datos."
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                            return JsonResponse(data)
+
+                if len(banco) > 0:
+                    if int(banco) > 0:
+                        print "LLego aqui"
+                        oBankCode = Bank.objects.get(pk=banco)
+
+                        if not oBankCode:
+                            mensaje = "El banco no existe en la base de datos."
+                            data = {
+                                'mensaje': mensaje, 'error': True
+                            }
+                            return JsonResponse(data)
+
+                if len(empCost) == 0:
+                    empCost = None
+
+                if len(salary) == 0:
+                    salary = None
+
+                oEmp = Employee.objects.get(pk=id)
+                oEmp.firstName = pNom
+                oEmp.middleName = sNom
+                oEmp.lastName = apellido
+                oEmp.extEmpNo = no_ext
+                oEmp.jobTitle = puesto
+                oEmp.position = oPosicion
+                oEmp.dept = oDepartamento
+                oEmp.branch = oSucursal
+                oEmp.slsPerson = oEmpVentas
+                oEmp.officeTel = telOf
+                oEmp.officeExt = telExt
+                oEmp.mobile = telMov
+                oEmp.pager = pag
+                oEmp.homeTel = telCasa
+                oEmp.fax = fax
+                oEmp.email = email
+                oEmp.homeStreet = calle
+                oEmp.streetNoH = ncalle
+                oEmp.homeBuild = edif
+                oEmp.homeBlock = bloque
+                oEmp.homeZip = codPos
+                oEmp.homeCity = ciudad
+                oEmp.homeCounty = condado
+                oEmp.homeState = oEstado
+                oEmp.homeCountry = oPais
+                oEmp.workStreet = wcalle
+                oEmp.streetNoW = wncalle
+                oEmp.workBlock = wbloque
+                oEmp.workBuild = wedif
+                oEmp.workZip = wcodPos
+                oEmp.workCity = wciudad
+                oEmp.workCounty = wcondado
+                oEmp.workState = oEstadoTrabajo
+                oEmp.workCountry = oPaisTrabajo
+                oEmp.startDate = fechaCont
+                oEmp.status = oEstadoEmpleado
+                oEmp.termDate = fechaRes
+                oEmp.termReason = oTerminoRescision
+                oEmp.sex = oSex
+                oEmp.birthDate = fecNac
+                oEmp.birthCountry = oBirthCountry
+                oEmp.marrStatus = oCivilStatus
+                oEmp.nChildren = cantHijos
+                oEmp.govID = govID
+                oEmp.citizenship = oCitizenShip
+                oEmp.passportNo = numPass
+                oEmp.passportExt = fecPassExt
+                oEmp.passIssue = fecEmis
+                oEmp.passIssuer = emisor
+                oEmp.salary = salary
+                oEmp.salaryUnits = oSalaryUnits
+                oEmp.empCost = empCost
+                oEmp.empCostUnit = oEmpCostUnit
+                oEmp.bankCode = oBankCode
+                oEmp.bankAccount = numCuenta
+                oEmp.branchBank = branchBank
+                oEmp.remark = remark
+
+                oEmp.active = activo
+                oEmp.user_mod = request.user
+                oEmp.date_mod = datetime.datetime.now()
+                oEmp.save()
+                
+                mensaje = 'Se ha actualizado el registro del Empleado'
+                data = {
+                    'mensaje':mensaje, 'error': False
+                }
+            else:
+                mensaje = "Metodo no permitido."
+                data = {
+                    'mensaje':mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje':mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error':True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def eliminar_empleado(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oMd = Employee.objects.get(pk=reg_id)
+                    oMd.delete()
+                    mensaje = 'Se ha eliminado el registro del Grupo Corporativo'
+                    data = {
+                        'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    #return HttpResponseRedirect('/listar/corporativos/')
+    return JsonResponse(data)
 
 def guardar_corporativo(request):
     try:
@@ -1706,29 +2207,22 @@ def actualizar_puesto(request):
                     oPos = Position.objects.get(pk=id)
 
                     if oPos:
-                        totReg = Employee.objects.filter(position__pk=id).count()
-                        if totReg > 0:
-                            oPos.name = nombre
-                            oPos.description = desc
-                            oPos.active = activo
-                            oPos.user_mod = request.user
-                            oPos.date_mod = datetime.datetime.now()
-                            oPos.save()
-                            pos = {
-                                'pk': oPos.pk,
-                                'name':oPos.name,
-                                'desc': oPos.description,
-                                'activo': oPos.active,
-                            }
-                            mensaje = 'Se ha actualizado el registro.'
-                            data = {
-                                'puesto': pos, 'mensaje': mensaje, 'error': False
-                            }
-                        else:
-                            mensaje = 'El registro tiene datos asociados.'
-                            data = {
-                                'mensaje': mensaje, 'error': True
-                            }
+                        oPos.name = nombre
+                        oPos.description = desc
+                        oPos.active = activo
+                        oPos.user_mod = request.user
+                        oPos.date_mod = datetime.datetime.now()
+                        oPos.save()
+                        pos = {
+                            'pk': oPos.pk,
+                            'name':oPos.name,
+                            'desc': oPos.description,
+                            'activo': oPos.active,
+                        }
+                        mensaje = 'Se ha actualizado el registro.'
+                        data = {
+                            'puesto': pos, 'mensaje': mensaje, 'error': False
+                        }
                     else:
                         mensaje = "No existe el registro."
                         data = {
@@ -3418,11 +3912,20 @@ def guardar_ausentismo(request):
                     return JsonResponse(data)
 
                 if len(motivo) == 0:
-                    mensaje = 'Ingrese un motivo del ausentismo.'
+                    mensaje = 'Seleccione un motivo por ausencia.'
                     data = {
                         'mensaje': mensaje, 'error': True
                     }
                     return JsonResponse(data)
+                else:
+                    if int(motivo) > 0:
+                        oMot = MotivosAusencia.objects.get(pk=motivo)
+                    else:
+                        mensaje = 'Seleccione un motivo por ausencia.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                        return JsonResponse(data)
 
                 if len(aprobo) == 0:
                     mensaje = 'Seleccione el empleado que Aprobó.'
@@ -3452,7 +3955,7 @@ def guardar_ausentismo(request):
                     empleado = oEmp,
                     desde = desde,
                     hasta = hasta,
-                    motivo = motivo,
+                    motivo = oMot,
                     aprobado = oAprobo,
                     active=activo,
                     user_reg=request.user,
@@ -3530,11 +4033,20 @@ def actualizar_ausentismo(request):
                     return JsonResponse(data)
 
                 if len(motivo) == 0:
-                    mensaje = "Agregue datos al campo 'Motivo'."
+                    mensaje = 'Seleccione un motivo por ausencia.'
                     data = {
                         'mensaje': mensaje, 'error': True
                     }
                     return JsonResponse(data)
+                else:
+                    if int(motivo) > 0:
+                        oMot = MotivosAusencia.objects.get(pk=motivo)
+                    else:
+                        mensaje = 'Seleccione un motivo por ausencia.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                        return JsonResponse(data)
 
                 if int(emp) == int(aprobo):
                     mensaje = 'El empleado debe ser distinto al usuario que apruebe.'
@@ -3555,7 +4067,7 @@ def actualizar_ausentismo(request):
                     oMd.empleado = oEmp
                     oMd.desde = desde
                     oMd.hasta = hasta
-                    oMd.motivo = motivo
+                    oMd.motivo = oMot
                     oMd.aprobado = oApro
                     oMd.active = activo
                     oMd.user_mod = request.user
@@ -4967,6 +5479,62 @@ def eliminar_motivo_aumento_sueldo(request):
                 }
         else:
             mensaje = "Tipo de petición no permitido."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def guardar_motivo_rescision_contrato(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                nombre = request.POST['nombre']
+                desc = request.POST['desc']
+                activo = request.POST['activo']
+
+                if len(nombre) == 0:
+                    mensaje = 'El campo "Nombre" es obligatorio.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(desc) == 0:
+                    mensaje = 'El campo "Descripción" es obligatorio.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if int(activo) == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                oMd = TermReason(
+                    name = nombre,
+                    description=desc,
+                    active=activo,
+                    user_reg=request.user,
+                )
+                oMd.save()
+                mensaje = 'Se ha guardado el registro'
+                data = {
+                    'mensaje': mensaje, 'error': False
+                }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
             data = {
                 'mensaje': mensaje, 'error': True
             }

@@ -856,7 +856,7 @@ function validargnrDatos() {
     var Au_emp = $('select[name="au_emp"]');
     var Au_desde = $('input[name="au_desde"]');
     var Au_hasta = $('input[name="au_hasta"]');
-    var Au_motivo = $('textarea[name="au_motivos"]');
+    var Au_motivo = $('select[name="au_motivos"]');
     var Au_aprobo = $('select[name="au_aprobo"]');
     var Au_activo = $('input[name="au_activo"]');
     //#endregion
@@ -960,52 +960,52 @@ function validargnrDatos() {
         e.preventDefault();
         url = '/guardar/motivo-ausencia/';
         metodo = 'POST';
-        if (validarmAuDatos() != false) {
-            if (mAu_pagado.is(":checked")) {
-                vPagado = 1;
-            } else {
-                vPagado = 0;
-            }
-            if (mAu_activo.is(":checked")) {
-                vActivo = 1;
-            } else {
-                vActivo = 0;
-            }
-            data = {
-                'desc': mAu_desc.val(),
-                'pagado': vPagado,
-                'activo': vActivo,
-                'csrfmiddlewaretoken': token.val(),
-            };
-            GuardarRegistro(url, metodo, data, "Motivos de Ausencia");
-            
+        //if (validarmAuDatos() != false) {
+        if (mAu_pagado.is(":checked")) {
+            vPagado = 1;
+        } else {
+            vPagado = 0;
         }
+        if (mAu_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
+        }
+        data = {
+            'desc': mAu_desc.val(),
+            'pagado': vPagado,
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Motivos de Ausencia");
+            
+        //}
     });
 
     $('#btnmAuActualizar').on('click', function(e) {
         e.preventDefault();
         url = '/actualizar/motivo-ausencia/';
         metodo = 'POST';
-        if (validarmAuDatos() != false) {
-            if (mAu_pagado.is(":checked")) {
-                vPagado = 1;
-            } else {
-                vPagado = 0;
-            }
-            if (mAu_activo.is(":checked")) {
-                vActivo = 1;
-            } else {
-                vActivo = 0;
-            }
-            data = {
-                'id': id.val(),
-                'desc': mAu_desc.val(),
-                'pagado': vPagado,
-                'activo': vActivo,
-                'csrfmiddlewaretoken': token.val(),
-            };
-            GuardarRegistro(url, metodo, data, "Motivo de Ausencia", true, "/listar/motivos-ausencia/");
+        //if (validarmAuDatos() != false) {
+        if (mAu_pagado.is(":checked")) {
+            vPagado = 1;
+        } else {
+            vPagado = 0;
         }
+        if (mAu_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
+        }
+        data = {
+            'id': id.val(),
+            'desc': mAu_desc.val(),
+            'pagado': vPagado,
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Motivo de Ausencia", true, "/listar/motivos-ausencia/");
+        //}
     });
 
     $('#btnmAuCancelar').on('click', function(e) {
@@ -1482,6 +1482,64 @@ function validargnrDatos() {
     //#endregion
 
 //#endregion Código para registrar Motivos para Aumento de Sueldo
+
+//#region Código para registrar Motivos para Rescisión de Contrato
+
+    //#region Variables
+    var mReCon_nombre = $('input[name="mReCon_nombre"]');
+    var mReCon_desc = $('textarea[name="mReCon_desc"]');
+    var mReCon_activo = $('input[name="mReCon_activo"]');
+    //#endregion
+
+    //#region Eventos Controles
+    $('#btnReConGuardar').on('click', function (e) {
+        e.preventDefault();
+        url = '/guardar/motivo-rescision-contrato/';
+        metodo = 'POST';
+        if (mReCon_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
+        }
+        //if (validarEvDatos() != false) {
+        data = {
+            'nombre': mReCon_nombre.val(),
+            'desc': mReCon_desc.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Motivos para Rescisión de Contrato");
+        //}
+    });
+
+    $('#btnReConActualizar').on('click', function (e) {
+        e.preventDefault();
+        url = '/actualizar/motivo-rescision-contrato/';
+        metodo = 'POST';
+        if (mReCon_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
+        }
+        //if (validarEvDatos() != false) {
+        data = {
+            'id': id.val(),
+            'nombre': mReCon_nombre.val(),
+            'desc': mReCon_desc.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Motivos para Rescisión de Contrato", true, "/listar/motivo-rescision-contrato/");
+        //}
+    });
+
+    $('#btnReConCancelar').on('click', function (e) {
+        e.preventDefault();
+        window.location.replace(dns + "/listar/motivo-rescision-contrato/");
+    });
+    //#endregion
+
+//#endregion Código para registrar Motivos para Rescisión de Contrato
 
 //#region Código para registar empleos anteriores
 

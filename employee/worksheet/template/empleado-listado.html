@@ -69,7 +69,7 @@ Listado de Empleados
     //#region Efectos en SideBar
     $('#side-menu a').removeClass('active');
     $('#aPersonal').addClass('active');
-    $('#aFunTrab').addClass('active');
+    $('#Emp').addClass('active');
     //#endregion
 
     //#region Eventos Controles
@@ -82,8 +82,8 @@ Listado de Empleados
 
     //#region Funciones
     function Eliminar(id) {
-        var Encabezado = 'Función de Trabajo';
-        var url = "/eliminar/funcion/"; // the script where you handle the form input.
+        var Encabezado = 'Empleado';
+        var url = "/eliminar/empleado/"; // the script where you handle the form input.
         $.ajax({
             type: "POST",
             url: url,

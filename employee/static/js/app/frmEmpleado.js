@@ -1,10 +1,12 @@
-$(document).on('ready', () => {
+$(document).on('ready', function() {
 
     //#region Variables
     var activo = 0;
+    var dns = window.location.protocol + "//" + window.location.host;
     //#endregion
 
     //#region Controles
+    var id = $('input[name="emp_id"');
     var chkActivo = $('#chkActivo');
     var pNombre = $('#txtPrimerNombre');
     var sNombre = $('input[name="segundoNombre"]');
@@ -81,6 +83,16 @@ $(document).on('ready', () => {
     $('#btnGuardar').on('click', function(e) {
         e.preventDefault();
         GuardarEmpleado();
+    });
+
+    $('#btnActualizar').on('click', function(e) {
+        e.preventDefault();
+        Actualizar();
+    });
+
+    $('#btnCancelar').on('click', function(e) {
+        e.preventDefault();
+        window.location.replace(dns + "/listar/empleados/");
     });
     //#endregion
 
@@ -199,6 +211,118 @@ $(document).on('ready', () => {
                 }
             });
         }
+    }
+
+    function Actualizar() {
+        if (chkActivo.is(":checked")) {
+            activo = 1;
+        } else {
+            activo = 0;
+        }
+        var url = "/actualizar/empleado/"; // the script where you handle the form input.
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {
+                'id': id.val(),
+                'pNom': pNombre.val(),
+                'sNom': sNombre.val(),
+                'apellido': apellido.val(),
+                'numExt': numExt.val(),
+                'puesto': puesto.val(),
+                'activo': activo,
+                'pos': pos.val(),
+                'telOf': telOfi.val(),
+                'dept': dept.val(),
+                'telExt': ext.val(),
+                'suc': suc.val(),
+                'telMov': telMov.val(),
+                'pag': pag.val(),
+                'slsP': slsP.val(),
+                'fax': fax.val(),
+                'email': email.val(),
+                'telCasa': telCasa.val(),
+                'calle': calle.val(),
+                'nCalle': nCalle.val(),
+                'bloque': bloque.val(),
+                'edif': edif.val(),
+                'codPos': codPost.val(),
+                'ciudad': ciudad.val(),
+                'condado': condado.val(),
+                'hdept': hdept.val(),
+                'hpais': hpais.val(),
+                'wcalle': wcalle.val(),
+                'wncalle': wncalle.val(),
+                'wbloque': wbloque.val(),
+                'wedif': wedif.val(),
+                'wcodPost': wcodPost.val(),
+                'wciudad': wciudad.val(),
+                'wcondado': wcondado.val(),
+                'wdept': wdept.val(),
+                'wpais': wpais.val(),
+                'fechaCont': fechaCont.val(),
+                'estEmp': estEmp.val(),
+                'fechaRES': fechaRes.val(),
+                'term': term.val(),
+                'sexo': sexo.val(),
+                'fecNac': fechaNac.val(),
+                'lugNac': lugNac.val(),
+                'estCivil': estadoCivil.val(),
+                'cantHijos': cantHijos.val(),
+                'numID': numID.val(),
+                'citiz': citiz.val(),
+                'numPass': numPass.val(),
+                'fecPassExt': fecPassExt.val(),
+                'fecEmis': fecEmis.val(),
+                'emisor': emisor.val(),
+                'salario': salario.val(),
+                'salarioUnd': salarioUnd.val(),
+                'costEmp': costEmp.val(),
+                'costEmpUni': costEmpUni.val(),
+                'banco': banco.val(),
+                'numCuenta': numCuenta.val(),
+                'bankSucursal': bankSucursal.val(),
+                'comentarios': comentarios.val(),
+                'csrfmiddlewaretoken': token.val(),
+            }, // serializes the form's elements.
+            success: function (data) {
+                if (data.error == false) {
+                    $.toast({
+                        heading: 'Empleado',
+                        text: 'Se ha actualizado el registro de empleado.',
+                        position: 'top-right',
+                        loaderBg: '#ff6849',
+                        icon: 'success',
+                        hideAfter: 5000,
+                        stack: 6
+                    });
+                    window.location.replace(dns + "/listar/empleados/");
+                    LimpiarControles();
+                } else {
+                    $.toast({
+                        heading: 'Empleado',
+                        text: data.mensaje,
+                        position: 'top-right',
+                        loaderBg: '#ff6849',
+                        icon: 'error',
+                        hideAfter: 5000,
+                        stack: 6
+                    });
+                }
+            },
+            error: function (data) {
+                console.log(data);
+                $.toast({
+                    heading: 'Empleado',
+                    text: data.status + ' - ' + data.statusText,
+                    position: 'top-right',
+                    loaderBg: '#ff6849',
+                    icon: 'error',
+                    hideAfter: 5000,
+                    stack: 6
+                });
+            }
+        });
     }
 
     function LimpiarControles() {
