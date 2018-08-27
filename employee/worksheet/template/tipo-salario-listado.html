@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block titulo %}
-Listado de Motivos de Rescisión de Contrato
+Listado de Tipos de Salario
 {% endblock titulo %}
 {% load static %}
 {% block contenido %}
@@ -9,13 +9,13 @@ Listado de Motivos de Rescisión de Contrato
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h2 class="text-bold"><i class="fa fa-list"></i>
-                    Listado de Motivos de Rescisión de Contrato</h2>
+                    Listado de Tipos de Salario</h2>
             </div>
             <div class="panel-wrapper">
                 <div class="panel-body">
                     <div class="row text-right">
                         <div class="col-md-12">
-                            <a href="{% url 'motivo_rescision_contrato_form' %}" class="btn btn-primary">Agregar</a>
+                            <a href="{% url 'tipo_salario_form' %}" class="btn btn-primary">Agregar</a>
                         </div>
                     </div>
                     <br>
@@ -66,8 +66,8 @@ Listado de Motivos de Rescisión de Contrato
     var token = $('input[name="csrfmiddlewaretoken"]');
     //#region Efectos en SideBar
     $('#side-menu a').removeClass('active');
-    $('#aPersonal').addClass('active');
-    $('#aMReCon').addClass('active');
+    $('#aCorporativo').addClass('active');
+    $('#aTiposSalarios').addClass('active');
     //#endregion
 
     //#region Eventos Controles
@@ -80,8 +80,8 @@ Listado de Motivos de Rescisión de Contrato
 
     //#region Funciones
     function Eliminar(id) {
-        var Encabezado = 'Motivos de Rescisión de Contrato';
-        var url = "/eliminar/motivo-rescision-contrato/"; // the script where you handle the form input.
+        var Encabezado = 'Tipo de Salario';
+        var url = "/eliminar/tipo-salario/"; // the script where you handle the form input.
         $.ajax({
             type: "POST",
             url: url,

@@ -66,7 +66,7 @@
                     <!-- Logo -->
                     <a class="logo" href="{% url 'home' %}">
                         <!-- Logo icon image, you can use font-icon also --><b>
-                        <!--This is dark logo icon--><img src="{% static 'images/promaco-logo-3.png' %}" alt="home" class="dark-logo" /><!--This is light logo icon--><!--img src="{% static 'images/promaco-logo-3.png' %}" alt="home" class="light-logo" /-->
+                        <!--This is dark logo icon--><img src="{% static 'images/logo.pnga' %}" alt="home" class="dark-logo" /><!--This is light logo icon--><!--img src="{% static 'images/promaco-logo-3.png' %}" alt="home" class="light-logo" /-->
                      </b>
                         <!-- Logo text image you can use text also --><span class="hidden-xs">
                         <!--This is dark logo text--><!--img src="{% static 'plugins/images/admin-text.png' %}" alt="home" class="dark-logo" /--><!--This is light logo text--><!--img src="{% static 'plugins/images/admin-text-dark.png' %}" alt="home" class="light-logo" /-->
@@ -140,6 +140,7 @@
                             <li><a href="{% url 'listado_departamentos' %}" id="aDepartamentos" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Departamentos</span></a></li>
                             <li><a href="{% url 'listado_puestos' %}" id="aPuesto" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Puesto</span></a></li>
                             <li><a href="{% url 'listado_ccostos' %}" id="aCCostos" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Centros de Costos</span></a></li>
+                            <li><a href="{% url 'tipo_salario_listar' %}" id="aTiposSalarios" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Tipos de Salario</span></a></li>
                         </ul>
                     </li><!--FIN DE OPCIÓN ORGANIZACIÓN-->
                     <li><a href="javascript:void(0)" id="aPersonal" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Personal <span class="fa arrow"></span></span></a>
@@ -197,7 +198,7 @@
                                     <i data-icon="" class="linea-icon linea-basic fa-fw"></i>
                                     <span class="hide-menu">Motivos de Renuncia</span>
                                 </a>
-                                <a href="{% url 'motivo_rescicion_contrato_listar' %}" id="aMRe" class="waves-effect">
+                                <a href="{% url 'motivo_rescicion_contrato_listar' %}" id="aMReCon" class="waves-effect">
                                     <i data-icon="" class="linea-icon linea-basic fa-fw"></i>
                                     <span class="hide-menu">Motivos Rescisión Contrato</span>
                                 </a>
@@ -284,7 +285,10 @@
                     <img id="" src="{% static 'images/tracker.png' %}" alt="">
                 </div>
                 <div class="col-xs-4 col-sm-4 col-md-4">
-                    2017 &copy; TELEMÁTICA
+                    2017 &copy; {% comment "" %}
+                    
+                     TELEMÁTICA
+                     {% endcomment %}
                 </div>
                 <div class="col-xs-4 col-sm-4 col-md-4 text-right"><img src="{% static 'images/logoTracker.png' %}" alt=""></div>
             </footer>

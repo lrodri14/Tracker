@@ -1486,6 +1486,7 @@ function validargnrDatos() {
 //#region Código para registrar Motivos para Rescisión de Contrato
 
     //#region Variables
+    var mReCon_id = $('input[name="mReCon_id"]');
     var mReCon_nombre = $('input[name="mReCon_nombre"]');
     var mReCon_desc = $('textarea[name="mReCon_desc"]');
     var mReCon_activo = $('input[name="mReCon_activo"]');
@@ -1523,7 +1524,7 @@ function validargnrDatos() {
         }
         //if (validarEvDatos() != false) {
         data = {
-            'id': id.val(),
+            'id': mReCon_id.val(),
             'nombre': mReCon_nombre.val(),
             'desc': mReCon_desc.val(),
             'activo': vActivo,
@@ -1860,6 +1861,65 @@ function validargnrDatos() {
     //#endregion
 
 //#endregion Código para registra Activos Asignados
+
+//#region Código para registrar Tipo de Salario
+
+    //#region Variables
+    var tipoSalario_id = $("input[name='tipoSalario_id'");
+    var tipoSalario_desc = $("textarea[name='tipoSalario_desc'");
+    var tipoSalario_nombre = $("input[name='tipoSalario_nombre'");
+    var tipoSalario_activo = $('input[name="tipoSalario_activo"]');
+    //#endregion
+
+    //#region Eventos Controles
+    $('#btnTipoSalarioGuardar').on('click', function (e) {
+        e.preventDefault();
+        url = '/guardar/tipo-salario/';
+        metodo = 'POST';
+        //if (validarEdDatos() != false) {
+        if (tipoSalario_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
+        }
+        data = {
+            'nombre': tipoSalario_nombre.val(),
+            'desc': tipoSalario_desc.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Tipo de Salario");
+        //}
+    });
+
+    $('#btnTipoSalarioActualizar').on('click', function (e) {
+        e.preventDefault();
+        url = '/actualizar/tipo-salario/';
+        metodo = 'POST';
+        if (tipoSalario_id.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
+        }
+        //if (validarEdDatos() != false) {
+        data = {
+            'id': tipoSalario_id.val(),
+            'nombre': tipoSalario_nombre.val(),
+            'desc': tipoSalario_desc.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Tipo de Salario", true, "/listar/activo-asignado/");
+        //}
+    });
+
+    $('#btnTipoSalarioCancelar').on('click', function (e) {
+        e.preventDefault();
+        window.location.replace(dns + "/listar/tipo-salario/");
+    });
+    //#endregion
+
+//#endregion Código para registrar Tipo de Salario
 
 //#region Funciones Generales
     function GuardarRegistro(url, metodo, data, encabezado, editar, urlRedirect) {

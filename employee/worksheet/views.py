@@ -406,10 +406,20 @@ def articulos_asignados_listar(request):
 def motivo_rescision_contrato_form(request):
     return render(request, 'motivos-rescision-contrato-form.html')
 
+def motivo_rescision_contrato_editar(request, id):
+    dato = TermReason.objects.get(pk=id)
+    return render(request, 'motivos-rescision-contrato-form.html', {'editar':True, 'dato':dato})
+
 def motivo_rescicion_contrato_listar(request):
     lista = TermReason.objects.all()
     return render(request, 'motivo-rescision-contrato-listado.html', {'lista':lista})
 
+def tipo_salario_form(request):
+    return render(request, 'tipo-salario-form.html')
+
+def tipo_salario_listar(request):
+    lista = SalaryUnit.objects.all()
+    return render(request, 'tipo-salario-listado.html', {'lista':lista})
 
 
 #---------------------------->>>> VISTAS AJAX <<<<----------------------------#
@@ -5546,6 +5556,102 @@ def guardar_motivo_rescision_contrato(request):
         }
     return JsonResponse(data)
 
+def actualizar_motivo_rescision_contrato(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                desc = request.POST['desc']
+                nombre = request.POST['nombre']
+                activo = int(request.POST['activo'])
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                if len(desc) > 0:
+                    oMd = TermReason.objects.get(pk=id)
+                    if oMd:
+                        oMd.description = desc
+                        oMd.name = nombre
+                        oMd.active = activo
+                        oMd.user_mod = request.user
+                        oMd.date_mod = datetime.datetime.now()
+                        oMd.save()
+                        mensaje = 'Se ha actualizado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = "No existe el registro."
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "Complete los campos requeridos."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def eliminar_motivo_rescision_contrato(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oMd = TermReason.objects.get(pk=reg_id)
+                    if oMd:
+                        oMd.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
 def guardar_empleo_anterior(request):
     try:
         if request.is_ajax():
@@ -6465,6 +6571,58 @@ def eliminar_activo_asignado(request):
                 }
         else:
             mensaje = "Tipo de petición no permitido."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def guardar_tipo_salario(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                nombre = request.POST['nombre']
+                desc = request.POST['desc']
+                activo = int(request.POST['activo'])
+
+                if len(nombre) == 0:
+                    mensaje = "El campo 'Nombre' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(desc) == 0:
+                    mensaje = "El campo 'Descripción' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                oMd = SalaryUnit(
+                    name = nombre,
+                    description=desc,
+                    active=activo,
+                    user_reg=request.user,
+                )
+                oMd.save()
+                mensaje = 'Se ha guardado el registro'
+                data = {
+                    'mensaje': mensaje, 'error': False
+                }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
             data = {
                 'mensaje': mensaje, 'error': True
             }
