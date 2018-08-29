@@ -75,8 +75,8 @@ $(document).on('ready', function() {
 
     //#region Efectos en SideBar
     $('#side-menu a').removeClass('active');
-    $('#aEmp').addClass('active');
-    $('#saEmpFrm').addClass('active');
+    $('#aPersonal').addClass('active');
+    $('#Emp').addClass('active');
     //#endregion
 
     //#region Eventos Botones

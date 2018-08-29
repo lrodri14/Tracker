@@ -139,7 +139,15 @@
                                                 <select class="form-control input-sm input-sm-1" name="dept" id="cboDepto">
                                                     <option value="0">Seleccionar...</option>
                                                     {% for department in departments %}
-                                                    <option value="{{department.pk}}">{{department.name}}</option>
+                                                        {% if editar %} 
+                                                            {% if dato.dept == department %}
+                                                                <option value="{{department.pk}}" selected>{{department.name}}</option>
+                                                            {% else %}
+                                                                <option value="{{department.pk}}">{{department.name}}</option>
+                                                            {% endif %} 
+                                                        {% else %}
+                                                            <option value="{{department.pk}}">{{department.name}}</option>
+                                                        {% endif %}
                                                     {% endfor %}
                                                 </select>
                                             </div>
@@ -151,7 +159,7 @@
                                                 <label for="txtExtension" class="control-label"> Extensión :</label>
                                             </div>
                                             <div class="col-md-7">
-                                                <input id="txtExtension" name="ext" type="text" class="form-control input-sm input-sm-1">
+                                                <input id="txtExtension" name="ext" value="{% if dato.officeExt %}{{dato.officeExt}}{% endif %}" type="text" class="form-control input-sm input-sm-1">
                                             </div>
                                         </div>
                                     </div>
@@ -166,7 +174,15 @@
                                                 <select class="form-control input-sm input-sm-1" name="sucursal" id="cboSucursal">
                                                     <option value="0">Seleccionar...</option>
                                                     {% for branch in branches %}
-                                                    <option value="{{branch.pk}}">{{branch.name}}</option>
+                                                        {% if editar %} 
+                                                            {% if dato.branch == branch %}
+                                                                <option value="{{branch.pk}}" selected>{{branch.name}}</option>
+                                                            {% else %}
+                                                                <option value="{{branch.pk}}">{{branch.name}}</option>
+                                                            {% endif %} 
+                                                        {% else %}
+                                                            <option value="{{branch.pk}}">{{branch.name}}</option>
+                                                        {% endif %}
                                                     {% endfor %}
                                                 </select>
                                             </div>
@@ -178,7 +194,7 @@
                                                 <label for="txtExtension" class="control-label"> Teléfono móvil :</label>
                                             </div>
                                             <div class="col-md-7">
-                                                <input id="txtTelMovil" type="text" class="form-control input-sm input-sm-1" name="telMov">
+                                                <input id="txtTelMovil" value="{% if dato.mobile %}{{dato.mobile}}{% endif %}" type="text" class="form-control input-sm input-sm-1" name="telMov">
                                             </div>
                                         </div>
                                     </div>
@@ -191,7 +207,7 @@
                                                 <label for="txtPager" class="control-label"> Pager :</label>
                                             </div>
                                             <div class="col-md-7">
-                                                <input id="txtPager" name="pager" type="text" class="form-control input-sm input-sm-1">
+                                                <input id="txtPager" value="{% if dato.pager %}{{dato.pager}}{% endif %}" name="pager" type="text" class="form-control input-sm input-sm-1">
                                             </div>
                                         </div>
                                     </div>
@@ -206,7 +222,16 @@
                                                 <select class="form-control input-sm input-sm-1" name="slsPer" id="cboSlsPerson">
                                                     <option value="0">Seleccionar...</option>
                                                     {% for salesPerson in salesPersons %}
-                                                    <option value="{{salesPerson.pk}}">{{salesPerson.slpName}}</option>
+                                                        {% if editar %} 
+                                                            {% if dato.slsPerson == salesPerson %}
+                                                                <option value="{{salesPerson.pk}}" selected>{{salesPerson.slpName}}</option>
+                                                            {% else %}
+                                                                <option value="{{salesPerson.pk}}">{{salesPerson.slpName}}</option>
+                                                            {% endif %}
+                                                        {% else %}
+                                                            <option value="{{salesPerson.pk}}">{{salesPerson.slpName}}</option>
+                                                        {% endif %}
+                                                    <!--option value="{{salesPerson.pk}}">{{salesPerson.slpName}}</option-->
                                                     {% endfor %}
                                                 </select>
                                             </div>
@@ -218,7 +243,7 @@
                                                 <label for="txtFax" class="control-label"> Fax :</label>
                                             </div>
                                             <div class="col-md-7">
-                                                <input id="txtFax" name="fax" type="text" class="form-control input-sm input-sm-1">
+                                                <input id="txtFax" name="fax" value="{% if dato.fax %}{{dato.fax}}{% endif %}" type="text" class="form-control input-sm input-sm-1">
                                             </div>
                                         </div>
                                     </div>

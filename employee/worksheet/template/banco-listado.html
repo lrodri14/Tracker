@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block titulo %}
-Listado de Tipos de Salario
+Listado de Bancos
 {% endblock titulo %}
 {% load static %}
 {% block contenido %}
@@ -9,13 +9,13 @@ Listado de Tipos de Salario
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h2 class="text-bold"><i class="fa fa-list"></i>
-                    Listado de Tipos de Salario</h2>
+                    Listado Bancos</h2>
             </div>
             <div class="panel-wrapper">
                 <div class="panel-body">
                     <div class="row text-right">
                         <div class="col-md-12">
-                            <a href="{% url 'tipo_salario_form' %}" class="btn btn-primary">Agregar</a>
+                            <a href="{% url 'banco_form' %}" class="btn btn-primary">Agregar</a>
                         </div>
                     </div>
                     <br>
@@ -43,7 +43,7 @@ Listado de Tipos de Salario
                                         {% endif %}
                                     </td>                         
                                     <td class="text-nowrap acciones">
-                                        <a href="{% url 'tipo_salario_editar' item.pk %}" data-toggle="tooltip" data-original-title="Editar">
+                                        <a href="{% url 'banco_editar' item.pk %}" data-toggle="tooltip" data-original-title="Editar">
                                             <i class="fa fa-pencil text-inverse m-r-10"></i>
                                         </a>
                                         <a href="#" class="btnEliminar" data="{{item.pk}}" data-toggle="tooltip" data-original-title="Eliminar">
@@ -67,7 +67,7 @@ Listado de Tipos de Salario
     //#region Efectos en SideBar
     $('#side-menu a').removeClass('active');
     $('#aCorporativo').addClass('active');
-    $('#aTiposSalarios').addClass('active');
+    $('#aBanco').addClass('active');
     //#endregion
 
     //#region Eventos Controles
@@ -80,8 +80,8 @@ Listado de Tipos de Salario
 
     //#region Funciones
     function Eliminar(id) {
-        var Encabezado = 'Tipo de Salario';
-        var url = "/eliminar/tipo-salario/"; // the script where you handle the form input.
+        var Encabezado = 'Banco';
+        var url = "/eliminar/banco/"; // the script where you handle the form input.
         $.ajax({
             type: "POST",
             url: url,

@@ -36,7 +36,10 @@ def empleado_form(request):
 def empleado_editar(request, id):
     dato = Employee.objects.get(pk=id)
     positions = Position.objects.filter(active=True)
-    return render(request, 'empleado-form.html', {'editar':True, 'dato':dato, 'positions':positions})
+    deptos = Department.objects.filter(active=True)
+    branches = Branch.objects.filter(active=True)
+    salesPersons = SalesPerson.objects.filter(active=True)
+    return render(request, 'empleado-form.html', {'editar':True, 'dato':dato, 'positions':positions, 'departments':deptos, 'branches':branches, 'salesPersons':salesPersons})
 
 def empleado_listado(request):
     empleados = Employee.objects.all()
@@ -417,25 +420,45 @@ def motivo_rescicion_contrato_listar(request):
 def tipo_salario_form(request):
     return render(request, 'tipo-salario-form.html')
 
+def tipo_salario_editar(request, id):
+    dato = SalaryUnit.objects.get(pk=id)
+    return render(request, 'tipo-salario-form.html', {'editar':True, 'dato':dato})
+
 def tipo_salario_listar(request):
     lista = SalaryUnit.objects.all()
     return render(request, 'tipo-salario-listado.html', {'lista':lista})
+
+def tipo_costo_empleado_form(request):
+    return render(request, 'costo-empleado-form.html')
+
+def tipo_costo_empleado_editar(request, id):
+    dato = CostUnit.objects.get(pk=id)
+    return render(request, 'costo-empleado-form.html', {'editar': True, 'dato': dato})
+
+def tipo_costo_empleado_listar(request):
+    lista = CostUnit.objects.all()
+    return render(request, 'costo-empleado-listado.html', {'lista':lista})
+
+def banco_form(request):
+    return render(request, 'banco-form.html')
+
+def banco_editar(request, id):
+    dato = Bank.objects.get(pk=id)
+    return render(request, 'banco-form.html', {'editar':True, 'dato':dato})
+
+def banco_listado(request):
+    lista = Bank.objects.all()
+    return render(request, 'banco-listado.html', {'lista':lista})
 
 
 #---------------------------->>>> VISTAS AJAX <<<<----------------------------#
 def guardar_empleado(request):
     mensaje = ""
     vSegundoNombre = None
-    vExtEmpNo = None
     oPosicion = None
     oDepartamento = None
     oSucursal = None
     oEmpVentas = None
-    telefono_oficina = None
-    telefono_extension = None
-    telefono_casa = None
-    celular = None
-    pager = None
     oEstado = None
     oPais = None
     oEstadoTrabajo = None
@@ -535,8 +558,8 @@ def guardar_empleado(request):
                     }
                     return JsonResponse(data)
 
-                if len(no_ext) > 0:
-                    vExtEmpNo = no_ext
+                if len(no_ext) == 0:
+                    no_ext = None
 
                 if len(pos) > 0:
                     if int(pos) > 0:
@@ -548,7 +571,9 @@ def guardar_empleado(request):
                             }
                             return JsonResponse(data)
 
+                print "Departamento: " + dept
                 if len(dept) > 0:
+
                     if int(dept) > 0:
                         oDepartamento = Department.objects.get(pk=dept)
                         if not oDepartamento:
@@ -578,20 +603,21 @@ def guardar_empleado(request):
                             }
                             return JsonResponse(data)
 
-                if len(telOf) > 0:
-                    telefono_oficina = telOf
+                if len(telOf) == 0:
+                    telOf = None
 
-                if len(telExt) > 0:
-                    telefono_extension = telExt
+                
+                if len(telExt) == 0:
+                    telExt = None
 
-                if len(telMov) > 0:
-                    celular = telMov
+                if len(telMov) == 0:
+                    telMov = None
 
-                if len(pag) > 0:
-                    pager = pag
+                if len(pag) == 0:
+                    pag = None
 
-                if len(telCasa) > 0:
-                    telefono_casa = telCasa
+                if len(telCasa) == 0:
+                    telCasa == None
 
                 if len(fax) == 0:
                     fax = None
@@ -806,21 +832,21 @@ def guardar_empleado(request):
                     firstName=pNom,
                     middleName = vSegundoNombre,
                     lastName=apellido,
-                    extEmpNo=vExtEmpNo,
+                    extEmpNo=no_ext,
                     jobTitle=puesto,
                     user_reg=request.user,
                     active = activo,
                     position = oPosicion,
-                    officeTel = telefono_oficina,
+                    officeTel = telOf,
                     dept = oDepartamento,
-                    officeExt = telefono_extension,
+                    officeExt = telExt,
                     branch = oSucursal,
-                    mobile=celular,
-                    pager = pager,
+                    mobile=telMov,
+                    pager = pag,
                     slsPerson = oEmpVentas,
                     fax = fax,
                     email = email,
-                    homeTel = telefono_casa,
+                    homeTel = telCasa,
                     homeStreet = calle,
                     streetNoH = ncalle,
                     homeBlock = bloque,
@@ -6623,6 +6649,410 @@ def guardar_tipo_salario(request):
                 }
         else:
             mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def actualizar_tipo_salario(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                desc = request.POST['desc']
+                nombre = request.POST['nombre']
+                activo = int(request.POST['activo'])
+
+                if len(nombre) == 0:
+                    mensaje = "El campo 'Nombre' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(desc) == 0:
+                    mensaje = "El campo 'Descripción' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                oMd = SalaryUnit.objects.get(pk=id)
+                if oMd:
+                    oMd.description = desc
+                    oMd.name = nombre
+                    oMd.active = activo
+                    oMd.user_mod = request.user
+                    oMd.date_mod = datetime.datetime.now()
+                    oMd.save()
+                    mensaje = 'Se ha actualizado el registro.'
+                    data = {
+                        'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "No existe el registro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def eliminar_tipo_salario(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oMd = SalaryUnit.objects.get(pk=reg_id)
+                    if oMd:
+                        oMd.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def guardar_costo_empleado(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                nombre = request.POST['nombre']
+                desc = request.POST['desc']
+                activo = int(request.POST['activo'])
+
+                if len(nombre) == 0:
+                    mensaje = "El campo 'Nombre' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(desc) == 0:
+                    mensaje = "El campo 'Descripción' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                oMd = CostUnit(
+                    name=nombre,
+                    description=desc,
+                    active=activo,
+                    user_reg=request.user,
+                )
+                oMd.save()
+                mensaje = 'Se ha guardado el registro'
+                data = {
+                    'mensaje': mensaje, 'error': False
+                }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def actualizar_costo_empleado(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                desc = request.POST['desc']
+                nombre = request.POST['nombre']
+                activo = int(request.POST['activo'])
+
+                if len(nombre) == 0:
+                    mensaje = "El campo 'Nombre' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(desc) == 0:
+                    mensaje = "El campo 'Descripción' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                oMd = CostUnit.objects.get(pk=id)
+                if oMd:
+                    oMd.description = desc
+                    oMd.name = nombre
+                    oMd.active = activo
+                    oMd.user_mod = request.user
+                    oMd.date_mod = datetime.datetime.now()
+                    oMd.save()
+                    mensaje = 'Se ha actualizado el registro.'
+                    data = {
+                        'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "No existe el registro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def eliminar_costo_empleado(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oMd = CostUnit.objects.get(pk=reg_id)
+                    if oMd:
+                        oMd.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def guardar_banco(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                nombre = request.POST['nombre']
+                desc = request.POST['desc']
+                activo = int(request.POST['activo'])
+
+                if len(nombre) == 0:
+                    mensaje = "El campo 'Nombre' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(desc) == 0:
+                    mensaje = "El campo 'Descripción' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                oMd = Bank(
+                    name=nombre,
+                    description=desc,
+                    active=activo,
+                    user_reg=request.user,
+                )
+                oMd.save()
+                mensaje = 'Se ha guardado el registro'
+                data = {
+                    'mensaje': mensaje, 'error': False
+                }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def actualizar_banco(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                desc = request.POST['desc']
+                nombre = request.POST['nombre']
+                activo = int(request.POST['activo'])
+
+                if len(nombre) == 0:
+                    mensaje = "El campo 'Nombre' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(desc) == 0:
+                    mensaje = "El campo 'Descripción' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                oMd = Bank.objects.get(pk=id)
+                if oMd:
+                    oMd.description = desc
+                    oMd.name = nombre
+                    oMd.active = activo
+                    oMd.user_mod = request.user
+                    oMd.date_mod = datetime.datetime.now()
+                    oMd.save()
+                    mensaje = 'Se ha actualizado el registro.'
+                    data = {
+                        'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "No existe el registro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def eliminar_banco(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oMd = Bank.objects.get(pk=reg_id)
+                    if oMd:
+                        oMd.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
             data = {
                 'mensaje': mensaje, 'error': True
             }

@@ -1896,7 +1896,7 @@ function validargnrDatos() {
         e.preventDefault();
         url = '/actualizar/tipo-salario/';
         metodo = 'POST';
-        if (tipoSalario_id.is(":checked")) {
+        if (tipoSalario_activo.is(":checked")) {
             vActivo = 1;
         } else {
             vActivo = 0;
@@ -1909,7 +1909,7 @@ function validargnrDatos() {
             'activo': vActivo,
             'csrfmiddlewaretoken': token.val(),
         };
-        GuardarRegistro(url, metodo, data, "Tipo de Salario", true, "/listar/activo-asignado/");
+        GuardarRegistro(url, metodo, data, "Tipo de Salario", true, "/listar/tipo-salario/");
         //}
     });
 
@@ -1920,6 +1920,124 @@ function validargnrDatos() {
     //#endregion
 
 //#endregion Código para registrar Tipo de Salario
+
+//#region Código para registrar Tipo Costo Empleado
+
+    //#region Variables
+    var empCosto_id = $("input[name='costoEmp_id'");
+    var empCosto_desc = $("textarea[name='costoEmp_desc'");
+    var empCosto_nombre = $("input[name='costoEmp_nombre'");
+    var empCosto_activo = $('input[name="costoEmp_activo"]');
+    //#endregion
+    
+    //#region Eventos Controles
+    $('#btncostoEmpGuardar').on('click', function (e) {
+        e.preventDefault();
+        url = '/guardar/costo-empleado-unidades/';
+        metodo = 'POST';
+        //if (validarEdDatos() != false) {
+        if (empCosto_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
+        }
+        data = {
+            'nombre': empCosto_nombre.val(),
+            'desc': empCosto_desc.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Unidades Costo Empleado");
+        //}
+    });
+
+    $('#btncostoEmpActualizar').on('click', function (e) {
+        e.preventDefault();
+        url = '/actualizar/costo-empleado-unidades/';
+        metodo = 'POST';
+        if (empCosto_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
+        }
+        //if (validarEdDatos() != false) {
+        data = {
+            'id': empCosto_id.val(),
+            'nombre': empCosto_nombre.val(),
+            'desc': empCosto_desc.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Unidades Costo de Empleado", true, "/listar/costo-empleado/");
+        //}
+    });
+
+    $('#btncostoEmpCancelar').on('click', function (e) {
+        e.preventDefault();
+        window.location.replace(dns + "/listar/costo-empleado/");
+    });
+    //#endregion
+
+//#endregion Código para registrar Tipo Costo Empleado
+
+//#region Código para registrar Banco
+
+    //#region Variables
+    var banco_id = $("input[name='banco_id'");
+    var banco_desc = $("textarea[name='banco_desc'");
+    var banco_nombre = $("input[name='banco_nombre'");
+    var banco_activo = $('input[name="banco_activo"]');
+    //#endregion
+
+    //#region Eventos Controles
+    $('#btnbancoGuardar').on('click', function (e) {
+        e.preventDefault();
+        url = '/guardar/banco/';
+        metodo = 'POST';
+        //if (validarEdDatos() != false) {
+        if (banco_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
+        }
+        data = {
+            'nombre': banco_nombre.val(),
+            'desc': banco_desc.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Banco");
+        //}
+    });
+
+    $('#btnbancoActualizar').on('click', function (e) {
+        e.preventDefault();
+        url = '/actualizar/banco/';
+        metodo = 'POST';
+        if (banco_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
+        }
+        //if (validarEdDatos() != false) {
+        data = {
+            'id': banco_id.val(),
+            'nombre': banco_nombre.val(),
+            'desc': banco_desc.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Banco", true, "/listar/banco/");
+        //}
+    });
+
+    $('#btnbancoCancelar').on('click', function (e) {
+        e.preventDefault();
+        window.location.replace(dns + "/listar/banco/");
+    });
+    //#endregion
+
+//#endregion Código para registrar Banco
 
 //#region Funciones Generales
     function GuardarRegistro(url, metodo, data, encabezado, editar, urlRedirect) {

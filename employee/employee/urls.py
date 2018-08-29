@@ -117,7 +117,14 @@ urlpatterns = [
     url(r'^editar/motivo-rescision-contrato/(?P<id>\w+)/$', views.motivo_rescision_contrato_editar, name="motivo_rescision_contrato_editar"),
     url(r'^listar/motivo-rescision-contrato/$', views.motivo_rescicion_contrato_listar, name="motivo_rescicion_contrato_listar"),
     url(r'^form/tipo-salario/$', views.tipo_salario_form, name="tipo_salario_form"),
+    url(r'^editar/tipo-salario/(?P<id>\w+)/$', views.tipo_salario_editar, name="tipo_salario_editar"),
     url(r'^listar/tipo-salario/$', views.tipo_salario_listar, name="tipo_salario_listar"),
+    url(r'^form/costo-empleado/$', views.tipo_costo_empleado_form, name="tipo_costo_empleado_form"),
+    url(r'^editar/costo-empleado/(?P<id>\w+)/$', views.tipo_costo_empleado_editar, name="tipo_costo_empleado_editar"),
+    url(r'^listar/costo-empleado/$', views.tipo_costo_empleado_listar, name="tipo_costo_empleado_listar"),
+    url(r'^form/banco/$', views.banco_form, name="banco_form"),
+    url(r'^editar/banco/(?P<id>\w+)/$', views.banco_editar, name="banco_editar"),
+    url(r'^listar/banco/$', views.banco_listado, name="banco_listado"),
 
     #----------------->>>AJAX<<<------------------
     url(r'^guardar/empleado/$', views.guardar_empleado, name='guardar_empleado'),
@@ -151,6 +158,9 @@ urlpatterns = [
     url(r'^guardar/feriado/$', views.guardar_feriado, name='guardar_feriado'),
     url(r'^guardar/activo-asignado/$', views.guardar_activo_asignado, name='guardar_activo_asignado'),
     url(r'^guardar/motivo-rescision-contrato/$', views.guardar_motivo_rescision_contrato, name='guardar_motivo_rescision_contrato'),
+    url(r'^guardar/tipo-salario/$', views.guardar_tipo_salario, name='guardar_tipo_salario'),
+    url(r'^guardar/costo-empleado-unidades/$', views.guardar_costo_empleado, name='guardar_costo_empleado'),
+    url(r'^guardar/banco/$', views.guardar_banco, name='guardar_banco'),
 
     url(r'^actualizar/corporativo/$', views.actualizar_corporativo, name='actualizar_corporativo'),
     url(r'^actualizar/empresa/$', views.actualizar_empresa, name='actualizar_empresa'),
@@ -183,6 +193,9 @@ urlpatterns = [
     url(r'^actualizar/activo-asignado/$', views.actualizar_activo_asignado, name='actualizar_activo_asignado'),
     url(r'^actualizar/empleado/$', views.actualizar_empleado, name='actualizar_empleado'),
     url(r'^actualizar/motivo-rescision-contrato/$', views.actualizar_motivo_rescision_contrato, name='actualizar_motivo_rescision_contrato'),
+    url(r'^actualizar/tipo-salario/$', views.actualizar_tipo_salario, name='actualizar_tipo_salario'),
+    url(r'^actualizar/costo-empleado-unidades/$', views.actualizar_costo_empleado, name='actualizar_costo_empleado'),
+    url(r'^actualizar/banco/$', views.actualizar_banco, name='actualizar_banco'),
 
     url(r'^eliminar/corporativo/$', views.eliminar_corporativo, name='eliminar_corporativo'),
     url(r'^eliminar/empresa/$', views.eliminar_empresa, name='eliminar_empresa'),
@@ -215,6 +228,9 @@ urlpatterns = [
     url(r'^eliminar/empleo-anterior/$', views.eliminar_empleo_anterior, name='eliminar_empleo_anterior'),
     url(r'^eliminar/empleado/$', views.eliminar_empleado, name='eliminar_empleado'),
     url(r'^eliminar/motivo-rescision-contrato/$', views.eliminar_motivo_rescision_contrato, name='eliminar_motivo_rescision_contrato'),
+    url(r'^eliminar/tipo-salario/$', views.eliminar_tipo_salario, name='eliminar_tipo_salario'),
+    url(r'^eliminar/costo-empleado-unidades/$', views.eliminar_costo_empleado, name='eliminar_costo_empleado'),
+    url(r'^eliminar/banco/$', views.eliminar_banco, name='eliminar_banco'),
     #------------------>>>AJAX<<<-------------------
 
     url(r'^seguridad/', include('django.contrib.auth.urls')),
