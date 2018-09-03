@@ -36,10 +36,21 @@ def empleado_form(request):
 def empleado_editar(request, id):
     dato = Employee.objects.get(pk=id)
     positions = Position.objects.filter(active=True)
-    deptos = Department.objects.filter(active=True)
+    departments = Department.objects.filter(active=True)
     branches = Branch.objects.filter(active=True)
     salesPersons = SalesPerson.objects.filter(active=True)
-    return render(request, 'empleado-form.html', {'editar':True, 'dato':dato, 'positions':positions, 'departments':deptos, 'branches':branches, 'salesPersons':salesPersons})
+    states = State.objects.filter(active=True)
+    countries = Country.objects.filter(active=True)
+    estados_emp = StatusEmp.objects.filter(active=True)
+    terms = TermReason.objects.filter(active=True)
+    sexos = Sex.objects.filter(active=True)
+    citizenships = Country.objects.filter(active=True)
+    civil_status = CivilStatus.objects.filter(active=True)
+    salary_units = SalaryUnit.objects.filter(active=True)
+    costs_units = CostUnit.objects.filter(active=True)
+    banks = Bank.objects.filter(active=True)
+    return render(request, 'empleado-form.html', {'editar':True, 'dato':dato, 'banks':banks, 'costs_units': costs_units, 'salary_units': salary_units, 'civil_status':civil_status, 'citizenships':citizenships, 'positions':positions, 'departments':departments, 'branches':branches, 'salesPersons':salesPersons, 'states':states, 'countries':countries, 'stats':estados_emp, 'terms':terms, 'sexs':sexos})
+    #return render(request, 'empleado-form.html', {'editar':True, 'dato':dato, 'positions':positions, 'departments':departments, 'branches':branches, 'salesPersons':salesPersons})
 
 def empleado_listado(request):
     empleados = Employee.objects.all()
