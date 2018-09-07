@@ -35,7 +35,7 @@ Inicio
                                 </td>
                                 <td>{{empleado.lastName}}</td>
                                 <td class="text-nowrap">
-                                    <a href="{% url 'empleado-perfil' %}" data-toggle="tooltip" data-original-title="Ver Perfil"> <i class="fa fa-search text-inverse m-r-10"></i> </a>
+                                    <a href="{% url 'empleado-perfil' empleado.pk %}" data-toggle="tooltip" data-original-title="Ver Perfil"> <i class="fa fa-search text-inverse m-r-10"></i> </a>
                                 </td>
                             </tr>
                             {% endfor %}

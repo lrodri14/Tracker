@@ -17,8 +17,8 @@
                             <div class="overlay-box">
                                 <div class="user-content">
                                     <a href="javascript:void(0)"><img src="{% static 'plugins/images/users/genu.jpg' %}" class="thumb-lg img-circle" alt="img"></a>
-                                    <h4 class="text-white">Nombre del empleado</h4>
-                                    <h5 class="text-white">info@myadmin.com</h5> </div>
+                                    <h4 class="text-white">{{dato.firstName}} {{dato.lastName}}</h4>
+                                    <h5 class="text-white">{{dato.email}}</h5> </div>
                             </div>
                         </div>
                     </div>
@@ -80,41 +80,88 @@
                                     </div>
                                     <div class="tab-pane active" id="profile">
                                         <div class="row">
-                                            <div class="col-md-3 col-xs-6 b-r"> <strong>Nombre completo</strong>
+                                            <div class="col-md-4 col-xs-6 b-r"> <strong>Primer nombre</strong>
                                                 <br>
-                                                <p class="text-muted">Johnathan Deo</p>
+                                                <p class="text-muted">{{dato.firstName}}</p>
                                             </div>
-                                            <div class="col-md-3 col-xs-6 b-r"> <strong>Teléfono movil</strong>
+                                            <div class="col-md-4 col-xs-6 b-r"> <strong>Segundo nombre</strong>
                                                 <br>
-                                                <p class="text-muted">(123) 456 7890</p>
+                                                <p class="text-muted">{% if dato.middleName %}{{dato.middleName}}{% endif %}</p>
                                             </div>
-                                            <div class="col-md-3 col-xs-6 b-r"> <strong>Email</strong>
+                                            <div class="col-md-4 col-xs-6 b-r"> <strong>Apellido</strong>
                                                 <br>
-                                                <p class="text-muted">johnathan@admin.com</p>
-                                            </div>
-                                            <div class="col-md-3 col-xs-6"> <strong>Locación</strong>
-                                                <br>
-                                                <p class="text-muted">London</p>
+                                                <p class="text-muted">{{dato.lastName}}</p>
                                             </div>
                                         </div>
                                         <div class="row">
-                                                <div class="col-md-3 col-xs-6 b-r"> <strong>Puesto de trabajo</strong>
-                                                    <br>
-                                                    <p class="text-muted">Vendedor</p>
-                                                </div>
-                                                <div class="col-md-3 col-xs-6 b-r"> <strong>Departamento</strong>
-                                                    <br>
-                                                    <p class="text-muted">Ventas</p>
-                                                </div>
-                                                <div class="col-md-3 col-xs-6 b-r"> <strong>Sucursal</strong>
-                                                    <br>
-                                                    <p class="text-muted">SuperTienda</p>
-                                                </div>
-                                                <div class="col-md-3 col-xs-6"> <strong>Gerente</strong>
-                                                    <br>
-                                                    <p class="text-muted">Nombre del gerente</p>
-                                                </div>
+                                            <div class="col-md-4 col-xs-6 b-r"> <strong>No de empleado ext.</strong>
+                                                <br>
+                                                <p class="text-muted">{% if dato.extEmpNo %}{{dato.extEmpNo}}{% endif %}</p>
                                             </div>
+                                            <div class="col-md-4 col-xs-6 b-r"> <strong>Estado de empleado</strong>
+                                                <br>
+                                                <p class="text-muted">{% if dato.active %}Activo{% else %}Inactivo{% endif %}</p>
+                                            </div>
+                                            <div class="col-md-4 col-xs-6 b-r"> <strong>Denominación de función</strong>
+                                                <br>
+                                                <p class="text-muted">{{dato.jobTitle}}</p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-4 col-xs-6 b-r"> <strong>Posición</strong>
+                                                <br>
+                                                <p class="text-muted">{% if dato.position %}{{dato.position.name}}{% endif %}</p>
+                                            </div>
+                                            <div class="col-md-4 col-xs-6 b-r"> <strong>Departamento</strong>
+                                                <br>
+                                                <p class="text-muted">{% if dato.dept %}{{dato.dept.name}}{% endif %}</p>
+                                            </div>
+                                            <div class="col-md-4 col-xs-6 b-r"> <strong>Sucursal</strong>
+                                                <br>
+                                                <p class="text-muted">{% if dato.branch %}{{dato.branch.name}}{% endif %}</p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-4 col-xs-6 b-r"> <strong>Gerente</strong>
+                                                <br>
+                                                <p class="text-muted"></p>
+                                            </div>
+                                            <div class="col-md-4 col-xs-6 b-r"> <strong>E-mail</strong>
+                                                <br>
+                                                <p class="text-muted">{% if dato.email %}{{dato.email}}{% endif %}</p>
+                                            </div>
+                                            <div class="col-md-4 col-xs-6 b-r"> <strong>Extensión</strong>
+                                                <br>
+                                                <p class="text-muted">{% if dato.officeExt %}{{dato.officeExt}}{% endif %}</p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-4 col-xs-6 b-r"> <strong>Teléfono de oficina</strong>
+                                                <br>
+                                                <p class="text-muted">{% if dato.officeTel %}{{dato.officeTel}}{% endif %}</p>
+                                            </div>
+                                            <div class="col-md-4 col-xs-6 b-r"> <strong>Teléfono movil</strong>
+                                                <br>
+                                                <p class="text-muted">{% if dato.mobile %}{{dato.mobile}}{% endif %}</p>
+                                            </div>
+                                            <div class="col-md-4 col-xs-6 b-r"> <strong>Teléfono casa</strong>
+                                                <br>
+                                                <p class="text-muted">{% if dato.homeTel %}{{dato.homeTel}}{% endif %}</p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-4 col-xs-6 b-r"> <strong>Pager</strong>
+                                                <br>
+                                                <p class="text-muted">{% if dato.pager %}{{dato.pager}}{% endif %}</p>
+                                            </div>
+                                            <div class="col-md-4 col-xs-6 b-r"> <strong>Fax</strong>
+                                                <br>
+                                                <p class="text-muted">{% if dato.fax %}{{dato.fax}}{% endif %}</p>
+                                            </div>
+                                            <div class="col-md-4 col-xs-6 b-r">
+                                                
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="tab-pane" id="settings">
                                         <form class="form-horizontal form-material">
@@ -207,5 +254,10 @@
                 }
             }
         });
+</script>
+<script>
+    $('#side-menu a').removeClass('active');
+    $('#aPersonal').addClass('active');
+    $('#Emp').addClass('active');
 </script>
 {% endblock scripts %}

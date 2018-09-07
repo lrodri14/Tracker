@@ -56,8 +56,9 @@ def empleado_listado(request):
     empleados = Employee.objects.all()
     return render(request, 'empleado-listado.html', {'empleados':empleados})
 
-def empleado_perfil(request):
-    return render(request, 'perfil-empleado.html')
+def empleado_perfil(request, id):
+    dato = Employee.objects.get(pk=id)
+    return render(request, 'perfil-empleado.html', {'dato':dato})
 
 def corporativo(request):
     return render(request, 'corporativo.html')
