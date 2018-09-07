@@ -162,6 +162,291 @@
                                                 
                                             </div>
                                         </div>
+                                        <hr>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <ul class="nav nav-tabs" role="tablist">
+                                                    <li role="presentation" class="active">
+                                                        <a href="#direccion" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true">
+                                                            <span class="visible-xs">
+                                                                <i class="ti-home"></i>
+                                                            </span>
+                                                            <span class="hidden-xs">Dirección</span>
+                                                        </a>
+                                                    </li>
+                                                    <li role="presentation">
+                                                        <a href="#gestion" aria-controls="gestion" role="tab" data-toggle="tab" aria-expanded="true">
+                                                            <span class="visible-xs">
+                                                                <i class="ti-user"></i>
+                                                            </span>
+                                                            <span class="hidden-xs">Gestion</span>
+                                                        </a>
+                                                    </li>
+                                                    <li role="presentation">
+                                                        <a href="#personal" aria-controls="personal" role="tab" data-toggle="tab" aria-expanded="true">
+                                                            <span class="visible-xs">
+                                                                <i class="ti-user"></i>
+                                                            </span>
+                                                            <span class="hidden-xs">Personal</span>
+                                                        </a>
+                                                    </li>
+                                                    <li role="presentation">
+                                                        <a href="#financiera" aria-controls="financiera" role="tab" data-toggle="tab" aria-expanded="true">
+                                                            <span class="visible-xs">
+                                                                <i class="ti-user"></i>
+                                                            </span>
+                                                            <span class="hidden-xs">Financiera</span>
+                                                        </a>
+                                                    </li>
+                                                    <li role="presentation">
+                                                        <a href="#comentarios" aria-controls="comentarios" role="tab" data-toggle="tab" aria-expanded="true">
+                                                            <span class="visible-xs">
+                                                                <i class="ti-user"></i>
+                                                            </span>
+                                                            <span class="hidden-xs">Comentarios</span>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                                <div class="tab-content">
+                                                    <div role="tabpanel" class="tab-pane active" id="direccion">
+                                                        <div class="col-md-12">
+                                                            <div class="col-md-6 col-xs-6">
+                                                                <h3>Dirección de Vivienda</h3> 
+                                                            </div>
+                                                            <div class="col-md-6 col-xs-6">
+                                                                <h3>Dirección de Trabajo</h3>
+                                                            </div>
+                                                            <hr>
+                                                            <div class="row">
+                                                                <div class="col-md-6 col-xs-6 b-r"> <strong>Calle</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.homeStreet %}{{dato.homeStreet}}{% endif %}</p>
+                                                                </div>
+                                                                <div class="col-md-6 col-xs-6 b-r"> <strong>Calle</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.workStreet %}{{dato.workStreet}}{% endif %}</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-6 col-xs-6 b-r"> <strong>No. Calle</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.streetNoH %}{{dato.streetNoH}}{% endif %}</p>
+                                                                </div>
+                                                                <div class="col-md-6 col-xs-6 b-r"> <strong>No. Calle</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.streetNoW %}{{dato.streetNoW}}{% endif %}</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-6 col-xs-6 b-r"> <strong>Bloque</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.homeBlock %}{{dato.homeBlock}}{% endif %}</p>
+                                                                </div>
+                                                                <div class="col-md-6 col-xs-6 b-r"> <strong>Bloque</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.workBlock %}{{dato.workBlock}}{% endif %}</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-6 col-xs-6 b-r"> <strong>Edificio/Casa</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.homeBuild %}{{dato.homeBuild}}{% endif %}</p>
+                                                                </div>
+                                                                <div class="col-md-6 col-xs-6 b-r"> <strong>Edificio/Casa</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.workBuild %}{{dato.workBuild}}{% endif %}</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-6 col-xs-6 b-r"> <strong>Código postal</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.homeZip %}{{dato.homeZip}}{% endif %}</p>
+                                                                </div>
+                                                                <div class="col-md-6 col-xs-6 b-r"> <strong>Código postal</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.workZip %}{{dato.workZip}}{% endif %}</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-6 col-xs-6 b-r"> <strong>Ciudad</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.homeCity %}{{dato.homeCity}}{% endif %}</p>
+                                                                </div>
+                                                                <div class="col-md-6 col-xs-6 b-r"> <strong>Ciudad</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.workCity %}{{dato.workCity}}{% endif %}</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-6 col-xs-6 b-r"> <strong>Condado/Municipio</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.homeCounty %}{{dato.homeCounty}}{% endif %}</p>
+                                                                </div>
+                                                                <div class="col-md-6 col-xs-6 b-r"> <strong>Condado/Municipio</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.workCounty %}{{dato.workCounty}}{% endif %}</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-6 col-xs-6 b-r"> <strong>Estado/Departamento</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.homeState %}{{dato.homeState.name}}{% endif %}</p>
+                                                                </div>
+                                                                <div class="col-md-6 col-xs-6 b-r"> <strong>Estado/Departamento</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.homeState %}{{dato.homeState.name}}{% endif %}</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-6 col-xs-6 b-r"> <strong>País</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.homeCountry %}{{dato.homeCountry.name}}{% endif %}</p>
+                                                                </div>
+                                                                <div class="col-md-6 col-xs-6 b-r"> <strong>País</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.homeCountry %}{{dato.homeCountry.name}}{% endif %}</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div role="tabpanel" class="tab-pane" id="gestion">
+                                                        <div class="col-md-12">
+                                                            <div class="row">
+                                                                <div class="col-md-6 col-xs-6 b-r"> <strong>Fecha de Inicio</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.startDate %}{{dato.startDate|date:"d/m/Y"}}{% endif %}</p>
+                                                                </div>
+                                                                <div class="col-md-6 col-xs-6 b-r"> <strong>Fecha rescisión de contrato</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.termDate %}{{dato.termDate|date:"d/m/Y"}}{% endif %}</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-6 col-xs-6 b-r"> <strong>Estado</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.status %}{{dato.status.name}}{% endif %}</p>
+                                                                </div>
+                                                                <div class="col-md-6 col-xs-6 b-r"> <strong>Motivo rescisión de contrato</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.termReason %}{{dato.termReason.name}}{% endif %}</p>
+                                                                </div>
+                                                                
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div role="tabpanel" class="tab-pane" id="personal">
+                                                        <div class="col-md-12">
+                                                            <div class="row">
+                                                                <div class="col-md-4 col-xs-6 b-r"> <strong>Sexo</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.sex %}{{dato.sex.description}}{% endif %}</p>
+                                                                </div>
+                                                                <div class="col-md-4 col-xs-6 b-r"> <strong>Fecha de nacimiento</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.birthDate %}{{dato.birthDate|date:"d/m/Y"}}{% endif %}</p>
+                                                                </div>
+                                                                <div class="col-md-4 col-xs-6 b-r"> <strong>Lugar de nacimiento</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.birthCountry %}{{dato.birthCountry.name}}{% endif %}</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-4 col-xs-6 b-r"> <strong>Estado civil</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.marrStatus %}{{dato.marrStatus.description}}{% endif %}</p>
+                                                                </div>
+                                                                <div class="col-md-4 col-xs-6 b-r"> <strong>Cantidad de hijos</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.nChildren %}{{dato.nChildren}}{% endif %}</p>
+                                                                </div>
+                                                                <div class="col-md-4 col-xs-6 b-r"> <strong>No. de ID</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.govID %}{{dato.govID}}{% endif %}</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-4 col-xs-6 b-r"> <strong>Nacionalidad</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.citizenship %}{{dato.citizenship.name}}{% endif %}</p>
+                                                                </div>
+                                                                <div class="col-md-4 col-xs-6 b-r"> <strong>No de Pasaporte</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.passportNo %}{{dato.passportNo}}{% endif %}</p>
+                                                                </div>
+                                                                <div class="col-md-4 col-xs-6 b-r"> <strong>Fecha vencimiento</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.passportExt %}{{dato.passportExt|date:"d/m/Y"}}{% endif %}</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-4 col-xs-6 b-r"> <strong>Fecha de Emisión</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.passIssue %}{{dato.passIssue}}{% endif %}</p>
+                                                                </div>
+                                                                <div class="col-md-4 col-xs-6 b-r"> <strong>Emisor de Pasaporte</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.passIssuer %}{{dato.passIssuer}}{% endif %}</p>
+                                                                </div>
+                                                                <div class="col-md-4 col-xs-6 b-r">
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.passportExt %}{% endif %}</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div role="tabpanel" class="tab-pane" id="financiera">
+                                                        <div class="col-md-12">
+                                                            <div class="row">
+                                                                <div class="col-md-6 col-xs-6">
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.passIssue %}{% endif %}</p>
+                                                                </div>
+                                                                <div class="col-md-6 col-xs-6">
+                                                                    <h3>INFORMACIÓN BANCARIA DETALLADA</h3>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-6 col-xs-6 b-r"> <strong>Salario</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.salary %}{{dato.salary}}{% endif %}</p>
+                                                                </div>
+                                                                <div class="col-md-6 col-xs-6 b-r"> <strong>Banco</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.bankCode %}{{dato.bankCode.name}}{% endif %}</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-6 col-xs-6 b-r"> <strong>Costos de empleado</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.empCost %}{{dato.empCost}}{% endif %}</p>
+                                                                </div>
+                                                                <div class="col-md-6 col-xs-6 b-r"> <strong>No. de cuenta</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.bankAccount %}{{dato.bankAccount}}{% endif %}</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-6 col-xs-6 b-r"></div>
+                                                                <div class="col-md-6 col-xs-6 b-r"> <strong>Sucursal</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.branchBank %}{{dato.branchBank}}{% endif %}</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div role="tabpanel" class="tab-pane" id="comentarios">
+                                                        <div class="col-md-12">
+                                                            <div class="row">
+                                                                <div class="col-md-12 col-xs-6 b-r"> <strong>Comentario</strong>
+                                                                    <br>
+                                                                    <p class="text-muted">{% if dato.remark %}{{dato.remark}}{% endif %}</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="tab-pane" id="settings">
                                         <form class="form-horizontal form-material">
