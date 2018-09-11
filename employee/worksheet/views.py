@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from worksheet.models import *
+from worksheet.forms import *
 import datetime
 from django.contrib.auth.decorators import login_required
 import datetime
@@ -15,6 +16,9 @@ import json
 def home(request):
     empleados = Employee.objects.all()
     return render(request, 'index.html', {'empleados':empleados})
+
+def login(request):
+    pass
 
 def empleado_form(request):
     positions = Position.objects.filter(active=True)
@@ -461,6 +465,22 @@ def banco_editar(request, id):
 def banco_listado(request):
     lista = Bank.objects.all()
     return render(request, 'banco-listado.html', {'lista':lista})
+
+def usuario_empresa_form(request):
+    frm = UsuarioEmpresaForm()
+    users = User.objects.all()
+    empresas = Empresa.objects.all()
+    return render(request, 'usuario-empresa.html', {'frm':frm, 'users':users, 'empresas':empresas})
+
+def usuario_empresa_listar(request):
+    lista = UsuarioEmpresa.objects.all()
+    return render(request, 'usuario-empresa-listado.html', {'lista': lista})
+
+def usuario_empresa_editar(request, id):
+    dato = UsuarioEmpresa.objects.get(pk=id)
+    users = User.objects.all()
+    empresas = Empresa.objects.all()
+    return render(request, 'usuario-empresa.html', {'editar':True, 'dato':dato, 'users':users, 'empresas':empresas})
 
 
 #---------------------------->>>> VISTAS AJAX <<<<----------------------------#
@@ -7042,6 +7062,244 @@ def eliminar_banco(request):
                 reg_id = request.POST['id']
                 if int(reg_id) > 0:
                     oMd = Bank.objects.get(pk=reg_id)
+                    if oMd:
+                        oMd.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def guardar_empresa_usuario(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                empresa = request.POST['empresa']
+                usuario = request.POST['usuario']
+                activo = int(request.POST['activo'])
+                
+                if len(empresa) == 0:
+                    mensaje = 'Seleccione una empresa.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+                else:
+                    if int(empresa) > 0:
+                        oEmpresa = Empresa.objects.get(pk=empresa)
+                    elif int(empresa) == 0:
+                        mensaje = 'Seleccione una empresa.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                        return JsonResponse(data)
+                    else:
+                        mensaje = 'Empleado no existe.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                        return JsonResponse(data)
+
+                if len(usuario) == 0:
+                    mensaje = 'Seleccione un usuario.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+                else:
+                    if int(usuario) > 0:
+                        oUsuario = User.objects.get(pk=usuario)
+                    elif int(usuario) == 0:
+                        mensaje = 'Seleccione un usuario.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                        return JsonResponse(data)
+                    else:
+                        mensaje = 'Empleado no existe.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                        return JsonResponse(data)
+
+                cReg = UsuarioEmpresa.objects.filter(empresa=oEmpresa, usuario=oUsuario).count()
+
+                if cReg > 0:
+                    mensaje = 'La empresa ya está asociada al usuario'
+                    data = {
+                        'mensaje':mensaje, 'error':True
+                    }
+                    return JsonResponse(data)
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                oMd = UsuarioEmpresa(
+                    empresa=oEmpresa,
+                    usuario=oUsuario,
+                    active=activo,
+                    user_reg=request.user,
+                )
+                oMd.save()
+                mensaje = 'Se ha guardado el registro'
+                data = {
+                    'mensaje': mensaje, 'error': False
+                }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def actualizar_empresa_usuario(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                empresa = request.POST['empresa']
+                usuario = request.POST['usuario']
+                activo = int(request.POST['activo'])
+
+                if len(empresa) == 0:
+                    mensaje = 'Seleccione una empresa.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+                else:
+                    if int(empresa) > 0:
+                        oEmpresa = Empresa.objects.get(pk=empresa)
+                    elif int(empresa) == 0:
+                        mensaje = 'Seleccione una empresa.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                        return JsonResponse(data)
+                    else:
+                        mensaje = 'Empleado no existe.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                        return JsonResponse(data)
+
+                if len(usuario) == 0:
+                    mensaje = 'Seleccione un usuario.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+                else:
+                    if int(usuario) > 0:
+                        oUsuario = User.objects.get(pk=usuario)
+                    elif int(usuario) == 0:
+                        mensaje = 'Seleccione un usuario.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                        return JsonResponse(data)
+                    else:
+                        mensaje = 'Usuario no existe.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                        return JsonResponse(data)
+
+                cReg = UsuarioEmpresa.objects.filter(empresa=oEmpresa, usuario=oUsuario)
+                
+                if cReg.count() > 0:
+                    mensaje = 'La empresa ya está asociada al usuario'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                oMd = UsuarioEmpresa.objects.get(pk=id)
+                if oMd:
+                    oMd.empresa = oEmpresa
+                    oMd.usuario = oUsuario
+                    oMd.active = activo
+                    oMd.user_mod = request.user
+                    oMd.date_mod = datetime.datetime.now()
+                    oMd.save()
+                    mensaje = 'Se ha actualizado el registro.'
+                    data = {
+                        'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "No existe el registro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def eliminar_empresa_usuario(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oMd = UsuarioEmpresa.objects.get(pk=reg_id)
                     if oMd:
                         oMd.delete()
                         mensaje = 'Se ha eliminado el registro.'

@@ -532,3 +532,14 @@ class ActivoAsignado(models.Model):
     def __unicode__(self):
         return self.descripcion
     
+class UsuarioEmpresa(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='usemp_user', related_query_name='usemp_user')
+    empresa = models.ForeignKey(Empresa)
+    user_reg = models.ForeignKey(User)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='usemp_usermod', related_query_name='usemp_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.NullBooleanField(blank=True, null=True)
+
+    def __unicode__(self):
+        return self.usuario.username + " - " + self.empresa.nombreComercial

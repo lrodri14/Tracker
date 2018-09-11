@@ -2039,6 +2039,65 @@ function validargnrDatos() {
 
 //#endregion Código para registrar Banco
 
+//#region Código para registrar Empresa por usuario
+
+    //#region Variables
+    var empUs_id = $("input[name='id'");
+    var empUs_usuario = $("select[name='userEmp_usuario'");
+    var empUs_empresa = $("select[name='userEmp_empresa'");
+    var empUs_activo = $("input[name='EmpUs_activo'");
+    //#endregion
+
+    //#region Eventos Controles
+    $('#btnempUserGuardar').on('click', function (e) {
+        e.preventDefault();
+        url = '/guardar/empresa-usuario/';
+        metodo = 'POST';
+        //if (validarEdDatos() != false) {
+        if (empUs_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
+        }
+        data = {
+            'empresa': empUs_empresa.val(),
+            'usuario': empUs_usuario.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Asignar empresa a usuario");
+        //}
+    });
+
+    $('#btnempUserActualizar').on('click', function (e) {
+        e.preventDefault();
+        url = '/actualizar/empresa-usuario/';
+        metodo = 'POST';
+        if (banco_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
+        }
+        //if (validarEdDatos() != false) {
+        data = {
+            'id': empUs_id.val(),
+            'empresa': empUs_empresa.val(),
+            'usuario': empUs_usuario.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Asignar empresa a usuario", true, "/listar/empresas-usuario/");
+        //}
+    });
+
+    $('#btnempUserCancelar').on('click', function (e) {
+        e.preventDefault();
+        window.location.replace(dns + "/listar/empresas-usuario/");
+    });
+    //#endregion
+
+//#endregion
+
 //#region Funciones Generales
     function GuardarRegistro(url, metodo, data, encabezado, editar, urlRedirect) {
         var texto = 'Se ha creado un nuevo registro.';

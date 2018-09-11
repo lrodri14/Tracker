@@ -125,6 +125,9 @@ urlpatterns = [
     url(r'^form/banco/$', views.banco_form, name="banco_form"),
     url(r'^editar/banco/(?P<id>\w+)/$', views.banco_editar, name="banco_editar"),
     url(r'^listar/banco/$', views.banco_listado, name="banco_listado"),
+    url(r'^form/empresa-usuario/$', views.usuario_empresa_form, name="emp_user_frm"),
+    url(r'^listar/empresas-usuario/$', views.usuario_empresa_listar, name="emp_user"),
+    url(r'^editar/empresa-usuario/(?P<id>\w+)/$', views.usuario_empresa_editar, name="usuario_empresa_editar"),
 
     #----------------->>>AJAX<<<------------------
     url(r'^guardar/empleado/$', views.guardar_empleado, name='guardar_empleado'),
@@ -161,6 +164,7 @@ urlpatterns = [
     url(r'^guardar/tipo-salario/$', views.guardar_tipo_salario, name='guardar_tipo_salario'),
     url(r'^guardar/costo-empleado-unidades/$', views.guardar_costo_empleado, name='guardar_costo_empleado'),
     url(r'^guardar/banco/$', views.guardar_banco, name='guardar_banco'),
+    url(r'^guardar/empresa-usuario/$', views.guardar_empresa_usuario, name='guardar_empresa_usuario'),
 
     url(r'^actualizar/corporativo/$', views.actualizar_corporativo, name='actualizar_corporativo'),
     url(r'^actualizar/empresa/$', views.actualizar_empresa, name='actualizar_empresa'),
@@ -196,6 +200,7 @@ urlpatterns = [
     url(r'^actualizar/tipo-salario/$', views.actualizar_tipo_salario, name='actualizar_tipo_salario'),
     url(r'^actualizar/costo-empleado-unidades/$', views.actualizar_costo_empleado, name='actualizar_costo_empleado'),
     url(r'^actualizar/banco/$', views.actualizar_banco, name='actualizar_banco'),
+    url(r'^actualizar/empresa-usuario/$', views.actualizar_empresa_usuario, name='actualizar_empresa_usuario'),
 
     url(r'^eliminar/corporativo/$', views.eliminar_corporativo, name='eliminar_corporativo'),
     url(r'^eliminar/empresa/$', views.eliminar_empresa, name='eliminar_empresa'),
@@ -231,6 +236,7 @@ urlpatterns = [
     url(r'^eliminar/tipo-salario/$', views.eliminar_tipo_salario, name='eliminar_tipo_salario'),
     url(r'^eliminar/costo-empleado-unidades/$', views.eliminar_costo_empleado, name='eliminar_costo_empleado'),
     url(r'^eliminar/banco/$', views.eliminar_banco, name='eliminar_banco'),
+    url(r'^eliminar/empresa-usuario/$', views.eliminar_empresa_usuario, name='eliminar_empresa_usuario'),
     #------------------>>>AJAX<<<-------------------
 
     url(r'^seguridad/', include('django.contrib.auth.urls')),

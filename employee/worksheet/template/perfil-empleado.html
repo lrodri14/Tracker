@@ -1,5 +1,12 @@
 {% extends "base.html" %}
 {% block titulo %}Perfíl de empleado{% endblock titulo %}
+{% block estilo %}
+<style>
+    .user-bg>.overlay-box{
+        background: #5493C8;
+    }
+</style>
+{% endblock estilo %}
 {% block contenido %}
 {% load static %}
 <div class="row">
@@ -13,10 +20,10 @@
                 <div class="panel-body">
                     <hr>
                     <div class="col-md-4 col-xs-12">
-                        <div class="user-bg"> <img width="100%" alt="user" src="{% static 'plugins/images/large/img1.jpg' %}">
+                        <div class="user-bg"> <!--img width="100%" alt="user" src="{% static 'plugins/images/large/img1.jpg' %}"-->
                             <div class="overlay-box">
                                 <div class="user-content">
-                                    <a href="javascript:void(0)"><img src="{% static 'plugins/images/users/genu.jpg' %}" class="thumb-lg img-circle" alt="img"></a>
+                                    <a href="javascript:void(0)"><img src="{% static 'images/usuario.jpg' %}" class="thumb-lg img-circle" alt="img"></a>
                                     <h4 class="text-white">{{dato.firstName}} {{dato.lastName}}</h4>
                                     <h5 class="text-white">{{dato.email}}</h5> </div>
                             </div>
