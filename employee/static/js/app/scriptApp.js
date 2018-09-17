@@ -2045,7 +2045,7 @@ function validargnrDatos() {
     var empUs_id = $("input[name='id'");
     var empUs_usuario = $("select[name='userEmp_usuario'");
     var empUs_empresa = $("select[name='userEmp_empresa'");
-    var empUs_activo = $("input[name='EmpUs_activo'");
+    var empUs_activo = $("input[name='userEmp_activo'");
     //#endregion
 
     //#region Eventos Controles
@@ -2073,7 +2073,7 @@ function validargnrDatos() {
         e.preventDefault();
         url = '/actualizar/empresa-usuario/';
         metodo = 'POST';
-        if (banco_activo.is(":checked")) {
+        if (empUs_activo.is(":checked")) {
             vActivo = 1;
         } else {
             vActivo = 0;

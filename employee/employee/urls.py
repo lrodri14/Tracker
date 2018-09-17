@@ -22,6 +22,7 @@ from worksheet import views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', views.home, name='home'),
+    url(r'^login/$', views.login, name="login"),
     url(r'^forms/empleado/$', views.empleado_form, name="empleados-form"),
     url(r'^editar/empleado/(?P<id>\w+)/$', views.empleado_editar, name="empleado_editar"),
     url(r'^perfil/empleado/(?P<id>\w+)/$', views.empleado_perfil, name="empleado-perfil"),

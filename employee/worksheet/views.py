@@ -18,7 +18,7 @@ def home(request):
     return render(request, 'index.html', {'empleados':empleados})
 
 def login(request):
-    pass
+    return render(request, 'login.html')
 
 def empleado_form(request):
     positions = Position.objects.filter(active=True)
@@ -7244,7 +7244,7 @@ def actualizar_empresa_usuario(request):
                         }
                         return JsonResponse(data)
 
-                cReg = UsuarioEmpresa.objects.filter(empresa=oEmpresa, usuario=oUsuario)
+                cReg = UsuarioEmpresa.objects.filter(empresa=oEmpresa, usuario=oUsuario).exclude(pk=id)
                 
                 if cReg.count() > 0:
                     mensaje = 'La empresa ya está asociada al usuario'
