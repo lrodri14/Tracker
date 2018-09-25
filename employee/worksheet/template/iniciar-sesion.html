@@ -31,7 +31,7 @@
                 <br>
                 <h3 class="box-title m-b-0">Acceso al Administrador</h3>
                 <small>Ingrese los datos abajo</small>
-                <form class="form-horizontal new-lg-form" action="{% url 'ingresar' %}" method="post" id="loginform">
+                <form class="form-horizontal new-lg-form" action="{% url 'ingresar' %}" method="POST" id="loginform">
                     {% csrf_token %}
                     {% if next %}
                         <input type="hidden" name="next" value="{{ next }}">

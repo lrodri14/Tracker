@@ -9,16 +9,56 @@ import datetime
 from django.contrib.auth.decorators import login_required
 import datetime
 from django.core.serializers import serialize
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 import json
 
 # Create your views here.
-@login_required(login_url='/seguridad/login/')
+@login_required(login_url='/ingresar/')
 def home(request):
     empleados = Employee.objects.all()
     return render(request, 'index.html', {'empleados':empleados})
 
-def login(request):
+def inicia_sesion(request):
     return render(request, 'login.html')
+
+# def login(request):
+#     print "Entra aqui"
+#     logout(request)
+#     username = password = ''
+#     username = request.POST['username']
+#     password = request.POST['password']
+#     user = authenticate(username=username, password=password)
+#     if user is not None:
+#         if user.is_active:
+#             login(user)
+#             return HttpResponseRedirect('/')
+#     return render(request, 'index.html')
+
+def ingresar(request):
+    if not request.user.is_anonymous():
+        return HttpResponseRedirect('/')
+    
+    if request.method == 'POST':
+        frmSesion = AuthenticationForm(request.POST)
+        #if frmSesion.is_valid():
+        usuario = request.POST['username']
+        clave = request.POST['password']
+        acceso = authenticate(username=usuario, password=clave)
+        if acceso is not None:
+            if acceso.is_active:
+                print "Entra aqui 2"
+                login(request, acceso)
+                return HttpResponseRedirect('/')
+            else:
+                return render(request, 'no-activo.html')
+        else:
+            return render(request, 'no-usuario.html')
+        #else:
+        #    pass
+    else:
+        frmSesion = AuthenticationForm()
+    return render(request, 'iniciar-sesion.html')
 
 def empleado_form(request):
     positions = Position.objects.filter(active=True)

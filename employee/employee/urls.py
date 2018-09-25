@@ -22,6 +22,7 @@ from worksheet import views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', views.home, name='home'),
+    url(r'^ingresar/$', views.ingresar, name="ingresar"),
     url(r'^login/$', views.login, name="login"),
     url(r'^forms/empleado/$', views.empleado_form, name="empleados-form"),
     url(r'^editar/empleado/(?P<id>\w+)/$', views.empleado_editar, name="empleado_editar"),
@@ -240,7 +241,7 @@ urlpatterns = [
     url(r'^eliminar/empresa-usuario/$', views.eliminar_empresa_usuario, name='eliminar_empresa_usuario'),
     #------------------>>>AJAX<<<-------------------
 
-    url(r'^seguridad/', include('django.contrib.auth.urls')),
+    #url(r'^seguridad/', include('django.contrib.auth.urls')),
     # url(r'^seguridad/logout/$', include('django.contrib.auth.views.login'), {'next_page': '/'}),
     # url(r'^seguridad/logout/$', include('django.contrib.auth.views.logout'), {'next_page': '/segurida/login/'}),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
