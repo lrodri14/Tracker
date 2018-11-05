@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>SELECCIONAR SUCURSAL</title>
+    <link href="{% static 'bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
+    <style>
+    .form-signin{
+        width: 100%;
+        max-width: 330px;
+        padding: 15px;
+        margin: 0 auto;
+    }
+    </style>
+<body class="text-center">
+    <form class="form-signin" action="{% url 'recibir_sucursal' %}" method="post">
+    <h1 class="h3 mb-3 font-weight-normal">Ingrese los siguientes datos</h1>
+    {% csrf_token %}
+    <label for="empresa" class="sr-only">Empresa</label>
+    <select name="empresa" id="empresa" class="form-control" placeholder="Empresa">
+    <option value="0">Seleccione la empresa...</option>
+    {% for empresa in empresas %}
+    <option value="{{empresa.pk}}">{{empresa.nombreComercial}}</option>
+    {% endfor %}
+    </select>
+    <br>
+    <select name="sucursal" class="form-control">
+    <option value="0">Seleccione la sucursal...</option>
+    {% comment %}
+    {% for item in sucursales %}
+    <option value="{{item.pk}}">{{item.sucursal.name}}</option>
+    {% endfor %}
+    {% endcomment %}
+    </select>
+    <br>
+    <input class="btn btn-lg btn-primary btn-block" type="submit" value="Aceptar">
+    </form>
+    {% comment %}
+    <ul>
+    <comment></comment>
+    {% for item in sucursales %}
+    <li>{{item.sucursal.name}}</li>
+    {% endfor %}
+    </ul>
+    {% endcomment %}
+    <script src="{% static 'plugins/bower_components/jquery/dist/jquery.min.js' %}"></script>
+    <script>
+    var cboEmpresa = $('select[name="empresa"]');
+    var cboSucursal = $('select[name="sucursal"]')
+
+    cboEmpresa.on('change', function() {
+        var empresa_id = cboEmpresa.val();
+        $.ajax({
+                type: "GET",
+                url: '/obtener/sucursales/',
+                data: {
+                    'idEmpresa':empresa_id
+                }, // serializes the form's elements.
+                success: function(data)
+                {
+                    cboSucursal.html(data);
+                },
+                error: function(data) {
+                    
+                },
+                typeData:'json'
+            });
+    });
+    </script>
+</body>
+</html>

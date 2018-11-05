@@ -29,18 +29,6 @@ class Department(models.Model):
     def __unicode__(self):
         return self.name
 
-class Branch(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.CharField(max_length=250)
-    user_reg = models.ForeignKey(User)
-    date_reg = models.DateTimeField(auto_now_add=True)
-    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='brn_usermod', related_query_name='brn_usermod')
-    date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.BooleanField(default=True)
-
-    def __unicode__(self):
-        return self.name
-
 class Group(models.Model):
     name = models.CharField(max_length=100)
     active = models.BooleanField(default=False)
@@ -49,6 +37,33 @@ class Group(models.Model):
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='grp_usermod', related_query_name='grp_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField(default=True)
+
+    def __unicode__(self):
+        return self.name
+
+class Empresa(models.Model):
+    razonSocial = models.CharField(max_length=100, blank=True, null=True)
+    nombreComercial = models.CharField(max_length=100, blank=True, null=True)
+    grupo = models.ForeignKey(Group, blank=True, null=True)
+    user_reg = models.ForeignKey(User)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='empr_usermod', related_query_name='empr_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.BooleanField()
+
+    def __unicode__(self):
+        return self.nombreComercial
+
+class Branch(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.CharField(max_length=250)
+    empresa = models.ForeignKey(Empresa)
+    user_reg = models.ForeignKey(User)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='brn_usermod', related_query_name='brn_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.BooleanField(default=True)
+
 
     def __unicode__(self):
         return self.name
@@ -162,6 +177,7 @@ class CostUnit(models.Model):
 class Bank(models.Model):
     name = models.CharField(max_length=25)
     description = models.TextField()
+    sucursal_reg = models.ForeignKey(Branch, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="bank_sucreg", related_query_name="bank_sucreg")
     user_reg = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name="bank_usermod", related_query_name="bank_usermod",)
@@ -253,18 +269,6 @@ class GrupoCorporativo(models.Model):
     user_reg = models.ForeignKey(User)
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='gcom_usermod', related_query_name='gcom_usermod')
-    date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.BooleanField()
-
-    def __unicode__(self):
-        return self.nombreComercial
-
-class Empresa(models.Model):
-    razonSocial = models.CharField(max_length=100, blank=True, null=True)
-    nombreComercial = models.CharField(max_length=100, blank=True, null=True)
-    user_reg = models.ForeignKey(User)
-    date_reg = models.DateTimeField(auto_now_add=True)
-    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='empr_usermod', related_query_name='empr_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField()
 
@@ -543,3 +547,15 @@ class UsuarioEmpresa(models.Model):
 
     def __unicode__(self):
         return self.usuario.username + " - " + self.empresa.nombreComercial
+
+class UsuarioSucursal(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='usbranch_user', related_query_name='usbranch_user')
+    sucursal = models.ForeignKey(Branch, blank=True, null=True)
+    user_reg = models.ForeignKey(User)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='usbranc_usermod', related_query_name='usbranch_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.NullBooleanField(blank=True, null=True)
+
+    def __unicode__(self):
+        return self.usuario.username + " - " + self.sucursal.name

@@ -78,12 +78,12 @@ WSGI_APPLICATION = 'employee.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'sql_server.pyodbc',
-        'NAME': 'django',
+        'NAME': 'planilla',
         'USER': 'sa',
-        #'PASSWORD': '12345',
-        'PASSWORD': 'holaMundo2018',
-        #'HOST': 'DESKTOP-O3RL0VG',
-        'HOST': 'IT06',
+        'PASSWORD': '12345',
+        #'PASSWORD': 'holaMundo2018',
+        'HOST': 'DESKTOP-B0F6DKE',
+        #'HOST': 'IT06',
         'PORT': '',
     }
 }
@@ -135,4 +135,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/seguridad/login/'
+LOGOUT_REDIRECT_URL = '/'

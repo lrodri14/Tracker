@@ -17,12 +17,16 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.auth.views import logout
 from worksheet import views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', views.home, name='home'),
     url(r'^ingresar/$', views.ingresar, name="ingresar"),
+    url(r'^seleccionar/sucursal/$', views.seleccionar_sucursal, name="selecciona_sucursal"),
+    url(r'^recibir/sucursal/$', views.recibir_sucursal, name="recibir_sucursal"),
+    url(r'^salir/$', logout, name="salir", kwargs={'next_page': '/'}),
     url(r'^login/$', views.login, name="login"),
     url(r'^forms/empleado/$', views.empleado_form, name="empleados-form"),
     url(r'^editar/empleado/(?P<id>\w+)/$', views.empleado_editar, name="empleado_editar"),
@@ -239,6 +243,8 @@ urlpatterns = [
     url(r'^eliminar/costo-empleado-unidades/$', views.eliminar_costo_empleado, name='eliminar_costo_empleado'),
     url(r'^eliminar/banco/$', views.eliminar_banco, name='eliminar_banco'),
     url(r'^eliminar/empresa-usuario/$', views.eliminar_empresa_usuario, name='eliminar_empresa_usuario'),
+
+    url(r'^obtener/sucursales/$', views.lista_sucursal, name="lista_sucursal"),
     #------------------>>>AJAX<<<-------------------
 
     #url(r'^seguridad/', include('django.contrib.auth.urls')),

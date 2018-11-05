@@ -17,6 +17,7 @@ import json
 @login_required(login_url='/ingresar/')
 def home(request):
     empleados = Employee.objects.all()
+    print request.session["sucursal"]
     return render(request, 'index.html', {'empleados':empleados})
 
 def inicia_sesion(request):
@@ -47,8 +48,19 @@ def ingresar(request):
         acceso = authenticate(username=usuario, password=clave)
         if acceso is not None:
             if acceso.is_active:
-                print "Entra aqui 2"
                 login(request, acceso)
+                Sucursales = UsuarioSucursal.objects.filter(usuario=request.user)
+                if Sucursales.count() > 0:
+                    if Sucursales.count() > 1:
+                        print "Entro aqui"
+                        return HttpResponseRedirect('/seleccionar/sucursal/')
+                    else:
+                        sucursal = UsuarioSucursal.objects.get(usuario=request.user)
+                        request.session["nombre_sucursal"] = sucursal.sucursal.name
+                        request.session["sucursal"] = sucursal.sucursal.pk
+                        print "Solo tiene una sucursal asignada"
+                else:
+                    pass
                 return HttpResponseRedirect('/')
             else:
                 return render(request, 'no-activo.html')
@@ -58,7 +70,39 @@ def ingresar(request):
         #    pass
     else:
         frmSesion = AuthenticationForm()
+    if "sucursal" in request:
+        print request.session["sucursal"]
     return render(request, 'iniciar-sesion.html')
+
+def seleccionar_sucursal(request):
+    empresas= []
+    empresa = {}
+    sucursales = UsuarioSucursal.objects.filter(usuario=request.user)
+    empresa_flat = UsuarioSucursal.objects.filter(usuario=request.user).values_list('sucursal__empresa_id', flat=True).distinct()
+    empresas = Empresa.objects.filter(pk__in=empresa_flat)
+
+    print empresas
+    # for item in sucursales:
+    #     empresa = {
+    #         "pk": item.sucursal.empresa.pk,
+    #         "nombre": item.sucursal.empresa.nombreComercial
+    #     }
+    return render(request, 'seleccionar_sucursal.html', {'sucursales':sucursales, 'empresas':empresas})
+
+def recibir_sucursal(request):
+    if request.method == "POST":
+        IdSucursal = request.POST["sucursal"]
+        totreg = Branch.objects.filter(pk=IdSucursal).count()
+        if totreg > 0:
+            sucursal = Branch.objects.get(pk=IdSucursal)
+            request.session["nombre_sucursal"] = sucursal.name
+            request.session["sucursal"] = IdSucursal
+            return HttpResponseRedirect("/")
+        else:
+            request.session["sucursal"] = 0
+            request.session["nombre_sucursal"] = ""
+
+            return HttpResponseRedirect("/seleccionar/sucursal/")
 
 def empleado_form(request):
     positions = Position.objects.filter(active=True)
@@ -503,7 +547,7 @@ def banco_editar(request, id):
     return render(request, 'banco-form.html', {'editar':True, 'dato':dato})
 
 def banco_listado(request):
-    lista = Bank.objects.all()
+    lista = Bank.objects.filter(sucursal_reg__pk=request.session["sucursal"])
     return render(request, 'banco-listado.html', {'lista':lista})
 
 def usuario_empresa_form(request):
@@ -7007,9 +7051,12 @@ def guardar_banco(request):
                 else:
                     activo = False
 
+                suc_reg = Branch.objects.get(pk=request.session["sucursal"])
+
                 oMd = Bank(
                     name=nombre,
                     description=desc,
+                    sucursal_reg=suc_reg,
                     active=activo,
                     user_reg=request.user,
                 )
@@ -7373,3 +7420,14 @@ def eliminar_empresa_usuario(request):
             'mensaje': 'error',
         }
     return JsonResponse(data)
+
+def lista_sucursal(request):
+    sucursales = None
+    idEmpresa = request.GET.get("idEmpresa")
+    sucursales_flat =  UsuarioSucursal.objects.filter(usuario=request.user, sucursal__empresa__id=idEmpresa).values_list('sucursal__id', flat=True)
+    sucursales = Branch.objects.filter(pk__in=sucursales_flat)
+    data = {
+        'pk': idEmpresa
+    } 
+    #return JsonResponse(data)    
+    return render(request, 'ajax/lista_sucursales.html', {'sucursales': sucursales})
