@@ -16,6 +16,12 @@ import json
 # Create your views here.
 @login_required(login_url='/ingresar/')
 def home(request):
+    if not "sucursal" in request.session:
+        return HttpResponseRedirect("/salir/")
+    else:
+        if request.session["sucursal"] < 1:
+            return HttpResponseRedirect("/salir/")
+
     empleados = Employee.objects.all()
     print request.session["sucursal"]
     return render(request, 'index.html', {'empleados':empleados})
