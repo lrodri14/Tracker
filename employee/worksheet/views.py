@@ -14,20 +14,22 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 import json
 
 # Create your views here.
-@login_required(login_url='/ingresar/')
-def home(request):
+def verificaSucursal(request):
     if not "sucursal" in request.session:
         return HttpResponseRedirect("/salir/")
     else:
         if request.session["sucursal"] < 1:
             return HttpResponseRedirect("/salir/")
 
+@login_required(login_url='/form/iniciar-sesion/')
+def home(request):
+    verificaSucursal(request)
     empleados = Employee.objects.all()
     print request.session["sucursal"]
     return render(request, 'index.html', {'empleados':empleados})
 
 def inicia_sesion(request):
-    return render(request, 'login.html')
+    return render(request, 'iniciar-sesion.html')
 
 # def login(request):
 #     print "Entra aqui"
@@ -43,42 +45,38 @@ def inicia_sesion(request):
 #     return render(request, 'index.html')
 
 def ingresar(request):
+    Sucursales = None
+
     if not request.user.is_anonymous():
-        return HttpResponseRedirect('/')
+        return HttpResponseRedirect('/form/iniciar-sesion/')
+    
     
     if request.method == 'POST':
         frmSesion = AuthenticationForm(request.POST)
-        #if frmSesion.is_valid():
         usuario = request.POST['username']
         clave = request.POST['password']
         acceso = authenticate(username=usuario, password=clave)
+        login(request, acceso)
         if acceso is not None:
             if acceso.is_active:
-                login(request, acceso)
-                Sucursales = UsuarioSucursal.objects.filter(usuario=request.user)
-                if Sucursales.count() > 0:
-                    if Sucursales.count() > 1:
-                        print "Entro aqui"
+                totReg = UsuarioSucursal.objects.filter(usuario=request.user, active = True).count()    
+                if totReg > 0:
+                    if totReg > 1:
                         return HttpResponseRedirect('/seleccionar/sucursal/')
                     else:
-                        sucursal = UsuarioSucursal.objects.get(usuario=request.user)
+                        sucursal = UsuarioSucursal.objects.get(usuario=request.user, active=True)
                         request.session["nombre_sucursal"] = sucursal.sucursal.name
-                        request.session["sucursal"] = sucursal.sucursal.pk
-                        print "Solo tiene una sucursal asignada"
+                        request.session["sucursal"] = sucursal.pk
+                        return HttpResponseRedirect('/')
                 else:
-                    pass
-                return HttpResponseRedirect('/')
+                    return HttpResponseRedirect('/salir/')
             else:
                 return render(request, 'no-activo.html')
         else:
             return render(request, 'no-usuario.html')
-        #else:
-        #    pass
     else:
         frmSesion = AuthenticationForm()
-    if "sucursal" in request:
-        print request.session["sucursal"]
-    return render(request, 'iniciar-sesion.html')
+        return HttpResponseRedirect('/form/iniciar-sesion/')
 
 def seleccionar_sucursal(request):
     empresas= []
@@ -86,13 +84,6 @@ def seleccionar_sucursal(request):
     sucursales = UsuarioSucursal.objects.filter(usuario=request.user)
     empresa_flat = UsuarioSucursal.objects.filter(usuario=request.user).values_list('sucursal__empresa_id', flat=True).distinct()
     empresas = Empresa.objects.filter(pk__in=empresa_flat)
-
-    print empresas
-    # for item in sucursales:
-    #     empresa = {
-    #         "pk": item.sucursal.empresa.pk,
-    #         "nombre": item.sucursal.empresa.nombreComercial
-    #     }
     return render(request, 'seleccionar_sucursal.html', {'sucursales':sucursales, 'empresas':empresas})
 
 def recibir_sucursal(request):
@@ -111,6 +102,7 @@ def recibir_sucursal(request):
             return HttpResponseRedirect("/seleccionar/sucursal/")
 
 def empleado_form(request):
+    verificaSucursal(request)
     positions = Position.objects.filter(active=True)
     departments = Department.objects.filter(active=True)
     branches = Branch.objects.filter(active=True)
@@ -165,59 +157,79 @@ def listadoCorporativo(request):
     corporativos = GrupoCorporativo.objects.all().order_by('date_reg')
     return render(request, 'corporativo-listado.html', {'corporativos':corporativos})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def empresa(request):
     return render(request, 'empresa.html')
 
+@login_required(login_url='/form/iniciar-sesion/')
 def empresa_editar(request, emp_id):
     dato = Empresa.objects.get(pk=emp_id)
     return render(request, 'empresa.html', {'dato':dato, 'editar':True} )
 
+@login_required(login_url='/form/iniciar-sesion/')
 def listadoEmpresa(request):
     empresas = Empresa.objects.all()
     return render(request, 'empresa-listado.html', {'empresas':empresas})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def sucursal(request):
     return render(request, 'sucursal.html')
 
+@login_required(login_url='/form/iniciar-sesion/')
 def sucursal_editar(request, id):
     dato = Branch.objects.get(pk=id)
     return render(request, 'sucursal.html', {'editar':True, 'dato':dato})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def listadoSucursal(request):
     sucursales = Branch.objects.all()
     return render(request, 'sucursal-listado.html', {'sucursales':sucursales})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def divisiones(request):
     return render(request, 'divisiones.html')
 
+@login_required(login_url='/form/iniciar-sesion/')
 def division_editar(request, id):
     dato = Divisiones.objects.get(pk=id)
     return render(request, 'divisiones.html', {'editar':True, 'dato':dato})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def listadoDivisiones(request):
     divisiones = Divisiones.objects.all()
     return render(request, 'divisiones-listado.html', {'divisiones':divisiones})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def departamentos(request):
     return render(request, 'departamentos.html')
 
+@login_required(login_url='/form/iniciar-sesion/')
 def departamento_editar(request, id):
     dato = Department.objects.get(pk=id)
     return render(request, 'departamentos.html', {'editar':True, 'dato':dato})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def listadoDepartamentos(request):
+    print request.session["sucursal"]
+    #oSucUs = UsuarioSucursal.objects.get(pk=request.session["sucursal"])
+    #deptos = Department.objects.filter(empresa_reg=oSucUs.sucursal.empresa, active=True)
     deptos = Department.objects.all()
     return render(request, 'departamento-listado.html', {'deptos':deptos})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def puestoTrabajo(request):
     return render(request, 'puesto-trabajo.html')
 
+@login_required(login_url='/form/iniciar-sesion/')
 def puesto_editar(request, id):
-    dato = Position.objects.get(pk=id)
+    dato = Position.object.get(pk=id)
     return render(request, 'puesto-trabajo.html', {'editar':True, 'dato':dato})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def listadoPuestoTrabajo(request):
-    puestos = Position.objects.all()
+    verificaSucursal(request)
+    oSucUs = UsuarioSucursal.object.get(sucursal_id=request.session["sucursal"])
+    puestos = Position.object.filter(active=True, empresa_reg=oSucUs.sucursal.empresa)
     return render(request, 'puestos-listado.html', {'puesto':puestos})
 
 def centro_costos(request):
@@ -2142,11 +2154,14 @@ def guardar_departamento(request):
                     activo = True
                 else:
                     activo = False
+
+                oSucUs = UsuarioSucursal.objects.get(pk=request.session["sucursal"])
                 
                 if len(nombre) > 0 and len(descripcion) > 0:
                     oDeparment = Department(
                         name = nombre,
                         description = descripcion,
+                        empresa_reg = oSucUs.sucursal.empresa,
                         active = activo,
                         user_reg=request.user,
                     )
@@ -2305,11 +2320,12 @@ def guardar_puesto(request):
                     activo = True
                 else:
                     activo = False
-
+                oSucUs = UsuarioSucursal.objects.get(pk=request.session["sucursal"])
                 if len(nombre) > 0 and len(descripcion) > 0:
                     oPuesto = Position(
                         name=nombre,
                         description=descripcion,
+                        empresa_reg=oSucUs.sucursal.empresa,
                         active=activo,
                         user_reg=request.user,
                     )

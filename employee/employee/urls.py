@@ -23,6 +23,7 @@ from worksheet import views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', views.home, name='home'),
+    url(r'^form/iniciar-sesion/$', views.inicia_sesion, name="iniciar-sesion"),
     url(r'^ingresar/$', views.ingresar, name="ingresar"),
     url(r'^seleccionar/sucursal/$', views.seleccionar_sucursal, name="selecciona_sucursal"),
     url(r'^recibir/sucursal/$', views.recibir_sucursal, name="recibir_sucursal"),

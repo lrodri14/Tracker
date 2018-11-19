@@ -4,31 +4,6 @@ from django.contrib.auth.models import User
 
 from django.db import models
 
-# Create your models here.
-class Position(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.CharField(max_length=250)
-    active = models.BooleanField(default=True)
-    user_reg = models.ForeignKey(User)
-    date_reg = models.DateTimeField(auto_now_add=True)
-    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='pos_usermod', related_query_name='pos_usermod')
-    date_mod = models.DateTimeField(blank=True, null=True)
-    
-    def __unicode__(self):
-        return self.name
-
-class Department(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.CharField(max_length=250)
-    user_reg = models.ForeignKey(User)
-    date_reg = models.DateTimeField(auto_now_add=True)
-    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='dep_usermod', related_query_name='dep_usermod')
-    date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.BooleanField(default=True)
-
-    def __unicode__(self):
-        return self.name
-
 class Group(models.Model):
     name = models.CharField(max_length=100)
     active = models.BooleanField(default=False)
@@ -41,6 +16,7 @@ class Group(models.Model):
     def __unicode__(self):
         return self.name
 
+# Create your models here.
 class Empresa(models.Model):
     razonSocial = models.CharField(max_length=100, blank=True, null=True)
     nombreComercial = models.CharField(max_length=100, blank=True, null=True)
@@ -64,6 +40,32 @@ class Branch(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField(default=True)
 
+
+    def __unicode__(self):
+        return self.name
+
+class Position(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.CharField(max_length=250)
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="pos_empreg", related_query_name="pos_empreg")
+    active = models.BooleanField(default=True)
+    user_reg = models.ForeignKey(User)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='pos_usermod', related_query_name='pos_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    
+    def __unicode__(self):
+        return self.name
+
+class Department(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.CharField(max_length=250)
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="dep_empreg", related_query_name="dep_empreg")
+    user_reg = models.ForeignKey(User)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='dep_usermod', related_query_name='dep_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.BooleanField(default=True)
 
     def __unicode__(self):
         return self.name
