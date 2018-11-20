@@ -73,6 +73,7 @@ class Department(models.Model):
 class SalesPerson(models.Model):
     slpName = models.CharField(max_length=150)
     groupCode = models.ForeignKey(Group, blank=True, null=True)
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="slsp_empreg", related_query_name="slsp_empreg")
     user_reg = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name="usermod", related_query_name="usermod",)
@@ -85,6 +86,8 @@ class SalesPerson(models.Model):
 class State(models.Model):
     code = models.CharField(max_length=5, blank=True, null=True)
     name = models.CharField(max_length=150)
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING,
+                                    related_name="state_empreg", related_query_name="state_empreg")
     user_reg = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name="state_usermod", related_query_name="state_usermod",)

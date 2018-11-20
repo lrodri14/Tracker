@@ -56,9 +56,10 @@ def ingresar(request):
         usuario = request.POST['username']
         clave = request.POST['password']
         acceso = authenticate(username=usuario, password=clave)
-        login(request, acceso)
+        
         if acceso is not None:
             if acceso.is_active:
+                login(request, acceso)
                 totReg = UsuarioSucursal.objects.filter(usuario=request.user, active = True).count()    
                 if totReg > 0:
                     if totReg > 1:
@@ -66,7 +67,7 @@ def ingresar(request):
                     else:
                         sucursal = UsuarioSucursal.objects.get(usuario=request.user, active=True)
                         request.session["nombre_sucursal"] = sucursal.sucursal.name
-                        request.session["sucursal"] = sucursal.pk
+                        request.session["sucursal"] = sucursal.sucursal.pk
                         return HttpResponseRedirect('/')
                 else:
                     return HttpResponseRedirect('/salir/')
@@ -210,10 +211,8 @@ def departamento_editar(request, id):
 
 @login_required(login_url='/form/iniciar-sesion/')
 def listadoDepartamentos(request):
-    print request.session["sucursal"]
-    #oSucUs = UsuarioSucursal.objects.get(pk=request.session["sucursal"])
-    #deptos = Department.objects.filter(empresa_reg=oSucUs.sucursal.empresa, active=True)
-    deptos = Department.objects.all()
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    deptos = Department.objects.filter(empresa_reg=suc.empresa, active=True)
     return render(request, 'departamento-listado.html', {'deptos':deptos})
 
 @login_required(login_url='/form/iniciar-sesion/')
@@ -222,14 +221,15 @@ def puestoTrabajo(request):
 
 @login_required(login_url='/form/iniciar-sesion/')
 def puesto_editar(request, id):
-    dato = Position.object.get(pk=id)
+    dato = Position.objects.get(pk=id)
     return render(request, 'puesto-trabajo.html', {'editar':True, 'dato':dato})
 
 @login_required(login_url='/form/iniciar-sesion/')
 def listadoPuestoTrabajo(request):
     verificaSucursal(request)
-    oSucUs = UsuarioSucursal.object.get(sucursal_id=request.session["sucursal"])
-    puestos = Position.object.filter(active=True, empresa_reg=oSucUs.sucursal.empresa)
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    print suc.empresa_id
+    puestos = Position.objects.filter(active=True, empresa_reg=suc.empresa)
     return render(request, 'puestos-listado.html', {'puesto':puestos})
 
 def centro_costos(request):
@@ -262,7 +262,8 @@ def deptos_pais_editar(request, id):
     return render(request, 'deptos-pais.html', {'editar':True, 'dato':dato})
 
 def deptos_pais_listado(request):
-    deptos = State.objects.all()
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    deptos = State.objects.filter(empresa_reg=suc.empresa)
     return render(request, 'deptos-pais-listado.html', {'deptos': deptos})
 
 def ciudad(request):
@@ -2155,13 +2156,13 @@ def guardar_departamento(request):
                 else:
                     activo = False
 
-                oSucUs = UsuarioSucursal.objects.get(pk=request.session["sucursal"])
+                suc = Branch.objects.get(pk=request.session["sucursal"])
                 
                 if len(nombre) > 0 and len(descripcion) > 0:
                     oDeparment = Department(
                         name = nombre,
                         description = descripcion,
-                        empresa_reg = oSucUs.sucursal.empresa,
+                        empresa_reg = suc.empresa,
                         active = activo,
                         user_reg=request.user,
                     )
@@ -2320,12 +2321,12 @@ def guardar_puesto(request):
                     activo = True
                 else:
                     activo = False
-                oSucUs = UsuarioSucursal.objects.get(pk=request.session["sucursal"])
+                suc = Branch.objects.get(pk=request.session["sucursal"])
                 if len(nombre) > 0 and len(descripcion) > 0:
                     oPuesto = Position(
                         name=nombre,
                         description=descripcion,
-                        empresa_reg=oSucUs.sucursal.empresa,
+                        empresa_reg=suc.empresa,
                         active=activo,
                         user_reg=request.user,
                     )
@@ -2803,10 +2804,13 @@ def guardar_deptos(request):
                 else:
                     activo = False
 
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+
                 if len(nombre) > 0 and len(codigo) > 0:
                     oDepto = State(
                         code = codigo,
                         name = nombre,
+                        empresa_reg = suc.empresa,
                         active=activo,
                         user_reg=request.user,
                     )

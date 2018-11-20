@@ -19,7 +19,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
+# SECURITY WARNING: keep the secret key used in production secret! 
 SECRET_KEY = '$o#5f0c6f4cifeoiu11(vsqw-qmi=r8c175yl+a+7h1guzw&tk'
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -78,12 +78,12 @@ WSGI_APPLICATION = 'employee.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'sql_server.pyodbc',
-        'NAME': 'planilla',
+        'NAME': 'django',
         'USER': 'sa',
-        'PASSWORD': '12345',
-        #'PASSWORD': 'holaMundo2018',
-        'HOST': 'DESKTOP-B0F6DKE',
-        #'HOST': 'IT06',
+        #'PASSWORD': '12345',
+        'PASSWORD': 'holaMundo2018',
+        #'HOST': 'DESKTOP-B0F6DKE',
+        'HOST': 'IT06',
         'PORT': '',
     }
 }
