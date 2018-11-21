@@ -24,7 +24,7 @@ Listado de Ciudades
                             {% csrf_token %}
                             <thead>
                                 <tr>
-                                    <th>ID</th>
+                                    <th>Código</th>
                                     <th>Nombre</th>
                                     <th>Estado Registro</th>
                                     <th>Acciones</th>
@@ -33,7 +33,7 @@ Listado de Ciudades
                             <tbody>
                                 {% for item in ciudades %}
                                 <tr>
-                                    <td>{{item.ID_ciudad}}</td>
+                                    <td>{{item.code}}</td>
                                     <td>{{item.nombre}}</td>
                                     <td>
                                     {% if item.active %}

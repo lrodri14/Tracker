@@ -24,7 +24,7 @@ Listado de Puestos
                         <table id="myTable" class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>Nombre</th>
+                                    <th>Código</th>
                                     <th>Descripción</th>
                                     <th>Estado del registro</th>
                                     <th>Acciones</th>
@@ -33,7 +33,7 @@ Listado de Puestos
                             <tbody>
                                 {% for item in puesto %}
                                 <tr>
-                                    <td>{{item.name}}</td>
+                                    <td>{{item.code}}</td>
                                     <td>{{item.description}}</td>
                                     <td>
                                     {% if item.active %}

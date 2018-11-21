@@ -21,10 +21,10 @@ Registro de Departamentos de la Empresa
                         <div class="col-md-12 margin-bottom-5px">
                             <div class="form-group">
                                 <div class="col-md-5 text-right">
-                                    <label for="txtNombre" class="control-label">Nombre :</label>
+                                    <label for="txtNombre" class="control-label">Código :</label>
                                 </div>
                                 <div class="col-md-7">
-                                    <input type="text" name="nombre" value="{{dato.name}}" id="txtNombre" class="form-control input-sm input-sm-1">
+                                    <input type="text" name="nombre" value="{{dato.name}}" id="txtNombre" class="form-control input-sm input-sm-1" maxlength="5">
                                 </div>
                             </div>
                         </div>
@@ -34,7 +34,7 @@ Registro de Departamentos de la Empresa
                                     <label for="txtDescripcion" class="control-label">Descripción :</label>
                                 </div>
                                 <div class="col-md-7">
-                                    <input type="text" name="descripcion" value="{{dato.description}}" id="txtDescripcion" class="form-control input-sm input-sm-1">
+                                    <input type="text" name="descripcion" value="{{dato.description}}" maxlength="250" id="txtDescripcion" class="form-control input-sm input-sm-1">
                                 </div>
                             </div>
                         </div>

@@ -19,17 +19,17 @@ Registro de Sucursal
                         <div class="col-md-12 margin-bottom-5px">
                             <div class="form-group">
                                 <div class="col-md-5 text-right">
-                                    <label for="txtRazonSocial" class="control-label">Nombre :</label>
+                                    <label for="txtRazonSocial" class="control-label">Código :</label>
                                 </div>
                                 <div class="col-md-7">
-                                    <input type="text" name="nombre" id="txtNombre" value="{{dato.name}}" class="form-control input-sm input-sm-1">
+                                    <input type="text" name="nombre" id="txtNombre" value="{{dato.code}}" class="form-control input-sm" maxlength="5">
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-12 margin-bottom-5px">
                             <div class="form-group">
                                 <div class="col-md-5 text-right">
-                                    <label for="txtNombreComercial" class="control-label">Descripcion :</label>
+                                    <label for="txtNombreComercial" class="control-label">Descripción :</label>
                                 </div>
                                 <div class="col-md-7">
                                         <textarea name="descripcion" id="txtDescipcion" rows="7" class="form-control">{{dato.description}}</textarea>

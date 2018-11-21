@@ -7,6 +7,7 @@ from worksheet.models import *
 # Register your models here.
 admin.site.register(Position)
 admin.site.register(Department)
+admin.site.register(Ciudad)
 admin.site.register(Group)
 admin.site.register(Branch)
 admin.site.register(SalesPerson)

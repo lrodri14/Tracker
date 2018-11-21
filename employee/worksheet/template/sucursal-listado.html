@@ -24,7 +24,7 @@ Listado de Sucursales de la Empresa
                         <table id="myTable" class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>Nombre</th>
+                                    <th>Código</th>
                                     <th>Descripción</th>
                                     <th>Activo</th>
                                     <th></th>
@@ -33,7 +33,7 @@ Listado de Sucursales de la Empresa
                             <tbody>
                                 {% for item in sucursales %}
                                 <tr>
-                                    <td>{{item.name}}</td>
+                                    <td>{{item.code}}</td>
                                     <td>{{item.description}}</td>
                                     <td>
                                         {% if item.active %}

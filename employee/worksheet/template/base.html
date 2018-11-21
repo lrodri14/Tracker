@@ -37,6 +37,26 @@
     <link href="{% static 'css/mi-estilo.css' %}" rel="stylesheet">
     {% block estilo %}
     {% endblock estilo %}
+    <style>
+        #side-menu>li>a{
+            padding-top: 4px;
+            padding-bottom: 3px;
+        }
+        .sidebar .arrow{
+            top: 6px;
+        }
+
+        .sidebar .fa-fw{
+            font-size: 12px;
+        }
+        a .hide-menu{
+            font-size: 12px;
+        }
+        .sidebar .nav-second-level li a{
+            padding-top: 5px;
+            padding-bottom: 4px;
+        }
+    </style>
     <!-- HTML5 Shim d Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>

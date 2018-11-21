@@ -79,6 +79,8 @@ def ingresar(request):
         frmSesion = AuthenticationForm()
         return HttpResponseRedirect('/form/iniciar-sesion/')
 
+
+@login_required(login_url='/form/iniciar-sesion/')
 def seleccionar_sucursal(request):
     empresas= []
     empresa = {}
@@ -93,7 +95,7 @@ def recibir_sucursal(request):
         totreg = Branch.objects.filter(pk=IdSucursal).count()
         if totreg > 0:
             sucursal = Branch.objects.get(pk=IdSucursal)
-            request.session["nombre_sucursal"] = sucursal.name
+            request.session["nombre_sucursal"] = sucursal.description
             request.session["sucursal"] = IdSucursal
             return HttpResponseRedirect("/")
         else:
@@ -102,6 +104,7 @@ def recibir_sucursal(request):
 
             return HttpResponseRedirect("/seleccionar/sucursal/")
 
+@login_required(login_url='/form/iniciar-sesion/')
 def empleado_form(request):
     verificaSucursal(request)
     positions = Position.objects.filter(active=True)
@@ -120,6 +123,7 @@ def empleado_form(request):
     banks = Bank.objects.filter(active=True)
     return render(request, 'empleado-form.html', {'banks':banks, 'costs_units': costs_units, 'salary_units': salary_units, 'civil_status':civil_status, 'citizenships':citizenships, 'positions':positions, 'departments':departments, 'branches':branches, 'salesPersons':salesPersons, 'states':states, 'countries':countries, 'stats':estados_emp, 'terms':terms, 'sexs':sexos})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def empleado_editar(request, id):
     dato = Employee.objects.get(pk=id)
     positions = Position.objects.filter(active=True)
@@ -139,21 +143,26 @@ def empleado_editar(request, id):
     return render(request, 'empleado-form.html', {'editar':True, 'dato':dato, 'banks':banks, 'costs_units': costs_units, 'salary_units': salary_units, 'civil_status':civil_status, 'citizenships':citizenships, 'positions':positions, 'departments':departments, 'branches':branches, 'salesPersons':salesPersons, 'states':states, 'countries':countries, 'stats':estados_emp, 'terms':terms, 'sexs':sexos})
     #return render(request, 'empleado-form.html', {'editar':True, 'dato':dato, 'positions':positions, 'departments':departments, 'branches':branches, 'salesPersons':salesPersons})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def empleado_listado(request):
     empleados = Employee.objects.all()
     return render(request, 'empleado-listado.html', {'empleados':empleados})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def empleado_perfil(request, id):
     dato = Employee.objects.get(pk=id)
     return render(request, 'perfil-empleado.html', {'dato':dato})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def corporativo(request):
     return render(request, 'corporativo.html')
 
+@login_required(login_url='/form/iniciar-sesion/')
 def corporativo_editar(request, reg_id):
     dato = GrupoCorporativo.objects.get(pk=reg_id)
     return render(request, 'corporativo.html', {'dato':dato, 'editar':True})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def listadoCorporativo(request):
     corporativos = GrupoCorporativo.objects.all().order_by('date_reg')
     return render(request, 'corporativo-listado.html', {'corporativos':corporativos})
@@ -232,60 +241,78 @@ def listadoPuestoTrabajo(request):
     puestos = Position.objects.filter(active=True, empresa_reg=suc.empresa)
     return render(request, 'puestos-listado.html', {'puesto':puestos})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def centro_costos(request):
     return render(request, 'centro-costos.html')
 
+@login_required(login_url='/form/iniciar-sesion/')
 def centro_costo_editar(request, id):
     dato = CentrosCostos.objects.get(pk=id)
     return render(request, 'centro-costos.html', {'editar':True, 'dato':dato})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def listadoCentroCostos(request):
     ccostos = CentrosCostos.objects.all()
     return render(request, 'ccostos-listado.html', {'ccostos':ccostos})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def paises(request):
     return render(request, 'paises.html')
 
+@login_required(login_url='/form/iniciar-sesion/')
 def paises_editar(request, id):
     dato = Country.objects.get(pk=id)
     return render(request, 'paises.html', {'editar':True, 'dato':dato})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def listadoPaises(request):
-    paises = Country.objects.all()
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    paises = Country.objects.filter(empresa_reg=suc.empresa)
     return render(request, 'paises-listado.html', {'paises':paises})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def deptos_pais(request):
     return render(request, 'deptos-pais.html')
 
+@login_required(login_url='/form/iniciar-sesion/')
 def deptos_pais_editar(request, id):
     dato = State.objects.get(pk=id)
     return render(request, 'deptos-pais.html', {'editar':True, 'dato':dato})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def deptos_pais_listado(request):
     suc = Branch.objects.get(pk=request.session["sucursal"])
     deptos = State.objects.filter(empresa_reg=suc.empresa)
     return render(request, 'deptos-pais-listado.html', {'deptos': deptos})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def ciudad(request):
     return render(request, 'ciudad.html')
 
+@login_required(login_url='/form/iniciar-sesion/')
 def ciudad_editar(request, id):
     dato = Ciudad.objects.get(pk=id)
     return render(request, 'ciudad.html', {'editar':True, 'dato':dato})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def ciudades_listado(request):
-    ciudades = Ciudad.objects.all()
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    ciudades = Ciudad.objects.filter(empresa_reg=suc.empresa)
     return render(request, 'ciudades-listado.html', {'ciudades':ciudades})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def genero(request):
     return render(request, 'genero.html')
 
+@login_required(login_url='/form/iniciar-sesion/')
 def genero_editar(request, id):
     dato = Sex.objects.get(pk=id)
     return render(request, 'genero.html', {'editar':True, 'dato':dato})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def generos_listado(request):
-    generos = Sex.objects.all()
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    generos = Sex.objects.filter(empresa_reg=suc.empresa)
     return render(request, 'genero-listado.html', {'generos':generos})
 
 def estado_civil(request):
@@ -296,7 +323,8 @@ def estado_civil_editar(request, id):
     return render(request, 'estado-civil.html', {'editar':True, 'dato':dato})
 
 def estado_civil_listado(request):
-    estados = CivilStatus.objects.all()
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    estados = CivilStatus.objects.filter(empresa_reg=suc.empresa)
     return render(request, 'estado-civil-listado.html', {'estados':estados})
 
 def parentesco(request):
@@ -544,7 +572,8 @@ def tipo_salario_editar(request, id):
     return render(request, 'tipo-salario-form.html', {'editar':True, 'dato':dato})
 
 def tipo_salario_listar(request):
-    lista = SalaryUnit.objects.all()
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    lista = SalaryUnit.objects.filter(empresa_reg=suc.empresa)
     return render(request, 'tipo-salario-listado.html', {'lista':lista})
 
 def tipo_costo_empleado_form(request):
@@ -555,7 +584,8 @@ def tipo_costo_empleado_editar(request, id):
     return render(request, 'costo-empleado-form.html', {'editar': True, 'dato': dato})
 
 def tipo_costo_empleado_listar(request):
-    lista = CostUnit.objects.all()
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    lista = CostUnit.objects.filter(empresa_reg=suc.empresa)
     return render(request, 'costo-empleado-listado.html', {'lista':lista})
 
 def banco_form(request):
@@ -1849,6 +1879,13 @@ def guardar_sucursal(request):
                 descripcion = request.POST['descripcion']
                 activo = int(request.POST['activo'])
 
+                if len(nombre) > 5:
+                    mensaje = "El campo 'Código' tiene como máximo 6 caracteres."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
                 if activo == 1:
                     activo = True
                 else:
@@ -1856,7 +1893,7 @@ def guardar_sucursal(request):
                 
                 if len(nombre) > 0:
                     oSucursal = Branch(
-                        name = nombre,
+                        code = nombre,
                         description = descripcion,
                         active = activo,
                         user_reg=request.user,
@@ -1909,11 +1946,19 @@ def actualizar_sucursal(request):
                 else:
                     activo = False
 
+                if len(nombre) > 5:
+                    mensaje = "Complete los campos requeridos."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+
                 if len(nombre) > 0 and len(desc) > 0:
                     oSucursal = Branch.objects.get(pk=id)
 
                     if oSucursal:
-                        oSucursal.name = nombre
+                        oSucursal.code = nombre
                         oSucursal.description = desc
                         oSucursal.active = activo
                         oSucursal.user_mod = request.user
@@ -1922,7 +1967,7 @@ def actualizar_sucursal(request):
                         sucursal = {
                             'pk': oSucursal.pk,
                             'desc': oSucursal.description,
-                            'nombre': oSucursal.name,
+                            'nombre': oSucursal.code,
                             'activo': oSucursal.active,
                         }
                         mensaje = 'Se ha actualizado el registro de la Sucursal'
@@ -2156,11 +2201,18 @@ def guardar_departamento(request):
                 else:
                     activo = False
 
+                if len(nombre) > 5:
+                    mensaje = "El campo 'Código' debe ser tener como máximo 6 caracteres."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
                 suc = Branch.objects.get(pk=request.session["sucursal"])
                 
                 if len(nombre) > 0 and len(descripcion) > 0:
                     oDeparment = Department(
-                        name = nombre,
+                        code = nombre,
                         description = descripcion,
                         empresa_reg = suc.empresa,
                         active = activo,
@@ -2169,6 +2221,7 @@ def guardar_departamento(request):
                     oDeparment.save()
                     grupo = {
                         'pk':oDeparment.pk,
+                        'codigo':oDeparment.code,
                         'descripcion':oDeparment.description,
                         'activo':oDeparment.active,
                     }
@@ -2217,7 +2270,7 @@ def actualizar_departamento(request):
                     oDep = Department.objects.get(pk=id)
 
                     if oDep:
-                        oDep.name = nombre
+                        oDep.code = nombre
                         oDep.description = desc
                         oDep.active = activo
                         oDep.user_mod = request.user
@@ -2225,7 +2278,7 @@ def actualizar_departamento(request):
                         oDep.save()
                         dep = {
                             'pk': oDep.pk,
-                            'name':oDep.name,
+                            'name':oDep.code,
                             'desc': oDep.description,
                             'activo': oDep.active,
                         }
@@ -2321,10 +2374,18 @@ def guardar_puesto(request):
                     activo = True
                 else:
                     activo = False
+
+                if len(nombre) > 5:
+                    data = {
+                        'error': True,
+                        'mensaje': 'El campo "Código" debe tener un máximo de 5 caracteres.',
+                    }
+                    return JsonResponse(data)
+
                 suc = Branch.objects.get(pk=request.session["sucursal"])
                 if len(nombre) > 0 and len(descripcion) > 0:
                     oPuesto = Position(
-                        name=nombre,
+                        code=nombre,
                         description=descripcion,
                         empresa_reg=suc.empresa,
                         active=activo,
@@ -2356,7 +2417,6 @@ def guardar_puesto(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -2376,13 +2436,20 @@ def actualizar_puesto(request):
                     activo = True
                 else:
                     activo = False
+
+                if len(nombre) > 5:
+                    data = {
+                        'error': True,
+                        'mensaje': 'El campo "Código" debe tener un máximo de 5 caracteres.',
+                    }
+                    return JsonResponse(data)
                 
-                print activo
+                
                 if len(nombre) > 0 and len(desc) > 0:
                     oPos = Position.objects.get(pk=id)
 
                     if oPos:
-                        oPos.name = nombre
+                        oPos.code = nombre
                         oPos.description = desc
                         oPos.active = activo
                         oPos.user_mod = request.user
@@ -2390,7 +2457,7 @@ def actualizar_puesto(request):
                         oPos.save()
                         pos = {
                             'pk': oPos.pk,
-                            'name':oPos.name,
+                            'name':oPos.code,
                             'desc': oPos.description,
                             'activo': oPos.active,
                         }
@@ -2638,10 +2705,13 @@ def guardar_pais(request):
                 else:
                     activo = False
 
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+
                 if len(nombre) > 0 and len(codigo) > 0:
                     oCountry = Country(
                         code = codigo,
                         name = nombre,
+                        empresa_reg = suc.empresa,
                         active=activo,
                         user_reg=request.user,
                     )
@@ -2966,22 +3036,32 @@ def guardar_ciudades(request):
                 nombre = request.POST['nombre']
                 activo = int(request.POST['activo'])
 
+                if len(ID) > 5:
+                    mensaje = "El campo 'Código' tiene un máximo de 5 caracteres."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
                 if activo == 1:
                     activo = True
                 else:
                     activo = False
 
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+
                 if len(nombre) > 0 and len(ID) > 0:
                     oCdd = Ciudad(
-                        ID_ciudad = ID,
+                        code = ID,
                         nombre = nombre,
+                        empresa_reg = suc.empresa,
                         active=activo,
                         user_reg=request.user,
                     )
                     oCdd.save()
                     ciudad = {
                         'pk': oCdd.pk,
-                        'ID': oCdd.ID_ciudad,
+                        'ID': oCdd.code,
                         'nombre': oCdd.nombre,
                         'activo': oCdd.active,
                     }
@@ -3029,7 +3109,7 @@ def actualizar_ciudad(request):
                 if len(ID) > 0 and len(nombre) > 0:
                     oCdd = Ciudad.objects.get(pk=id)
                     if oCdd:
-                        oCdd.ID_ciudad = ID
+                        oCdd.code = ID
                         oCdd.nombre = nombre
                         oCdd.active = activo
                         oCdd.user_mod = request.user
@@ -3037,7 +3117,7 @@ def actualizar_ciudad(request):
                         oCdd.save()
                         ciudad = {
                             'pk': oCdd.pk,
-                            'ID':oCdd.ID_ciudad,
+                            'ID':oCdd.code,
                             'nombre': oCdd.nombre,
                             'activo': oCdd.active,
                         }
@@ -3126,9 +3206,12 @@ def guardar_genero(request):
                 else:
                     activo = False
 
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+
                 if len(desc) > 0:
                     oGnr = Sex(
                         description = desc,
+                        empresa_reg = suc.empresa,
                         active=activo,
                         user_reg=request.user,
                     )
@@ -3283,9 +3366,12 @@ def guardar_estado_civil(request):
                 else:
                     activo = False
 
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+
                 if len(desc) > 0:
                     oCv = CivilStatus(
                         description = desc,
+                        empresa_reg = suc.empresa,
                         active=activo,
                         user_reg=request.user,
                     )
@@ -3898,6 +3984,13 @@ def guardar_estado_empleado(request):
                 desc = request.POST['desc']
                 activo = int(request.POST['activo'])
 
+                if len(nombre):
+                    mensaje = "El campo 'Código' tiene como maximo 5 caracteres."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
                 if activo == 1:
                     activo = True
                 else:
@@ -3905,7 +3998,7 @@ def guardar_estado_empleado(request):
 
                 if len(desc) > 0 and len(nombre) > 0:
                     oMd = StatusEmp(
-                        name = nombre,
+                        code = nombre,
                         description = desc,
                         active=activo,
                         user_reg=request.user,
@@ -3913,7 +4006,7 @@ def guardar_estado_empleado(request):
                     oMd.save()
                     registro = {
                         'pk': oMd.pk,
-                        'nombre': oMd.name,
+                        'nombre': oMd.code,
                         'desc': oMd.description,
                         'activo': oMd.active,
                     }
@@ -3961,7 +4054,7 @@ def actualizar_estatus_empleado(request):
                 if len(desc) > 0 and len(nombre) > 0:
                     oMd = StatusEmp.objects.get(pk=id)
                     if oMd:
-                        oMd.name = nombre
+                        oMd.code = nombre
                         oMd.description = desc
                         oMd.active = activo
                         oMd.user_mod = request.user
@@ -3969,7 +4062,7 @@ def actualizar_estatus_empleado(request):
                         oMd.save()
                         registro = {
                             'pk': oMd.pk,
-                            'nombre':oMd.name,
+                            'nombre':oMd.code,
                             'desc': oMd.description,
                             'activo': oMd.active,
                         }
@@ -5677,7 +5770,14 @@ def guardar_motivo_rescision_contrato(request):
                 activo = request.POST['activo']
 
                 if len(nombre) == 0:
-                    mensaje = 'El campo "Nombre" es obligatorio.'
+                    mensaje = 'El campo "código" es obligatorio.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(nombre) > 5:
+                    mensaje = 'El campo "código" tiene como máximo de 5 caracteres.'
                     data = {
                         'mensaje': mensaje, 'error': True
                     }
@@ -5695,9 +5795,12 @@ def guardar_motivo_rescision_contrato(request):
                 else:
                     activo = False
 
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+
                 oMd = TermReason(
-                    name = nombre,
+                    code = nombre,
                     description=desc,
+                    empresa_reg=suc.empresa,
                     active=activo,
                     user_reg=request.user,
                 )
@@ -5742,7 +5845,7 @@ def actualizar_motivo_rescision_contrato(request):
                     oMd = TermReason.objects.get(pk=id)
                     if oMd:
                         oMd.description = desc
-                        oMd.name = nombre
+                        oMd.code = nombre
                         oMd.active = activo
                         oMd.user_mod = request.user
                         oMd.date_mod = datetime.datetime.now()
@@ -6768,14 +6871,22 @@ def guardar_tipo_salario(request):
                     data = {'error': True, 'mensaje': mensaje}
                     return JsonResponse(data)
 
+                if len(nombre) > 5:
+                    mensaje = "El campo 'Código' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
                 if activo == 1:
                     activo = True
                 else:
                     activo = False
 
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+
                 oMd = SalaryUnit(
-                    name = nombre,
+                    code = nombre,
                     description=desc,
+                    empresa_reg = suc.empresa,
                     active=activo,
                     user_reg=request.user,
                 )
@@ -6829,7 +6940,7 @@ def actualizar_tipo_salario(request):
                 oMd = SalaryUnit.objects.get(pk=id)
                 if oMd:
                     oMd.description = desc
-                    oMd.name = nombre
+                    oMd.code = nombre
                     oMd.active = activo
                     oMd.user_mod = request.user
                     oMd.date_mod = datetime.datetime.now()
@@ -6920,14 +7031,22 @@ def guardar_costo_empleado(request):
                     data = {'error': True, 'mensaje': mensaje}
                     return JsonResponse(data)
 
+                if len(nombre) > 5:
+                    mensaje = "El campo 'Código' tiene un máximo de 5 carateres."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
                 if activo == 1:
                     activo = True
                 else:
                     activo = False
 
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+
                 oMd = CostUnit(
-                    name=nombre,
+                    code=nombre,
                     description=desc,
+                    empresa_reg = suc.empresa,
                     active=activo,
                     user_reg=request.user,
                 )

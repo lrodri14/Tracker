@@ -4,19 +4,20 @@ from django.contrib.auth.models import User
 
 from django.db import models
 
+# Create your models here.
 class Group(models.Model):
     name = models.CharField(max_length=100)
     active = models.BooleanField(default=False)
     user_reg = models.ForeignKey(User)
     date_reg = models.DateTimeField(auto_now_add=True)
-    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='grp_usermod', related_query_name='grp_usermod')
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL,
+                                 related_name='grp_usermod', related_query_name='grp_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField(default=True)
 
     def __unicode__(self):
         return self.name
 
-# Create your models here.
 class Empresa(models.Model):
     razonSocial = models.CharField(max_length=100, blank=True, null=True)
     nombreComercial = models.CharField(max_length=100, blank=True, null=True)
@@ -31,7 +32,7 @@ class Empresa(models.Model):
         return self.nombreComercial
 
 class Branch(models.Model):
-    name = models.CharField(max_length=100)
+    code = models.CharField(max_length=5, blank=True, null=True)
     description = models.CharField(max_length=250)
     empresa = models.ForeignKey(Empresa)
     user_reg = models.ForeignKey(User)
@@ -42,10 +43,10 @@ class Branch(models.Model):
 
 
     def __unicode__(self):
-        return self.name
+        return self.code + " - " + self.description
 
 class Position(models.Model):
-    name = models.CharField(max_length=100)
+    code = models.CharField(max_length=100, blank=True, null=True)
     description = models.CharField(max_length=250)
     empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="pos_empreg", related_query_name="pos_empreg")
     active = models.BooleanField(default=True)
@@ -58,7 +59,7 @@ class Position(models.Model):
         return self.name
 
 class Department(models.Model):
-    name = models.CharField(max_length=100)
+    code = models.CharField(max_length=5, blank=True, null=True)
     description = models.CharField(max_length=250)
     empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="dep_empreg", related_query_name="dep_empreg")
     user_reg = models.ForeignKey(User)
@@ -100,6 +101,7 @@ class State(models.Model):
 class Country(models.Model):
     code = models.CharField(max_length=5, blank=True, null=True)
     name = models.CharField(max_length=150)
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="country_empreg", related_query_name="country_empreg")
     user_reg = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name="country_usermod", related_query_name="country_usermod",)
@@ -110,8 +112,9 @@ class Country(models.Model):
         return self.name
 
 class StatusEmp(models.Model):
-    name = models.CharField(max_length=150)
+    code = models.CharField(max_length=5, blank=True, null=True)
     description = models.TextField()
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="stemp_empreg", related_query_name="stemp_empreg")
     user_reg = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name="sts_usermod", related_query_name="sts_usermod",)
@@ -122,8 +125,9 @@ class StatusEmp(models.Model):
         return self.name
 
 class TermReason(models.Model):
-    name = models.CharField(max_length=150)
+    code = models.CharField(max_length=5, blank=True, null=True)
     description = models.TextField()
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="termres_empreg", related_query_name="termres_empreg")
     user_reg = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name="trm_usermod", related_query_name="trm_usermod",)
@@ -135,6 +139,7 @@ class TermReason(models.Model):
 
 class Sex(models.Model):
     description = models.CharField(max_length=25)
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="sex_empreg", related_query_name="sex_empreg")
     user_reg = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name="sex_usermod", related_query_name="sex_usermod",)
@@ -146,6 +151,7 @@ class Sex(models.Model):
 
 class CivilStatus(models.Model):
     description = models.CharField(max_length=50)
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="cvlstatus_empreg", related_query_name="cvlstatus_empreg")
     user_reg = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name="civStatus_usermod", related_query_name="civStatus_usermod",)
@@ -156,8 +162,9 @@ class CivilStatus(models.Model):
         return self.description
 
 class SalaryUnit(models.Model):
-    name = models.CharField(max_length=25)
+    code = models.CharField(max_length=5, blank=True, null=True)
     description = models.TextField()
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="slrunt_empreg", related_query_name="slrunt_empreg")
     user_reg = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name="salary_usermod", related_query_name="salary_usermod",)
@@ -168,8 +175,9 @@ class SalaryUnit(models.Model):
         return self.name
 
 class CostUnit(models.Model):
-    name = models.CharField(max_length=25)
+    code = models.CharField(max_length=5, blank=True, null=True)
     description = models.TextField()
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="cstunt_empreg", related_query_name="cstunt_empreg")
     user_reg = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name="cost_usermod", related_query_name="cost_usermod",)
@@ -177,7 +185,7 @@ class CostUnit(models.Model):
     active = models.BooleanField(default=True)
 
     def __unicode__(self):
-        return self.name
+        return self.description
 
 class Bank(models.Model):
     name = models.CharField(max_length=25)
@@ -191,8 +199,6 @@ class Bank(models.Model):
 
     def __unicode__(self):
         return self.name
-
-
 
 class Employee(models.Model):
     firstName = models.CharField(max_length=50)
@@ -303,8 +309,9 @@ class CentrosCostos(models.Model):
         return self.descripcion
 
 class Ciudad(models.Model):
-    ID_ciudad = models.CharField(max_length=5, blank=True, null=True)
+    code = models.CharField(max_length=5, blank=True, null=True)
     nombre = models.CharField(max_length=150)
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="ciudad_empreg", related_query_name="ciudad_empreg")
     user_reg = models.ForeignKey(User)
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='cdd_usermod', related_query_name='cdd_usermod')
@@ -312,7 +319,7 @@ class Ciudad(models.Model):
     active = models.BooleanField()
 
     def __unicode__(self):
-        return self.descripcion
+        return self.nombre
 
 class Parentesco(models.Model):
     descripcion = models.CharField(max_length=50, blank=True, null=True)
@@ -447,7 +454,6 @@ class Evaluacion(models.Model):
     def __unicode__(self):
         return self.empleado.firstName + ' ' + self.empleado.lastName + ' | ' + str(self.fecha)
 
-
 class MotivoAumentoSueldo(models.Model):
     descripcion = models.CharField(max_length=150)
     user_reg = models.ForeignKey(User)
@@ -563,4 +569,4 @@ class UsuarioSucursal(models.Model):
     active = models.NullBooleanField(blank=True, null=True)
 
     def __unicode__(self):
-        return self.usuario.username + " - " + self.sucursal.name
+        return self.usuario.username + " - " + self.sucursal.description

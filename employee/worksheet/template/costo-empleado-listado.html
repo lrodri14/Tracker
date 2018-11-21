@@ -24,7 +24,7 @@ Listado de Tipo Costo de Empleado
                             {% csrf_token %}
                             <thead>
                                 <tr>
-                                    <th>Nombre</th>
+                                    <th>Código</th>
                                     <th>Descripción</th>
                                     <th>Estado registro</th>
                                     <th>Acciones</th>
@@ -33,7 +33,7 @@ Listado de Tipo Costo de Empleado
                             <tbody>
                                 {% for item in lista %}
                                 <tr>
-                                    <td>{{item.name}}</td>
+                                    <td>{{item.code}}</td>
                                     <td>{{item.description}}</td>
                                     <td>
                                         {% if item.active %}
