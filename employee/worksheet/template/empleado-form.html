@@ -106,12 +106,12 @@
                                                     {% for position in positions %}
                                                     {% if editar %}
                                                         {% if dato.position == position %}
-                                                            <option value="{{position.pk}}" selected>{{position.name}}</option>
+                                                            <option value="{{position.pk}}" selected>{{position.description}}</option>
                                                         {% else %}
-                                                            <option value="{{position.pk}}">{{position.name}}</option>
+                                                            <option value="{{position.pk}}">{{position.description}}</option>
                                                         {% endif %}
                                                     {% else %}
-                                                        <option value="{{position.pk}}">{{position.name}}</option>
+                                                        <option value="{{position.pk}}">{{position.description}}</option>
                                                     {% endif %}
                                                     {% endfor %}
                                                 </select>
@@ -141,12 +141,12 @@
                                                     {% for department in departments %}
                                                         {% if editar %} 
                                                             {% if dato.dept == department %}
-                                                                <option value="{{department.pk}}" selected>{{department.name}}</option>
+                                                                <option value="{{department.pk}}" selected>{{department.description}}</option>
                                                             {% else %}
-                                                                <option value="{{department.pk}}">{{department.name}}</option>
+                                                                <option value="{{department.pk}}">{{department.description}}</option>
                                                             {% endif %} 
                                                         {% else %}
-                                                            <option value="{{department.pk}}">{{department.name}}</option>
+                                                            <option value="{{department.pk}}">{{department.description}}</option>
                                                         {% endif %}
                                                     {% endfor %}
                                                 </select>
@@ -176,12 +176,12 @@
                                                     {% for branch in branches %}
                                                         {% if editar %} 
                                                             {% if dato.branch == branch %}
-                                                                <option value="{{branch.pk}}" selected>{{branch.name}}</option>
+                                                                <option value="{{branch.pk}}" selected>{{branch.description}}</option>
                                                             {% else %}
-                                                                <option value="{{branch.pk}}">{{branch.name}}</option>
+                                                                <option value="{{branch.pk}}">{{branch.description}}</option>
                                                             {% endif %} 
                                                         {% else %}
-                                                            <option value="{{branch.pk}}">{{branch.name}}</option>
+                                                            <option value="{{branch.pk}}">{{branch.description}}</option>
                                                         {% endif %}
                                                     {% endfor %}
                                                 </select>
@@ -622,11 +622,11 @@
                                                                     {% for status in stats %}
                                                                         {% if editar %}
                                                                         {% if dato.status == status %}
-                                                                        <option value="{{status.pk}}" selected>{{status.name}}</option>
+                                                                        <option value="{{status.pk}}" selected>{{status.description}}</option>
                                                                         {% else %}
-                                                                        <option value="{{status.pk}}">{{status.name}}</option>
+                                                                        <option value="{{status.pk}}">{{status.description}}</option>
                                                                         {% endif %} {% else %}
-                                                                        <option value="{{status.pk}}">{{status.name}}</option>
+                                                                        <option value="{{status.pk}}">{{status.description}}</option>
                                                                         {% endif %}
                                                                     {% endfor %}
                                                                 </select>
@@ -662,11 +662,11 @@
                                                                     <option value="0">Seleccionar...</option>
                                                                     {% for term in terms %}
                                                                     {% if editar %} {% if dato.termReason == term %}
-                                                                    <option value="{{term.pk}}" selected>{{term.name}}</option>
+                                                                    <option value="{{term.pk}}" selected>{{term.description}}</option>
                                                                     {% else %}
-                                                                    <option value="{{term.pk}}">{{term.name}}</option>
+                                                                    <option value="{{term.pk}}">{{term.description}}</option>
                                                                     {% endif %} {% else %}
-                                                                    <option value="{{term.pk}}">{{term.name}}</option>
+                                                                    <option value="{{term.pk}}">{{term.description}}</option>
                                                                     {% endif %}
                                                                     {% endfor %}
                                                                 </select>
@@ -883,11 +883,11 @@
                                                                 <option value="0">Seleccionar...</option>
                                                                 {% for item in salary_units %}
                                                                 {% if editar %} {% if dato.salaryUnits == item %}
-                                                                <option value="{{item.pk}}" selected>{{item.name}}</option>
+                                                                <option value="{{item.pk}}" selected>{{item.description}}</option>
                                                                 {% else %}
-                                                                <option value="{{item.pk}}">{{item.name}}</option>
+                                                                <option value="{{item.pk}}">{{item.description}}</option>
                                                                 {% endif %} {% else %}
-                                                                <option value="{{item.pk}}">{{item.name}}</option>
+                                                                <option value="{{item.pk}}">{{item.description}}</option>
                                                                 {% endif %}
                                                                 {% endfor %}
                                                             </select>
@@ -907,11 +907,11 @@
                                                                 <option value="0">Seleccionar...</option>
                                                                 {% for item in costs_units %}
                                                                 {% if editar %} {% if dato.empCostUnit == item %}
-                                                                <option value="{{item.pk}}" selected>{{item.name}}</option>
+                                                                <option value="{{item.pk}}" selected>{{item.description}}</option>
                                                                 {% else %}
-                                                                <option value="{{item.pk}}">{{item.name}}</option>
+                                                                <option value="{{item.pk}}">{{item.description}}</option>
                                                                 {% endif %} {% else %}
-                                                                <option value="{{item.pk}}">{{item.name}}</option>
+                                                                <option value="{{item.pk}}">{{item.description}}</option>
                                                                 {% endif %}
                                                                 {% endfor %}
                                                             </select>
@@ -931,11 +931,11 @@
                                                                 <option value="0">Seleccionar...</option>
                                                                 {% for item in banks %}
                                                                 {% if editar %} {% if dato.bankCode == item %}
-                                                                <option value="{{item.pk}}" selected>{{item.name}}</option>
+                                                                <option value="{{item.pk}}" selected>{{item.description}}</option>
                                                                 {% else %}
-                                                                <option value="{{item.pk}}">{{item.name}}</option>
+                                                                <option value="{{item.pk}}">{{item.description}}</option>
                                                                 {% endif %} {% else %}
-                                                                <option value="{{item.pk}}">{{item.name}}</option>
+                                                                <option value="{{item.pk}}">{{item.description}}</option>
                                                                 {% endif %}
                                                                 {% endfor %}
                                                             </select>

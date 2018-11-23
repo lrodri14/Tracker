@@ -408,6 +408,7 @@ function validarcddDatos() {
 
 //#region Variables
     var gnr_desc = $('input[name="gnr_desc"]');
+    var gnr_code = $('input[name="gnr_code"]');
     var gnr_activo = $('input[name="gnr_activo"]');
 //#endregion
 
@@ -424,6 +425,7 @@ function validarcddDatos() {
             }
             data = {
                 'desc': gnr_desc.val(),
+                'code': gnr_code.val(),
                 'activo': vActivo,
                 'csrfmiddlewaretoken': token.val(),
             };
@@ -443,6 +445,7 @@ function validarcddDatos() {
             }
             data = {
                 'id': id.val(),
+                'code': gnr_code.val(),
                 'desc': gnr_desc.val(),
                 'activo': vActivo,
                 'csrfmiddlewaretoken': token.val(),
@@ -479,6 +482,7 @@ function validargnrDatos() {
 
     //#region Variables
     var estcv_desc = $('input[name="estcv_desc"]');
+    var estcv_code = $('input[name="estcv_code"]');
     var estcv_activo = $('input[name="estcv_activo"]');
     //#endregion
 
@@ -495,6 +499,7 @@ function validargnrDatos() {
             }
             data = {
                 'desc': estcv_desc.val(),
+                'code': estcv_code.val(),
                 'activo': vActivo,
                 'csrfmiddlewaretoken': token.val(),
             };
@@ -515,6 +520,7 @@ function validargnrDatos() {
             data = {
                 'id': id.val(),
                 'desc': estcv_desc.val(),
+                'code': estcv_code.val(),
                 'activo': vActivo,
                 'csrfmiddlewaretoken': token.val(),
             };

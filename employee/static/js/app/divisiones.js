@@ -9,6 +9,7 @@ $(document).on('ready', () => {
     //#region Variables
     var vActivo = 0;
     var id = $('input[name="id"]');
+    var code = $('input[name="codigo"]');
     var descripcion = $('input[name="descripcion"]');
     var activo = $('input[name="activo"]');
     var token = $('input[name="csrfmiddlewaretoken"]');
@@ -45,6 +46,7 @@ $(document).on('ready', () => {
                 type: "POST",
                 url: url,
                 data: {
+                    'code': code.val(),
                     'descripcion':descripcion.val(),
                     'activo':vActivo,
                     'csrfmiddlewaretoken': token.val(),
@@ -106,6 +108,7 @@ $(document).on('ready', () => {
                 url: url,
                 data: {
                     'id': id.val(),
+                    'code': code.val(),
                     'desc': descripcion.val(),
                     'activo': vActivo,
                     'csrfmiddlewaretoken': token.val(),

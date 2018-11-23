@@ -56,7 +56,7 @@ class Position(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     
     def __unicode__(self):
-        return self.name
+        return self.description
 
 class Department(models.Model):
     code = models.CharField(max_length=5, blank=True, null=True)
@@ -69,7 +69,7 @@ class Department(models.Model):
     active = models.BooleanField(default=True)
 
     def __unicode__(self):
-        return self.name
+        return self.description	
 
 class SalesPerson(models.Model):
     slpName = models.CharField(max_length=150)
@@ -122,7 +122,7 @@ class StatusEmp(models.Model):
     active = models.BooleanField(default=True)
 
     def __unicode__(self):
-        return self.name
+        return self.description
 
 class TermReason(models.Model):
     code = models.CharField(max_length=5, blank=True, null=True)
@@ -135,9 +135,10 @@ class TermReason(models.Model):
     active = models.BooleanField(default=True)
 
     def __unicode__(self):
-        return self.name
+        return self.description
 
 class Sex(models.Model):
+    code = models.CharField(max_length=5, blank=True, null=True)
     description = models.CharField(max_length=25)
     empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="sex_empreg", related_query_name="sex_empreg")
     user_reg = models.ForeignKey(User, on_delete=models.DO_NOTHING)
@@ -150,6 +151,7 @@ class Sex(models.Model):
         return self.description
 
 class CivilStatus(models.Model):
+    code = models.CharField(max_length=5, blank=True, null=True)
     description = models.CharField(max_length=50)
     empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="cvlstatus_empreg", related_query_name="cvlstatus_empreg")
     user_reg = models.ForeignKey(User, on_delete=models.DO_NOTHING)
@@ -172,7 +174,7 @@ class SalaryUnit(models.Model):
     active = models.BooleanField(default=True)
 
     def __unicode__(self):
-        return self.name
+        return self.description
 
 class CostUnit(models.Model):
     code = models.CharField(max_length=5, blank=True, null=True)
@@ -188,9 +190,9 @@ class CostUnit(models.Model):
         return self.description
 
 class Bank(models.Model):
-    name = models.CharField(max_length=25)
+    code = models.CharField(max_length=5, blank=True, null=True)
     description = models.TextField()
-    sucursal_reg = models.ForeignKey(Branch, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="bank_sucreg", related_query_name="bank_sucreg")
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="bank_empreg", related_query_name="bank_empreg")
     user_reg = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name="bank_usermod", related_query_name="bank_usermod",)
@@ -198,7 +200,7 @@ class Bank(models.Model):
     active = models.BooleanField(default=True)
 
     def __unicode__(self):
-        return self.name
+        return self.description
 
 class Employee(models.Model):
     firstName = models.CharField(max_length=50)
@@ -263,6 +265,7 @@ class Employee(models.Model):
     branchBank = models.CharField(max_length=150, blank=True, null=True)
 
     remark = models.TextField(blank=True, null=True)
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="empl_empreg", related_query_name="empl_empreg")
 
 
     user_reg = models.ForeignKey(User)
@@ -277,6 +280,7 @@ class Employee(models.Model):
 class GrupoCorporativo(models.Model):
     razonSocial = models.CharField(max_length=100, blank=True, null=True)
     nombreComercial = models.CharField(max_length=100, blank=True, null=True)
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="group_empreg", related_query_name="group_empreg")
     user_reg = models.ForeignKey(User)
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='gcom_usermod', related_query_name='gcom_usermod')
@@ -287,7 +291,9 @@ class GrupoCorporativo(models.Model):
         return self.nombreComercial
 
 class Divisiones(models.Model):
+    code = models.CharField(max_length=5, blank=True, null=True)
     descripcion = models.CharField(max_length=250, blank=True, null=True)
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="div_empreg", related_query_name="div_empreg")
     user_reg = models.ForeignKey(User)
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='div_usermod', related_query_name='div_usermod')
