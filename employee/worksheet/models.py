@@ -304,7 +304,9 @@ class Divisiones(models.Model):
         return self.descripcion
 
 class CentrosCostos(models.Model):
+    code = models.CharField(max_length=5, blank=True, null=True)
     descripcion = models.CharField(max_length=250, blank=True, null=True)
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="cc_empreg", related_query_name="cc_empreg")
     user_reg = models.ForeignKey(User)
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='cc_usermod', related_query_name='cc_usermod')
@@ -328,7 +330,9 @@ class Ciudad(models.Model):
         return self.nombre
 
 class Parentesco(models.Model):
+    code = models.CharField(max_length=5, blank=True, null=True)
     descripcion = models.CharField(max_length=50, blank=True, null=True)
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="parent_empreg", related_query_name="parent_empreg")
     user_reg = models.ForeignKey(User)
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='parnt_usermod', related_query_name='parnt_usermod')
@@ -339,8 +343,9 @@ class Parentesco(models.Model):
         return self.descripcion
 
 class FuncionesTrabajo(models.Model):
-    nombre = models.CharField(max_length=50, blank=True, null=True)
+    code = models.CharField(max_length=5, blank=True, null=True)
     descripcion = models.CharField(max_length=150, blank=True, null=True)
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="fun_empreg", related_query_name="fun_empreg")
     user_reg = models.ForeignKey(User)
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='fnT_usermod', related_query_name='fnT_usermod')
@@ -351,8 +356,9 @@ class FuncionesTrabajo(models.Model):
         return self.nombre
 
 class EquipoTrabajo(models.Model):
-    nombre = models.CharField(max_length=50, blank=True, null=True)
+    code = models.CharField(max_length=5, blank=True, null=True)
     descripcion = models.CharField(max_length=150, blank=True, null=True)
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="eqtr_empreg", related_query_name="eqtr_empreg")
     user_reg = models.ForeignKey(User)
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='eqTr_usermod', related_query_name='eqTr_usermod')
@@ -362,14 +368,14 @@ class EquipoTrabajo(models.Model):
     def __unicode__(self):
         return self.nombre
 
-
 class MotivosAusencia(models.Model):
+    code = models.CharField(max_length=5, blank=True, null=True)
     descripcion = models.CharField(max_length=150)
     pagado = models.BooleanField()
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="motIng_empreg", related_query_name="motIng_empreg")
     user_reg = models.ForeignKey(User)
     date_reg = models.DateTimeField(auto_now_add=True)
-    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL,
-                                 related_name='catIng_usermod', related_query_name='catIng_usermod')
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='catIng_usermod', related_query_name='catIng_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField()
 

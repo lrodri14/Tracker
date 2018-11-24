@@ -86,6 +86,7 @@ $(document).on('ready', () => {
     //#region Variables
     var cc_desc = $('input[name="cc_descripcion"]');
     var cc_activo = $('input[name="cc_activo"]');
+    var cc_code = $('input[name="cc_codigo"]');
     //#endregion
 
     //#region Eventos Controles
@@ -101,6 +102,7 @@ $(document).on('ready', () => {
             }
             data = {
                 'descripcion': cc_desc.val(),
+                'code': cc_code.val(),
                 'activo': vActivo,
                 'csrfmiddlewaretoken': token.val(),
             };
@@ -123,6 +125,7 @@ $(document).on('ready', () => {
             data = {
                 'id': id.val(),
                 'desc': cc_desc.val(),
+                'code': cc_code.val(),
                 'activo': vActivo,
                 'csrfmiddlewaretoken': token.val(),
             };
@@ -556,6 +559,7 @@ function validargnrDatos() {
     //#region Variables
     var parnt_desc = $('input[name="parent_desc"]');
     var parnt_activo = $('input[name="parent_activo"]');
+    var parnt_code = $('input[name="parent_codigo"]');
     //#endregion
 
     //#region Eventos Controles
@@ -571,6 +575,7 @@ function validargnrDatos() {
             }
             data = {
                 'desc': parnt_desc.val(),
+                'code': parnt_code.val(),
                 'activo': vActivo,
                 'csrfmiddlewaretoken': token.val(),
             };
@@ -591,6 +596,7 @@ function validargnrDatos() {
             data = {
                 'id': id.val(),
                 'desc': parnt_desc.val(),
+                'code':parnt_code.val(),
                 'activo': vActivo,
                 'csrfmiddlewaretoken': token.val(),
             };
@@ -627,6 +633,7 @@ function validargnrDatos() {
     var fun_nombre = $('input[name="fun_desc"]');
     var fun_desc = $('input[name="fun_desc"]');
     var fun_activo = $('input[name="fun_activo"]');
+    var fun_code = $('input[name="fun_code"]');
     //#endregion
 
     //#region Eventos Controles
@@ -641,8 +648,8 @@ function validargnrDatos() {
                 vActivo = 0;
             }
             data = {
-                'nombre': fun_nombre.val(),
                 'desc': fun_desc.val(),
+                'code': fun_code.val(),
                 'activo': vActivo,
                 'csrfmiddlewaretoken': token.val(),
             };
@@ -664,6 +671,7 @@ function validargnrDatos() {
                 'id': id.val(),
                 'nombre': fun_nombre.val(),
                 'desc': fun_desc.val(),
+                'code': fun_code.val(),
                 'activo': vActivo,
                 'csrfmiddlewaretoken': token.val(),
             };
@@ -708,6 +716,7 @@ function validargnrDatos() {
     var eqT_nombre = $('input[name="eqT_desc"]');
     var eqT_desc = $('input[name="eqT_desc"]');
     var eqT_activo = $('input[name="eqT_activo"]');
+    var eqT_code = $('input[name="eqT_codigo"]');
     //#endregion
 
     //#region Eventos Controles
@@ -722,7 +731,7 @@ function validargnrDatos() {
                 vActivo = 0;
             }
             data = {
-                'nombre': eqT_nombre.val(),
+                'code': eqT_code.val(),
                 'desc': eqT_desc.val(),
                 'activo': vActivo,
                 'csrfmiddlewaretoken': token.val(),
@@ -743,7 +752,7 @@ function validargnrDatos() {
             }
             data = {
                 'id': id.val(),
-                'nombre': eqT_nombre.val(),
+                'code': eqT_code.val(),
                 'desc': eqT_desc.val(),
                 'activo': vActivo,
                 'csrfmiddlewaretoken': token.val(),
@@ -955,6 +964,7 @@ function validargnrDatos() {
 //#region Código para registrar Motivos de Ausencia
 
     //#region Variables
+    var mAu_code = $('input[name="mau_code"]');
     var mAu_desc = $('input[name="mau_desc"]');
     var mAu_pagado = $('input[name="mau_pagado"]');
     var mAu_activo = $('input[name="mau_activo"]');
@@ -979,6 +989,7 @@ function validargnrDatos() {
         }
         data = {
             'desc': mAu_desc.val(),
+            'code': mAu_code.val(),
             'pagado': vPagado,
             'activo': vActivo,
             'csrfmiddlewaretoken': token.val(),
@@ -1005,6 +1016,7 @@ function validargnrDatos() {
         }
         data = {
             'id': id.val(),
+            'code':mAu_code.val(),
             'desc': mAu_desc.val(),
             'pagado': vPagado,
             'activo': vActivo,

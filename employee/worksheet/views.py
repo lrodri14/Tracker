@@ -256,7 +256,8 @@ def centro_costo_editar(request, id):
 
 @login_required(login_url='/form/iniciar-sesion/')
 def listadoCentroCostos(request):
-    ccostos = CentrosCostos.objects.all()
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    ccostos = CentrosCostos.objects.filter(empresa_reg=suc.empresa)
     return render(request, 'ccostos-listado.html', {'ccostos':ccostos})
 
 @login_required(login_url='/form/iniciar-sesion/')
@@ -331,73 +332,96 @@ def estado_civil_listado(request):
     estados = CivilStatus.objects.filter(empresa_reg=suc.empresa)
     return render(request, 'estado-civil-listado.html', {'estados':estados})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def parentesco(request):
     return render(request, 'parentesco.html')
 
+@login_required(login_url='/form/iniciar-sesion/')
 def parentesco_editar(request, id):
     dato = Parentesco.objects.get(pk=id)
     return render(request, 'parentesco.html', {'editar':True, 'dato':dato})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def parentesco_listado(request):
-    parentescos = Parentesco.objects.all()
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    parentescos = Parentesco.objects.filter(empresa_reg=suc.empresa)
     return render(request, 'parentesco-listado.html', {'parentescos':parentescos})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def funcion_trabajo(request):
     return render(request, 'funciones-trabajo.html')
 
+@login_required(login_url='/form/iniciar-sesion/')
 def funcion_trabajo_editar(request, id):
     funcion = FuncionesTrabajo.objects.get(pk=id)
     return render(request, 'funciones-trabajo.html', {'dato':funcion, 'editar':True})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def funcion_trab_listado(request):
-    funciones = FuncionesTrabajo.objects.all()
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    funciones = FuncionesTrabajo.objects.filter(empresa_reg=suc.empresa)
     return render(request, 'funciones-trabajo-listado.html', {'funciones': funciones})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def equipo_trabajo(request):
     return render(request, 'equipo-trabajo.html' )
 
+@login_required(login_url='/form/iniciar-sesion/')
 def equipo_trabajo_editar(request, id):
     dato = EquipoTrabajo.objects.get(pk=id)
     return render(request, 'equipo-trabajo.html', {'editar':True, 'dato':dato})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def equipo_trabajo_listado(request):
-    equipos = EquipoTrabajo.objects.all()
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    equipos = EquipoTrabajo.objects.filter(empresa_reg=suc.empresa)
     return render(request, 'equipo-trabajo-listado.html', {'equipos':equipos})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def estado_empleado(request):
     return render(request, 'estatus-empleado.html')
 
+@login_required(login_url='/form/iniciar-sesion/')
 def estado_empleado_editar(request, id):
     dato = StatusEmp.objects.get(pk=id)
     return render(request, 'estatus-empleado.html', {'editar':True, 'dato':dato})
 
+
+@login_required(login_url='/form/iniciar-sesion/')
 def estado_empleado_listado(request):
     lista = StatusEmp.objects.all()
     return render(request, 'estado-empleado-listado.html', {'lista':lista})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def ausentismo(request):
     empleados = Employee.objects.filter(active=True)
     motivos = MotivosAusencia.objects.filter(active=True)
     return render(request, 'ausentismo.html', {'empleados':empleados, 'motivos':motivos})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def ausentismo_editar(request, id):
     dato = Ausentismo.objects.get(pk=id)
     empleados = Employee.objects.filter(active=True)
     return render(request, 'ausentismo.html', {'editar':True, 'dato':dato, 'empleados':empleados})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def ausentismo_listado(request):
     lista = Ausentismo.objects.all().order_by('-desde')
     return render(request, 'ausentismo-listado.html', {'lista':lista})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def motivos_ausencia(request):
     return render(request, 'motivos-ausencia.html')
 
+@login_required(login_url='/form/iniciar-sesion/')
 def motivos_ausencia_editar(request, id):
     dato = MotivosAusencia.objects.get(pk=id)
     return render(request, 'motivos-ausencia.html', {'editar':True, 'dato':dato})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def motivos_ausencia_listado(request):
-    lista = MotivosAusencia.objects.all()
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    lista = MotivosAusencia.objects.filter(empresa_reg=suc.empresa)
     return render(request, 'motivos-ausencia-listado.html', {'lista':lista})
 
 def motivo_despido(request):
@@ -2116,6 +2140,7 @@ def actualizar_division(request):
         if request.is_ajax():
             if request.method == 'POST':
                 id = request.POST['id']
+                code = request.POST['code']
                 desc = request.POST['desc']
                 activo = int(request.POST['activo'])
 
@@ -2128,6 +2153,7 @@ def actualizar_division(request):
                     oDiv = Divisiones.objects.get(pk=id)
 
                     if oDiv:
+                        oDiv.code = code
                         oDiv.descripcion = desc
                         oDiv.active = activo
                         oDiv.user_mod = request.user
@@ -2568,6 +2594,7 @@ def guardar_ccosto(request):
     try:
         if request.is_ajax():
             if request.method == 'POST':
+                code = request.POST['code']
                 descripcion = request.POST['descripcion']
                 activo = int(request.POST['activo'])
 
@@ -2576,9 +2603,20 @@ def guardar_ccosto(request):
                 else:
                     activo = False
 
+                if len(code) > 5:
+                    mensaje = 'El campo "Código" tiene un máximo de 5 caracteres'
+                    data = {
+                        'mensaje': mensaje, 'error': False
+                    }
+                    return JsonResponse(data)
+
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+
                 if len(descripcion) > 0:
                     oCCosto = CentrosCostos(
+                        code = code,
                         descripcion=descripcion,
+                        empresa_reg = suc.empresa,
                         active=activo,
                         user_reg=request.user,
                     )
@@ -2620,6 +2658,7 @@ def actualizar_ccosto(request):
         if request.is_ajax():
             if request.method == 'POST':
                 id = int(request.POST['id'])
+                code = request.POST['code']
                 desc = request.POST['desc']
                 activo = int(request.POST['activo'])
 
@@ -2633,6 +2672,7 @@ def actualizar_ccosto(request):
 
                     if oCC:
                         oCC.descripcion = desc
+                        oCC.code = code
                         oCC.active = activo
                         oCC.user_mod = request.user
                         oCC.date_mod = datetime.datetime.now()
@@ -3557,6 +3597,7 @@ def guardar_parentesco(request):
         if request.is_ajax():
             if request.method == 'POST':
                 desc = request.POST['desc']
+                code = request.POST['code']
                 activo = int(request.POST['activo'])
 
                 if activo == 1:
@@ -3564,9 +3605,20 @@ def guardar_parentesco(request):
                 else:
                     activo = False
 
+                if len(code) > 5:
+                    mensaje = "El campo 'código' tiene como máximo 6 caracteres."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+
                 if len(desc) > 0:
                     oPr = Parentesco(
                         descripcion = desc,
+                        code = code,
+                        empresa_reg = suc.empresa,
                         active=activo,
                         user_reg=request.user,
                     )
@@ -3609,6 +3661,7 @@ def actualizar_parentesco(request):
             if request.method == 'POST':
                 id = int(request.POST['id'])
                 desc = request.POST['desc']
+                code = request.POST['code']
                 activo = int(request.POST['activo'])
 
                 if activo == 1:
@@ -3619,6 +3672,7 @@ def actualizar_parentesco(request):
                 if len(desc) > 0:
                     oPr = Parentesco.objects.get(pk=id)
                     if oPr:
+                        oPr.code = code
                         oPr.descripcion = desc
                         oPr.active = activo
                         oPr.user_mod = request.user
@@ -3706,8 +3760,8 @@ def guardar_funciones(request):
     try:
         if request.is_ajax():
             if request.method == 'POST':
-                nombre = request.POST['nombre']
                 desc = request.POST['desc']
+                code = request.POST['code']
                 activo = int(request.POST['activo'])
 
                 if activo == 1:
@@ -3715,17 +3769,27 @@ def guardar_funciones(request):
                 else:
                     activo = False
 
+                if len(code) > 5:
+                    mensaje = "El campo 'Código' tiene como máximo 5 caracteres."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+
                 if len(desc) > 0:
                     oFn = FuncionesTrabajo(
-                        nombre = nombre,
                         descripcion = desc,
+                        code = code,
+                        empresa_reg = suc.empresa,
                         active=activo,
                         user_reg=request.user,
                     )
                     oFn.save()
                     funcion = {
                         'pk': oFn.pk,
-                        'nombre': oFn.nombre,
+                        'code': oFn.code,
                         'desc': oFn.descripcion,
                         'activo': oFn.active,
                     }
@@ -3761,7 +3825,7 @@ def actualizar_funcion(request):
         if request.is_ajax():
             if request.method == 'POST':
                 id = int(request.POST['id'])
-                nombre = request.POST['nombre']
+                code = request.POST['code']
                 desc = request.POST['desc']
                 activo = int(request.POST['activo'])
 
@@ -3773,7 +3837,7 @@ def actualizar_funcion(request):
                 if len(desc) > 0:
                     oFn = FuncionesTrabajo.objects.get(pk=id)
                     if oFn:
-                        oFn.nombre = nombre
+                        oFn.code = code
                         oFn.descripcion = desc
                         oFn.active = activo
                         oFn.user_mod = request.user
@@ -3781,7 +3845,7 @@ def actualizar_funcion(request):
                         oFn.save()
                         funcion = {
                             'pk': oFn.pk,
-                            'nombre':oFn.nombre,
+                            'code':oFn.code,
                             'desc': oFn.descripcion,
                             'activo': oFn.active,
                         }
@@ -3862,7 +3926,7 @@ def guardar_equipos(request):
     try:
         if request.is_ajax():
             if request.method == 'POST':
-                nombre = request.POST['nombre']
+                code = request.POST['code']
                 desc = request.POST['desc']
                 activo = int(request.POST['activo'])
 
@@ -3871,17 +3935,27 @@ def guardar_equipos(request):
                 else:
                     activo = False
 
-                if len(desc) > 0 and len(nombre) > 0:
+                if len(desc) > 0 and len(code) > 0:
+                    if len(code) > 5:
+                        mensaje = "El campo 'código' tiene como máximo 5 caracteres."
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                        return JsonResponse(data)
+
+                    suc = Branch.objects.get(pk=request.session["sucursal"])
+
                     oEq = EquipoTrabajo(
-                        nombre = nombre,
+                        code = code,
                         descripcion = desc,
+                        empresa_reg = suc.empresa,
                         active=activo,
                         user_reg=request.user,
                     )
                     oEq.save()
                     equipo = {
                         'pk': oEq.pk,
-                        'nombre': oEq.nombre,
+                        'code': oEq.code,
                         'desc': oEq.descripcion,
                         'activo': oEq.active,
                     }
@@ -3917,9 +3991,16 @@ def actualizar_equipos(request):
         if request.is_ajax():
             if request.method == 'POST':
                 id = int(request.POST['id'])
-                nombre = request.POST['nombre']
+                code = request.POST['code']
                 desc = request.POST['desc']
                 activo = int(request.POST['activo'])
+
+                if len(code) > 5:
+                    mensaje = "El campo 'Código' tiene como máximo 5 caracteres."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
 
                 if activo == 1:
                     activo = True
@@ -3929,7 +4010,7 @@ def actualizar_equipos(request):
                 if len(desc) > 0:
                     oMd = EquipoTrabajo.objects.get(pk=id)
                     if oMd:
-                        oMd.nombre = nombre
+                        oMd.code = code
                         oMd.descripcion = desc
                         oMd.active = activo
                         oMd.user_mod = request.user
@@ -3937,7 +4018,7 @@ def actualizar_equipos(request):
                         oMd.save()
                         registro = {
                             'pk': oMd.pk,
-                            'nombre':oMd.nombre,
+                            'code':oMd.code,
                             'desc': oMd.descripcion,
                             'activo': oMd.active,
                         }
@@ -4463,11 +4544,19 @@ def guardar_motivo_ausencia(request):
         if request.is_ajax():
             if request.method == 'POST':
                 desc = request.POST['desc']
+                code = request.POST['code']
                 pagado = request.POST['pagado']
                 activo = request.POST['activo']
                 
                 if len(desc) == 0:
                     mensaje = 'Ingrese una descripción.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(code) > 5:
+                    mensaje = 'El campo "Código" tiene como máximo 5 caracteres.'
                     data = {
                         'mensaje': mensaje, 'error': True
                     }
@@ -4483,9 +4572,13 @@ def guardar_motivo_ausencia(request):
                 else:
                     activo = False
 
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+
                 oMd = MotivosAusencia(
+                    code = code,
                     descripcion = desc,
                     pagado = pagado,
+                    empresa_reg = suc.empresa,
                     active=activo,
                     user_reg=request.user,
                 )
@@ -4523,6 +4616,7 @@ def actualizar_motivo_ausencia(request):
         if request.is_ajax():
             if request.method == 'POST':
                 id = int(request.POST['id'])
+                code = request.POST['code']
                 desc = request.POST['desc']
                 pagado = request.POST['pagado']
                 activo = int(request.POST['activo'])
@@ -4541,6 +4635,7 @@ def actualizar_motivo_ausencia(request):
                     oMd = MotivosAusencia.objects.get(pk=id)
                     if oMd:
                         oMd.descripcion = desc
+                        oMd.code = code
                         oMd.pagado = pagado
                         oMd.active = activo
                         oMd.user_mod = request.user

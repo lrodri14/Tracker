@@ -18,8 +18,16 @@ Motivos Ausencia
                     <input type="hidden" value="{{dato.pk}}" name="id">
                     {% endif %}
                     <div class="col-md-12">
-                        <div class="col-md-12 margin-bottom-5px">    
+                        <div class="col-md-12 margin-bottom-5px">
                             <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label for="txtCodeMAu" class="control-label">Código :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <input id="txtCodeMAu" value='{{dato.code}}' name="mau_code" type="text" maxlength="5" class="form-control input-sm-1">
+                                    </div>
+                                </div>
                                 <div class="form-group">
                                     <div class="col-md-5 text-right">
                                         <label for="txtDescMAu" class="control-label">Descripción :</label>

@@ -24,7 +24,7 @@ Listado de Funciones de Trabajo
                             {% csrf_token %}
                             <thead>
                                 <tr>
-                                    <th>Nombre</th>
+                                    <th>Código</th>
                                     <th>Descripción</th>
                                     <th>Estado Registro</th>
                                     <th>Acciones</th>
@@ -33,7 +33,7 @@ Listado de Funciones de Trabajo
                             <tbody>
                                 {% for item in funciones %}
                                 <tr>
-                                    <td>{{item.nombre}}</td>
+                                    <td>{{item.code}}</td>
                                     <td>{{item.descripcion}}</td>
                                     <td>
                                     {% if item.active %}

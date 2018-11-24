@@ -24,6 +24,7 @@ Listado de Centros de Costos
                         <table id="myTable" class="table table-striped">
                             <thead>
                                 <tr>
+                                    <th>Código</th>
                                     <th>Descripción</th>
                                     <th>Estado del registro</th>
                                     <th>Acciones</th>
@@ -32,6 +33,7 @@ Listado de Centros de Costos
                             <tbody>
                                 {% for item in ccostos %}
                                 <tr>
+                                    <td>{{item.code}}</td>
                                     <td>{{item.descripcion}}</td>
                                     <td>
                                     {% if item.active %}
