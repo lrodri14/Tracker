@@ -388,6 +388,7 @@ class Ausentismo(models.Model):
     hasta = models.DateField(blank=True, null=True)
     motivo = models.ForeignKey(MotivosAusencia, blank=True, null=True, on_delete=models.DO_NOTHING)
     aprobado = models.ForeignKey(Employee, related_name='au_emp', related_query_name='au_emp', blank=True, null=True)
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="au_empreg", related_query_name="au_empreg")
     user_reg = models.ForeignKey(User)
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='au_usermod', related_query_name='au_usermod')

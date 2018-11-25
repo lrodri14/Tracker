@@ -24,6 +24,7 @@ Listado de Motivos de Ausentismo
                             {% csrf_token %}
                             <thead>
                                 <tr>
+                                    <th>Código</th>
                                     <th>Descripción</th>
                                     <th>Pagado</th>
                                     <th>Estado registro</th>
@@ -33,6 +34,7 @@ Listado de Motivos de Ausentismo
                             <tbody>
                                 {% for item in lista %}
                                 <tr>
+                                    <td>{{item.code}}</td>
                                     <td>{{item.descripcion}}</td>
                                     <td>
                                         {% if item.pagado %}

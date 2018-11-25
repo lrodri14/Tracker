@@ -394,20 +394,36 @@ def estado_empleado_listado(request):
 
 @login_required(login_url='/form/iniciar-sesion/')
 def ausentismo(request):
-    empleados = Employee.objects.filter(active=True)
-    motivos = MotivosAusencia.objects.filter(active=True)
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    empleados = Employee.objects.filter(active=True, empresa_reg=suc.empresa)
+    motivos = MotivosAusencia.objects.filter(active=True, empresa_reg=suc.empresa)
     return render(request, 'ausentismo.html', {'empleados':empleados, 'motivos':motivos})
 
 @login_required(login_url='/form/iniciar-sesion/')
 def ausentismo_editar(request, id):
+    suc = Branch.objects.get(pk=request.session["sucursal"])
     dato = Ausentismo.objects.get(pk=id)
-    empleados = Employee.objects.filter(active=True)
+    empleados = Employee.objects.filter(active=True, empresa_reg=suc.empresa)
     return render(request, 'ausentismo.html', {'editar':True, 'dato':dato, 'empleados':empleados})
 
 @login_required(login_url='/form/iniciar-sesion/')
 def ausentismo_listado(request):
-    lista = Ausentismo.objects.all().order_by('-desde')
-    return render(request, 'ausentismo-listado.html', {'lista':lista})
+    lista = []
+    busqueda = None
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    empleados = Employee.objects.all()
+    if 'empleado' in request.GET:
+        emp = request.GET.get("empleado")
+        if len(emp) > 0:
+            if int(emp) > 0:
+                busqueda = int(emp)
+                empleado = Employee.objects.get(pk=busqueda)
+                print empleado
+                lista = Ausentismo.objects.filter(empleado=empleado, empresa_reg = suc.empresa)
+                print lista
+    #lista = Ausentismo.objects.all().order_by('-desde')
+    #empleados = Employee.objects.filter(empresa_reg=suc.empresa)
+    return render(request, 'ausentismo-listado.html', {'datos':lista, 'empleados': empleados, 'busqueda':busqueda})
 
 @login_required(login_url='/form/iniciar-sesion/')
 def motivos_ausencia(request):
@@ -4341,12 +4357,15 @@ def guardar_ausentismo(request):
                 else:
                     activo = False
 
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+
                 oMd = Ausentismo(
                     empleado = oEmp,
                     desde = desde,
                     hasta = hasta,
                     motivo = oMot,
                     aprobado = oAprobo,
+                    empresa_reg = suc.empresa,
                     active=activo,
                     user_reg=request.user,
                 )
@@ -4356,7 +4375,7 @@ def guardar_ausentismo(request):
                     'empleado': oMd.empleado.pk,
                     'desde': oMd.desde,
                     'hasta': oMd.hasta,
-                    'motivo': oMd.motivo,
+                    'motivo': oMd.motivo.pk,
                     'activo': oMd.active,
                 }
                 mensaje = 'Se ha guardado el registro'

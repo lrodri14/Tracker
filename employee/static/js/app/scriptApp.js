@@ -946,10 +946,10 @@ function validargnrDatos() {
             mensaje("Registro de Ausentismo", "El campo 'Hasta' es obligatorio.", "warning");
             return false;
         }
-        if (Au_motivo.val().length == 0) {
-            mensaje("Registro de Ausentismo", "El campo 'Motivo' es obligatorio.", "warning");
-            return false;
-        }
+        // if (Au_motivo.val().length == 0) {
+        //     mensaje("Registro de Ausentismo", "El campo 'Motivo' es obligatorio.", "warning");
+        //     return false;
+        // }
 
         // if (Au_aprobo.val() == 0) {
         //     mensaje("Registro de Ausentismo", "El campo 'Aprobó' es obligatorio.", "warning");

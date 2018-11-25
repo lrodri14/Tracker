@@ -16,7 +16,7 @@ Datos de Ausentismo
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <form action="{% url 'evaluacion_listar' %}" method="GET">
+                                <form action="{% url 'ausentismo_listado' %}" method="GET">
                                     <div class="col-md-3">
                                         <label for="cboAuEmp" class="control-label">Empleado :</label>
                                     </div>
@@ -26,12 +26,12 @@ Datos de Ausentismo
                                             {% for item in empleados %}
                                                 {% if busqueda %}
                                                     {% if item.pk == busqueda %}
-                                                    <option value="{{item.pk}}" selected>{{item.firstName}} {{item.middleName}} {{item.lastName}}</option>
+                                                    <option value="{{item.pk}}" selected>{{item.firstName}}{% if item.middleName %}{{item.middleName}}{% endif %} {{item.lastName}}</option>
                                                     {% else %}
-                                                    <option value="{{item.pk}}">{{item.firstName}} {{item.middleName}} {{item.lastName}}</option>
+                                                    <option value="{{item.pk}}">{{item.firstName}}{% if item.middleName %} {{item.middleName}}{% endif %} {{item.lastName}}</option>
                                                     {% endif %}
                                                 {% else %}
-                                                <option value="{{item.pk}}">{{item.firstName}} {{item.middleName}} {{item.lastName}}</option>
+                                                <option value="{{item.pk}}">{{item.firstName}}{% if item.middleName %} {{item.middleName}}{% endif %} {{item.lastName}}</option>
                                                 {% endif %}
                                             {% endfor %}
                                         </select>
