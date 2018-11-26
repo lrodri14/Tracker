@@ -440,15 +440,19 @@ def motivos_ausencia_listado(request):
     lista = MotivosAusencia.objects.filter(empresa_reg=suc.empresa)
     return render(request, 'motivos-ausencia-listado.html', {'lista':lista})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def motivo_despido(request):
     return render(request, 'motivos-despido.html')
 
+@login_required(login_url='/form/iniciar-sesion/')
 def motivo_despido_editar(request, id):
     dato = MotivosDespido.objects.get(pk=id)
     return render(request, 'motivos-despido.html', {'editar':True, 'dato':dato})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def motivos_despido_listado(request):
-    lista = MotivosDespido.objects.all()
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    lista = MotivosDespido.objects.filter(e,[])
     return render(request, 'motivos-despido-listado.html', {'lista':lista})
 
 def motivos_renuncia(request):
@@ -4744,11 +4748,18 @@ def guardar_motivo_despido(request):
         if request.is_ajax():
             if request.method == 'POST':
                 desc = request.POST['desc']
-                nombre = request.POST['nombre']
+                code = request.POST['code']
                 activo = request.POST['activo']
                 
-                if len(nombre) == 0:
-                    mensaje = 'El campo "Nombre" es obligatorio.'
+                if len(code) == 0:
+                    mensaje = 'El campo "Código" es obligatorio.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(code) > 5:
+                    mensaje = 'El campo "Código" tiene como máximo 5 caracteres.'
                     data = {
                         'mensaje': mensaje, 'error': True
                     }
@@ -4759,9 +4770,12 @@ def guardar_motivo_despido(request):
                 else:
                     activo = False
 
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+
                 oMd = MotivosDespido(
                     descripcion = desc,
-                    nombre = nombre,
+                    empresa_reg=suc.empresa,
+                    code = code,
                     active=activo,
                     user_reg=request.user,
                 )
@@ -4769,7 +4783,7 @@ def guardar_motivo_despido(request):
                 registro = {
                     'pk': oMd.pk,
                     'desc': oMd.descripcion,
-                    'nombre': oMd.nombre,
+                    'code': oMd.code,
                     'activo': oMd.active,
                 }
                 mensaje = 'Se ha guardado el registro'
@@ -4800,7 +4814,7 @@ def actualizar_motivo_despido(request):
             if request.method == 'POST':
                 id = int(request.POST['id'])
                 desc = request.POST['desc']
-                nombre = request.POST['nombre']
+                code = request.POST['code']
                 activo = int(request.POST['activo'])
 
                 if activo == 1:
@@ -4812,7 +4826,7 @@ def actualizar_motivo_despido(request):
                     oMd = MotivosDespido.objects.get(pk=id)
                     if oMd:
                         oMd.descripcion = desc
-                        oMd.nombre = nombre
+                        oMd.code = code
                         oMd.active = activo
                         oMd.user_mod = request.user
                         oMd.date_mod = datetime.datetime.now()
@@ -4820,7 +4834,7 @@ def actualizar_motivo_despido(request):
                         registro = {
                             'pk': oMd.pk,
                             'descripcion':oMd.descripcion,
-                            'nombre': oMd.nombre,
+                            'code': oMd.code,
                             'activo': oMd.active,
                         }
                         mensaje = 'Se ha actualizado el registro.'
@@ -5051,7 +5065,7 @@ def guardar_clase_educacion(request):
     try:
         if request.is_ajax():
             if request.method == 'POST':
-                nombre = request.POST['nombre']
+                code = request.POST['code']
                 desc = request.POST['desc']
                 activo = request.POST['activo']
 
@@ -5075,7 +5089,7 @@ def guardar_clase_educacion(request):
                     activo = False
 
                 oMd = ClaseEducacion(
-                    nombre = nombre,
+                    code =code
                     descripcion = desc,
                     active=activo,
                     user_reg=request.user,
@@ -5083,7 +5097,7 @@ def guardar_clase_educacion(request):
                 oMd.save()
                 registro = {
                     'pk': oMd.pk,
-                    'nombre': oMd.nombre,
+                    'codigo': oMd.nombre
                     'desc': oMd.descripcion,
                     'activo': oMd.active,
                 }

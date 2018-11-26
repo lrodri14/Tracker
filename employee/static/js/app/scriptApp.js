@@ -1049,7 +1049,7 @@ function validargnrDatos() {
 
      //#region Variables
      var mdes_desc = $('textarea[name="mdes_desc"]');
-     var mdes_nombre = $('input[name="mdes_nombre"]');
+     var mdes_code = $('input[name="mdes_code"]');
      var mdes_activo = $('input[name="mdes_activo"]');
 
      //#endregion
@@ -1067,7 +1067,7 @@ function validargnrDatos() {
             }
             data = {
                 'desc': mdes_desc.val(),
-                'nombre': mdes_nombre.val(),
+                'code': mdes_code.val(),
                 'activo': vActivo,
                 'csrfmiddlewaretoken': token.val(),
             };
@@ -1089,7 +1089,7 @@ function validargnrDatos() {
             data = {
                 'id': id.val(),
                 'desc': mdes_desc.val(),
-                'nombre': mdes_nombre.val(),
+                'code': mdes_code.val(),
                 'pagado': vPagado,
                 'activo': vActivo,
                 'csrfmiddlewaretoken': token.val(),
@@ -1107,8 +1107,8 @@ function validargnrDatos() {
      //#region Validación
      function validarmAuDatos() {
         $('div').removeClass('has-warning');
-        if (mdes_nombre.val().length == 0) {
-            mensaje("Registro de Motivos de Despido", "El campo 'Nombre' es obligatorio.", "warning");
+        if (mdes_code.val().length == 0) {
+            mensaje("Registro de Motivos de Despido", "El campo 'Código' es obligatorio.", "warning");
             return false;
         }
         return true;
@@ -1188,7 +1188,7 @@ function validargnrDatos() {
 
     //#region Variables
     var clsEd_desc = $('textarea[name="clsEd_desc"]');
-    var clsEd_nombre = $('input[name="clsEd_nombre"]');
+    var clsEd_code = $('input[name="clsEd_code"]');
     var clsEd_activo = $('input[name="clsEd_activo"]');
     //#endregion
 
@@ -1204,7 +1204,7 @@ function validargnrDatos() {
                 vActivo = 0;
             }
             data = {
-                'nombre': clsEd_nombre.val(),
+                'code': clsEd_code.val(),
                 'desc': clsEd_desc.val(),
                 'activo': vActivo,
                 'csrfmiddlewaretoken': token.val(),

@@ -399,8 +399,10 @@ class Ausentismo(models.Model):
         return self.empleado.firstName + ' ' + self.empleado.lastName + ' - ' + str(self.desde) + ' | ' + str(self.hasta)
 
 class MotivosDespido(models.Model):
-    nombre = models.CharField(max_length=50, blank=True, null=True)
+    code = models.CharField(max_length=5, blank=True, null=True)
+    #nombre = models.CharField(max_length=50, blank=True, null=True)
     descripcion = models.TextField(blank=True, null=True)
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="mDes_empreg", related_query_name="mDes_empreg")
     user_reg = models.ForeignKey(User)
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='mDes_usermod', related_query_name='mDes_usermod')
@@ -411,8 +413,10 @@ class MotivosDespido(models.Model):
         return self.nombre
 
 class MotivosRenuncia(models.Model):
+    code = models.CharField(max_length=5, blank=True, null=True)
     descripcion = models.CharField(max_length=150)
     user_reg = models.ForeignKey(User)
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="mRe_empreg", related_query_name="mRe_empreg")
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='mRe_usermod', related_query_name='mRe_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
@@ -422,8 +426,10 @@ class MotivosRenuncia(models.Model):
         return self.descripcion
 
 class ClaseEducacion(models.Model):
-    nombre = models.CharField(max_length=50, blank=True, null=True)
+    code = models.CharField(max_length=5, blank=True, null=True)
+    #nombre = models.CharField(max_length=50, blank=True, null=True)
     descripcion = models.TextField(blank=True, null=True)
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="clsEd_empreg", related_query_name="clsEd_empreg")
     user_reg = models.ForeignKey(User)
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='clsEdu_usermod', related_query_name='clsEdu_usermod')
