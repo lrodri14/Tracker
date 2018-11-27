@@ -17,6 +17,19 @@ Activo Asignado
                     <input type="hidden" value="{{dato.pk}}" name="act_asig_id">
                     {% endif %}
                     <div class="col-md-12">
+                        <div class="col-md-12 margin-bottom-5px">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label class="control-label">Código :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <input name="banco_nombre" value="{{dato.code}}" type="text" class="form-control input" maxlength="5" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6"></div>
+                        </div>
                         <div class="col-md-12 margin-bottom-5px">    
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -28,6 +41,9 @@ Activo Asignado
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-md-6"></div>
+                        </div>
+                        <div class="col-md-12 margin-bottom-5px">
                             <div class="col-md-6">
                                 <div class="col-md-6">
                                     <div class="form-group">
@@ -43,6 +59,7 @@ Activo Asignado
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-md-6"></div>
                         </div>
                         <hr>
                         <div class="form-action col-md-12 text-right">

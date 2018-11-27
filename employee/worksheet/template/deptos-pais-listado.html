@@ -25,7 +25,8 @@ Listado de Departamentos/Estados
                             <thead>
                                 <tr>
                                     <th>Código</th>
-                                    <th>Nombre</th>
+                                    <th>Departamento/Estado</th>
+                                    <th>País</th>
                                     <th>Estado del registro</th>
                                     <th>Acciones</th>
                                 </tr>
@@ -35,6 +36,7 @@ Listado de Departamentos/Estados
                                 <tr>
                                     <td>{{item.code}}</td>
                                     <td>{{item.name}}</td>
+                                    <td>{{item.pais.name}}</td>
                                     <td>
                                     {% if item.active %}
                                     <span class="label label-success">Habilitado</span>

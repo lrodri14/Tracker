@@ -248,6 +248,7 @@ $(document).on('ready', () => {
     var dept_codigo = $('input[name="dept_codigo"]');
     var dept_nombre = $('input[name="dept_nombre"]');
     var dept_activo = $('input[name="dept_activo"]');
+    var dept_pais = $('select[name="dept_pais"]');
 //#endregion
 
 //#region Eventos Controles
@@ -265,6 +266,7 @@ $(document).on('ready', () => {
             data = {
                 'codigo': dept_codigo.val(),
                 'nombre': dept_nombre.val(),
+                'pais': dept_pais.val(),
                 'activo': vActivo,
                 'csrfmiddlewaretoken': token.val(),
             };
@@ -286,6 +288,7 @@ $(document).on('ready', () => {
                 'id': id.val(),
                 'codigo': dept_codigo.val(),
                 'nombre': dept_nombre.val(),
+                'pais': dept_pais.val(),
                 'activo': vActivo,
                 'csrfmiddlewaretoken': token.val(),
             };
@@ -316,6 +319,10 @@ $(document).on('ready', () => {
         }
         if (dept_nombre.val().length > 150) {
             mensaje("Registro de Departamentos/Estado", "El campo 'Nombre' solo es de 5 caracteres.", "warning");
+            return false;
+        }
+        if (dept_pais.val() == 0) {
+            mensaje("Registro de Departamentos/Estado", "El campo 'País' es un campo obligatorio.", "warning");
             return false;
         }
         return true;
@@ -1121,6 +1128,7 @@ function validargnrDatos() {
 
     //#region Variables
     var mre_desc = $('textarea[name="mre_desc"]');
+    var mre_code = $('input[name="mre_codigo"]');
     var mre_activo = $('input[name="mre_activo"]');
     //#endregion
 
@@ -1137,6 +1145,7 @@ function validargnrDatos() {
             }
             data = {
                 'desc': mre_desc.val(),
+                'code': mre_code.val(),
                 'activo': vActivo,
                 'csrfmiddlewaretoken': token.val(),
             };
@@ -1158,6 +1167,7 @@ function validargnrDatos() {
             data = {
                 'id': id.val(),
                 'desc': mre_desc.val(),
+                'code': mre_code.val(),
                 'activo': vActivo,
                 'csrfmiddlewaretoken': token.val(),
             };
@@ -1226,7 +1236,7 @@ function validargnrDatos() {
             }
             data = {
                 'id': id.val(),
-                'nombre': clsEd_nombre.val(),
+                'code': clsEd_code.val(),
                 'desc': clsEd_desc.val(),
                 'activo': vActivo,
                 'csrfmiddlewaretoken': token.val(),
@@ -1244,8 +1254,8 @@ function validargnrDatos() {
     //#region Validación
      function validarClsEdDatos() {
         $('div').removeClass('has-warning');
-        if (clsEd_nombre.val().length == 0) {
-            mensaje("Registro de Clase de Educación", "El campo 'Nombre' es obligatorio.", "warning");
+        if (clsEd_code.val().length == 0) {
+            mensaje("Registro de Clase de Educación", "El campo 'Código' es obligatorio.", "warning");
             return false;
         }
         if (clsEd_desc.val().length == 0) {
@@ -1449,6 +1459,7 @@ function validargnrDatos() {
 //#region Código para registrar Motivos para Aumento de Sueldo
 
     //#region Variables
+    var mas_code = $('input[name="mAuSal_code"]');
     var mas_desc = $('textarea[name="mAuSal_desc"]');
     var mas_activo = $('input[name="mas_activo"]');
     //#endregion
@@ -1466,6 +1477,7 @@ function validargnrDatos() {
         //if (validarEvDatos() != false) {
         data = {
             'desc': mas_desc.val(),
+            'code': mas_code.val(),
             'activo': vActivo,
             'csrfmiddlewaretoken': token.val(),
         };
@@ -1485,6 +1497,7 @@ function validargnrDatos() {
         //if (validarEvDatos() != false) {
         data = {
             'id': id.val(),
+            'code': mas_code.val(),
             'desc': mas_desc.val(),
             'activo': vActivo,
             'csrfmiddlewaretoken': token.val(),
@@ -1634,6 +1647,7 @@ function validargnrDatos() {
     //#region Variables
     var grpCom_id = $("input[name='grpCom_id'");
     var grpCom_desc = $('textarea[name="grpCom_desc"]');
+    var grpCom_code = $('input[name="grpCom_code"]');
     var grpCom_activo = $('input[name="grpCom_activo"]');
     //#endregion
 
@@ -1649,6 +1663,7 @@ function validargnrDatos() {
         }
         data = {
             'desc': grpCom_desc.val(),
+            'code': grpCom_code.val(),
             'activo': vActivo,
             'csrfmiddlewaretoken': token.val(),
         };
@@ -1668,6 +1683,7 @@ function validargnrDatos() {
         data = {
             'id': grpCom_id.val(),
             'desc': grpCom_desc.val(),
+            'code': grpCom_code.val(),
             'activo': vActivo,
             'csrfmiddlewaretoken': token.val(),
         };

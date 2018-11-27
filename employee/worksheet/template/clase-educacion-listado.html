@@ -24,7 +24,7 @@ Listado de Clases de Educación
                             {% csrf_token %}
                             <thead>
                                 <tr>
-                                    <th>Nombre</th>
+                                    <th>Código</th>
                                     <th>Descripción</th>
                                     <th>Estado registro</th>
                                     <th>Acciones</th>
@@ -33,7 +33,7 @@ Listado de Clases de Educación
                             <tbody>
                                 {% for item in lista %}
                                 <tr>
-                                    <td>{{item.nombre}}</td>
+                                    <td>{{item.code}}</td>
                                     <td>{{item.descripcion}}</td>
                                     <td>
                                         {% if item.active %}

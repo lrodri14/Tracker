@@ -25,11 +25,11 @@ Empleos anteriores
                                         <select class="form-control select2 input-sm input-sm-1" name="empleado" id="cboAuEmp">
                                             <option value="0">Seleccionar...</option>
                                             {% for item in empleados %} {% if busqueda %} {% if item.pk == busqueda %}
-                                            <option value="{{item.pk}}" selected>{{item.firstName}} {{item.middleName}} {{item.lastName}}</option>
+                                            <option value="{{item.pk}}" selected>{{item.firstName}} {% if item.middleName %}{{item.middleName}}{% endif %} {{item.lastName}}</option>
                                             {% else %}
-                                            <option value="{{item.pk}}">{{item.firstName}} {{item.middleName}} {{item.lastName}}</option>
+                                            <option value="{{item.pk}}">{{item.firstName}} {% if item.middleName %}{{item.middleName}}{% endif %} {{item.lastName}}</option>
                                             {% endif %} {% else %}
-                                            <option value="{{item.pk}}">{{item.firstName}} {{item.middleName}} {{item.lastName}}</option>
+                                            <option value="{{item.pk}}">{{item.firstName}} {% if item.middleName %}{{item.middleName}}{% endif %} {{item.lastName}}</option>
                                             {% endif %} {% endfor %}
                                         </select>
                                     </div>

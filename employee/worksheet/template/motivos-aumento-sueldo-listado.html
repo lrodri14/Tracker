@@ -24,6 +24,7 @@ Listado de Motivos para Aumento de Sueldo
                             {% csrf_token %}
                             <thead>
                                 <tr>
+                                    <th>Código</th>
                                     <th>Descripción</th>
                                     <th>Estado registro</th>
                                     <th>Acciones</th>
@@ -32,6 +33,7 @@ Listado de Motivos para Aumento de Sueldo
                             <tbody>
                                 {% for item in lista %}
                                 <tr>
+                                    <td>{{item.code}}</td>
                                     <td>{{item.descripcion}}</td>
                                     <td>
                                         {% if item.active %}

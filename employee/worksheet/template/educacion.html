@@ -53,12 +53,12 @@ Educación
                                             {% for item in clasesEducacion %}
                                                 {% if editar %}
                                                     {% if item == dato.clase_edu %}
-                                                    <option value="{{item.pk}}" selected>{{item.nombre}}</option>
+                                                    <option value="{{item.pk}}" selected>{{item.descripcion}}</option>
                                                     {% else %}
-                                                    <option value="{{item.pk}}">{{item.nombre}}</option>
+                                                    <option value="{{item.pk}}">{{item.descripcion}}</option>
                                                     {% endif %}
                                                 {% else %}
-                                                <option value="{{item.pk}}">{{item.nombre}}</option>
+                                                <option value="{{item.pk}}">{{item.descripcion}}</option>
                                                 {% endif %}
                                             {% endfor %}
                                         </select>

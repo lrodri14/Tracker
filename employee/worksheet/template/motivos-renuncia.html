@@ -18,6 +18,19 @@ Motivos de Renuncia
                     <input type="hidden" value="{{dato.pk}}" name="id">
                     {% endif %}
                     <div class="col-md-12">
+                        <div class="col-md-12 margin-bottom-5px">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label for="txtCodigo" class="control-label">Código :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <input type="text" name="mre_codigo" value="{{dato.code}}" id="txtCodigo" maxlength="5" class="form-control input-md">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6"></div>
+                        </div>
                         <div class="col-md-12 margin-bottom-5px">    
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -25,7 +38,7 @@ Motivos de Renuncia
                                         <label for="txtDescMRe" class="control-label">Descripción :</label>
                                     </div>
                                     <div class="col-md-7">
-                                        <textarea name="mre_desc" id="txtDescMRe" rows="10" class="form-control" maxlength="150">{{dato.descripcion}}</textarea>
+                                        <textarea name="mre_desc" id="txtDescMRe" rows="7" class="form-control" maxlength="150">{{dato.descripcion}}</textarea>
                                     </div>
                                 </div>
                             </div>

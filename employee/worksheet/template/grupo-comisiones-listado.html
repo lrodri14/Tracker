@@ -9,7 +9,7 @@ Listado de Vendedores
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h2 class="text-bold"><i class="ti-user"></i>
-                    Listado de Vendedores</h2>
+                    Listado de Grupos de Comisiones</h2>
             </div>
             <div class="panel-wrapper">
                 <div class="panel-body">
@@ -24,6 +24,7 @@ Listado de Vendedores
                             {% csrf_token %}
                             <thead>
                                 <tr>
+                                    <th>Código</th>
                                     <th>Descripción</th>
                                     <th>Estado registro</th>
                                     <th>Acciones</th>
@@ -32,6 +33,7 @@ Listado de Vendedores
                             <tbody>
                                 {% for item in datos %}
                                 <tr>
+                                    <td>{{item.code}}</td>
                                     <td>{{item.descripcion}}</td>
                                     <td>
                                         {% if item.active %}

@@ -24,7 +24,7 @@ Departamentos/Estado
                                     <label for="txtCodigo" class="control-label">Código :</label>
                                 </div>
                                 <div class="col-md-7">
-                                    <input type="text" name="dept_codigo" value="{{dato.code}}" id="txtCodigo" class="form-control input-sm input-sm-1">
+                                    <input type="text" name="dept_codigo" value="{{dato.code}}" id="txtCodigo" maxlength="5" class="form-control input-md">
                                 </div>
                             </div>
                         </div>
@@ -34,7 +34,31 @@ Departamentos/Estado
                                     <label for="txtNombre" class="control-label">Nombre :</label>
                                 </div>
                                 <div class="col-md-7">
-                                    <input type="text" name="dept_nombre" value="{{dato.name}}" id="txtNombre" class="form-control input-sm input-sm-1">
+                                    <input type="text" name="dept_nombre" value="{{dato.name}}" id="txtNombre" class="form-control input-md">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 margin-bottom-5px">
+                            <div class="form-group">
+                                <div class="col-md-5 text-right">
+                                    <label for="txtNombre" class="control-label">País :</label>
+                                </div>
+                                <div class="col-md-7">
+                                    <select class="form-control input-md" name="dept_pais">
+                                        <option value="0">Seleccionar</option>
+                                        {% for item in paises %}
+                                            {% if editar %}
+                                                {% if item == dato.pais %}
+                                                <option selected value="{{item.pk}}">{{item.name}}</option>
+                                                {% else %}        
+                                                <option value="{{item.pk}}">{{item.name}}</option>
+                                                {% endif %}
+                                            {% else %}
+                                            <option value="{{item.pk}}">{{item.name}}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                    {% comment %} <input type="text" name="dept_nombre" value="{{dato.name}}" id="txtNombre" class="form-control input-md"> {% endcomment %}
                                 </div>
                             </div>
                         </div>
