@@ -224,12 +224,12 @@
                                                     {% for salesPerson in salesPersons %}
                                                         {% if editar %} 
                                                             {% if dato.slsPerson == salesPerson %}
-                                                                <option value="{{salesPerson.pk}}" selected>{{salesPerson.slpName}}</option>
+                                                                <option value="{{salesPerson.pk}}" selected>{{salesPerson.nombre}}</option>
                                                             {% else %}
-                                                                <option value="{{salesPerson.pk}}">{{salesPerson.slpName}}</option>
+                                                                <option value="{{salesPerson.pk}}">{{salesPerson.nombre}}</option>
                                                             {% endif %}
                                                         {% else %}
-                                                            <option value="{{salesPerson.pk}}">{{salesPerson.slpName}}</option>
+                                                            <option value="{{salesPerson.pk}}">{{salesPerson.nombre}}</option>
                                                         {% endif %}
                                                     {% endfor %}
                                                 </select>

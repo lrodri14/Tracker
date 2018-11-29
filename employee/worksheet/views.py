@@ -111,13 +111,13 @@ def empleado_form(request):
     positions = Position.objects.filter(active=True, empresa_reg=suc.empresa)
     departments = Department.objects.filter(active=True, empresa_reg=suc.empresa)
     branches = Branch.objects.filter(active=True)
-    salesPersons = SalesPerson.objects.filter(active=True)
+    salesPersons = Vendedor.objects.filter(active=True, empresa_reg=suc.empresa)
     states = State.objects.filter(active=True, empresa_reg=suc.empresa)
     countries = Country.objects.filter(active=True, empresa_reg=suc.empresa)
     estados_emp = StatusEmp.objects.filter(active=True, empresa_reg=suc.empresa)
     terms = TermReason.objects.filter(active=True, empresa_reg=suc.empresa)
     sexos = Sex.objects.filter(active=True, empresa_reg=suc.empresa)
-    citizenships = Country.objects.filter(active=True)
+    citizenships = Country.objects.filter(active=True, empresa_reg=suc.empresa)
     civil_status = CivilStatus.objects.filter(active=True)
     salary_units = SalaryUnit.objects.filter(active=True)
     costs_units = CostUnit.objects.filter(active=True)
@@ -604,8 +604,12 @@ def grupo_comisiones_listar(request):
 
 @login_required(login_url='/form/iniciar-sesion/')
 def vendedor_form(request):
-    grp_com = GrupoComisiones.objects.all()
-    empleados = Employee.objects.filter(active=True)
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    grp_com = GrupoComisiones.objects.filter(empresa_reg=suc.empresa)
+    empl_list = Vendedor.objects.filter(empresa_reg=suc.empresa).values_list('empleado__id', flat=True)
+    empleados = Employee.objects.exclude(pk__in=empl_list)
+    print empl_list
+    #empleados = Employee.objects.filter(active=True)
     return render(request, 'vendedor.html', {'grp_com':grp_com, 'empleados':empleados, 'editar':False})
 
 @login_required(login_url='/form/iniciar-sesion/')
@@ -874,7 +878,7 @@ def guardar_empleado(request):
 
                 if len(slsP) > 0:
                     if int(slsP) > 0:
-                        oEmpVentas = SalesPerson.objects.get(pk=slsP)
+                        oEmpVentas = Vendedor.objects.get(pk=slsP)
                         if not oSucursal:
                             mensaje = "El 'empleado de ventas' no existe."
                             data = {
@@ -6752,6 +6756,7 @@ def guardar_vendedor(request):
                     user_reg=request.user,
                 )
                 oMd.save()
+                
                 mensaje = 'Se ha guardado el registro'
                 data = {
                     'mensaje': mensaje, 'error': False

@@ -84,7 +84,6 @@ class SalesPerson(models.Model):
     def __unicode__(self):
         return self.slpName
 
-
 class Country(models.Model):
     code = models.CharField(max_length=5, blank=True, null=True)
     name = models.CharField(max_length=150)
@@ -205,6 +204,42 @@ class Bank(models.Model):
     def __unicode__(self):
         return self.description
 
+class GrupoComisiones(models.Model):
+    code = models.CharField(max_length=5, blank=True, null=True)
+    descripcion = models.CharField(max_length=150)
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING,
+                                    related_name="gpCom_empreg", related_query_name="gpCom_empreg")
+    user_reg = models.ForeignKey(User)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL,
+                                 related_name='grpcom_usermod', related_query_name='grpcom_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.NullBooleanField(blank=True, null=True)
+
+    def __unicode__(self):
+        return self.descripcion
+
+class Vendedor(models.Model):
+    nombre = models.CharField(max_length=150)
+    grupo_comisiones = models.ForeignKey(GrupoComisiones)
+    porcentaje_comision = models.CharField(
+        max_length=15, blank=True, null=True)
+    telefono = models.CharField(max_length=25, blank=True, null=True)
+    tel_movil = models.CharField(max_length=25)
+    correo = models.CharField(max_length=150)
+    comentario = models.TextField(blank=True, null=True)
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING,
+                                    related_name="vendedor_empreg", related_query_name="vendedor_empreg")
+    user_reg = models.ForeignKey(User)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL,
+                                 related_name='vendedor_usermod', related_query_name='vendedor_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.BooleanField()
+
+    def __unicode__(self):
+        return self.nombre
+
 class Employee(models.Model):
     firstName = models.CharField(max_length=50)
     middleName = models.CharField(max_length=50, blank=True, null=True)
@@ -214,7 +249,7 @@ class Employee(models.Model):
     position = models.ForeignKey(Position, help_text="Posición del empleado", verbose_name="Posicion", blank=True, null=True)
     dept = models.ForeignKey(Department, blank=True, null=True)
     branch = models.ForeignKey(Branch, blank=True, null=True)
-    slsPerson = models.ForeignKey(SalesPerson, blank=True, null=True)
+    slsPerson = models.ForeignKey(Vendedor, blank=True, null=True)
     officeTel = models.CharField(max_length=50, blank=True, null=True)
     officeExt = models.CharField(max_length=50, blank=True, null=True)
     mobile = models.CharField(max_length=50, blank=True, null=True)
@@ -519,38 +554,6 @@ class Banco(models.Model):
     
     def __unicode__(self):
         return self.codigo + ' ' + self.nombre + ' ' + self.pais.name
-
-class GrupoComisiones(models.Model):
-    code = models.CharField(max_length=5, blank=True, null=True)
-    descripcion = models.CharField(max_length=150)
-    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="gpCom_empreg", related_query_name="gpCom_empreg")
-    user_reg = models.ForeignKey(User)
-    date_reg = models.DateTimeField(auto_now_add=True)
-    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='grpcom_usermod', related_query_name='grpcom_usermod')
-    date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.NullBooleanField(blank=True, null=True)
-
-    def __unicode__(self):
-        return self.descripcion
-
-class Vendedor(models.Model):
-    nombre = models.CharField(max_length=150)
-    grupo_comisiones = models.ForeignKey(GrupoComisiones)
-    porcentaje_comision = models.CharField(max_length=15, blank=True, null=True)
-    empleado = models.ForeignKey(Employee)
-    telefono = models.CharField(max_length=25, blank=True, null=True)
-    tel_movil = models.CharField(max_length=25)
-    correo = models.CharField(max_length=150)
-    comentario = models.TextField(blank=True, null=True)
-    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="vendedor_empreg", related_query_name="vendedor_empreg")
-    user_reg = models.ForeignKey(User)
-    date_reg = models.DateTimeField(auto_now_add=True)
-    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='vendedor_usermod', related_query_name='vendedor_usermod')
-    date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.BooleanField()
-
-    def __unicode__(self):
-        return self.nombre
 
 class Feriado(models.Model):
     fecha = models.DateField()

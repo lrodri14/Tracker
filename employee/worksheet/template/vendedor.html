@@ -3,6 +3,16 @@
 Vendedor
 {% endblock titulo %}
 {% load static %}
+{% block estilo %}
+<style>
+    .checkbox{
+        font-weight: 500;
+    }
+    .checkbox label{
+        font-weight: 500;
+    }
+</style>
+{% endblock estilo %}
 {% block contenido %}
 <div class="row">
     <div class="col-md-12">
@@ -72,11 +82,11 @@ Vendedor
                                         <select class="form-control select2" name="vend_emp" id="cboVendGrpCom">
                                             <option value="0">Seleccionar...</option>
                                             {% for item in empleados %} {% if editar %} {% if item == dato.empleado %}
-                                            <option value="{{item.pk}}" selected>{{item.firstName}} {{item.middleName}} {{item.lastName}}</option>
+                                            <option value="{{item.pk}}" selected>{{item.firstName}} {% if item.middleName %}{{item.middleName}}{% endif %} {{item.lastName}}</option>
                                             {% else %}
-                                            <option value="{{item.pk}}">{{item.firstName}} {{item.middleName}} {{item.lastName}}</option>
+                                            <option value="{{item.pk}}">{{item.firstName}} {% if item.middleName %}{{item.middleName}}{% endif %} {{item.lastName}}</option>
                                             {% endif %} {% else %}
-                                            <option value="{{item.pk}}">{{item.firstName}} {{item.middleName}} {{item.lastName}}</option>
+                                            <option value="{{item.pk}}">{{item.firstName}} {% if item.middleName %}{{item.middleName}}{% endif %} {{item.lastName}}</option>
                                             {% endif %} {% endfor %}
                                         </select>
                                     </div>
