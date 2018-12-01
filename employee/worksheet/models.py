@@ -249,6 +249,7 @@ class Employee(models.Model):
     position = models.ForeignKey(Position, help_text="Posición del empleado", verbose_name="Posicion", blank=True, null=True)
     dept = models.ForeignKey(Department, blank=True, null=True)
     branch = models.ForeignKey(Branch, blank=True, null=True)
+    jefe = models.ForeignKey('self', blank=True, null=True)
     slsPerson = models.ForeignKey(Vendedor, blank=True, null=True)
     officeTel = models.CharField(max_length=50, blank=True, null=True)
     officeExt = models.CharField(max_length=50, blank=True, null=True)

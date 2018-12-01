@@ -18,6 +18,7 @@ $(document).on('ready', function() {
     var dept = $('select[name="dept"]');
     var ext = $('input[name="ext"]');
     var suc = $('select[name="sucursal"]');
+    var jefe = $('select[name="jefe"]');
     var telMov = $('input[name="telMov"]');
     var pag = $('input[name="pager"]');
     var slsP = $('select[name="slsPer"]');
@@ -123,6 +124,7 @@ $(document).on('ready', function() {
                     'dept':dept.val(),
                     'telExt':ext.val(),
                     'suc':suc.val(),
+                    'jefe':jefe.val(),
                     'telMov':telMov.val(),
                     'pag':pag.val(),
                     'slsP':slsP.val(),
@@ -236,6 +238,7 @@ $(document).on('ready', function() {
                 'dept': dept.val(),
                 'telExt': ext.val(),
                 'suc': suc.val(),
+                'jefe': jefe.val(),
                 'telMov': telMov.val(),
                 'pag': pag.val(),
                 'slsP': slsP.val(),

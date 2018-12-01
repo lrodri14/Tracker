@@ -246,6 +246,7 @@ urlpatterns = [
     url(r'^eliminar/empresa-usuario/$', views.eliminar_empresa_usuario, name='eliminar_empresa_usuario'),
 
     url(r'^obtener/sucursales/$', views.lista_sucursal, name="lista_sucursal"),
+    url(r'^obtener/estados/$', views.lista_estados, name="lista_estados"),
     #------------------>>>AJAX<<<-------------------
 
     #url(r'^seguridad/', include('django.contrib.auth.urls')),

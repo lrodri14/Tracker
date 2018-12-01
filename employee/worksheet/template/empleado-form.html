@@ -200,7 +200,29 @@
                                     </div>
                                 </div>
                                 <div class="col-md-12 margin-bottom-5px">
-                                    <div class="col-md-6"></div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <div class="col-md-5 text-right">
+                                                <label for="" class="control-label">Gerente :</label>
+                                            </div>
+                                            <div class="col-md-7">
+                                                <select class="form-control input-sm input-sm-1" name="jefe" id="cboSlsPerson">
+                                                    <option value="0">Seleccionar...</option>
+                                                    {% for emp in empleados %}
+                                                        {% if editar %} 
+                                                            {% if dato.jefe == emp %}
+                                                                <option value="{{emp.pk}}" selected>{{emp.firstName}} {{emp.lastName}}</option>
+                                                            {% else %}
+                                                                <option value="{{emp.pk}}">{{emp.firstName}} {{emp.lastName}}</option>
+                                                            {% endif %}
+                                                        {% else %}
+                                                            <option value="{{emp.pk}}">{{emp.firstName}} {{emp.lastName}}</option>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <div class="col-md-5 text-right">
@@ -413,18 +435,7 @@
                                                             </div>
                                                             <div class="col-md-7">
                                                                 <select class="form-control input-sm input-sm-1" name="hdept" id="cboDeptoH">
-                                                                        <option value="0">Seleccionar...</option>
-                                                                        {% for state in states %}
-                                                                            {% if editar %} 
-                                                                                {% if dato.homeState == state %}
-                                                                                    <option value="{{state.pk}}" selected>{{state.name}}</option>
-                                                                                {% else %}
-                                                                                    <option value="{{state.pk}}">{{state.name}}</option>
-                                                                                {% endif %}
-                                                                            {% else %}
-                                                                                <option value="{{state.pk}}">{{state.name}}</option>
-                                                                            {% endif %}
-                                                                        {% endfor %}
+                                                                    <option value="0">Seleccionar...</option>
                                                                 </select>
                                                             </div>
                                                         </div>
@@ -552,18 +563,6 @@
                                                             <div class="col-md-7">
                                                                 <select class="form-control input-sm input-sm-1" name="wdept" id="cboWEstado">
                                                                         <option value="0">Seleccionar...</option>
-                                                                        {% for state in states %}
-                                                                            {% if editar %} 
-                                                                                {% if dato.workState == state %}
-                                                                                <option value="{{state.pk}}" selected>{{state.name}}</option>
-                                                                                {% else %}
-                                                                                <option value="{{state.pk}}">{{state.name}}</option>
-                                                                                {% endif %} 
-                                                                            {% else %}
-                                                                            <option value="{{state.pk}}">{{state.name}}</option>
-                                                                            {% endif %}
-                                                                        <!--option value="{{state.pk}}">{{state.name}}</option-->
-                                                                        {% endfor %}
                                                                 </select>
                                                             </div>
                                                         </div>
@@ -997,4 +996,47 @@
 {% endblock contenido %}
 {% block scripts %}
 <script src="{% static 'js/app/frmEmpleado.js' %}"></script>
+<script>
+var cboPaisW = $('select[name="wpais"]');
+var cboEstadoW = $('select[name="wdept"]');
+var cboPaisH = $('select[name="hpais"]');
+var cboEstadoH = $('select[name="hdept"]');
+cboPaisH.on('change', function() {
+    var pais_id = cboPaisH.val();
+    $.ajax({
+            type: "GET",
+            url: '/obtener/estados/',
+            data: {
+                'idPais':pais_id
+            }, // serializes the form's elements.
+            success: function(data)
+            {
+                cboEstadoH.html(data);
+            },
+            error: function(data) {
+                
+            },
+            typeData:'html'
+    });
+});
+
+cboPaisW.on('change', function() {
+    var pais_id = cboPaisW.val();
+    $.ajax({
+            type: "GET",
+            url: '/obtener/estados/',
+            data: {
+                'idPais':pais_id
+            }, // serializes the form's elements.
+            success: function(data)
+            {
+                cboEstadoW.html(data);
+            },
+            error: function(data) {
+                
+            },
+            typeData:'html'
+    });
+});
+</script>
 {% endblock scripts %}
