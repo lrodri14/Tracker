@@ -168,6 +168,7 @@ class CivilStatus(models.Model):
 class SalaryUnit(models.Model):
     code = models.CharField(max_length=5, blank=True, null=True)
     description = models.TextField()
+    dias_salario = models.IntegerField(blank=True, null=True)
     empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="slrunt_empreg", related_query_name="slrunt_empreg")
     user_reg = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     date_reg = models.DateTimeField(auto_now_add=True)

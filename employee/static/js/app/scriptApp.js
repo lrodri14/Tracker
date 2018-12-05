@@ -1902,12 +1902,18 @@ function validargnrDatos() {
     var tipoSalario_id = $("input[name='tipoSalario_id'");
     var tipoSalario_desc = $("textarea[name='tipoSalario_desc'");
     var tipoSalario_nombre = $("input[name='tipoSalario_nombre'");
+    var tipoSalario_dias = $("input[name='tipoSalario_salariosDias'");
     var tipoSalario_activo = $('input[name="tipoSalario_activo"]');
     //#endregion
 
     //#region Eventos Controles
     $('#btnTipoSalarioGuardar').on('click', function (e) {
         e.preventDefault();
+        var resp = $.isNumeric(tipoSalario_dias.val());
+        if (!resp) {
+            mensaje("Tipo de Salario", "El campo 'Días de salario' es numérico.", "warning", 3500);
+            return;
+        }
         url = '/guardar/tipo-salario/';
         metodo = 'POST';
         //if (validarEdDatos() != false) {
@@ -1919,6 +1925,7 @@ function validargnrDatos() {
         data = {
             'nombre': tipoSalario_nombre.val(),
             'desc': tipoSalario_desc.val(),
+            'dias': tipoSalario_dias.val(),
             'activo': vActivo,
             'csrfmiddlewaretoken': token.val(),
         };
@@ -1940,6 +1947,7 @@ function validargnrDatos() {
             'id': tipoSalario_id.val(),
             'nombre': tipoSalario_nombre.val(),
             'desc': tipoSalario_desc.val(),
+            'dias': tipoSalario_dias.val(),
             'activo': vActivo,
             'csrfmiddlewaretoken': token.val(),
         };
@@ -2185,6 +2193,7 @@ function validargnrDatos() {
     }
     function LimpiarControles() {
         $('input[type="text"]').val(null);
+        $('input[type="number"]').val(null);
         $('input[type="checkbox"]').removeAttr('checked');
         $('select').val(0);
         $('textarea').val(null);

@@ -7259,6 +7259,7 @@ def guardar_tipo_salario(request):
             if request.method == 'POST':
                 nombre = request.POST['nombre']
                 desc = request.POST['desc']
+                dias = request.POST['dias']
                 activo = int(request.POST['activo'])
 
                 if len(nombre) == 0:
@@ -7276,6 +7277,11 @@ def guardar_tipo_salario(request):
                     data = {'error': True, 'mensaje': mensaje}
                     return JsonResponse(data)
 
+                if validarEntero(dias) != True:
+                    mensaje = "El campo 'Días de salario' es de tipo numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
                 if activo == 1:
                     activo = True
                 else:
@@ -7287,6 +7293,7 @@ def guardar_tipo_salario(request):
                     code = nombre,
                     description=desc,
                     empresa_reg = suc.empresa,
+                    dias_salario = dias,
                     active=activo,
                     user_reg=request.user,
                 )
@@ -7320,6 +7327,7 @@ def actualizar_tipo_salario(request):
                 id = int(request.POST['id'])
                 desc = request.POST['desc']
                 nombre = request.POST['nombre']
+                dias = request.POST['dias']
                 activo = int(request.POST['activo'])
 
                 if len(nombre) == 0:
@@ -7332,6 +7340,11 @@ def actualizar_tipo_salario(request):
                     data = {'error': True, 'mensaje': mensaje}
                     return JsonResponse(data)
 
+                if validarEntero(dias) != True:
+                    mensaje = "El campo 'Dias de salario' es de tipo numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
                 if activo == 1:
                     activo = True
                 else:
@@ -7341,6 +7354,7 @@ def actualizar_tipo_salario(request):
                 if oMd:
                     oMd.description = desc
                     oMd.code = nombre
+                    oMd.dias_salario = dias
                     oMd.active = activo
                     oMd.user_mod = request.user
                     oMd.date_mod = datetime.datetime.now()
@@ -7989,3 +8003,13 @@ def lista_estados(request):
     idPais = request.GET.get('idPais')
     estados = State.objects.filter(pais__id=idPais, active=True)
     return render(request, 'ajax/lista_estados.html.', {'estados':estados})
+
+
+#--------------------------VALIDACIONES------------------------------
+def validarEntero(dato):
+    try:
+        dato = int(dato)
+        dato += 1
+        return True
+    except TypeError:
+        return False
