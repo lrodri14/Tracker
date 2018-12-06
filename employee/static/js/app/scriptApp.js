@@ -2140,6 +2140,52 @@ function validargnrDatos() {
 
 //#endregion
 
+//#region Código para Editar Fotografía
+    var fileFoto = $('#btnCargarFoto');
+    var archivo = $('input[name="archivo"]');
+
+    $('#frmImagenEmp').submit(function(e) {
+        e.preventDefault();
+        $form = $(this);
+        var formData = new FormData(this);
+        var token = $('input[name="csrfmiddlewaretoken"]');
+        $.ajax({
+            url: '/actualizar/imagen-perfil/',
+            type: 'POST',
+            data: formData,
+            success: function (response) {
+                $('.error').remove();
+                console.log(response);
+                if (response.error) {
+                    $.each(response.errors, function (name, error) {
+                        error = '<small class="text-muted error">' + error + '</small>';
+                        $form.find('[name=' + name + ']').after(error);
+                    });
+                }
+                else {
+                    //alert(response.message);
+                    console.log(response);
+                    $('input[type="text"], input[type="file"]').val(null);
+                    $('select').val(null);
+                    token.val(token.val());
+                }
+            },
+            cache: false,
+            contentType: false,
+            processData: false,
+        });
+    });
+
+    fileFoto.on('click', function(e) {
+        e.preventDefault();
+        if (archivo[0].files.length == 0) {
+            console.log("No tiene foto");    
+        }else{
+            console.log("Cargando foto");
+        }
+    });
+//#endregion
+
 //#region Funciones Generales
     function GuardarRegistro(url, metodo, data, encabezado, editar, urlRedirect) {
         var texto = 'Se ha creado un nuevo registro.';

@@ -259,7 +259,7 @@ class Employee(models.Model):
     homeTel = models.CharField(max_length=50, blank=True, null=True)
     fax = models.CharField(max_length=50, blank=True, null=True)
     email = models.CharField(max_length=150, blank=True, null=True)
-    picture = models.ImageField(upload_to='images/emp_photos')
+    #picture = models.ImageField(upload_to='images/emp_photos')
     homeStreet = models.CharField(max_length=250, blank=True, null=True)
     streetNoH = models.CharField(max_length=50, blank=True, null=True)
     homeBuild = models.CharField(max_length=50, blank=True, null=True)
@@ -609,3 +609,16 @@ class UsuarioSucursal(models.Model):
 
     def __unicode__(self):
         return self.usuario.username + " - " + self.sucursal.description
+
+class ImagenEmpleado(models.Model):
+    empleado = models.OneToOneField("worksheet.employee", verbose_name="Imagen", on_delete=models.DO_NOTHING)
+    imagen = models.ImageField(upload_to='images/emp_photos')
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="imgemp_empreg", related_query_name="imgemp_empreg")
+    user_reg = models.ForeignKey(User)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='imgemp_usermod', related_query_name='imgemp_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.NullBooleanField(blank=True, null=True)
+
+def __unicode__(self):
+    return self.empleado.firstName + " " + self.empleado.lastName

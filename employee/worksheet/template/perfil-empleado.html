@@ -1,9 +1,26 @@
 {% extends "base.html" %}
 {% block titulo %}Perfíl de empleado{% endblock titulo %}
 {% block estilo %}
+
 <style>
+
+    #btnCargarFoto{
+        margin-top: 10px;
+    }
+
+    #input-file-now{
+        margin-bottom:7px;
+    }
     .user-bg>.overlay-box{
         background: #5493C8;
+    }
+
+    #grpImagenEmp{
+        margin-bottom: 2px;
+    }
+
+    #grpImagenEmp .white-box{
+        margin-bottom: 3px;
     }
 </style>
 {% endblock estilo %}
@@ -25,10 +42,12 @@
                                 <div class="user-content">
                                     <a href="javascript:void(0)"><img src="{% static 'images/usuario.jpg' %}" class="thumb-lg img-circle" alt="img"></a>
                                     <h4 class="text-white">{{dato.firstName}} {{dato.lastName}}</h4>
-                                    <h5 class="text-white">{{dato.email}}</h5> </div>
+                                    <h5 class="text-white">{% if dato.email %}{{dato.email}}{% endif %}</h5> </div>
                             </div>
                         </div>
+                        
                     </div>
+                    
                     <!--ENCABEZADO DE -->
                     <div class="col-md-8 col-xs-12">
                             <div class="white-box">
@@ -456,6 +475,19 @@
                                         </div>
                                     </div>
                                     <div class="tab-pane" id="settings">
+                                        {% csrf_token %}
+                                        <form name="frmImagen" id="frmImagenEmp" class="form-horizontal form-material">
+                                            <div id="grpImagenEmp" class="form-group">
+                                                <div class="white-box">
+                                                    <h3 class="box-title">Cargar archivo</h3>
+                                                    <label for="input-file-now">Cargar archivo de fotografía.</label>
+                                                    <input type="file" name="archivo" id="input-file-now" class="dropify" />
+                                                    <button id="btnCargarFoto">Cargar</button>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                            </div>
+                                        </form>
                                         <form class="form-horizontal form-material">
                                             <div class="form-group">
                                                 <label class="col-md-12">Nombre</label>
@@ -508,6 +540,8 @@
 </div>
 {% endblock contenido %}
 {% block scripts %}
+<script src="{% static 'js/app/scriptApp.js' %}"></script>
+<script src="{% static 'plugins/bower_components/dropify/dist/js/dropify.min.js' %}"></script>
 <script>
         var ctx = document.getElementById("myChart");
         var myChart = new Chart(ctx, {
@@ -551,5 +585,6 @@
     $('#side-menu a').removeClass('active');
     $('#aPersonal').addClass('active');
     $('#Emp').addClass('active');
+    $('.dropify').dropify();
 </script>
 {% endblock scripts %}

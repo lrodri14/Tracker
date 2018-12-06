@@ -7997,12 +7997,35 @@ def lista_sucursal(request):
     #return JsonResponse(data)    
     return render(request, 'ajax/lista_sucursales.html', {'sucursales': sucursales})
 
-
 def lista_estados(request):
     estados = None
     idPais = request.GET.get('idPais')
     estados = State.objects.filter(pais__id=idPais, active=True)
     return render(request, 'ajax/lista_estados.html.', {'estados':estados})
+
+def guardar_foto_perfil(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                form = ImagenEmpleadoForm(request.POST, request.FILES)
+                if form.is_valid():
+                    form.save()
+                    return JsonResponse({'error': False, 'mensaje': 'Se han cargado los datos'})
+                else:
+                    return JsonResponse({'error': True, 'errors': form.errors})
+            else:
+                #form = ImagenEmpleadoForm()
+                return JsonResponse({'error': True, 'mensaje': 'El método no esta permitido'})
+        else:
+            return JsonResponse({'error': True, 'mensaje': 'El método no es asíncrono'})
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': ex.message,
+        }
+        return JsonResponse(data)
+    
 
 
 #--------------------------VALIDACIONES------------------------------
