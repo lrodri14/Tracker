@@ -2150,24 +2150,27 @@ function validargnrDatos() {
         var formData = new FormData(this);
         var token = $('input[name="csrfmiddlewaretoken"]');
         $.ajax({
-            url: '/actualizar/imagen-perfil/',
+            url: '/guardar/foto-perfil/',
             type: 'POST',
             data: formData,
             success: function (response) {
                 $('.error').remove();
                 console.log(response);
                 if (response.error) {
-                    $.each(response.errors, function (name, error) {
-                        error = '<small class="text-muted error">' + error + '</small>';
-                        $form.find('[name=' + name + ']').after(error);
-                    });
+                    mensaje("Perfíl de usuario", "No se pudo registrar la actualización.", "warning", 3500);
+                    console.log(response.mensaje)
+                    // $.each(response.errors, function (name, error) {
+                    //     error = '<small class="text-muted error">' + error + '</small>';
+                    //     $form.find('[name=' + name + ']').after(error);
+                    // });
                 }
                 else {
                     //alert(response.message);
                     console.log(response);
-                    $('input[type="text"], input[type="file"]').val(null);
-                    $('select').val(null);
-                    token.val(token.val());
+                    // $('input[type="text"], input[type="file"]').val(null);
+                    // $('select').val(null);
+                    // token.val(token.val());
+                    mensaje("Perfíl de usuario", "Se ha actualizado la foto del usuario.", "ok", 3500);
                 }
             },
             cache: false,
@@ -2176,14 +2179,14 @@ function validargnrDatos() {
         });
     });
 
-    fileFoto.on('click', function(e) {
-        e.preventDefault();
-        if (archivo[0].files.length == 0) {
-            console.log("No tiene foto");    
-        }else{
-            console.log("Cargando foto");
-        }
-    });
+    // fileFoto.on('click', function(e) {
+    //     e.preventDefault();
+    //     if (archivo[0].files.length == 0) {
+    //         console.log("No tiene foto");    
+    //     }else{
+    //         console.log("Cargando foto");
+    //     }
+    // });
 //#endregion
 
 //#region Funciones Generales

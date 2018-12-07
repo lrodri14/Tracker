@@ -172,6 +172,7 @@ urlpatterns = [
     url(r'^guardar/costo-empleado-unidades/$', views.guardar_costo_empleado, name='guardar_costo_empleado'),
     url(r'^guardar/banco/$', views.guardar_banco, name='guardar_banco'),
     url(r'^guardar/empresa-usuario/$', views.guardar_empresa_usuario, name='guardar_empresa_usuario'),
+    url(r'^guardar/foto-perfil/$', views.guardar_foto_perfil, name='guardar_foto_perfil'),
 
     url(r'^actualizar/corporativo/$', views.actualizar_corporativo, name='actualizar_corporativo'),
     url(r'^actualizar/empresa/$', views.actualizar_empresa, name='actualizar_empresa'),

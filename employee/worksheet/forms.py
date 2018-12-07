@@ -8,7 +8,7 @@ class UsuarioEmpresaForm(forms.ModelForm):
         fields = ('usuario', 'empresa')
 
 
-class ImagenEmpleadoForm(forms.Model):
+class ImagenEmpleadoForm(forms.ModelForm):
     class Meta:
         model = ImagenEmpleado
         fields = ('empleado', 'imagen')

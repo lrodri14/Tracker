@@ -8007,6 +8007,7 @@ def guardar_foto_perfil(request):
     try:
         if request.is_ajax():
             if request.method == 'POST':
+                print "Entra aqui"
                 form = ImagenEmpleadoForm(request.POST, request.FILES)
                 if form.is_valid():
                     form.save()
