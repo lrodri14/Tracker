@@ -156,7 +156,12 @@ def empleado_listado(request):
 @login_required(login_url='/form/iniciar-sesion/')
 def empleado_perfil(request, id):
     dato = Employee.objects.get(pk=id)
-    return render(request, 'perfil-empleado.html', {'dato':dato})
+    tot_reg = ImagenEmpleado.objects.filter(empleado__id=id).count()
+    if tot_reg > 0:
+        imagen = ImagenEmpleado.objects.get(empleado__id=id)
+    else:
+        imagen = None
+    return render(request, 'perfil-empleado.html', {'dato':dato, 'imagen': imagen})
 
 @login_required(login_url='/form/iniciar-sesion/')
 def corporativo(request):
@@ -8007,9 +8012,16 @@ def guardar_foto_perfil(request):
     try:
         if request.is_ajax():
             if request.method == 'POST':
-                print "Entra aqui"
-                form = ImagenEmpleadoForm(request.POST, request.FILES)
+                empleado_id = request.POST["empleado"]
+                tot_reg = ImagenEmpleado.objects.filter(empleado__id=empleado_id)
+                if tot_reg > 0:
+                    instancia = ImagenEmpleado.objects.get(empleado__id=empleado_id)
+                    form = ImagenEmpleadoForm(request.POST, request.FILES, instance=instancia)
+                else:
+                    form = ImagenEmpleadoForm(request.POST, request.FILES)
+                
                 if form.is_valid():
+                    print "Entra tambien aqui"
                     form.save()
                     return JsonResponse({'error': False, 'mensaje': 'Se han cargado los datos'})
                 else:

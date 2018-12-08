@@ -40,7 +40,7 @@
                         <div class="user-bg"> <!--img width="100%" alt="user" src="{% static 'plugins/images/large/img1.jpg' %}"-->
                             <div class="overlay-box">
                                 <div class="user-content">
-                                    <a href="javascript:void(0)"><img src="{% static 'images/usuario.jpg' %}" class="thumb-lg img-circle" alt="img"></a>
+                                    <a href="javascript:void(0)"><img src="{{ MEDIA_URL }}{{ imagen.imagen }}" class="thumb-lg img-circle" alt="img"></a>
                                     <h4 class="text-white">{{dato.firstName}} {{dato.lastName}}</h4>
                                     <h5 class="text-white">{% if dato.email %}{{dato.email}}{% endif %}</h5> </div>
                             </div>
@@ -477,11 +477,12 @@
                                     <div class="tab-pane" id="settings">
                                         <form name="frmImagen" id="frmImagenEmp" class="form-horizontal form-material">
                                             {% csrf_token %}
+                                            <input type="hidden" name="empleado" value="{{dato.pk}}" />
                                             <div id="grpImagenEmp" class="form-group">
                                                 <div class="white-box">
                                                     <h3 class="box-title">Cargar archivo</h3>
                                                     <label for="input-file-now">Cargar archivo de fotografía.</label>
-                                                    <input type="file" name="archivo" id="input-file-now" class="dropify" />
+                                                    <input type="file" name="imagen" id="input-file-now" class="dropify" />
                                                     <button id="btnCargarFoto">Cargar</button>
                                                 </div>
                                             </div>

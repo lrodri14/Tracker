@@ -611,10 +611,10 @@ class UsuarioSucursal(models.Model):
         return self.usuario.username + " - " + self.sucursal.description
 
 class ImagenEmpleado(models.Model):
-    empleado = models.OneToOneField("worksheet.employee", verbose_name="Imagen", on_delete=models.DO_NOTHING)
+    empleado = models.OneToOneField("worksheet.employee", verbose_name="Empleado", on_delete=models.DO_NOTHING)
     imagen = models.ImageField(upload_to='images/emp_photos')
     empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="imgemp_empreg", related_query_name="imgemp_empreg")
-    user_reg = models.ForeignKey(User)
+    user_reg = models.ForeignKey(User, blank=True, null=True)
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='imgemp_usermod', related_query_name='imgemp_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
