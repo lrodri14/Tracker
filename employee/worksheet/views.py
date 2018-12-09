@@ -8013,7 +8013,8 @@ def guardar_foto_perfil(request):
         if request.is_ajax():
             if request.method == 'POST':
                 empleado_id = request.POST["empleado"]
-                tot_reg = ImagenEmpleado.objects.filter(empleado__id=empleado_id)
+                print empleado_id
+                tot_reg = ImagenEmpleado.objects.filter(empleado__id=empleado_id).count()
                 if tot_reg > 0:
                     instancia = ImagenEmpleado.objects.get(empleado__id=empleado_id)
                     form = ImagenEmpleadoForm(request.POST, request.FILES, instance=instancia)
