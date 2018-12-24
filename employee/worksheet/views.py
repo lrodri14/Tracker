@@ -12,6 +12,7 @@ from django.core.serializers import serialize
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 import json
+from django.core import serializers
 
 # Create your views here.
 def verificaSucursal(request):
@@ -8018,13 +8019,18 @@ def guardar_foto_perfil(request):
                 if tot_reg > 0:
                     instancia = ImagenEmpleado.objects.get(empleado__id=empleado_id)
                     form = ImagenEmpleadoForm(request.POST, request.FILES, instance=instancia)
+                    # data = serializers.serialize("json", [instancia,])
+                    # data = data.strip("[]")
+                    # print data["fields"]
                 else:
                     form = ImagenEmpleadoForm(request.POST, request.FILES)
                 
                 if form.is_valid():
                     print "Entra tambien aqui"
                     form.save()
-                    return JsonResponse({'error': False, 'mensaje': 'Se han cargado los datos'})
+                    instancia = ImagenEmpleado.objects.get(empleado__id=empleado_id)
+                    return render(request, 'ajax/imagen-perfil.html', {'imagen':instancia})
+                    #return JsonResponse({'error': False, 'mensaje': 'Se han cargado los datos'})
                 else:
                     return JsonResponse({'error': True, 'errors': form.errors})
             else:

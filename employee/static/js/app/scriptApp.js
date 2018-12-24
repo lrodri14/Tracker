@@ -2141,14 +2141,19 @@ function validargnrDatos() {
 //#endregion
 
 //#region Código para Editar Fotografía
-    var fileFoto = $('#btnCargarFoto');
-    var archivo = $('input[name="archivo"]');
+    var archivo = $('input[name="imagen"]');
+    var fileArchivo = $('.dropify').dropify();
+    fileArchivo.init();
 
     $('#frmImagenEmp').submit(function(e) {
         e.preventDefault();
         $form = $(this);
         var formData = new FormData(this);
         var token = $('input[name="csrfmiddlewaretoken"]');
+        if (archivo[0].files.length == 0) {
+            mensaje("Perfíl de usuario", "Aún no se ha seleccionado la fotografía.", "warning", 3500);
+            return;
+        }
         $.ajax({
             url: '/guardar/foto-perfil/',
             type: 'POST',
@@ -2167,9 +2172,13 @@ function validargnrDatos() {
                 else {
                     //alert(response.message);
                     console.log(response);
+                    $('#imgPerfilUsuario').html(response);
                     // $('input[type="text"], input[type="file"]').val(null);
                     // $('select').val(null);
                     // token.val(token.val());
+                    fileArchivo = fileArchivo.data('dropify');
+                    fileArchivo.resetPreview();
+                    fileArchivo.clearElement(); 
                     mensaje("Perfíl de usuario", "Se ha actualizado la foto del usuario.", "ok", 3500);
                 }
             },
@@ -2182,8 +2191,8 @@ function validargnrDatos() {
     // fileFoto.on('click', function(e) {
     //     e.preventDefault();
     //     if (archivo[0].files.length == 0) {
-    //         console.log("No tiene foto");    
-    //     }else{
+    //         console.log("No tiene foto");
+    //     } else {
     //         console.log("Cargando foto");
     //     }
     // });

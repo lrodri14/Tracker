@@ -39,13 +39,13 @@
                     <div class="col-md-4 col-xs-12">
                         <div class="user-bg"> <!--img width="100%" alt="user" src="{% static 'plugins/images/large/img1.jpg' %}"-->
                             <div class="overlay-box">
-                                <div class="user-content">
+                                <div id="imgPerfilUsuario" class="user-content">
                                     <a href="javascript:void(0)"><img src="{{ MEDIA_URL }}{{ imagen.imagen }}" class="thumb-lg img-circle" alt="img"></a>
                                     <h4 class="text-white">{{dato.firstName}} {{dato.lastName}}</h4>
-                                    <h5 class="text-white">{% if dato.email %}{{dato.email}}{% endif %}</h5> </div>
+                                    <h5 class="text-white">{% if dato.email %}{{dato.email}}{% endif %}</h5>
+                                </div>
                             </div>
                         </div>
-                        
                     </div>
                     
                     <!--ENCABEZADO DE -->
@@ -541,8 +541,8 @@
 </div>
 {% endblock contenido %}
 {% block scripts %}
-<script src="{% static 'js/app/scriptApp.js' %}"></script>
 <script src="{% static 'plugins/bower_components/dropify/dist/js/dropify.min.js' %}"></script>
+<script src="{% static 'js/app/scriptApp.js' %}"></script>
 <script>
         var ctx = document.getElementById("myChart");
         var myChart = new Chart(ctx, {
@@ -586,6 +586,6 @@
     $('#side-menu a').removeClass('active');
     $('#aPersonal').addClass('active');
     $('#Emp').addClass('active');
-    $('.dropify').dropify();
+    
 </script>
 {% endblock scripts %}
