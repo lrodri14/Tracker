@@ -2198,6 +2198,42 @@ function validargnrDatos() {
     // });
 //#endregion
 
+//#region Código para Enviar Sucursal
+
+    var btnSelSuc = $('.btnSelSuc');
+
+    var idSucursal = 0;
+
+    btnSelSuc.on('click', function (e) {
+        e.preventDefault();
+        idSucursal = $(this).attr('data-suc');
+
+        seleccionaUnaSucursal()
+    });
+
+    function seleccionaUnaSucursal() {
+        $.ajax({
+            type: "GET",
+            url: '/enviar/sucursal/',
+            data: {
+                'idSucursal': idSucursal
+            }, // serializes the form's elements.
+            success: function (data) {
+                if (data.error == false) {
+                    window.location.replace(dns + "/");
+                } else {
+                    mensaje("Seleccionar sucursal", data.mensaje, "error", 3500);
+                }
+            },
+            error: function (data) {
+                mensaje("Seleccionar sucursal", data.statusText, "error", 3500);
+            },
+            typeData: 'json'
+        });
+    }
+
+//#endregion
+
 //#region Funciones Generales
     function GuardarRegistro(url, metodo, data, encabezado, editar, urlRedirect) {
         var texto = 'Se ha creado un nuevo registro.';

@@ -6,13 +6,15 @@ from django.shortcuts import render
 from worksheet.models import *
 from worksheet.forms import *
 import datetime
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 import datetime
 from django.core.serializers import serialize
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 import json
 from django.core import serializers
+from django.contrib.auth.decorators import permission_required
+from django.utils.decorators import method_decorator
 
 # Create your views here.
 def verificaSucursal(request):
@@ -104,6 +106,12 @@ def recibir_sucursal(request):
             request.session["nombre_sucursal"] = ""
 
             return HttpResponseRedirect("/seleccionar/sucursal/")
+
+@login_required(login_url='/form/iniciar-sesion/')
+def aumento_salario_listado(request):
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    empleados = Employee.objects.filter(active=True, empresa_reg=suc.empresa)
+    return render(request, 'aumento-salario-listado.html', {'empleados': empleados})
 
 @login_required(login_url='/form/iniciar-sesion/')
 def empleado_form(request):
@@ -709,6 +717,7 @@ def tipo_costo_empleado_listar(request):
     return render(request, 'costo-empleado-listado.html', {'lista':lista})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_banco', raise_exception=True)
 def banco_form(request):
     return render(request, 'banco-form.html')
 
@@ -8046,7 +8055,30 @@ def guardar_foto_perfil(request):
         }
         return JsonResponse(data)
     
-
+def enviar_sucursal(request):
+    try:
+        if request.is_ajax():
+            print "Entro a enviar_sucursal"
+            IdSucursal = request.GET.get("idSucursal")
+            totreg = Branch.objects.filter(pk=IdSucursal).count()
+            if totreg > 0:
+                sucursal = Branch.objects.get(pk=IdSucursal)
+                request.session["nombre_sucursal"] = sucursal.description
+                request.session["sucursal"] = IdSucursal
+                return JsonResponse({'error': False, 'mensaje': 'Sucursal válida'})
+            else:
+                request.session["sucursal"] = 0
+                request.session["nombre_sucursal"] = ""
+                return JsonResponse({'error': True, 'mensaje': 'El método no es asíncrono'})
+        else:
+            return JsonResponse({'error': True, 'mensaje': 'El método no es asíncrono'})
+    except Exception as ex:
+        data = {
+            'error': True,
+            'mensaje': ex.message,
+        }
+        return JsonResponse(data)
+    
 
 #--------------------------VALIDACIONES------------------------------
 def validarEntero(dato):

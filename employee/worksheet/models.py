@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save, pre_save
+from django.dispatch import receiver
+import datetime
 
 from django.db import models
 
@@ -619,6 +622,44 @@ class ImagenEmpleado(models.Model):
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='imgemp_usermod', related_query_name='imgemp_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.NullBooleanField(blank=True, null=True)
+    
+    def __unicode__(self):
+        return self.empleado.firstName + " " + self.empleado.lastName
 
-def __unicode__(self):
-    return self.empleado.firstName + " " + self.empleado.lastName
+#Transacciones
+class IncrementosSalariales(models.Model):
+    empleado = models.ForeignKey("worksheet.employee", verbose_name="Empleado", on_delete=models.DO_NOTHING)
+    fecha_incremento = models.DateField()
+    motivo_aumento = models.ForeignKey(MotivoAumentoSueldo, on_delete=models.DO_NOTHING)
+    salario_anterior = models.DecimalField(max_digits=18, decimal_places=3)
+    incremento = models.DecimalField(max_digits=18, decimal_places=3)
+    nuevo_salario = models.DecimalField(max_digits=18, decimal_places=3)
+    comentarios = models.TextField(blank=True, null=True)
+    salario_actual = models.BooleanField(blank=False, null=False, default=True)
+    user_reg = models.ForeignKey(User, blank=True, null=True)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='incsal_usermod', related_query_name='incsal_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.NullBooleanField(blank=True, null=True)
+
+    def __unicode__(self):
+        return self.empleado.firstName + ' ' + self.empleado.lastName + ' | ' + str(self.fecha_incremento)
+
+@receiver(post_save, sender=IncrementosSalariales)
+def post_save_incrementossalariales(sender, instance, **kwargs):
+
+    if kwargs['created']:
+        tot_reg = IncrementosSalariales.objects.filter(empleado=instance.empleado, active=True, salario_actual=True).count()
+        if tot_reg > 0:
+            datos = IncrementosSalariales.objects.filter(empleado=instance.empleado, active=True, salario_actual=True).exclude(pk=instance.pk)
+            if datos.count() > 0:
+                dato = datos[0]
+                dato.salario_actual=False
+                dato.user_mod = instance.user_reg
+                dato.date_mod = datetime.datetime.now()
+                dato.save()
+                
+                print "Actualizo empleado"
+        d_empleado = Employee.objects.get(pk=instance.empleado.pk)
+        d_empleado.salary = str(instance.nuevo_salario)
+        d_empleado.save()

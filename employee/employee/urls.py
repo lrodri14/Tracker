@@ -136,6 +136,8 @@ urlpatterns = [
     url(r'^listar/empresas-usuario/$', views.usuario_empresa_listar, name="emp_user"),
     url(r'^editar/empresa-usuario/(?P<id>\w+)/$', views.usuario_empresa_editar, name="usuario_empresa_editar"),
 
+    url(r'^listar/aumento-salario/$', views.aumento_salario_listado, name="aumento_salario_listado"),
+
     #----------------->>>AJAX<<<------------------
     url(r'^guardar/empleado/$', views.guardar_empleado, name='guardar_empleado'),
     url(r'^guardar/corporativo/$', views.guardar_corporativo, name='guardar_corporativo'),
@@ -248,6 +250,8 @@ urlpatterns = [
 
     url(r'^obtener/sucursales/$', views.lista_sucursal, name="lista_sucursal"),
     url(r'^obtener/estados/$', views.lista_estados, name="lista_estados"),
+    url(r'^enviar/sucursal/$', views.enviar_sucursal, name="enviar_sucursal"),
+
     #------------------>>>AJAX<<<-------------------
 
     #url(r'^seguridad/', include('django.contrib.auth.urls')),
