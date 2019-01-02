@@ -164,13 +164,17 @@
                             <li><a href="{% url 'listado_puestos' %}" id="aPuesto" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Puesto</span></a></li>
                             <li><a href="{% url 'listado_ccostos' %}" id="aCCostos" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Centros de Costos</span></a></li>
                             <li><a href="{% url 'tipo_costo_empleado_listar' %}" id="aCostoEmp" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Unidades Costo Empleado</span></a></li>
+                            {% if perms.worksheet.see_banco %}
                             <li><a href="{% url 'banco_listado' %}" id="aBanco" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Banco</span></a></li>
+                            {% endif %}
                             <li><a href="{% url 'emp_user' %}" id="aUsuarioEmpresa" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Empresas por Usuario</span></a></li>
                         </ul>
                     </li><!--FIN DE OPCIÓN ORGANIZACIÓN-->
                     <li><a href="javascript:void(0)" id="aPersonal" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Personal <span class="fa arrow"></span></span></a>
                         <ul class="nav nav-second-level">
+                            {% if perms.worksheet.see_banco %}
                             <li><a href="{% url 'banco_listado' %}" id="aBanco" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Banco</span></a></li>
+                            {% endif %}
                             <li><a href="{% url 'listado_paises' %}" id="aPaises" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Países</span></a></li>
                             <li><a href="{% url 'listado_deptos' %}" id="aDept" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Departamentos</span></a></li>
                             <li><a href="{% url 'ciudades_listado' %}" id="aCiud" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Ciudades</span></a></li>

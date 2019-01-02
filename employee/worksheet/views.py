@@ -109,9 +109,27 @@ def recibir_sucursal(request):
 
 @login_required(login_url='/form/iniciar-sesion/')
 def aumento_salario_listado(request):
+    lista = []
+    busqueda = None
     suc = Branch.objects.get(pk=request.session["sucursal"])
-    empleados = Employee.objects.filter(active=True, empresa_reg=suc.empresa)
-    return render(request, 'aumento-salario-listado.html', {'empleados': empleados})
+    empleados = Employee.objects.filter(empresa_reg=suc.empresa)
+    if 'empleado' in request.GET:
+        emp = request.GET.get("empleado")
+        if len(emp) > 0:
+            if int(emp) > 0:
+                busqueda = int(emp)
+                empleado = Employee.objects.get(pk=busqueda)
+                print empleado
+                lista = IncrementosSalariales.objects.filter(empleado=empleado, empresa_reg = suc.empresa)
+                print lista
+            else:
+                lista = IncrementosSalariales.objects.filter(empresa_reg = suc.empresa)
+    else:
+        lista = IncrementosSalariales.objects.filter(empresa_reg = suc.empresa)
+
+    # suc = Branch.objects.get(pk=request.session["sucursal"])
+    # empleados = Employee.objects.filter(active=True, empresa_reg=suc.empresa)
+    return render(request, 'aumento-salario-listado.html', {'empleados': empleados, 'datos':lista, 'busqueda': busqueda})
 
 @login_required(login_url='/form/iniciar-sesion/')
 def empleado_form(request):
@@ -727,6 +745,7 @@ def banco_editar(request, id):
     return render(request, 'banco-form.html', {'editar':True, 'dato':dato})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_banco', raise_exception=True)
 def banco_listado(request):
     suc = Branch.objects.get(pk=request.session["sucursal"])
     lista = Bank.objects.filter(empresa_reg=suc.empresa)
@@ -1303,6 +1322,8 @@ def actualizar_empleado(request):
                 numCuenta = request.POST['numCuenta']
                 branchBank = request.POST['bankSucursal']
                 remark = request.POST['comentarios']
+
+                print "GovID: " + govID
 
                 if len(pNom) == 0:
                     mensaje = "El campo 'Primer Nombre' es obligatorio."

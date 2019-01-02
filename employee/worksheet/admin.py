@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
+from django.contrib.auth.models import Permission
 from django.contrib import admin
 from worksheet.models import *
 
 # Register your models here.
+admin.site.register(Permission)
 admin.site.register(Position)
 admin.site.register(Department)
 admin.site.register(Ciudad)

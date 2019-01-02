@@ -16,7 +16,7 @@ Datos de Aumento de Salario
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <form action="{% url 'educacion_listar' %}" method="GET">
+                                <form action="{% url 'aumento_salario_listado' %}" method="GET">
                                     <div class="col-md-3">
                                         <label for="cboAuEmp" class="control-label">Empleado :</label>
                                     </div>
@@ -25,6 +25,7 @@ Datos de Aumento de Salario
                                             <option value="0">Seleccionar...</option>
                                             {% for item in empleados %}
                                                 {% if busqueda %}
+                                                
                                                     {% if item.pk == busqueda %}
                                                     <option value="{{item.pk}}" selected>{{item.firstName}}{% if item.middleName %} {{item.middleName}} {% endif %} {{item.lastName}}</option>
                                                     {% else %}
@@ -53,28 +54,24 @@ Datos de Aumento de Salario
                             {% csrf_token %}
                             <thead>
                                 <tr>
-                                    <th>Clase de Formación</th>
-                                    <th>Institución</th>
-                                    <th>Asignatura principal</th>
-                                    <th>Título</th>
-                                    <th>Desde</th>
-                                    <th>Hasta</th>
+                                    <th>ID</th>
+                                    <th>Nombre completo</th>
+                                    <th>Fecha</th>
+                                    <th>Salario actual</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for item in datos %}
                                 <tr>
-                                    <td>{{item.clase_edu.descripcion}}</td>
-                                    <td>{{item.entidad}}</td>
+                                    <td>{{item.empleado.govID}}</td>
+                                    <td>{{item.empleado.firstName}} {% if item.empleado.middleName %}{{item.empleado.middleName}}{% endif %} {{item.empleado.lastName}}</td>
                                     <td>
-                                        {{item.asignatura_principal}}
+                                        {{item.fecha_incremento}}
                                     </td>
                                     <td>
-                                        {{item.titulo}}
+                                        {% if item.salario_actual %}SI{% else %}NO{% endif %}
                                     </td>
-                                    <td>{{item.desde|date:"d/m/Y"}}</td>
-                                    <td>{{item.hasta|date:"d/m/Y"}}</td>
                                     <td class="text-nowrap acciones">
                                         <a href="{% url 'educacion_editar' item.pk %}" data-toggle="tooltip" data-original-title="Edit">
                                             <i class="fa fa-pencil text-inverse m-r-10"></i>

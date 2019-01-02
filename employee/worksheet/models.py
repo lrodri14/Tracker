@@ -46,7 +46,7 @@ class Branch(models.Model):
 
 
     def __unicode__(self):
-        return self.code + " - " + self.description
+        return self.description
 
 class Position(models.Model):
     code = models.CharField(max_length=100, blank=True, null=True)
@@ -636,6 +636,7 @@ class IncrementosSalariales(models.Model):
     nuevo_salario = models.DecimalField(max_digits=18, decimal_places=3)
     comentarios = models.TextField(blank=True, null=True)
     salario_actual = models.BooleanField(blank=False, null=False, default=True)
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING)
     user_reg = models.ForeignKey(User, blank=True, null=True)
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='incsal_usermod', related_query_name='incsal_usermod')
