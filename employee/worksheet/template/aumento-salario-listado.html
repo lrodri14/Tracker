@@ -44,9 +44,11 @@ Datos de Aumento de Salario
                                 </form>
                             </div>
                         </div>
+                        {% if perms.worksheet.add_incrementossalariales %}
                         <div class="col-md-6 text-right">
-                            <a href="{% url 'educacion' %}" class="btn btn-primary">Agregar</a>
+                            <a href="{% url 'aumento_salario_form' %}" class="btn btn-primary">Agregar</a>
                         </div>
+                        {% endif %}
                     </div>
                     <br>
                     <div class="table-responsive">

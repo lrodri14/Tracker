@@ -132,6 +132,15 @@ def aumento_salario_listado(request):
     return render(request, 'aumento-salario-listado.html', {'empleados': empleados, 'datos':lista, 'busqueda': busqueda})
 
 @login_required(login_url='/form/iniciar-sesion/')
+def aumento_salario_form(request):
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    empleados = Employee.objects.filter(active=True, empresa_reg=suc.empresa)
+    motivos = MotivoAumentoSueldo.objects.filter(active=True, empresa_reg=suc.empresa)
+    clases_educacion = ClaseEducacion.objects.filter(
+        active=True, empresa_reg=suc.empresa)
+    return render(request, 'aumento-salario-form.html', {'empleados': empleados, 'clasesEducacion': clases_educacion, 'motivos':motivos})
+
+@login_required(login_url='/form/iniciar-sesion/')
 def empleado_form(request):
     suc = Branch.objects.get(pk=request.session["sucursal"])
     verificaSucursal(request)

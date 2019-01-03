@@ -136,6 +136,8 @@ urlpatterns = [
     url(r'^listar/empresas-usuario/$', views.usuario_empresa_listar, name="emp_user"),
     url(r'^editar/empresa-usuario/(?P<id>\w+)/$', views.usuario_empresa_editar, name="usuario_empresa_editar"),
 
+    url(r'^formulario/aumento-salario/$',
+        views.aumento_salario_form, name="aumento_salario_form"),
     url(r'^listar/aumento-salario/$', views.aumento_salario_listado, name="aumento_salario_listado"),
 
     #----------------->>>AJAX<<<------------------
