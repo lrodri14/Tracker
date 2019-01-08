@@ -108,39 +108,6 @@ def recibir_sucursal(request):
             return HttpResponseRedirect("/seleccionar/sucursal/")
 
 @login_required(login_url='/form/iniciar-sesion/')
-def aumento_salario_listado(request):
-    lista = []
-    busqueda = None
-    suc = Branch.objects.get(pk=request.session["sucursal"])
-    empleados = Employee.objects.filter(empresa_reg=suc.empresa)
-    if 'empleado' in request.GET:
-        emp = request.GET.get("empleado")
-        if len(emp) > 0:
-            if int(emp) > 0:
-                busqueda = int(emp)
-                empleado = Employee.objects.get(pk=busqueda)
-                print empleado
-                lista = IncrementosSalariales.objects.filter(empleado=empleado, empresa_reg = suc.empresa)
-                print lista
-            else:
-                lista = IncrementosSalariales.objects.filter(empresa_reg = suc.empresa)
-    else:
-        lista = IncrementosSalariales.objects.filter(empresa_reg = suc.empresa)
-
-    # suc = Branch.objects.get(pk=request.session["sucursal"])
-    # empleados = Employee.objects.filter(active=True, empresa_reg=suc.empresa)
-    return render(request, 'aumento-salario-listado.html', {'empleados': empleados, 'datos':lista, 'busqueda': busqueda})
-
-@login_required(login_url='/form/iniciar-sesion/')
-def aumento_salario_form(request):
-    suc = Branch.objects.get(pk=request.session["sucursal"])
-    empleados = Employee.objects.filter(active=True, empresa_reg=suc.empresa)
-    motivos = MotivoAumentoSueldo.objects.filter(active=True, empresa_reg=suc.empresa)
-    clases_educacion = ClaseEducacion.objects.filter(
-        active=True, empresa_reg=suc.empresa)
-    return render(request, 'aumento-salario-form.html', {'empleados': empleados, 'clasesEducacion': clases_educacion, 'motivos':motivos})
-
-@login_required(login_url='/form/iniciar-sesion/')
 def empleado_form(request):
     suc = Branch.objects.get(pk=request.session["sucursal"])
     verificaSucursal(request)
@@ -8053,7 +8020,6 @@ def guardar_foto_perfil(request):
         if request.is_ajax():
             if request.method == 'POST':
                 empleado_id = request.POST["empleado"]
-                print empleado_id
                 tot_reg = ImagenEmpleado.objects.filter(empleado__id=empleado_id).count()
                 if tot_reg > 0:
                     instancia = ImagenEmpleado.objects.get(empleado__id=empleado_id)
@@ -8108,6 +8074,133 @@ def enviar_sucursal(request):
             'mensaje': ex.message,
         }
         return JsonResponse(data)
+
+def obtener_ultimo_salario(request):
+    try:
+        if request.is_ajax():
+            IdEmpleado = request.GET.get("idEmpleado")
+            aumentos = IncrementosSalariales.objects.filter(empleado__pk=IdEmpleado).order_by('-fecha_incremento')
+            if aumentos.count() > 0:
+                o_aumento = aumentos[0]
+                return JsonResponse({'error': False, 'mensaje': 'Respuesta exitosa', 'salario_anterior':o_aumento.nuevo_salario})
+            else:
+                return JsonResponse({'error': False, 'mensaje': 'Respuesta exitosa', 'salario_anterior': 0.00})
+        else:
+            return JsonResponse({'error': True, 'mensaje': 'El método no es asíncrono'})
+    except Exception as ex:
+        data = {
+            'error': True,
+            'mensaje': ex.message,
+        }
+        return JsonResponse(data)
+
+#region Codigo para Aumento de Sueldo
+@login_required(login_url='/form/iniciar-sesion/')
+def aumento_salario_listado(request):
+    lista = []
+    busqueda = None
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    empleados = Employee.objects.filter(empresa_reg=suc.empresa)
+    if 'empleado' in request.GET:
+        emp = request.GET.get("empleado")
+        if len(emp) > 0:
+            if int(emp) > 0:
+                busqueda = int(emp)
+                empleado = Employee.objects.get(pk=busqueda)
+                print empleado
+                lista = IncrementosSalariales.objects.filter(empleado=empleado, empresa_reg = suc.empresa)
+                print lista
+            else:
+                lista = IncrementosSalariales.objects.filter(empresa_reg = suc.empresa)
+    else:
+        lista = IncrementosSalariales.objects.filter(empresa_reg = suc.empresa)
+
+    # suc = Branch.objects.get(pk=request.session["sucursal"])
+    # empleados = Employee.objects.filter(active=True, empresa_reg=suc.empresa)
+    return render(request, 'aumento-salario-listado.html', {'empleados': empleados, 'datos':lista, 'busqueda': busqueda})
+
+@login_required(login_url='/form/iniciar-sesion/')
+def aumento_salario_form(request):
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    empleados = Employee.objects.filter(active=True, empresa_reg=suc.empresa)
+    motivos = MotivoAumentoSueldo.objects.filter(active=True, empresa_reg=suc.empresa)
+    return render(request, 'aumento-salario-form.html', {'empleados': empleados, 'motivos':motivos})
+
+def aumento_salario_editar(request, id):
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    empleados = Employee.objects.filter(active=True, empresa_reg=suc.empresa)
+    motivos = MotivoAumentoSueldo.objects.filter(active=True, empresa_reg=suc.empresa)
+    dato = IncrementosSalariales.objects.get(pk=id)
+    return render(request, 'aumento-salario-form.html', {'empleados': empleados, 'dato': dato, 'motivos':motivos , 'editar':True})
+
+def aumento_salario_guardar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                empleado_fk = request.POST['empleado_fk']
+                fecha_incremento = request.POST['fecha_incremento']
+                motivo_aumento_fk = request.POST['motivo_aumento']
+                salario_anterior = request.POST['salario_anterior']
+                incremento = request.POST['incremento']
+                nuevo_salario = request.POST['nuevo_salario']
+                comentarios = request.POST['comentarios']
+                if empleado_fk == 0:
+                    return JsonResponse({'error': True, 'mensaje': 'El campo "empleado" es obligatorio.'})
+                else:
+                    empleados = Employee.objects.filter(pk=empleado_fk)
+                    if empleados.count() > 0:
+                        o_empleado = Employee.objects.get(pk=empleado_fk)
+                    else:
+                        return JsonResponse({'error': True, 'mensaje': 'El empleado no existe.'})
+
+                if motivo_aumento_fk == 0:
+                    return JsonResponse({'error': True, 'mensaje': 'El campo "motivo de aumento" es obligatorio.'})
+                else:
+                    motivos = MotivoAumentoSueldo.objects.filter(pk=motivo_aumento_fk)
+                    if motivos.count() > 0:
+                        o_motivo = MotivoAumentoSueldo.objects.get(pk=motivo_aumento_fk)
+                    else:
+                        return JsonResponse({'error': True, 'mensaje': 'El "motivo de aumento" no existe.'})
+
+                aumentos = IncrementosSalariales.objects.filter(empleado=o_empleado, fecha_incremento=fecha_incremento)
+
+                if aumentos.count() > 0:
+                    return JsonResponse({'error': True, 'mensaje': 'Ya existe un registro de aumento para el empleado en la fecha seleccionada.'})
+
+                if validarDecimal(incremento) == False:
+                    return JsonResponse({'error': True, 'mensaje': 'El tipo de dato no es válido.'})
+                else:
+                    if incremento == 0:
+                        return JsonResponse({'error': True, 'mensaje': 'El incremento tiene que ser mayor a cero.'})
+
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+                oIncremento = IncrementosSalariales(
+                    empleado = o_empleado,
+                    fecha_incremento = fecha_incremento,
+                    motivo_aumento = o_motivo,
+                    salario_anterior = salario_anterior,
+                    incremento = incremento,
+                    nuevo_salario = nuevo_salario,
+                    comentarios = comentarios,
+                    salario_actual = True,
+                    empresa_reg = suc.empresa,
+                    user_reg = request.user,
+                    active=True
+                )
+                oIncremento.save()
+                return JsonResponse({'error': False, 'mensaje': 'Se ha guardado el registro de Aumento de salario.'})
+            else:
+                return JsonResponse({'error': True, 'mensaje': 'El método no está permitido.'})
+        else:
+            pass
+        return JsonResponse({'error': False, 'mensaje': 'Respuesta exitosa'})
+    except Exception as ex:
+        data = {
+            'error': True,
+            'mensaje': ex.message,
+        }
+        return JsonResponse(data)
+#endregion
     
 
 #--------------------------VALIDACIONES------------------------------
@@ -8115,6 +8208,13 @@ def validarEntero(dato):
     try:
         dato = int(dato)
         dato += 1
+        return True
+    except TypeError:
+        return False
+
+def validarDecimal(dato):
+    try:
+        dato = float(dato)
         return True
     except TypeError:
         return False

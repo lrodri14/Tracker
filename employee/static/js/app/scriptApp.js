@@ -2234,6 +2234,106 @@ function validargnrDatos() {
 
 //#endregion
 
+//#region Código para Aumento de Sueldo
+    var cboEmpleado = $('.aumento-salario select[name="empleado"]');
+    var txtFechaIncremento = $('.aumento-salario input[name="fecha_incremento"]');
+    var motivo_aumento = $('.aumento-salario select[name="motivo_aumento"]');
+    var txtSalarioAnterior = $('.aumento-salario input[name="salario_anterior"]');
+    var txtIncremento = $('.aumento-salario input[name="incremento"]');
+    var txtNuevoSalario = $('.aumento-salario input[name="nuevo_salario"]');
+    var txtComentarios = $('.aumento-salario textarea[name="comentarios"]');
+
+    $('#btnIncGuardar').on('click', function (e) {
+        e.preventDefault();
+        url = '/enviar/aumento-salario/';
+        metodo = 'POST';
+        data = {
+            'empleado_fk': cboEmpleado.val(),
+            'fecha_incremento': txtFechaIncremento.val(),
+            'motivo_aumento': motivo_aumento.val(),
+            'salario_anterior': txtSalarioAnterior.val(),
+            'incremento': txtIncremento.val(),
+            'nuevo_salario': txtNuevoSalario.val(),
+            'comentarios': txtComentarios.val(),
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Aumento de salario");
+        
+    });
+
+    $('#btnIncGuardar').on('click', function(e) {
+        e.preventDefault();
+        Guardar_AumentoSalario();
+    });
+
+    $('#btnIncCancelar').on('click', function(e) {
+        e.preventDefault();
+        window.location.replace(dns + "/listar/aumento-salario/");
+    });
+
+    cboEmpleado.on('change', function() {
+        obtener_ultimo_salario(cboEmpleado.val())
+    });
+
+    txtIncremento.on('change', function() {
+        calcular_nuevo_sueldo();
+    });
+
+    // $('#frmAumentoSalario').submit(function(e) {
+    //     e.preventDefault();
+    //     url = '/enviar/aumento-salario/'
+    //     formData = new FormData(this);
+    //     metodo = 'POST'
+    //     GuardarRegistro(url, metodo, data, "Aumento de sueldo");
+    //     // $.ajax({
+    //     //     url: '/enviar/aumento-salario/',
+    //     //     type: 'POST',
+    //     //     data: formData,
+    //     //     success: function (response) {
+               
+    //     //     },
+    //     //     cache: false,
+    //     //     contentType: false,
+    //     //     processData: false,
+    //     // });
+    // });
+
+    function Guardar_AumentoSalario() {
+        
+    }
+
+    function calcular_nuevo_sueldo(){
+        salario_anterior = 0;
+        incremento = 0;
+        if (txtSalarioAnterior.length > 0) {
+            salario_anterior = Number(txtSalarioAnterior.val());
+        }
+        if (txtIncremento.length > 0) {
+            incremento = Number(txtIncremento.val());
+        }
+        txtNuevoSalario.val(salario_anterior + incremento);
+    }
+
+    function obtener_ultimo_salario(codEmpleado) {
+        $.ajax({
+            type: 'GET',
+            url: '/obtener/salario-ultimo/',
+            data: {'idEmpleado': codEmpleado},
+            success: function (data) {
+                if (data.error == false) {
+                    $('.aumento-salario input[name="salario_anterior"]').val(data.salario_anterior);
+                    calcular_nuevo_sueldo();
+                } else {
+                    mensaje("Aumento de salario", data.mensaje, "error", 3500);
+                }
+            },
+            error: function (data) {
+                mensaje("Aumento de salario", data.statusText, "error", 3500);
+            }
+        });
+    }
+//#endregion
+
 //#region Funciones Generales
     function GuardarRegistro(url, metodo, data, encabezado, editar, urlRedirect) {
         var texto = 'Se ha creado un nuevo registro.';

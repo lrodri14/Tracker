@@ -214,6 +214,8 @@ urlpatterns = [
     url(r'^actualizar/banco/$', views.actualizar_banco, name='actualizar_banco'),
     url(r'^actualizar/empresa-usuario/$', views.actualizar_empresa_usuario, name='actualizar_empresa_usuario'),
 
+    url(r'^editar/aumento-salario/(?P<id>\w+)/$', views.aumento_salario_editar, name="aumento_salario_editar"),
+
     url(r'^eliminar/corporativo/$', views.eliminar_corporativo, name='eliminar_corporativo'),
     url(r'^eliminar/empresa/$', views.eliminar_empresa, name='eliminar_empresa'),
     url(r'^eliminar/sucursal/$', views.eliminar_sucursal, name='eliminar_sucursal'),
@@ -251,7 +253,10 @@ urlpatterns = [
     url(r'^eliminar/empresa-usuario/$', views.eliminar_empresa_usuario, name='eliminar_empresa_usuario'),
 
     url(r'^obtener/sucursales/$', views.lista_sucursal, name="lista_sucursal"),
+    url(r'^obtener/salario-ultimo/$', views.obtener_ultimo_salario, name="obtener_ultimo_salario"),
     url(r'^obtener/estados/$', views.lista_estados, name="lista_estados"),
+
+    url(r'^enviar/aumento-salario/$', views.aumento_salario_guardar, name="aumento_salario_guardar"),
     url(r'^enviar/sucursal/$', views.enviar_sucursal, name="enviar_sucursal"),
 
     #------------------>>>AJAX<<<-------------------

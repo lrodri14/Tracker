@@ -21,7 +21,7 @@ Datos de Aumento de Salario
                                         <label for="cboAuEmp" class="control-label">Empleado :</label>
                                     </div>
                                     <div class="col-md-7">
-                                        <select class="form-control select2 input-sm input-sm-1" name="empleado" id="cboAuEmp">
+                                        <select class="form-control select2 input-sm" name="empleado" id="cboAuEmp">
                                             <option value="0">Seleccionar...</option>
                                             {% for item in empleados %}
                                                 {% if busqueda %}
@@ -75,7 +75,7 @@ Datos de Aumento de Salario
                                         {% if item.salario_actual %}SI{% else %}NO{% endif %}
                                     </td>
                                     <td class="text-nowrap acciones">
-                                        <a href="{% url 'educacion_editar' item.pk %}" data-toggle="tooltip" data-original-title="Edit">
+                                        <a href="{% url 'aumento_salario_editar' item.pk %}" data-toggle="tooltip" data-original-title="Edit">
                                             <i class="fa fa-pencil text-inverse m-r-10"></i>
                                         </a>
                                         <a href="#" class="btnEliminar" data="{{item.pk}}" data-toggle="tooltip" data-original-title="Close">

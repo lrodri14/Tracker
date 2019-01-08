@@ -79,13 +79,13 @@ WSGI_APPLICATION = 'employee.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'sql_server.pyodbc',
-        # 'NAME': 'planilla',
-        'NAME': 'django',
+        'NAME': 'planilla',
+        # 'NAME': 'django',
         'USER': 'sa',
-        # 'PASSWORD': '12345',
-        'PASSWORD': 'holaMundo2018',
-        # 'HOST': 'DESKTOP-B0F6DKE',
-        'HOST': 'IT06',
+        'PASSWORD': '12345',
+        # 'PASSWORD': 'holaMundo2018',
+        'HOST': 'DESKTOP-B0F6DKE',
+        # 'HOST': 'IT06',
         'PORT': '',
     }
 }
