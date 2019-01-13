@@ -59,8 +59,8 @@ Datos de Aumento de Salario
                                     <th>ID</th>
                                     <th>Nombre completo</th>
                                     <th>Fecha</th>
-                                    <th>Salario actual</th>
-                                    <th>Acciones</th>
+                                    <th>Salario</th>
+                                    <th class="text-center">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -74,13 +74,17 @@ Datos de Aumento de Salario
                                     <td>
                                         {% if item.salario_actual %}SI{% else %}NO{% endif %}
                                     </td>
-                                    <td class="text-nowrap acciones">
-                                        <a href="{% url 'aumento_salario_editar' item.pk %}" data-toggle="tooltip" data-original-title="Edit">
-                                            <i class="fa fa-pencil text-inverse m-r-10"></i>
-                                        </a>
-                                        <a href="#" class="btnEliminar" data="{{item.pk}}" data-toggle="tooltip" data-original-title="Close">
+                                    <td class="text-nowrap acciones text-center">
+                                        {% if perms.worksheet.delete_incrementossalariales %}
+                                        <a href="#" class="btnEliminar" data="{{item.pk}}" data-tooltip="Eliminar el registro" data-toggle="tooltip" data-original-title="Eliminar">
                                             <i class="fa fa-close text-danger"></i>
                                         </a>
+                                        {% endif %}
+                                        {% if perms.worksheet.see_reg_incrementossalariales %}
+                                        <a href="#" id="btnVerRegistroAuSal" data-tooltip="Ver registro" data-toggle="tooltip" data-original-title="Ver registro" class="btnVerRegistroAumentoSalario" data="{{item.pk}}">
+                                            <i class="fa fa-search text-success"></i>
+                                        </a>
+                                        {% endif %}
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -92,6 +96,10 @@ Datos de Aumento de Salario
         </div>
     </div>
 </div>
+<div class="col-md-4">
+    <div id="responsive-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div id="aumento-salario-modal" class="modal-dialog"></div>
+</div>
 {% endblock contenido %}
 {% block scripts %}
 <script>
@@ -100,7 +108,7 @@ Datos de Aumento de Salario
     //#region Efectos en SideBar
     $('#side-menu a').removeClass('active');
     $('#aAccionesPer').addClass('active');
-    $('#aEdu').addClass('active');
+    $('#aAumSal').addClass('active');
     //#endregion
 
     //#region Eventos Controles
@@ -114,7 +122,7 @@ Datos de Aumento de Salario
     //#region Funciones
     function Eliminar(id) {
         var Encabezado = 'Educación';
-        var url = "/eliminar/educacion/"; // the script where you handle the form input.
+        var url = "/eliminar/aumento-salario/"; // the script where you handle the form input.
         $.ajax({
             type: "POST",
             url: url,

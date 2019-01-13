@@ -1,0 +1,38 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 class="modal-title">{{titulo}}</h4> </div>
+    <div class="modal-body">
+        {% if error %}
+        <p>{{ mensaje }}</p>
+        {% else %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <tbody>
+                    <tr>
+                        <td><label>Nombre: </label> {{dato.empleado.firstName}} {% if dato.empleado.middleName %}{{dato.empleado.middleName}}{% endif %} {{dato.empleado.lastName}}</td>
+                        <td><label>Fecha de Incremento: </label> {% if dato.fecha_incremento %}{{dato.fecha_incremento|date:"j/n/Y"}}{% endif %}</label></td>
+                    </tr>
+                    <tr>
+                        <td><label>Motivo: </label> {% if dato.motivo_aumento.descripcion %}{{dato.motivo_aumento.descripcion}}{% endif %}</td>
+                        <td><label>Salario anterior: </label> {% if dato.salario_anterior %}{{dato.salario_anterior}}{% endif %}</label></td>
+                    </tr>
+                    <tr>
+                        <td><label>Incremento: </label> {% if dato.incremento %}{{dato.incremento}}{% endif %}</td>
+                        <td><label>Nuevo salario: </label> {% if dato.nuevo_salario %}{{dato.nuevo_salario}}{% endif %}</label></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="table table-striped">
+                <tbody>
+                    <tr>
+                        <td><label>Comentarios: </label> {{dato.comentarios}}</td>
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
+    </div>
+</div>

@@ -244,6 +244,36 @@ class Vendedor(models.Model):
     def __unicode__(self):
         return self.nombre
 
+
+class TipoNomina(models.Model):
+    tipo_planilla = models.CharField(max_length=100)
+    descripcion = models.TextField()
+    empresa_reg = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING)
+    user_reg = models.ForeignKey(User)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL,
+                                 related_name='tnom_usermod', related_query_name='tnom_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.NullBooleanField(blank=True, null=True)
+
+    def __unicode__(self):
+        return self.tipo_planilla
+
+
+class TipoContrato(models.Model):
+    tipo_contrato = models.CharField(max_length=100)
+    descripcion = models.TextField()
+    empresa_reg = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING)
+    user_reg = models.ForeignKey(User)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL,
+                                 related_name='tcon_usermod', related_query_name='tcon_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.NullBooleanField(blank=True, null=True)
+
+    def __unicode__(self):
+        return self.tipo_contrato
+
 class Employee(models.Model):
     firstName = models.CharField(max_length=50)
     middleName = models.CharField(max_length=50, blank=True, null=True)
@@ -306,6 +336,8 @@ class Employee(models.Model):
     bankCode = models.ForeignKey(Bank, blank=True, null=True)
     bankAccount = models.CharField(max_length=50, blank=True, null=True)
     branchBank = models.CharField(max_length=150, blank=True, null=True)
+    tipo_nomina = models.ForeignKey("worksheet.TipoNomina", verbose_name="tipo nomina", on_delete=models.PROTECT, blank=True, null=True)
+    tipo_contrato = models.ForeignKey("worksheet.TipoContrato", verbose_name="tipo contrato", on_delete=models.PROTECT, blank=True, null=True)
 
     remark = models.TextField(blank=True, null=True)
     empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="empl_empreg", related_query_name="empl_empreg")
@@ -625,6 +657,51 @@ class ImagenEmpleado(models.Model):
     
     def __unicode__(self):
         return self.empleado.firstName + " " + self.empleado.lastName
+
+class TipoIngreso(models.Model):
+    tipo_ingreso = models.CharField(max_length=50)
+    descripcion = models.TextField()
+    empresa_reg = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING)
+    user_reg = models.ForeignKey(User)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='ting_usermod', related_query_name='ting_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.NullBooleanField(blank=True, null=True)
+
+    def __unicode__(self):
+        return self.tipo_ingreso
+
+
+class IngresoIndividual(models.Model):
+    ingreso_i = models.CharField(max_length=50)
+    tipo_ingreso = models.ForeignKey(TipoIngreso, on_delete=models.PROTECT)
+    gravable = models.BooleanField()
+    empresa_reg = models.ForeignKey(Empresa, on_delete=models.PROTECT)
+    sucursal_reg = models.ForeignKey(Branch, on_delete=models.PROTECT)
+    user_reg = models.ForeignKey(User, on_delete=models.PROTECT)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT, related_name='ingind_usermod', related_query_name='ingind_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.NullBooleanField()
+
+    def __unicode__(self):
+        return self.ingreso_i
+
+class IngresoGeneral(models.Model):
+    ingreso_g = models.CharField(max_length=50)
+    tipo_ingreso = models.ForeignKey("worksheet.TipoIngreso", verbose_name="tipo ingreso", on_delete=models.PROTECT)
+    gravable = models.BooleanField()
+    empresa_reg = models.ForeignKey(Empresa, on_delete=models.PROTECT)
+    sucursal_reg = models.ForeignKey(Branch, on_delete=models.PROTECT)
+    user_reg = models.ForeignKey(User, on_delete=models.PROTECT)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT, related_name='ingg_usermod', related_query_name='ingg_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.NullBooleanField()
+
+    def __unicode__(self):
+        return self.ingreso_g
+
 
 #Transacciones
 class IncrementosSalariales(models.Model):

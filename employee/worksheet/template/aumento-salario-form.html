@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 {% block titulo %}
 Aumento de Salario{% endblock titulo %}
+{% load humanize %}
 {% load static %}
+
 {% block contenido %}
 <div class="row aumento-salario">
     <div class="col-md-12">
@@ -25,20 +27,24 @@ Aumento de Salario{% endblock titulo %}
                                             <label for="cboAuEmp" class="control-label">Empleado :</label>
                                         </div>
                                         <div class="col-md-7">
-                                            <select class="form-control select2" name="empleado" id="cboIncEmp">
-                                                <option value="0">Seleccionar...</option>
-                                                {% for item in empleados %}
-                                                    {% if editar %}
-                                                        {% if item == dato.empleado %}
-                                                        <option value="{{item.pk}}" selected>{{item.firstName}} {% if item.middleName %}{{item.middleName}}{% endif %} {{item.lastName}}</option>
+                                            {% if editar %}
+                                                <input id="txtNombre" readonly value='{{dato.empleado.firstName}} {{dato.empleado.lastName}}' type="text" class="form-control" />
+                                            {% else %}
+                                                <select class="form-control select2" name="empleado" id="cboIncEmp">
+                                                    <option value="0">Seleccionar...</option>
+                                                    {% for item in empleados %}
+                                                        {% if editar %}
+                                                            {% if item == dato.empleado %}
+                                                            <option value="{{item.pk}}" selected>{{item.firstName}} {% if item.middleName %}{{item.middleName}}{% endif %} {{item.lastName}}</option>
+                                                            {% else %}
+                                                            <option value="{{item.pk}}">{{item.firstName}} {% if item.middleName %}{{item.middleName}}{% endif %} {{item.lastName}}</option>
+                                                            {% endif %}
                                                         {% else %}
                                                         <option value="{{item.pk}}">{{item.firstName}} {% if item.middleName %}{{item.middleName}}{% endif %} {{item.lastName}}</option>
                                                         {% endif %}
-                                                    {% else %}
-                                                    <option value="{{item.pk}}">{{item.firstName}} {% if item.middleName %}{{item.middleName}}{% endif %} {{item.lastName}}</option>
-                                                    {% endif %}
-                                                {% endfor %}
-                                            </select>
+                                                    {% endfor %}
+                                                </select>
+                                            {% endif %}
                                         </div>
                                     </div>
                                 </div>
@@ -85,7 +91,7 @@ Aumento de Salario{% endblock titulo %}
                                             <label for="txtEdHasta" class="control-label">Salario anterior :</label>
                                         </div>
                                         <div class="col-md-7">
-                                            <input type="number" name="salario_anterior" readonly value="{{dato.salario_anterior}}" class="form-control" maxlength="100">
+                                            <input type="text" name="salario_anterior" readonly value="{{ dato.salario_anterior }}" class="form-control">
                                         </div>
                                     </div>
                                 </div>
@@ -97,7 +103,7 @@ Aumento de Salario{% endblock titulo %}
                                             <label class="control-label">Incremento :</label>
                                         </div>
                                         <div class="col-md-7">
-                                            <input type="number" name="incremento" value="{{dato.incremento}}" class="form-control">
+                                            <input type="text" name="incremento" value="{{dato.incremento}}" class="form-control">
                                         </div>
                                     </div>
                                 </div>
@@ -107,7 +113,7 @@ Aumento de Salario{% endblock titulo %}
                                             <label class="control-label">Nuevo salario :</label>
                                         </div>
                                         <div class="col-md-7">
-                                            <input type="number" name="nuevo_salario" readonly value="{{dato.nuevo_salario}}" class="form-control">
+                                            <input type="text" name="nuevo_salario" readonly value="{{dato.nuevo_salario}}" class="form-control">
                                         </div>
                                     </div>
                                 </div>
@@ -119,7 +125,7 @@ Aumento de Salario{% endblock titulo %}
                                             <label class="control-label">Comentarios :</label>
                                         </div>
                                         <div class="col-md-7">
-                                            <textarea name="comentarios" rows="7" class="form-control"></textarea>
+                                            <textarea name="comentarios" rows="7" class="form-control">{{dato.comentarios}}</textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -143,12 +149,11 @@ Aumento de Salario{% endblock titulo %}
 </div>
 {% endblock contenido %}
 {% block scripts %}
-<script src="{% static 'js/app/scriptApp.js' %}"></script>
 <script>
     $(".select2").select2();
     $('#side-menu a').removeClass('active');
     $('#aAccionesPer').addClass('active');
-    $('#aEdu').addClass('active');
+    $('#aAumSal').addClass('active');
 
     jQuery('.mydatepicker, #datepicker').datepicker({
         format: 'yyyy-mm-dd',

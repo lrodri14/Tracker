@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block titulo %}
+Tipo de Nómina
+{% endblock titulo %}
+{% load static %}
+{% block contenido %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="text-bold"><i class="ti-pencil-alt"></i>
+                    Tipo de Nómina</h2>
+            </div>
+            <div class="panel-wrapper">
+                <div class="panel-body">
+                    {% csrf_token %}
+                    {% if editar %}
+                    <input type="hidden" value="{{dato.pk}}" name="tipoSalario_id">
+                    {% endif %}
+                    <div class="col-md-12">
+                        <div class="col-md-12 margin-bottom-5px">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label class="control-label">Tipo de nómina :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <input name="txtTipoNomina" value="{{dato.tipo_nomina}}" type="text" class="form-control input" maxlength="100" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6"></div>
+                        </div>
+                        <div class="col-md-12 margin-bottom-5px">    
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label class="control-label">Descripción :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <textarea name="txtDescripcion" rows="7" class="form-control" maxlength="300">{{dato.description}}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6"></div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5"></div>
+                                    <div class="col-md-7">
+                                        <div class="checkbox checkbox-success">
+                                            {% if dato.active %}
+                                            <input id="chkActivo" name="tipoNomina_activo" type="checkbox" checked class="input">
+                                            {% else %}
+                                            <input id="chkActivo" name="tipoNomina_activo" type="checkbox" class="input">
+                                            {% endif %}
+                                            <label for="chkActivo" class="control-label"> Activo </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-action text-right">
+                                    {% if editar %}
+                                    <button id="btnTipoNominaActualizar" class="btn btn-success">Actualizar</button>
+                                    {% else %}
+                                    <button id="btnTipoNominaGuardar" class="btn btn-success">Guardar</button>
+                                    {% endif %}
+                                    <button id="btnTipoNominaCancelar" class="btn btn-default">Cancelar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contenido %}
+{% block scripts %}
+<script src="{% static 'js/app/scriptApp.js' %}"></script>
+<script>
+    $('#side-menu a').removeClass('active');
+    $('#aCorporativo').addClass('active');
+    $('#aTiposSalarios').addClass('active');
+</script>
+{% endblock scripts %}

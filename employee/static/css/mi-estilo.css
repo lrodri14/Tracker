@@ -14,8 +14,23 @@ select.input-sm-1{
 }
 
 
+.toolTip{
+    background: rgba(20,20,20,0.9) url('img/info.gif') center left 5px no-repeat;
+    border: 2px solid #87cefa;
+    border-radius: 5px;
+    box-shadow: 5px 5px 5px #333;
+    color: #87cefa;
+    font-size: 0.8em;
+    padding: 10px 10px 10px 35px;
+    max-width: 600px;
+    position: absolute;
+    z-index: 100;   
+}
+
+
 @media (min-width: 768px){
     .logo-izq{
         padding-left: 70px;
     }
 }
+

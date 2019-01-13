@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
     'worksheet',
     
 ]
@@ -79,13 +80,13 @@ WSGI_APPLICATION = 'employee.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'sql_server.pyodbc',
-        'NAME': 'planilla',
-        # 'NAME': 'django',
+        # 'NAME': 'planilla',
+        'NAME': 'django',
         'USER': 'sa',
-        'PASSWORD': '12345',
-        # 'PASSWORD': 'holaMundo2018',
-        'HOST': 'DESKTOP-B0F6DKE',
-        # 'HOST': 'IT06',
+        # 'PASSWORD': '12345',
+        'PASSWORD': 'holaMundo2018',
+        # 'HOST': 'DESKTOP-B0F6DKE',
+        'HOST': 'IT06',
         'PORT': '',
     }
 }
@@ -113,7 +114,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
-LANGUAGE_CODE = 'es-HN'
+LANGUAGE_CODE = 'es-hn'
 
 TIME_ZONE = 'America/Tegucigalpa'
 
@@ -122,6 +123,7 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
 
 
 # Static files (CSS, JavaScript, Images)

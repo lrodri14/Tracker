@@ -196,6 +196,9 @@
                             <li><a href="{% url 'articulos_asignados_listar' %}" id="actAsig" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Activo Asignados</span></a></li>
                             <li><a href="{% url 'empleados-listado' %}" id="Emp" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Empleado</span></a></li>
                             <li><a href="{% url 'tipo_salario_listar' %}" id="aTiposSalarios" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Tipos de Salario</span></a></li>
+                            {% if perms.worksheet.see_tiponomina %}
+                            <li><a href="{% url 'tipo_nomina_listar' %}" id="aTipoNomina" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Tipos de Nómina</span></a></li>
+                            {% endif %}
                         </ul>
                     </li>
                     <li><a href="javascript:void(0)" id="aAccionesPer" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Acciones de Personal <span class="fa arrow"></span></span></a>
@@ -204,7 +207,9 @@
                             <li><a href="{% url 'ausentismo_listado' %}" id="aAu" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Ausentismo</span></a></li>
                             <li><a href="{% url 'educacion_listar' %}" id="aEdu" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Educación</span></a></li>
                             <li><a href="{% url 'empleo_anterior_listar' %}" id="empAnt" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Empleos Anteriores</span></a></li>
-                            <li><a href="{% url 'aumento_salario_listado' %}" id="empAnt" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Aumento de Salario</span></a></li>
+                            {% if perms.worksheet.see_incrementossalariales %}
+                            <li><a href="{% url 'aumento_salario_listado' %}" id="aAumSal" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Aumento de Salario</span></a></li>
+                            {% endif %}
                         </ul>
                     </li>
                     
@@ -280,6 +285,8 @@
     <script src="{% static 'plugins/bower_components/toast-master/js/jquery.toast.js' %}"></script>
     <script src="{% static 'plugins/bower_components/dropify/dist/js/dropify.min.js' %}"></script>
     <script src="{% static 'plugins/bower_components/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'plugins/bower_components/inputmask/dist/min/jquery.inputmask.bundle.min.js' %}"></script>
+    <script src="{% static 'js/mask.js' %}"></script>
     <script src="{% static 'js/lib/toastr.js' %}"></script>
     <!--script src="{% static 'plugins/bower_components/raphael/raphael-min.js' %}"></script-->
     <script src="{% static 'js/lib/custom.js' %}"></script>
@@ -306,6 +313,7 @@
             }
         });
     </script>
+    <script src="{% static 'js/app/scriptApp.js' %}"></script>
 </body>
 
 </html>

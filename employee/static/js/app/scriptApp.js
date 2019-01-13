@@ -2243,6 +2243,26 @@ function validargnrDatos() {
     var txtNuevoSalario = $('.aumento-salario input[name="nuevo_salario"]');
     var txtComentarios = $('.aumento-salario textarea[name="comentarios"]');
 
+    $('#btnVerRegistroAuSal').on('click', function(e) {
+        e.preventDefault();
+        url = '/ver-registro/aumento-salario/';
+        metodo = 'GET';
+        data = {'id': $(this).attr('data')};
+        $.ajax({
+            type: metodo,
+            url: url,
+            data: data,
+            success: function (data) {
+                $('#aumento-salario-modal').html(data);
+            },
+            error: function (data) {
+                console.log(data);
+            },
+            dataType: 'html'
+        });
+        $('#responsive-modal').modal('toggle');
+    });
+
     $('#btnIncGuardar').on('click', function (e) {
         e.preventDefault();
         url = '/enviar/aumento-salario/';
@@ -2251,19 +2271,29 @@ function validargnrDatos() {
             'empleado_fk': cboEmpleado.val(),
             'fecha_incremento': txtFechaIncremento.val(),
             'motivo_aumento': motivo_aumento.val(),
-            'salario_anterior': txtSalarioAnterior.val(),
-            'incremento': txtIncremento.val(),
-            'nuevo_salario': txtNuevoSalario.val(),
+            'salario_anterior': (txtSalarioAnterior.val().replace(",", "")),
+            'incremento': (txtIncremento.val().replace(",", "")),
+            'nuevo_salario': (txtNuevoSalario.val().replace(",", "")),
             'comentarios': txtComentarios.val(),
             'csrfmiddlewaretoken': token.val(),
         };
-        GuardarRegistro(url, metodo, data, "Aumento de salario");
-        
+        GuardarRegistro(url, metodo, data, "Aumento de salario");      
     });
 
-    $('#btnIncGuardar').on('click', function(e) {
+    $('#btnIncActualizar').on('click', function(e) {
         e.preventDefault();
-        Guardar_AumentoSalario();
+        var novo_saldo = parseFloat(txtNuevoSalario.val().replace(",", "")).toFixed(2)
+        url = '/actualizar/aumento-salario/';
+        metodo = 'POST';
+        data = {
+            'id': id.val(),
+            'motivo': motivo_aumento.val(),
+            'fecha_incremento': txtFechaIncremento.val(),
+            'incremento': txtIncremento.val(),
+            'nuevo_salario': novo_saldo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Aumento de salario", true, "/listar/aumento-salario/");
     });
 
     $('#btnIncCancelar').on('click', function(e) {
@@ -2277,6 +2307,7 @@ function validargnrDatos() {
 
     txtIncremento.on('change', function() {
         calcular_nuevo_sueldo();
+        txtIncremento.val(formatNumber.new(txtIncremento.val()));
     });
 
     // $('#frmAumentoSalario').submit(function(e) {
@@ -2298,20 +2329,24 @@ function validargnrDatos() {
     //     // });
     // });
 
-    function Guardar_AumentoSalario() {
-        
-    }
-
     function calcular_nuevo_sueldo(){
         salario_anterior = 0;
         incremento = 0;
-        if (txtSalarioAnterior.length > 0) {
-            salario_anterior = Number(txtSalarioAnterior.val());
+        nuevo_salario = 0;
+        var salant = 0;
+        var inc = 0;
+        var nuevo_sal = 0;
+        if (txtSalarioAnterior.val().length > 0) {
+            salant = $('input[name="salario_anterior"]').val().replace(",", "");
+            salario_anterior = Number($('input[name="salario_anterior"]').val());
         }
-        if (txtIncremento.length > 0) {
-            incremento = Number(txtIncremento.val());
+        if (txtIncremento.val().length > 0) {
+            inc = parseFloat($('input[name="incremento"]').val()).toFixed(2);
+            incremento = Number($('input[name="incremento"]').val());
         }
-        txtNuevoSalario.val(salario_anterior + incremento);
+        nuevo_sal = Number(salant) + Number(inc);
+        nuevo_sal = parseFloat(nuevo_sal).toFixed(2);
+        txtNuevoSalario.val(formatNumber.new(nuevo_sal));
     }
 
     function obtener_ultimo_salario(codEmpleado) {
@@ -2321,7 +2356,8 @@ function validargnrDatos() {
             data: {'idEmpleado': codEmpleado},
             success: function (data) {
                 if (data.error == false) {
-                    $('.aumento-salario input[name="salario_anterior"]').val(data.salario_anterior);
+                    
+                    $('.aumento-salario input[name="salario_anterior"]').val(formatNumber.new(parseFloat(Number(data.salario_anterior)).toFixed(2)));
                     calcular_nuevo_sueldo();
                 } else {
                     mensaje("Aumento de salario", data.mensaje, "error", 3500);
@@ -2332,6 +2368,7 @@ function validargnrDatos() {
             }
         });
     }
+
 //#endregion
 
 //#region Funciones Generales
@@ -2393,5 +2430,25 @@ function validargnrDatos() {
         $('textarea').val(null);
         $('.select2').select2('val', '0');
     }
-    //#endregion
+
+    var formatNumber = {
+        separador: ",", // separador para los miles
+        sepDecimal: '.', // separador para los decimales
+        formatear: function (num) {
+            num += '';
+            var splitStr = num.split('.');
+            var splitLeft = splitStr[0];
+            var splitRight = splitStr.length > 1 ? this.sepDecimal + splitStr[1] : '';
+            var regx = /(\d+)(\d{3})/;
+            while (regx.test(splitLeft)) {
+                splitLeft = splitLeft.replace(regx, '$1' + this.separador + '$2');
+            }
+            return this.simbol + splitLeft + splitRight;
+        },
+        new: function (num, simbol) {
+            this.simbol = simbol || '';
+            return this.formatear(num);
+        }
+    }
+//#endregion
 });

@@ -15,6 +15,8 @@ import json
 from django.core import serializers
 from django.contrib.auth.decorators import permission_required
 from django.utils.decorators import method_decorator
+import locale
+locale.setlocale(locale.LC_ALL, '')
 
 # Create your views here.
 def verificaSucursal(request):
@@ -8096,6 +8098,7 @@ def obtener_ultimo_salario(request):
 
 #region Codigo para Aumento de Sueldo
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_incrementossalariales', raise_exception=True)
 def aumento_salario_listado(request):
     lista = []
     busqueda = None
@@ -8120,20 +8123,38 @@ def aumento_salario_listado(request):
     return render(request, 'aumento-salario-listado.html', {'empleados': empleados, 'datos':lista, 'busqueda': busqueda})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_incrementossalariales', raise_exception=True)
 def aumento_salario_form(request):
     suc = Branch.objects.get(pk=request.session["sucursal"])
     empleados = Employee.objects.filter(active=True, empresa_reg=suc.empresa)
     motivos = MotivoAumentoSueldo.objects.filter(active=True, empresa_reg=suc.empresa)
     return render(request, 'aumento-salario-form.html', {'empleados': empleados, 'motivos':motivos})
 
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_incrementossalariales', raise_exception=True)
 def aumento_salario_editar(request, id):
     suc = Branch.objects.get(pk=request.session["sucursal"])
     empleados = Employee.objects.filter(active=True, empresa_reg=suc.empresa)
     motivos = MotivoAumentoSueldo.objects.filter(active=True, empresa_reg=suc.empresa)
     dato = IncrementosSalariales.objects.get(pk=id)
+    dato = {
+        'pk': dato.pk,
+        'empleado': dato.empleado,
+        'fecha_incremento': dato.fecha_incremento,
+        'motivo_aumento':dato.motivo_aumento,
+        'salario_anterior': locale.format("%.2f", dato.salario_anterior, grouping=True),
+        'incremento': locale.format("%.2f", dato.incremento, grouping=True),
+        'nuevo_salario': locale.format("%.2f", dato.nuevo_salario, grouping=True),
+        'comentarios': dato.comentarios
+    }
     return render(request, 'aumento-salario-form.html', {'empleados': empleados, 'dato': dato, 'motivos':motivos , 'editar':True})
 
+#------------------ AJAX -----------------------
 def aumento_salario_guardar(request):
+    fecha_incremento = ""
+    salario_anterior = 0.00
+    incremento = 0.00
+    nuevo_salario = 0.00
     try:
         if request.is_ajax():
             if request.method == 'POST':
@@ -8144,7 +8165,7 @@ def aumento_salario_guardar(request):
                 incremento = request.POST['incremento']
                 nuevo_salario = request.POST['nuevo_salario']
                 comentarios = request.POST['comentarios']
-                if empleado_fk == 0:
+                if int(empleado_fk) == 0:
                     return JsonResponse({'error': True, 'mensaje': 'El campo "empleado" es obligatorio.'})
                 else:
                     empleados = Employee.objects.filter(pk=empleado_fk)
@@ -8152,6 +8173,9 @@ def aumento_salario_guardar(request):
                         o_empleado = Employee.objects.get(pk=empleado_fk)
                     else:
                         return JsonResponse({'error': True, 'mensaje': 'El empleado no existe.'})
+
+                if len(fecha_incremento) == 0:
+                    return JsonResponse({'error': True, 'mensaje': 'El campo "Fecha de Incremento" es obligatorio.'})
 
                 if motivo_aumento_fk == 0:
                     return JsonResponse({'error': True, 'mensaje': 'El campo "motivo de aumento" es obligatorio.'})
@@ -8200,8 +8224,164 @@ def aumento_salario_guardar(request):
             'mensaje': ex.message,
         }
         return JsonResponse(data)
+
+def aumento_salario_actualizar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = request.POST["id"]
+                motivo = request.POST["motivo"]
+                fecha_incremento = request.POST["fecha_incremento"]
+                incremento = request.POST["incremento"]
+                nuevo_salario = request.POST["incremento"]
+
+                if motivo == 0:
+                    return JsonResponse({'error': True, 'mensaje': 'El campo "motivo de aumento" es obligatorio.'})
+                else:
+                    motivos = MotivoAumentoSueldo.objects.filter(pk=motivo)
+                    if motivos.count() > 0:
+                        o_motivo = MotivoAumentoSueldo.objects.get(pk=motivo)
+                    else:
+                        return JsonResponse({'error': True, 'mensaje': 'El "motivo de aumento" no existe.'})
+
+                if validarDecimal(incremento) == False:
+                    return JsonResponse({'error': True, 'mensaje': 'El tipo de dato no es válido.'})
+                else:
+                    if incremento == 0:
+                        return JsonResponse({'error': True, 'mensaje': 'El incremento tiene que ser mayor a cero.'})
+
+                tot_reg = IncrementosSalariales.objects.filter(pk=id).count()
+                if tot_reg > 0:
+                    o_Incremento = IncrementosSalariales.objects.get(pk=id)
+                    o_Incremento.motivo_aumento = o_motivo
+                    o_Incremento.fecha_incremento = fecha_incremento
+                    o_Incremento.incremento = incremento
+                    o_Incremento.nuevo_salario = nuevo_salario
+                    o_Incremento.save()
+                    return JsonResponse({'error': False, 'mensaje': 'Se ha guardado el registro.'})
+                else:
+                    return JsonResponse({'error': True, 'mensaje': 'El registro no existe.'})
+            else:
+                return JsonResponse({'error': True, 'mensaje': 'El método no está permitido.'})
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+            return JsonResponse(data)
+    except Exception as ex:
+        data = {
+            'error': True,
+            'mensaje': ex.message,
+        }
+        return JsonResponse(data)
+
+def aumento_salario_eliminar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oMd = IncrementosSalariales.objects.get(pk=reg_id)
+                    empleado_id = oMd.empleado.pk
+                    if oMd:
+                        oMd.delete()
+                        regs = IncrementosSalariales.objects.filter(empleado__pk=empleado_id).order_by('-fecha_incremento')[:1]
+                        if regs.count() > 0:
+                            incremento = regs[0]
+                            incremento.salario_actual = True
+                            incremento.save()
+                            regs = Employee.objects.filter(pk=empleado_id)
+                            if regs.count() > 0:
+                                empleado = Employee.objects.get(pk=empleado_id)
+                                empleado.salary = incremento.nuevo_salario
+                                empleado.save()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def aumento_salario_ver_registro(request):
+    error = False
+    mensaje = ""
+    titulo = ""
+    dato = None
+    id = 0
+    if request.is_ajax():
+        id = request.GET.get('id')
+        if id == 0:
+            error = True
+            mensaje = "El registro no existe."
+        else:
+            tot_reg = IncrementosSalariales.objects.filter(pk=id).count()
+            if tot_reg > 0:
+                dato = IncrementosSalariales.objects.get(pk=id)
+                dato = {
+                    'pk': dato.pk,
+                    'empleado': dato.empleado,
+                    'fecha_incremento': dato.fecha_incremento,
+                    'motivo_aumento': dato.motivo_aumento,
+                    'salario_anterior': locale.format("%.2f", dato.salario_anterior, grouping=True),
+                    'incremento': locale.format("%.2f", dato.incremento, grouping=True),
+                    'nuevo_salario': locale.format("%.2f", dato.nuevo_salario, grouping=True),
+                    'comentarios': dato.comentarios
+                }
+                error = False
+            else:
+                error = True
+                mensaje = "No existe el registro."
+
+    else:
+        error = True
+        mensaje = "El método no está permitido."
+
+    if error:
+        titulo = "Error - Mensaje"
+    else:
+        titulo = "Ver registro"
+    return render(request, 'ajax/aumento-salario-modal.html', {'error':error, 'mensaje': mensaje, 'titulo':titulo, 'dato':dato})
+
+
+#----------------- END AJAX --------------------
+
+
 #endregion
-    
+
+#region Código para Tipo de Nomina
+
+def tipo_nomina_listado(request):
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    listado = TipoNomina.objects.filter(active=True, empresa_reg=suc.empresa)
+    return render(request, 'tipo-nomina-listado.html', {'listado':listado})
+
+# endregion 
 
 #--------------------------VALIDACIONES------------------------------
 def validarEntero(dato):

@@ -136,9 +136,10 @@ urlpatterns = [
     url(r'^listar/empresas-usuario/$', views.usuario_empresa_listar, name="emp_user"),
     url(r'^editar/empresa-usuario/(?P<id>\w+)/$', views.usuario_empresa_editar, name="usuario_empresa_editar"),
 
-    url(r'^formulario/aumento-salario/$',
-        views.aumento_salario_form, name="aumento_salario_form"),
+    url(r'^formulario/aumento-salario/$', views.aumento_salario_form, name="aumento_salario_form"),
+
     url(r'^listar/aumento-salario/$', views.aumento_salario_listado, name="aumento_salario_listado"),
+    url(r'^listar/tipo-nomina/$', views.tipo_nomina_listado, name="tipo_nomina_listar"),
 
     #----------------->>>AJAX<<<------------------
     url(r'^guardar/empleado/$', views.guardar_empleado, name='guardar_empleado'),
@@ -213,9 +214,11 @@ urlpatterns = [
     url(r'^actualizar/costo-empleado-unidades/$', views.actualizar_costo_empleado, name='actualizar_costo_empleado'),
     url(r'^actualizar/banco/$', views.actualizar_banco, name='actualizar_banco'),
     url(r'^actualizar/empresa-usuario/$', views.actualizar_empresa_usuario, name='actualizar_empresa_usuario'),
+    url(r'^actualizar/aumento-salario/$', views.aumento_salario_actualizar, name='aumento_salario_actualizar'),
 
     url(r'^editar/aumento-salario/(?P<id>\w+)/$', views.aumento_salario_editar, name="aumento_salario_editar"),
 
+    url(r'^eliminar/aumento-salario/$', views.aumento_salario_eliminar, name='aumento_salario_eliminar'),
     url(r'^eliminar/corporativo/$', views.eliminar_corporativo, name='eliminar_corporativo'),
     url(r'^eliminar/empresa/$', views.eliminar_empresa, name='eliminar_empresa'),
     url(r'^eliminar/sucursal/$', views.eliminar_sucursal, name='eliminar_sucursal'),
@@ -258,6 +261,8 @@ urlpatterns = [
 
     url(r'^enviar/aumento-salario/$', views.aumento_salario_guardar, name="aumento_salario_guardar"),
     url(r'^enviar/sucursal/$', views.enviar_sucursal, name="enviar_sucursal"),
+
+    url(r'^ver-registro/aumento-salario/$', views.aumento_salario_ver_registro, name="aumento_salario_ver_registro"),
 
     #------------------>>>AJAX<<<-------------------
 
