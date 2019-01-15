@@ -8381,6 +8381,183 @@ def tipo_nomina_listado(request):
     listado = TipoNomina.objects.filter(active=True, empresa_reg=suc.empresa)
     return render(request, 'tipo-nomina-listado.html', {'listado':listado})
 
+def tipo_nomina_form(request):
+    return render(request, 'tipo-nomina-form.html')
+
+@login_required(login_url='/form/iniciar-sesion/')
+def tipo_nomina_editar(request, id):
+    dato = TipoNomina.objects.get(pk=id)
+    return render(request, 'tipo-nomina-form.html', {'dato':dato, 'editar':True})
+
+#---------------------AJAX-------------------------------
+
+def tipo_nomina_guardar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                tipo_nomina = request.POST['tipo_nomina']
+                desc = request.POST['descripcion']
+                activo = int(request.POST['activo'])
+
+                if len(tipo_nomina) == 0:
+                    mensaje = "El campo 'Tipo Nómina' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(desc) == 0:
+                    mensaje = "El campo 'Descripción' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(tipo_nomina) > 100:
+                    mensaje = "El campo 'Tipo Nómina' tiene como máximo 100 caracteres."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+
+                oMd = TipoNomina(
+                    tipo_planilla=tipo_nomina,
+                    descripcion=desc,
+                    empresa_reg=suc.empresa,
+                    active=activo,
+                    user_reg=request.user,
+                )
+                oMd.save()
+                mensaje = 'Se ha guardado el registro'
+                data = {
+                    'mensaje': mensaje, 'error': False
+                }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def tipo_nomina_actualizar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                tipo_nomina = request.POST['tipo_nomina']
+                desc = request.POST['descripcion']
+                activo = int(request.POST['activo'])
+
+                if len(tipo_nomina) == 0:
+                    mensaje = "El campo 'Tipo Nómina' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(desc) == 0:
+                    mensaje = "El campo 'Descripción' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(tipo_nomina) > 100:
+                    mensaje = "El campo 'Tipo Nómina' tiene como máximo 100 caracteres."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                oMd = TipoNomina.objects.get(pk=id)
+                if oMd:
+                    oMd.tipo_planilla = tipo_nomina
+                    oMd.descripcion = desc
+                    oMd.active = activo
+                    oMd.user_mod = request.user
+                    oMd.date_mod = datetime.datetime.now()
+                    oMd.save()
+                    mensaje = 'Se ha actualizado el registro.'
+                    data = {
+                        'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "No existe el registro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def tipo_nomina_eliminar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oMd = TipoNomina.objects.get(pk=reg_id)
+                    if oMd:
+                        oMd.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+#---------------------END AJAX---------------------------
+
 # endregion 
 
 #--------------------------VALIDACIONES------------------------------

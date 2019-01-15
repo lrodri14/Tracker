@@ -2310,25 +2310,6 @@ function validargnrDatos() {
         txtIncremento.val(formatNumber.new(txtIncremento.val()));
     });
 
-    // $('#frmAumentoSalario').submit(function(e) {
-    //     e.preventDefault();
-    //     url = '/enviar/aumento-salario/'
-    //     formData = new FormData(this);
-    //     metodo = 'POST'
-    //     GuardarRegistro(url, metodo, data, "Aumento de sueldo");
-    //     // $.ajax({
-    //     //     url: '/enviar/aumento-salario/',
-    //     //     type: 'POST',
-    //     //     data: formData,
-    //     //     success: function (response) {
-               
-    //     //     },
-    //     //     cache: false,
-    //     //     contentType: false,
-    //     //     processData: false,
-    //     // });
-    // });
-
     function calcular_nuevo_sueldo(){
         salario_anterior = 0;
         incremento = 0;
@@ -2368,6 +2349,57 @@ function validargnrDatos() {
             }
         });
     }
+
+//#endregion
+
+//#region Código para Tipo Nómina
+
+var tn_id = $('#tipo_nomina input[name="tipoSalario_id"]');
+var tn_txtTipoNomina = $('#tipo_nomina input[name="txtTipoNomina"]');
+var tn_txtDescripcion = $('#tipo_nomina textarea[name="txtDescripcion"]');
+var tn_chkActivo = $('#tipo_nomina input[name="tipoNomina_activo"]');
+
+$('#tipo_nomina #btnTipoNominaGuardar').on('click', function(e) {
+    e.preventDefault();
+    if (tn_chkActivo.is(":checked")) {
+        vActivo = 1;
+    } else {
+        vActivo = 0;
+    }
+    url = '/guardar/tipo-nomina/';
+    metodo = 'POST';
+    data = {
+        'tipo_nomina': tn_txtTipoNomina.val(),
+        'descripcion': tn_txtDescripcion.val(),
+        'activo': vActivo,
+        'csrfmiddlewaretoken': token.val(),
+    };
+    GuardarRegistro(url, metodo, data, "Tipo de nómina");
+});
+
+$('#tipo_nomina #btnTipoNominaActualizar').on('click', function(e) {
+    e.preventDefault();
+        url = '/actualizar/tipo-nomina/';
+        metodo = 'POST';
+        if (tn_chkActivo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
+        }
+        data = {
+            'id': tn_id.val(),
+            'tipo_nomina': tn_txtTipoNomina.val(),
+            'descripcion': tn_txtDescripcion.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Tipo de Nómina", true, "/listar/tipo-nomina/");
+});
+
+$('#tipo_nomina #btnTipoNominaCancelar').on('click', function(e) {
+    e.preventDefault();
+    window.location.replace(dns + "/listar/tipo-nomina/");
+});
 
 //#endregion
 

@@ -3,8 +3,18 @@
 Tipo de Nómina
 {% endblock titulo %}
 {% load static %}
+{% block estilo %}
+<style>
+    .checkbox{
+        font-weight: 500;
+    }
+    .checkbox label{
+        font-weight: 500;
+    }
+</style>
+{% endblock estilo %}
 {% block contenido %}
-<div class="row">
+<div id="tipo_nomina" class="row">
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -25,7 +35,7 @@ Tipo de Nómina
                                         <label class="control-label">Tipo de nómina :</label>
                                     </div>
                                     <div class="col-md-7">
-                                        <input name="txtTipoNomina" value="{{dato.tipo_nomina}}" type="text" class="form-control input" maxlength="100" />
+                                        <input name="txtTipoNomina" value="{{dato.tipo_planilla}}" type="text" class="form-control input" maxlength="100" />
                                     </div>
                                 </div>
                             </div>
@@ -38,7 +48,7 @@ Tipo de Nómina
                                         <label class="control-label">Descripción :</label>
                                     </div>
                                     <div class="col-md-7">
-                                        <textarea name="txtDescripcion" rows="7" class="form-control" maxlength="300">{{dato.description}}</textarea>
+                                        <textarea name="txtDescripcion" rows="7" class="form-control" maxlength="300">{{dato.descripcion}}</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -50,11 +60,7 @@ Tipo de Nómina
                                     <div class="col-md-5"></div>
                                     <div class="col-md-7">
                                         <div class="checkbox checkbox-success">
-                                            {% if dato.active %}
-                                            <input id="chkActivo" name="tipoNomina_activo" type="checkbox" checked class="input">
-                                            {% else %}
-                                            <input id="chkActivo" name="tipoNomina_activo" type="checkbox" class="input">
-                                            {% endif %}
+                                            <input id="chkActivo" name="tipoNomina_activo" type="checkbox" {% if dato.active %}checked{% endif %} class="input">
                                             <label for="chkActivo" class="control-label"> Activo </label>
                                         </div>
                                     </div>
@@ -77,10 +83,9 @@ Tipo de Nómina
 </div>
 {% endblock contenido %}
 {% block scripts %}
-<script src="{% static 'js/app/scriptApp.js' %}"></script>
 <script>
     $('#side-menu a').removeClass('active');
-    $('#aCorporativo').addClass('active');
-    $('#aTiposSalarios').addClass('active');
+    $('#aPersonal').addClass('active');
+    $('#aTipoNomina').addClass('active');
 </script>
 {% endblock scripts %}

@@ -15,7 +15,9 @@ Listado de Tipos de Nómina
                 <div class="panel-body">
                     <div class="row text-right">
                         <div class="col-md-12">
-                            <a href="{% url 'tipo_salario_form' %}" class="btn btn-primary">Agregar</a>
+                        {% if perms.worksheet.add_tiponomina %}
+                            <a href="{% url 'tipo_nomina_form' %}" class="btn btn-primary">Agregar</a>
+                        {% endif %}
                         </div>
                     </div>
                     <br>
@@ -33,7 +35,7 @@ Listado de Tipos de Nómina
                             <tbody>
                                 {% for item in listado %}
                                 <tr>
-                                    <td>{{item.tipo_nomina}}</td>
+                                    <td>{{item.tipo_planilla}}</td>
                                     <td>{{item.descripcion}}</td>
                                     <td>
                                         {% if item.active %}
@@ -43,7 +45,7 @@ Listado de Tipos de Nómina
                                         {% endif %}
                                     </td>                         
                                     <td class="text-nowrap acciones">
-                                        <a href="{% url 'tipo_salario_editar' item.pk %}" data-toggle="tooltip" data-original-title="Editar">
+                                        <a href="{% url 'tipo_nomina_editar' item.pk %}" data-toggle="tooltip" data-original-title="Editar">
                                             <i class="fa fa-pencil text-inverse m-r-10"></i>
                                         </a>
                                         <a href="#" class="btnEliminar" data="{{item.pk}}" data-toggle="tooltip" data-original-title="Eliminar">
@@ -66,8 +68,8 @@ Listado de Tipos de Nómina
     var token = $('input[name="csrfmiddlewaretoken"]');
     //#region Efectos en SideBar
     $('#side-menu a').removeClass('active');
-    $('#aCorporativo').addClass('active');
-    $('#aTiposSalarios').addClass('active');
+    $('#aPersonal').addClass('active');
+    $('#aTipoNomina').addClass('active');
     //#endregion
 
     //#region Eventos Controles
@@ -80,8 +82,8 @@ Listado de Tipos de Nómina
 
     //#region Funciones
     function Eliminar(id) {
-        var Encabezado = 'Tipo de Salario';
-        var url = "/eliminar/tipo-salario/"; // the script where you handle the form input.
+        var Encabezado = 'Tipo de Nómina';
+        var url = "/eliminar/tipo-nomina/"; // the script where you handle the form input.
         $.ajax({
             type: "POST",
             url: url,
