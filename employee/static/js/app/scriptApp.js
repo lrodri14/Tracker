@@ -2352,6 +2352,57 @@ function validargnrDatos() {
 
 //#endregion
 
+//#region Código para Tipo de Contrato
+
+var tc_id = $('#tipo_contrato input[name="tipo_contrato_id"]');
+var tc_txtTipoContrato = $('#tipo_contrato input[name="txtTipoContrato"]');
+var tc_txtDescripcion = $('#tipo_contrato textarea[name="txtDescripcion"]');
+var tc_chkActivo =  $('#tipo_contrato input[name="chkActivo"]');
+
+$('#tipo_contrato #btnGuardar').on('click', function(e) {
+    e.preventDefault();
+    if (tc_chkActivo.is(":checked")) {
+        vActivo = 1;
+    } else {
+        vActivo = 0;
+    }
+    url = '/guardar/tipo-contrato/';
+    metodo = 'POST';
+    data = {
+        'tipo_contrato': tc_txtTipoContrato.val(),
+        'descripcion': tc_txtDescripcion.val(),
+        'activo': vActivo,
+        'csrfmiddlewaretoken': token.val(),
+    };
+    GuardarRegistro(url, metodo, data, "Tipo de contrato");
+});
+
+$('#tipo_contrato #btnActualizar').on('click', function(e) {
+    e.preventDefault();
+    if (tc_chkActivo.is(":checked")) {
+        vActivo = 1;
+    } else {
+        vActivo = 0;
+    }
+    url = '/actualizar/tipo-contrato/';
+    metodo = 'POST';
+    data = {
+        'id': tc_id.val(),
+        'tipo_contrato': tc_txtTipoContrato.val(),
+        'descripcion': tc_txtDescripcion.val(),
+        'activo': vActivo,
+        'csrfmiddlewaretoken': token.val(),
+    };
+    GuardarRegistro(url, metodo, data, "Tipo de contrato");
+});
+
+$('#tipo_contrato #btnCancelar').on('click', function(e) {
+    e.preventDefault();
+    window.location.replace(dns + "/listar/tipo-contrato/");
+});
+
+//#endregion
+
 //#region Código para Tipo Nómina
 
 var tn_id = $('#tipo_nomina input[name="tipoSalario_id"]');

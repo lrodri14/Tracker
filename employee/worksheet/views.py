@@ -8375,16 +8375,20 @@ def aumento_salario_ver_registro(request):
 #endregion
 
 #region Código para Tipo de Nomina
-
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_tiponomina', raise_exception=True)
 def tipo_nomina_listado(request):
     suc = Branch.objects.get(pk=request.session["sucursal"])
     listado = TipoNomina.objects.filter(active=True, empresa_reg=suc.empresa)
     return render(request, 'tipo-nomina-listado.html', {'listado':listado})
 
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_tiponomina', raise_exception=True)
 def tipo_nomina_form(request):
     return render(request, 'tipo-nomina-form.html')
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_tiponomina', raise_exception=True)
 def tipo_nomina_editar(request, id):
     dato = TipoNomina.objects.get(pk=id)
     return render(request, 'tipo-nomina-form.html', {'dato':dato, 'editar':True})
@@ -8559,6 +8563,200 @@ def tipo_nomina_eliminar(request):
 #---------------------END AJAX---------------------------
 
 # endregion 
+
+#region Código para Tipo de Contrato
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_tipocontrato', raise_exception=True)
+def tipo_contrato_listado(request):
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    if request.user.has_perm("worksheet.see_all_tipocontrato"):
+        listado = TipoContrato.objects.filter(empresa_reg=suc.empresa)
+    else:
+        listado = TipoContrato.objects.filter(active=True, empresa_reg=suc.empresa)
+    return render(request, 'tipo-contrato-listado.html', {'listado':listado})
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_tipocontrato', raise_exception=True)
+def tipo_contrato_form(request):
+    return render(request, 'tipo-contrato-form.html')
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_tipocontrato', raise_exception=True)
+def tipo_contrato_editar(request, id):
+    dato = TipoContrato.objects.get(pk=id)
+    return render(request, 'tipo-contrato-form.html', {'editar':True, 'dato':dato})
+
+#---------------------AJAX-------------------------------
+
+def tipo_contrato_guardar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                tipo_contrato = request.POST['tipo_contrato']
+                desc = request.POST['descripcion']
+                activo = int(request.POST['activo'])
+
+                if len(tipo_contrato) == 0:
+                    mensaje = "El campo 'Tipo de Contrato' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(desc) == 0:
+                    mensaje = "El campo 'Descripción' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(tipo_contrato) > 100:
+                    mensaje = "El campo 'Tipo Contrato' tiene como máximo 100 caracteres."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+
+                oMd = TipoContrato(
+                    tipo_contrato=tipo_contrato,
+                    descripcion=desc,
+                    empresa_reg=suc.empresa,
+                    active=activo,
+                    user_reg=request.user,
+                )
+                oMd.save()
+                mensaje = 'Se ha guardado el registro'
+                data = {
+                    'mensaje': mensaje, 'error': False
+                }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def tipo_contrato_actualizar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                tipo_contrato = request.POST['tipo_contrato']
+                desc = request.POST['descripcion']
+                activo = int(request.POST['activo'])
+
+                if len(tipo_contrato) == 0:
+                    mensaje = "El campo 'Tipo Nómina' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(desc) == 0:
+                    mensaje = "El campo 'Descripción' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(tipo_contrato) > 100:
+                    mensaje = "El campo 'Tipo Nómina' tiene como máximo 100 caracteres."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                oMd = TipoContrato.objects.get(pk=id)
+                if oMd:
+                    oMd.tipo_contrato = tipo_contrato
+                    oMd.descripcion = desc
+                    oMd.active = activo
+                    oMd.user_mod = request.user
+                    oMd.date_mod = datetime.datetime.now()
+                    oMd.save()
+                    mensaje = 'Se ha actualizado el registro.'
+                    data = {
+                        'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "No existe el registro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def tipo_contrato_eliminar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oMd = TipoContrato.objects.get(pk=reg_id)
+                    if oMd:
+                        oMd.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+#---------------------END AJAX---------------------------
+
+#endregion
 
 #--------------------------VALIDACIONES------------------------------
 def validarEntero(dato):
