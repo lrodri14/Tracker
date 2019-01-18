@@ -12,7 +12,7 @@
 </style>
 {% endblock estilo %}
 {% block contenido %}
-<div class="row">
+<div id="frmEmpleado" class="row">
     <div class="col-lg-12">
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -914,6 +914,59 @@
                                                                 {% endif %}
                                                                 {% endfor %}
                                                             </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row margin-bottom-5px">
+                                                    <div class="form-group">
+                                                        <div class="col-md-5 text-right">
+                                                            <label class="control-label">Tipo de Contrato :</label>
+                                                        </div>
+                                                        <div class="col-md-7">
+                                                            <select class="form-control input-sm input-sm-1" name="cboTipoContrato" id="cboTipoContrato">
+                                                                <option value="0">Seleccionar...</option>
+                                                                {% for item in tipos_contratos %}
+                                                                {% if editar %} {% if dato.tipo_contrato == item %}
+                                                                <option value="{{item.pk}}" selected>{{item.tipo_contrato}}</option>
+                                                                {% else %}
+                                                                <option value="{{item.pk}}">{{item.tipo_contrato}}</option>
+                                                                {% endif %} {% else %}
+                                                                <option value="{{item.pk}}">{{item.tipo_contrato}}</option>
+                                                                {% endif %}
+                                                                {% endfor %}
+                                                            </select>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row margin-bottom-5px">
+                                                    <div class="form-group">
+                                                        <div class="col-md-5 text-right">
+                                                            <label class="control-label">Tipo de Nómina :</label>
+                                                        </div>
+                                                        <div class="col-md-7">
+                                                            <select class="form-control input-sm input-sm-1" name="cboTipoNomina" id="cboTipoNomina">
+                                                                <option value="0">Seleccionar...</option>
+                                                                {% for item in tipos_nominas %}
+                                                                {% if editar %} {% if dato.tipo_nomina == item %}
+                                                                <option value="{{item.pk}}" selected>{{item.tipo_planilla}}</option>
+                                                                {% else %}
+                                                                <option value="{{item.pk}}">{{item.tipo_planilla}}</option>
+                                                                {% endif %} {% else %}
+                                                                <option value="{{item.pk}}">{{item.tipo_planilla}}</option>
+                                                                {% endif %}
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row margin-bottom-5px">
+                                                    <div class="form-group">
+                                                        <div class="col-md-5 text-right">
+                                                            <label class="control-label">Salario Diario :</label>
+                                                        </div>
+                                                        <div class="col-md-7">
+                                                            <input value="{% if dato.salario_diario %}{{dato.salario_diario}}{% endif %}" readonly type="text" name="txtSalarioDiario" class="form-control input-sm input-sm-1">
                                                         </div>
                                                     </div>
                                                 </div>

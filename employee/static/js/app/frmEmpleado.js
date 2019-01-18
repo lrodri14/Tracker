@@ -63,6 +63,7 @@ $(document).on('ready', function() {
     var fecEmis = $('input[name="fecEmis"]');
     var emisor = $('input[name="emisor"]');
     var salario = $('input[name="salario"]');
+    var salario_diario = $('#frmEmpleado input[name="txtSalarioDiario"]');
     var salarioUnd = $('select[name="salaryUnits"]');
     var costEmp = $('input[name="costEmp"]');
     var costEmpUni = $('select[name="costEmpUni"]');
@@ -165,6 +166,7 @@ $(document).on('ready', function() {
                     'fecEmis':fecEmis.val(),
                     'emisor':emisor.val(),
                     'salario':salario.val(),
+                    'salario_diario': salario_diario.val(),
                     'salarioUnd':salarioUnd.val(),
                     'costEmp':costEmp.val(),
                     'costEmpUni':costEmpUni.val(),
@@ -279,6 +281,7 @@ $(document).on('ready', function() {
                 'fecEmis': fecEmis.val(),
                 'emisor': emisor.val(),
                 'salario': salario.val(),
+                'salario_diario': salario_diario.val(),
                 'salarioUnd': salarioUnd.val(),
                 'costEmp': costEmp.val(),
                 'costEmpUni': costEmpUni.val(),

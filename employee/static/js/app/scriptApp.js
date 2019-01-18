@@ -2234,6 +2234,78 @@ function validargnrDatos() {
 
 //#endregion
 
+//#region Código para Empleado
+var emp_cboTipoSalario = $('#frmEmpleado select[name="salaryUnits"]');
+var emp_txtSalario = $('#frmEmpleado input[name="salario"]');
+var emp_txtSalarioDiario = $('#frmEmpleado input[name="txtSalarioDiario"]');
+var emp_dias_salario = 0;
+
+$(document).ready(function () {
+   if (emp_cboTipoSalario.val() > 0) {
+    $.ajax({
+        type: "GET",
+        url: '/obtener/dias-salario/',
+        data: {
+            'id': emp_cboTipoSalario.val(),
+        }, // serializes the form's elements.
+        success: function (data) {
+            if (data.error == false) {
+                emp_dias_salario = data.dias_salario;
+                if (emp_dias_salario > 0) {
+                    if (emp_txtSalario.val() > 0) {
+                        sal_dia = parseFloat(emp_txtSalario.val() / emp_dias_salario).toFixed(2);
+                        emp_txtSalarioDiario.val(formatNumber.new(sal_dia));
+                    }
+                }
+            } else {
+                mensaje("Seleccionar sucursal", data.mensaje, "error", 3500);
+            }
+        },
+        error: function (data) {
+            mensaje("Seleccionar sucursal", data.statusText, "error", 3500);
+        },
+        typeData: 'json'
+    });
+   }
+});
+
+emp_txtSalario.on('change', function() {
+    if (emp_dias_salario > 0) {
+        if (emp_txtSalario.val() > 0) {
+            sal_dia = parseFloat(emp_txtSalario.val() / emp_dias_salario).toFixed(2);
+            emp_txtSalarioDiario.val(formatNumber.new(sal_dia));
+        }
+    }
+});
+
+emp_cboTipoSalario.on('change', function() {
+    $.ajax({
+        type: "GET",
+        url: '/obtener/dias-salario/',
+        data: {
+            'id': emp_cboTipoSalario.val(),
+        }, // serializes the form's elements.
+        success: function (data) {
+            if (data.error == false) {
+                emp_dias_salario = data.dias_salario;
+                if (emp_dias_salario > 0) {
+                    if (emp_txtSalario.val() > 0) {
+                        sal_dia = parseFloat(emp_txtSalario.val() / emp_dias_salario).toFixed(2);
+                        emp_txtSalarioDiario.val(formatNumber.new(sal_dia));
+                    }
+                }
+            } else {
+                mensaje("Seleccionar sucursal", data.mensaje, "error", 3500);
+            }
+        },
+        error: function (data) {
+            mensaje("Seleccionar sucursal", data.statusText, "error", 3500);
+        },
+        typeData: 'json'
+    });
+})
+//#endregion
+
 //#region Código para Aumento de Sueldo
     var cboEmpleado = $('.aumento-salario select[name="empleado"]');
     var txtFechaIncremento = $('.aumento-salario input[name="fecha_incremento"]');

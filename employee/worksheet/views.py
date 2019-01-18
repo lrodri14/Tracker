@@ -110,6 +110,7 @@ def recibir_sucursal(request):
             return HttpResponseRedirect("/seleccionar/sucursal/")
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_employee', raise_exception=True)
 def empleado_form(request):
     suc = Branch.objects.get(pk=request.session["sucursal"])
     verificaSucursal(request)
@@ -125,12 +126,15 @@ def empleado_form(request):
     citizenships = Country.objects.filter(active=True, empresa_reg=suc.empresa)
     empleados = Employee.objects.filter(active=True, empresa_reg=suc.empresa)
     civil_status = CivilStatus.objects.filter(active=True)
-    salary_units = SalaryUnit.objects.filter(active=True)
-    costs_units = CostUnit.objects.filter(active=True)
+    salary_units = SalaryUnit.objects.filter(active=True, empresa_reg=suc.empresa)
+    costs_units = CostUnit.objects.filter(active=True, empresa_reg=suc.empresa)
     banks = Bank.objects.filter(active=True)
-    return render(request, 'empleado-form.html', {'banks':banks, 'costs_units': costs_units, 'salary_units': salary_units, 'civil_status':civil_status, 'citizenships':citizenships, 'positions':positions, 'departments':departments, 'branches':branches, 'salesPersons':salesPersons, 'states':states, 'countries':countries, 'stats':estados_emp, 'terms':terms, 'sexs':sexos, 'empleados':empleados})
+    tipos_contratos = TipoContrato.objects.filter(active=True, empresa_reg=suc.empresa)
+    tipos_nominas = TipoNomina.objects.filter(active=True, empresa_reg=suc.empresa)
+    return render(request, 'empleado-form.html', {'banks':banks, 'costs_units': costs_units, 'salary_units': salary_units, 'civil_status':civil_status, 'citizenships':citizenships, 'positions':positions, 'departments':departments, 'branches':branches, 'salesPersons':salesPersons, 'states':states, 'countries':countries, 'stats':estados_emp, 'terms':terms, 'sexs':sexos, 'empleados':empleados, 'tipos_contratos':tipos_contratos, 'tipos_nominas':tipos_nominas})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_employee', raise_exception=True)
 def empleado_editar(request, id):
     suc = Branch.objects.get(pk=request.session["sucursal"])
     dato = Employee.objects.get(pk=id)
@@ -145,20 +149,24 @@ def empleado_editar(request, id):
     sexos = Sex.objects.filter(active=True, empresa_reg=suc.empresa)
     citizenships = Country.objects.filter(active=True, empresa_reg=suc.empresa)
     empleados = Employee.objects.filter(active=True, empresa_reg=suc.empresa)
-    civil_status = CivilStatus.objects.filter(active=True)
-    salary_units = SalaryUnit.objects.filter(active=True)
-    costs_units = CostUnit.objects.filter(active=True)
-    banks = Bank.objects.filter(active=True)
-    return render(request, 'empleado-form.html', {'editar':True, 'dato':dato, 'banks':banks, 'costs_units': costs_units, 'salary_units': salary_units, 'civil_status':civil_status, 'citizenships':citizenships, 'positions':positions, 'departments':departments, 'branches':branches, 'salesPersons':salesPersons, 'states':states, 'countries':countries, 'stats':estados_emp, 'terms':terms, 'sexs':sexos, 'empleados':empleados})
+    civil_status = CivilStatus.objects.filter(active=True, empresa_reg=suc.empresa)
+    salary_units = SalaryUnit.objects.filter(active=True, empresa_reg=suc.empresa)
+    costs_units = CostUnit.objects.filter(active=True, empresa_reg=suc.empresa)
+    banks = Bank.objects.filter(active=True, empresa_reg=suc.empresa)
+    tipos_contratos = TipoContrato.objects.filter(active=True, empresa_reg=suc.empresa)
+    tipos_nominas = TipoNomina.objects.filter(active=True, empresa_reg=suc.empresa)
+    return render(request, 'empleado-form.html', {'editar':True, 'dato':dato, 'banks':banks, 'costs_units': costs_units, 'salary_units': salary_units, 'civil_status':civil_status, 'citizenships':citizenships, 'positions':positions, 'departments':departments, 'branches':branches, 'salesPersons':salesPersons, 'states':states, 'countries':countries, 'stats':estados_emp, 'terms':terms, 'sexs':sexos, 'empleados':empleados, 'tipos_contratos':tipos_contratos, 'tipos_nominas':tipos_nominas})
     #return render(request, 'empleado-form.html', {'editar':True, 'dato':dato, 'positions':positions, 'departments':departments, 'branches':branches, 'salesPersons':salesPersons})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_employee', raise_exception=True)
 def empleado_listado(request):
     suc = Branch.objects.get(pk=request.session["sucursal"])
     empleados = Employee.objects.filter(empresa_reg=suc.empresa)
     return render(request, 'empleado-listado.html', {'empleados':empleados})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_reg_employee', raise_exception=True)
 def empleado_perfil(request, id):
     dato = Employee.objects.get(pk=id)
     tot_reg = ImagenEmpleado.objects.filter(empleado__id=id).count()
@@ -826,6 +834,7 @@ def guardar_empleado(request):
                 fecEmis = request.POST['fecEmis']
                 emisor = request.POST['emisor']
                 salary = request.POST['salario']
+                salario_diario = request.POST['salario_diario']
                 salaryUnits = request.POST['salarioUnd']
                 empCost = request.POST['costEmp']
                 empCostUnit = request.POST['costEmpUni']
@@ -1137,6 +1146,9 @@ def guardar_empleado(request):
                 if len(salary) == 0:
                     salary = None
 
+                if len(salario_diario) == 0:
+                    salario_diario = None
+
                 suc = Branch.objects.get(pk=request.session["sucursal"])
                 
                 oEmpleado = Employee(
@@ -1193,6 +1205,7 @@ def guardar_empleado(request):
                     passIssue = fecEmis,
                     passIssuer = emisor,
                     salary = salary,
+                    salario_diario = salario_diario,
                     salaryUnits = oSalaryUnits,
                     empCost = empCost,
                     empCostUnit = oEmpCostUnit,
@@ -1293,6 +1306,7 @@ def actualizar_empleado(request):
                 fecEmis = request.POST['fecEmis']
                 emisor = request.POST['emisor']
                 salary = request.POST['salario']
+                salario_diario = request.POST['salario_diario']
                 salaryUnits = request.POST['salarioUnd']
                 empCost = request.POST['costEmp']
                 empCostUnit = request.POST['costEmpUni']
@@ -1300,8 +1314,6 @@ def actualizar_empleado(request):
                 numCuenta = request.POST['numCuenta']
                 branchBank = request.POST['bankSucursal']
                 remark = request.POST['comentarios']
-
-                print "GovID: " + govID
 
                 if len(pNom) == 0:
                     mensaje = "El campo 'Primer Nombre' es obligatorio."
@@ -1601,6 +1613,9 @@ def actualizar_empleado(request):
                 if len(salary) == 0:
                     salary = None
 
+                if len(salario_diario) == 0:
+                    salario_diario = None
+
                 oEmp = Employee.objects.get(pk=id)
                 oEmp.firstName = pNom
                 oEmp.middleName = sNom
@@ -1653,6 +1668,7 @@ def actualizar_empleado(request):
                 oEmp.passIssue = fecEmis
                 oEmp.passIssuer = emisor
                 oEmp.salary = salary
+                oEmp.salario_diario = salario_diario
                 oEmp.salaryUnits = oSalaryUnits
                 oEmp.empCost = empCost
                 oEmp.empCostUnit = oEmpCostUnit
@@ -1696,7 +1712,7 @@ def eliminar_empleado(request):
                 if int(reg_id) > 0:
                     oMd = Employee.objects.get(pk=reg_id)
                     oMd.delete()
-                    mensaje = 'Se ha eliminado el registro del Grupo Corporativo'
+                    mensaje = 'Se ha eliminado el registro del empleado'
                     data = {
                         'mensaje': mensaje, 'error': False
                     }
@@ -8371,6 +8387,33 @@ def aumento_salario_ver_registro(request):
 
 #----------------- END AJAX --------------------
 
+
+#endregion
+
+#region Código para Empleado
+
+#---------------------------AJAX-----------------------------
+
+def obtener_dias_salario(request):
+    try:
+        if request.is_ajax():
+            Id = request.GET.get("id")
+            tot_reg = SalaryUnit.objects.filter(pk=Id)
+            if tot_reg.count() > 0:
+                tipo_salario = SalaryUnit.objects.get(pk=Id)
+                return JsonResponse({'error': False, 'mensaje': 'Respuesta exitosa', 'dias_salario':tipo_salario.dias_salario})
+            else:
+                return JsonResponse({'error': True, 'mensaje': 'El tipo de salario no existe.'})
+        else:
+            return JsonResponse({'error': True, 'mensaje': 'El método no es asíncrono'})
+    except Exception as ex:
+        data = {
+            'error': True,
+            'mensaje': ex.message,
+        }
+        return JsonResponse(data) 
+
+#--------------------------END AJAX -------------------------
 
 #endregion
 

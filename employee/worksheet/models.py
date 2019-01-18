@@ -330,6 +330,7 @@ class Employee(models.Model):
     passIssuer = models.CharField(max_length=150, blank=True, null=True)
 
     salary = models.CharField(max_length=20, blank=True, null=True)
+    salario_diario = models.CharField(max_length=20, blank=True, null=True)
     salaryUnits = models.ForeignKey(SalaryUnit, blank=True, null=True)
     empCost = models.CharField(max_length=20, blank=True, null=True)
     empCostUnit = models.ForeignKey(CostUnit, blank=True, null=True)

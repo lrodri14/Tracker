@@ -194,7 +194,9 @@
                             <li><a href="{% url 'vendedor_listar' %}" id="Vend" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Vendedores</span></a></li>
                             <li><a href="{% url 'feriado_listar' %}" id="Fer" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Feriados</span></a></li>
                             <li><a href="{% url 'articulos_asignados_listar' %}" id="actAsig" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Activo Asignados</span></a></li>
+                            {% if perms.worksheet.see_employee %}
                             <li><a href="{% url 'empleados-listado' %}" id="Emp" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Empleado</span></a></li>
+                            {% endif %}
                             <li><a href="{% url 'tipo_salario_listar' %}" id="aTiposSalarios" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Tipos de Salario</span></a></li>
                             {% if perms.worksheet.see_tiponomina %}
                             <li><a href="{% url 'tipo_nomina_listar' %}" id="aTipoNomina" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Tipo de Nómina</span></a></li>

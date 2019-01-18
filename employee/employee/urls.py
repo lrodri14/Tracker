@@ -266,9 +266,10 @@ urlpatterns = [
     url(r'^eliminar/tipo-salario/$', views.eliminar_tipo_salario, name='eliminar_tipo_salario'),
     url(r'^eliminar/vendedor/$', views.eliminar_vendedor, name='eliminar_vendedor'),
 
-    url(r'^obtener/sucursales/$', views.lista_sucursal, name="lista_sucursal"),
-    url(r'^obtener/salario-ultimo/$', views.obtener_ultimo_salario, name="obtener_ultimo_salario"),
     url(r'^obtener/estados/$', views.lista_estados, name="lista_estados"),
+    url(r'^obtener/dias-salario/$', views.obtener_dias_salario, name="obtener_dias_salario"),
+    url(r'^obtener/salario-ultimo/$', views.obtener_ultimo_salario, name="obtener_ultimo_salario"),
+    url(r'^obtener/sucursales/$', views.lista_sucursal, name="lista_sucursal"),
 
     url(r'^enviar/aumento-salario/$', views.aumento_salario_guardar, name="aumento_salario_guardar"),
     url(r'^enviar/sucursal/$', views.enviar_sucursal, name="enviar_sucursal"),
