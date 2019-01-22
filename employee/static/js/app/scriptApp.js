@@ -2315,7 +2315,7 @@ emp_cboTipoSalario.on('change', function() {
     var txtNuevoSalario = $('.aumento-salario input[name="nuevo_salario"]');
     var txtComentarios = $('.aumento-salario textarea[name="comentarios"]');
 
-    $('#btnVerRegistroAuSal').on('click', function(e) {
+    $('#aumento-salario-listado .btnVerRegistroAumentoSalario').on('click', function(e) {
         e.preventDefault();
         url = '/ver-registro/aumento-salario/';
         metodo = 'GET';
@@ -2550,6 +2550,7 @@ $('#tipo_nomina #btnTipoNominaCancelar').on('click', function(e) {
                     }
                 } else {
                     mensaje(encabezado, data.mensaje, "error", tiempo);
+                    console.log(data.mensaje);
                 }
             },
             error: function (data) {

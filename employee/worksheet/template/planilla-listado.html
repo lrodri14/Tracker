@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block titulo %}
-Datos de Aumento de Salario
+Listado de Planillas
 {% endblock titulo %}
 {% load static %}
 {% block contenido %}
@@ -9,43 +9,13 @@ Datos de Aumento de Salario
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h2 class="text-bold"><i class="fa fa-list"></i>
-                    Datos de Aumento de Salario</h2>
+                    Listado de Planillas</h2>
             </div>
             <div class="panel-wrapper">
                 <div class="panel-body">
                     <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <form action="{% url 'aumento_salario_listado' %}" method="GET">
-                                    <div class="col-md-3">
-                                        <label for="cboAuEmp" class="control-label">Empleado :</label>
-                                    </div>
-                                    <div class="col-md-7">
-                                        <select class="form-control select2 input-sm" name="empleado" id="cboAuEmp">
-                                            <option value="0">Seleccionar...</option>
-                                            {% for item in empleados %}
-                                                {% if busqueda %}
-                                                
-                                                    {% if item.pk == busqueda %}
-                                                    <option value="{{item.pk}}" selected>{{item.firstName}}{% if item.middleName %} {{item.middleName}} {% endif %} {{item.lastName}}</option>
-                                                    {% else %}
-                                                    <option value="{{item.pk}}">{{item.firstName}} {% if item.middleName %}{{item.middleName}}{% endif %} {{item.lastName}}</option>
-                                                    {% endif %}
-                                                {% else %}
-                                                <option value="{{item.pk}}">{{item.firstName}} {% if item.middleName %}{{item.middleName}}{% endif %} {{item.lastName}}</option>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <input type="submit" class="btn btn-default" value="Buscar">
-                                        <!--button type="submit" class="btn btn-default">Buscar</button-->
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
                         {% if perms.worksheet.add_incrementossalariales %}
-                        <div class="col-md-6 text-right">
+                        <div class="col-md-12 text-right">
                             <a href="{% url 'aumento_salario_form' %}" class="btn btn-primary">Agregar</a>
                         </div>
                         {% endif %}
@@ -56,7 +26,7 @@ Datos de Aumento de Salario
                             {% csrf_token %}
                             <thead>
                                 <tr>
-                                    <th>ID</th>
+                                    <th>Correlativo</th>
                                     <th>Nombre completo</th>
                                     <th>Fecha</th>
                                     <th>Salario</th>

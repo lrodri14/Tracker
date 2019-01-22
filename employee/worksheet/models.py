@@ -741,4 +741,34 @@ def post_save_incrementossalariales(sender, instance, **kwargs):
                 print "Actualizo empleado"
         d_empleado = Employee.objects.get(pk=instance.empleado.pk)
         d_empleado.salary = str(instance.nuevo_salario)
+        if d_empleado.salaryUnits:
+            tot_reg = SalaryUnit.objects.filter(pk=d_empleado.salaryUnits.pk).count()
+            if tot_reg > 0:
+                o_salary_units = SalaryUnit.objects.get(pk=d_empleado.salaryUnits.pk)
+                if o_salary_units.dias_salario > 0:
+                    d_empleado.salario_diario = float(instance.nuevo_salario) / float(o_salary_units.dias_salario)
         d_empleado.save()
+
+class Planilla(models.Model):
+    correlativo = models.CharField(("Correlativo"), max_length=50)
+    descripcion = models.CharField(max_length=100)
+    tipo_planilla = models.ForeignKey("worksheet.TipoNomina", on_delete=models.PROTECT)
+    frecuencia_pago = models.ForeignKey("worksheet.SalaryUnit", on_delete=models.PROTECT)
+    fecha_inicio = models.DateField(("Fecha Inicio"), auto_now=False, auto_now_add=False)
+    fecha_fin = models.DateField(("Fecha Fin"), auto_now=False, auto_now_add=False)
+    fecha_pago = models.DateField(("Fecha Pago"), auto_now=False, auto_now_add=False)
+    cerrada = models.BooleanField(("Cerrada"))
+    empresa_reg = models.ForeignKey(Empresa, on_delete=models.PROTECT)
+    sucursal_reg = models.ForeignKey(Branch, on_delete=models.PROTECT)
+    user_reg = models.ForeignKey(User, on_delete=models.PROTECT)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT, related_name='plan_usermod', related_query_name='plan_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.NullBooleanField()
+
+    class Meta:
+        verbose_name = ("planilla")
+        verbose_name_plural = ("planillas")
+
+    def __str__(self):
+        return self.descripcion + " - " + str(self.fecha_pago)

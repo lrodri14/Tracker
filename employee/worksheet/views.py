@@ -8311,6 +8311,12 @@ def aumento_salario_eliminar(request):
                             if regs.count() > 0:
                                 empleado = Employee.objects.get(pk=empleado_id)
                                 empleado.salary = incremento.nuevo_salario
+                                if empleado.salaryUnits:
+                                    tot_reg = SalaryUnit.objects.filter(pk=empleado.salaryUnits.pk).count()
+                                    if tot_reg > 0:
+                                        o_salary_units = SalaryUnit.objects.get(pk=empleado.salaryUnits.pk)
+                                        if o_salary_units.dias_salario > 0:
+                                            empleado.salario_diario = float(incremento.nuevo_salario) / float(o_salary_units.dias_salario)
                                 empleado.save()
                         mensaje = 'Se ha eliminado el registro.'
                         data = {
