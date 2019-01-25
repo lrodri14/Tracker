@@ -137,10 +137,12 @@ urlpatterns = [
     url(r'^editar/empresa-usuario/(?P<id>\w+)/$', views.usuario_empresa_editar, name="usuario_empresa_editar"),
 
     url(r'^formulario/aumento-salario/$', views.aumento_salario_form, name="aumento_salario_form"),
+    url(r'^formulario/planilla/$', views.planilla_form, name="planilla_form"),
     url(r'^formulario/tipo-contrato/$', views.tipo_contrato_form, name="tipo_contrato_form"),
     url(r'^formulario/tipo-nomina/$', views.tipo_nomina_form, name="tipo_nomina_form"),
 
     url(r'^listar/aumento-salario/$', views.aumento_salario_listado, name="aumento_salario_listado"),
+    url(r'^listar/planilla/$', views.planilla_listado, name="planilla_listado"),
     url(r'^listar/tipo-contrato/$', views.tipo_contrato_listado, name="tipo_contrato_listado"),
     url(r'^listar/tipo-nomina/$', views.tipo_nomina_listado, name="tipo_nomina_listar"),
 

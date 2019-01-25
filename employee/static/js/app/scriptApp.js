@@ -2424,6 +2424,41 @@ emp_cboTipoSalario.on('change', function() {
 
 //#endregion
 
+//#region Código para Planilla
+
+    var btnPlGuardar = $('#frmPlanilla #btnGuardar');
+    var btnPlActualizar = $('#frmPlanilla #btnActualizar');
+    var btnPlCancelar = $('#frmPlanilla #btnCancelar');
+    var cboTipoPlanilla = $('#frmPlanilla select[name="tipo_planilla"]');
+    var cboTipoPago = $('#frmPlanilla select[name="tipo_pago"]');
+    var txtFechaPago = $('#frmPlanilla select[name="fecha_pago"]');
+    var txtFechaInicio = $('#frmPlanilla select[name="fecha_inicio"]');
+    
+
+    btnPlGuardar.on('click', function(e) {
+        e.preventDefault();
+        url = '/enviar/aumento-salario/';
+        metodo = 'POST';
+        data = {
+            'empleado_fk': cboEmpleado.val(),
+            'fecha_incremento': txtFechaIncremento.val(),
+            'motivo_aumento': motivo_aumento.val(),
+            'salario_anterior': (txtSalarioAnterior.val().replace(",", "")),
+            'incremento': (txtIncremento.val().replace(",", "")),
+            'nuevo_salario': (txtNuevoSalario.val().replace(",", "")),
+            'comentarios': txtComentarios.val(),
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Aumento de salario");
+    });
+
+    btnPlCancelar.on('click', function(e) {
+        e.preventDefault();
+        window.location.replace(dns + "/listar/planilla/");
+    });
+
+//#endregion
+
 //#region Código para Tipo de Contrato
 
 var tc_id = $('#tipo_contrato input[name="tipo_contrato_id"]');

@@ -8423,6 +8423,27 @@ def obtener_dias_salario(request):
 
 #endregion
 
+#region Código para Planilla
+
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_planilla', raise_exception=True)
+def planilla_listado(request):
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    
+    datos = Planilla.objects.filter(empresa_reg=suc.empresa, active=True)
+    return render(request, 'planilla-listado.html', {'datos':datos})
+
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_planilla', raise_exception=True)
+def planilla_form(request):
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    tipo_pago = SalaryUnit.objects.filter(empresa_reg=suc.empresa, active=True)
+    tipo_planilla = TipoNomina.objects.filter(empresa_reg=suc.empresa, active=True)
+    return render(request, 'planilla-form.html',{'tipo_planilla':tipo_planilla, 'tipos_pago':tipo_pago})
+#endregion
+
 #region Código para Tipo de Nomina
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.see_tiponomina', raise_exception=True)

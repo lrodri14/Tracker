@@ -750,7 +750,7 @@ def post_save_incrementossalariales(sender, instance, **kwargs):
         d_empleado.save()
 
 class Planilla(models.Model):
-    correlativo = models.CharField(("Correlativo"), max_length=50)
+    correlativo = models.CharField(("Correlativo"), max_length=50, blank=True, null=True)
     descripcion = models.CharField(max_length=100)
     tipo_planilla = models.ForeignKey("worksheet.TipoNomina", on_delete=models.PROTECT)
     frecuencia_pago = models.ForeignKey("worksheet.SalaryUnit", on_delete=models.PROTECT)

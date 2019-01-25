@@ -3,6 +3,7 @@
 
 <head>
     {% load static %}
+    {% load auth_extras %}
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -197,7 +198,9 @@
                             {% if perms.worksheet.see_employee %}
                             <li><a href="{% url 'empleados-listado' %}" id="Emp" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Empleado</span></a></li>
                             {% endif %}
+                            {% if perms.worksheet.see_tiposalario %}
                             <li><a href="{% url 'tipo_salario_listar' %}" id="aTiposSalarios" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Tipos de Salario</span></a></li>
+                            {% endif %}
                             {% if perms.worksheet.see_tiponomina %}
                             <li><a href="{% url 'tipo_nomina_listar' %}" id="aTipoNomina" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Tipo de Nómina</span></a></li>
                             {% endif %}
@@ -208,12 +211,17 @@
                     </li>
                     <li><a href="javascript:void(0)" id="aAccionesPer" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Acciones de Personal <span class="fa arrow"></span></span></a>
                         <ul class="nav nav-second-level">
-                            <li><a href="{% url 'evaluacion_listar' %}" id="aEv" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Evaluación</span></a></li>
                             <li><a href="{% url 'ausentismo_listado' %}" id="aAu" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Ausentismo</span></a></li>
                             <li><a href="{% url 'educacion_listar' %}" id="aEdu" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Educación</span></a></li>
+                            <li><a href="{% url 'evaluacion_listar' %}" id="aEv" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Evaluación</span></a></li>
+                            {% if perms.worksheet.see_empleoanterior %}
                             <li><a href="{% url 'empleo_anterior_listar' %}" id="empAnt" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Empleos Anteriores</span></a></li>
+                            {% endif %}
                             {% if perms.worksheet.see_incrementossalariales %}
                             <li><a href="{% url 'aumento_salario_listado' %}" id="aAumSal" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Aumento de Salario</span></a></li>
+                            {% endif %}
+                            {% if perms.worksheet.see_planilla %}
+                            <li><a href="{% url 'planilla_listado' %}" id="aPlanilla" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Planilla</span></a></li>
                             {% endif %}
                         </ul>
                     </li>

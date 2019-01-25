@@ -4,7 +4,7 @@ Listado de Planillas
 {% endblock titulo %}
 {% load static %}
 {% block contenido %}
-<div id="aumento-salario-listado" class="row">
+<div id="planilla-listado" class="row">
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -14,9 +14,9 @@ Listado de Planillas
             <div class="panel-wrapper">
                 <div class="panel-body">
                     <div class="row">
-                        {% if perms.worksheet.add_incrementossalariales %}
+                        {% if perms.worksheet.add_planilla %}
                         <div class="col-md-12 text-right">
-                            <a href="{% url 'aumento_salario_form' %}" class="btn btn-primary">Agregar</a>
+                            <a href="{% url 'planilla_form' %}" class="btn btn-primary">Agregar</a>
                         </div>
                         {% endif %}
                     </div>
@@ -27,22 +27,22 @@ Listado de Planillas
                             <thead>
                                 <tr>
                                     <th>Correlativo</th>
-                                    <th>Nombre completo</th>
-                                    <th>Fecha</th>
-                                    <th>Salario</th>
+                                    <th>Descripción</th>
+                                    <th>Fecha de Pago</th>
+                                    <th>Cerrada</th>
                                     <th class="text-center">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for item in datos %}
                                 <tr>
-                                    <td>{{item.empleado.govID}}</td>
-                                    <td>{{item.empleado.firstName}} {% if item.empleado.middleName %}{{item.empleado.middleName}}{% endif %} {{item.empleado.lastName}}</td>
+                                    <td>{{item.correlativo}}</td>
+                                    <td>{{item.descripcion}}</td>
                                     <td>
-                                        {{item.fecha_incremento}}
+                                        {{item.fecha_pago|date:"d/m/Y"}}
                                     </td>
                                     <td>
-                                        {% if item.salario_actual %}SI{% else %}NO{% endif %}
+                                        {% if item.cerrada %}SI{% else %}NO{% endif %}
                                     </td>
                                     <td class="text-nowrap acciones text-center">
                                         {% if perms.worksheet.delete_incrementossalariales %}
@@ -78,7 +78,7 @@ Listado de Planillas
     //#region Efectos en SideBar
     $('#side-menu a').removeClass('active');
     $('#aAccionesPer').addClass('active');
-    $('#aAumSal').addClass('active');
+    $('#aPlanilla').addClass('active');
     //#endregion
 
     //#region Eventos Controles
@@ -91,8 +91,8 @@ Listado de Planillas
 
     //#region Funciones
     function Eliminar(id) {
-        var Encabezado = 'Aumento de sueldo';
-        var url = "/eliminar/aumento-salario/"; // the script where you handle the form input.
+        var Encabezado = 'Planilla';
+        var url = "/eliminar/planilla/"; // the script where you handle the form input.
         $.ajax({
             type: "POST",
             url: url,
