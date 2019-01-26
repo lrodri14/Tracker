@@ -8430,8 +8430,10 @@ def obtener_dias_salario(request):
 @permission_required('worksheet.see_planilla', raise_exception=True)
 def planilla_listado(request):
     suc = Branch.objects.get(pk=request.session["sucursal"])
-    
-    datos = Planilla.objects.filter(empresa_reg=suc.empresa, active=True)
+    if request.user.has_perm("worksheet.see_all_planilla"):
+        datos = Planilla.objects.filter(empresa_reg=suc.empresa, active=True)
+    else:
+        datos = Planilla.objects.filter(sucursal_reg=suc, active=True)
     return render(request, 'planilla-listado.html', {'datos':datos})
 
 
@@ -8442,6 +8444,207 @@ def planilla_form(request):
     tipo_pago = SalaryUnit.objects.filter(empresa_reg=suc.empresa, active=True)
     tipo_planilla = TipoNomina.objects.filter(empresa_reg=suc.empresa, active=True)
     return render(request, 'planilla-form.html',{'tipo_planilla':tipo_planilla, 'tipos_pago':tipo_pago})
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_planilla', raise_exception=True)
+def planilla_editar(request, id):
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    tipo_pago = SalaryUnit.objects.filter(empresa_reg=suc.empresa, active=True)
+    tipo_planilla = TipoNomina.objects.filter(empresa_reg=suc.empresa, active=True)
+    o_planilla = Planilla.objects.get(pk=id)
+    return render(request, 'planilla-form.html',{'editar':True,'tipo_planilla':tipo_planilla, 'tipos_pago':tipo_pago, 'dato':o_planilla})
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.play_planilla', raise_exception=True)
+def planilla_generar(request):
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    if request.user.has_perm("worksheet.see_all_planilla"):
+        planillas = Planilla.objects.filter(empresa_reg=suc.empresa, active=True, cerrada=False)
+    else:
+        planillas = Planilla.objects.filter(sucursal_reg=suc, active=True, cerrada=False)
+    return render(request, 'planilla-generar.html', {'planillas':planillas})
+
+#--------------------------------AJAX-----------------------------------
+
+
+def planilla_guardar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                tipo_planilla_id = request.POST['tipo_planilla']
+                tipo_pago_id = request.POST['tipo_pago']
+                fecha_pago = request.POST['fecha_pago']
+                fecha_inicio = request.POST['fecha_inicio']
+                fecha_fin = request.POST['fecha_fin']
+                descripcion = request.POST['descripcion']
+                
+                if int(tipo_planilla_id) == 0:
+                    return JsonResponse({'error': True, 'mensaje': 'El campo "Tipo de Planilla" es obligatorio.'})
+                else:
+                    tipos_planilla = TipoNomina.objects.filter(pk=tipo_planilla_id)
+                    if tipos_planilla.count() > 0:
+                        o_tipo_planilla = TipoNomina.objects.get(pk=tipo_planilla_id)
+                    else:
+                        return JsonResponse({'error': True, 'mensaje': 'El Tipo de Planilla no existe.'})
+
+                if int(tipo_pago_id) == 0:
+                    return JsonResponse({'error': True, 'mensaje': 'El campo "Tipo de Pago" es obligatorio.'})
+                else:
+                    tipos_pago = SalaryUnit.objects.filter(pk=tipo_pago_id)
+                    if tipos_pago.count() > 0:
+                        o_tipo_pago = SalaryUnit.objects.get(pk=tipo_pago_id)
+                    else:
+                        return JsonResponse({'error': True, 'mensaje': 'El Tipo de Pago no existe.'})
+
+                if len(fecha_pago) == 0:
+                    return JsonResponse({'error': True, 'mensaje': 'El campo "Fecha de Pago" es obligatorio.'})
+                
+                if len(fecha_inicio) == 0:
+                    return JsonResponse({'error': True, 'mensaje': 'El campo "Fecha de Inicio" es obligatorio.'})
+
+                if len(fecha_fin) == 0:
+                    return JsonResponse({'error': True, 'mensaje': 'El campo "Fecha de Fin" es obligatorio.'})
+
+                if len(descripcion) == 0:
+                    return JsonResponse({'error': True, 'mensaje': 'El campo "Descripcion" es obligatorio.'})
+
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+                oPlanilla = Planilla(
+                    correlativo = 1,
+                    tipo_planilla = o_tipo_planilla,
+                    descripcion = descripcion,
+                    frecuencia_pago = o_tipo_pago,
+                    fecha_inicio = fecha_inicio,
+                    fecha_fin = fecha_fin,
+                    fecha_pago = fecha_pago,
+                    cerrada = False,
+                    empresa_reg = suc.empresa,
+                    sucursal_reg = suc,
+                    active=True,
+                    user_reg = request.user
+                )
+                
+                oPlanilla.save()
+                return JsonResponse({'error': False, 'mensaje': 'Se ha guardado el registro de Planilla.'})
+            else:
+                return JsonResponse({'error': True, 'mensaje': 'El método no está permitido.'})
+        else:
+            pass
+        return JsonResponse({'error': False, 'mensaje': 'Respuesta exitosa'})
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': ex.message,
+        }
+        return JsonResponse(data)
+
+def planilla_actualizar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = request.POST["id"]
+                tipo_planilla_id = request.POST['tipo_planilla']
+                tipo_pago_id = request.POST['tipo_pago']
+                fecha_pago = request.POST['fecha_pago']
+                fecha_inicio = request.POST['fecha_inicio']
+                fecha_fin = request.POST['fecha_fin']
+                descripcion = request.POST['descripcion']
+
+                if int(tipo_planilla_id) == 0:
+                    return JsonResponse({'error': True, 'mensaje': 'El campo "Tipo de Planilla" es obligatorio.'})
+                else:
+                    tipos_planilla = TipoNomina.objects.filter(
+                        pk=tipo_planilla_id)
+                    if tipos_planilla.count() > 0:
+                        o_tipo_planilla = TipoNomina.objects.get(
+                            pk=tipo_planilla_id)
+                    else:
+                        return JsonResponse({'error': True, 'mensaje': 'El Tipo de Planilla no existe.'})
+
+                if int(tipo_pago_id) == 0:
+                    return JsonResponse({'error': True, 'mensaje': 'El campo "Tipo de Pago" es obligatorio.'})
+                else:
+                    tipos_pago = SalaryUnit.objects.filter(pk=tipo_pago_id)
+                    if tipos_pago.count() > 0:
+                        o_tipo_pago = SalaryUnit.objects.get(pk=tipo_pago_id)
+                    else:
+                        return JsonResponse({'error': True, 'mensaje': 'El Tipo de Pago no existe.'})
+
+                if len(fecha_pago) == 0:
+                    return JsonResponse({'error': True, 'mensaje': 'El campo "Fecha de Pago" es obligatorio.'})
+
+                if len(fecha_inicio) == 0:
+                    return JsonResponse({'error': True, 'mensaje': 'El campo "Fecha de Inicio" es obligatorio.'})
+
+                if len(fecha_fin) == 0:
+                    return JsonResponse({'error': True, 'mensaje': 'El campo "Fecha de Fin" es obligatorio.'})
+
+                if len(descripcion) == 0:
+                    return JsonResponse({'error': True, 'mensaje': 'El campo "Descripcion" es obligatorio.'})
+
+                tot_reg = Planilla.objects.filter(pk=id).count()
+                if tot_reg > 0:
+                    o_Mdl = Planilla.objects.get(pk=id)
+                    if o_Mdl.cerrada:
+                        return JsonResponse({'error': True, 'mensaje': 'La planilla ya está cerrada.'})
+                    o_Mdl.tipo_planilla = o_tipo_planilla
+                    o_Mdl.frecuencia_pago = o_tipo_pago
+                    o_Mdl.fecha_pago = fecha_pago
+                    o_Mdl.fecha_inicio = fecha_inicio
+                    o_Mdl.fecha_fin = fecha_fin
+                    o_Mdl.descripcion = descripcion
+                    o_Mdl.save()
+                    return JsonResponse({'error': False, 'mensaje': 'Se ha guardado el registro.'})
+                else:
+                    return JsonResponse({'error': True, 'mensaje': 'El registro no existe.'})
+            else:
+                return JsonResponse({'error': True, 'mensaje': 'El método no está permitido.'})
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+            return JsonResponse(data)
+    except Exception as ex:
+        data = {
+            'error': True,
+            'mensaje': ex.message,
+        }
+        return JsonResponse(data)
+
+def planilla_ver_registro(request):
+    error = False
+    mensaje = ""
+    titulo = ""
+    dato = None
+    id = 0
+    if request.is_ajax():
+        id = request.GET.get('id')
+        if id == 0:
+            error = True
+            mensaje = "El registro no existe."
+        else:
+            tot_reg = Planilla.objects.filter(pk=id).count()
+            if tot_reg > 0:
+                dato = Planilla.objects.get(pk=id)
+                error = False
+            else:
+                error = True
+                mensaje = "No existe el registro."
+
+    else:
+        error = True
+        mensaje = "El método no está permitido."
+
+    if error:
+        titulo = "Error - Mensaje"
+    else:
+        titulo = "Ver registro"
+    return render(request, 'ajax/planilla-modal.html', {'error':error, 'mensaje': mensaje, 'titulo':titulo, 'dato':dato})
+
+#------------------------------END AJAX---------------------------------
+
 #endregion
 
 #region Código para Tipo de Nomina

@@ -2429,33 +2429,74 @@ emp_cboTipoSalario.on('change', function() {
     var btnPlGuardar = $('#frmPlanilla #btnGuardar');
     var btnPlActualizar = $('#frmPlanilla #btnActualizar');
     var btnPlCancelar = $('#frmPlanilla #btnCancelar');
-    var cboTipoPlanilla = $('#frmPlanilla select[name="tipo_planilla"]');
-    var cboTipoPago = $('#frmPlanilla select[name="tipo_pago"]');
-    var txtFechaPago = $('#frmPlanilla select[name="fecha_pago"]');
-    var txtFechaInicio = $('#frmPlanilla select[name="fecha_inicio"]');
-    
+    var btnPlVerRegistro = $('#planilla-listado #btnVerRegistro');
+    var cboPlTipoPlanilla = $('#frmPlanilla select[name="tipo_planilla"]');
+    var cboPlTipoPago = $('#frmPlanilla select[name="tipo_pago"]');
+    var txtPlFechaPago = $('#frmPlanilla input[name="fecha_pago"]');
+    var txtPlFechaInicio = $('#frmPlanilla input[name="fecha_inicio"]');
+    var txtPlFechaFin = $('#frmPlanilla input[name="fecha_fin"]');
+    var txtPlFechaPago = $('#frmPlanilla input[name="fecha_pago"]');
+    var txtPlDescripcion = $('#frmPlanilla textarea[name="descripcion"]');
+
 
     btnPlGuardar.on('click', function(e) {
         e.preventDefault();
-        url = '/enviar/aumento-salario/';
+        url = '/guardar/planilla/';
         metodo = 'POST';
         data = {
-            'empleado_fk': cboEmpleado.val(),
-            'fecha_incremento': txtFechaIncremento.val(),
-            'motivo_aumento': motivo_aumento.val(),
-            'salario_anterior': (txtSalarioAnterior.val().replace(",", "")),
-            'incremento': (txtIncremento.val().replace(",", "")),
-            'nuevo_salario': (txtNuevoSalario.val().replace(",", "")),
-            'comentarios': txtComentarios.val(),
+            'tipo_planilla': cboPlTipoPlanilla.val(),
+            'tipo_pago': cboPlTipoPago.val(),
+            'fecha_pago': txtPlFechaPago.val(),
+            'fecha_inicio': txtPlFechaInicio.val(),
+            'fecha_fin': txtPlFechaFin.val(),
+            'descripcion': txtPlDescripcion.val(),
             'csrfmiddlewaretoken': token.val(),
         };
-        GuardarRegistro(url, metodo, data, "Aumento de salario");
+        GuardarRegistro(url, metodo, data, "Planilla");
+    });
+
+    btnPlActualizar.on('click', function (e) {
+        e.preventDefault();
+        url = '/actualizar/planilla/';
+        metodo = 'POST';
+        data = {
+            'id': id.val(),
+            'tipo_planilla': cboPlTipoPlanilla.val(),
+            'tipo_pago': cboPlTipoPago.val(),
+            'fecha_pago': txtPlFechaPago.val(),
+            'fecha_inicio': txtPlFechaInicio.val(),
+            'fecha_fin': txtPlFechaFin.val(),
+            'descripcion': txtPlDescripcion.val(),
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Planilla", true, "/listar/planilla/");
     });
 
     btnPlCancelar.on('click', function(e) {
         e.preventDefault();
         window.location.replace(dns + "/listar/planilla/");
     });
+
+    btnPlVerRegistro.on('click', function(e) {
+        e.preventDefault();
+        url = '/ver-registro/planilla/';
+        metodo = 'GET';
+        data = { 'id': $(this).attr('data') };
+        $.ajax({
+            type: metodo,
+            url: url,
+            data: data,
+            success: function (data) {
+                $('#planilla-modal').html(data);
+            },
+            error: function (data) {
+                console.log(data);
+            },
+            dataType: 'html'
+        });
+        $('#responsive-modal').modal('toggle');
+    });
+
 
 //#endregion
 

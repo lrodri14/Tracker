@@ -179,12 +179,15 @@ urlpatterns = [
     url(r'^guardar/motivo-rescision-contrato/$', views.guardar_motivo_rescision_contrato, name='guardar_motivo_rescision_contrato'),
     url(r'^guardar/pais/$', views.guardar_pais, name='guardar_pais'),
     url(r'^guardar/parentesco/$', views.guardar_parentesco, name='guardar_parentesco'),
+    url(r'^guardar/planilla/$', views.planilla_guardar, name='planilla_guardar'),
     url(r'^guardar/puesto/$', views.guardar_puesto, name='guardar_puesto'),
     url(r'^guardar/sucursal/$', views.guardar_sucursal, name='guardar_sucursal'),
     url(r'^guardar/tipo-salario/$', views.guardar_tipo_salario, name='guardar_tipo_salario'),
     url(r'^guardar/tipo-contrato/$', views.tipo_contrato_guardar, name='tipo_contrato_guardar'),
     url(r'^guardar/tipo-nomina/$', views.tipo_nomina_guardar, name='tipo_nomina_guardar'),
     url(r'^guardar/vendedor/$', views.guardar_vendedor, name='guardar_vendedor'),
+
+    url(r'^generar/planilla/$', views.planilla_generar, name='planilla_generar'),
 
     url(r'^actualizar/activo-asignado/$', views.actualizar_activo_asignado, name='actualizar_activo_asignado'),
     url(r'^actualizar/aumento-salario/$', views.aumento_salario_actualizar, name='aumento_salario_actualizar'),
@@ -217,6 +220,7 @@ urlpatterns = [
     url(r'^actualizar/motivo-renuncia/$', views.actualizar_motivo_renuncia, name='actualizar_motivo_renuncia'),
     url(r'^actualizar/motivo-rescision-contrato/$', views.actualizar_motivo_rescision_contrato, name='actualizar_motivo_rescision_contrato'),
     url(r'^actualizar/pais/$', views.actualizar_pais, name='actualizar_pais'),
+    url(r'^actualizar/planilla/$', views.planilla_actualizar, name='planilla_actualizar'),
     url(r'^actualizar/parentesco/$', views.actualizar_parentesco, name='actualizar_parentesco'),
     url(r'^actualizar/puesto/$', views.actualizar_puesto, name='actualizar_puesto'),
     url(r'^actualizar/sucursal/$', views.actualizar_sucursal, name='actualizar_sucursal'),
@@ -226,6 +230,7 @@ urlpatterns = [
     url(r'^actualizar/tipo-salario/$', views.actualizar_tipo_salario, name='actualizar_tipo_salario'),
 
     url(r'^editar/aumento-salario/(?P<id>\w+)/$', views.aumento_salario_editar, name="aumento_salario_editar"),
+    url(r'^editar/planilla/(?P<id>\w+)/$', views.planilla_editar, name="planilla_editar"),
     url(r'^editar/tipo-contrato/(?P<id>\w+)/$', views.tipo_contrato_editar, name="tipo_contrato_editar"),
     url(r'^editar/tipo-nomina/(?P<id>\w+)/$', views.tipo_nomina_editar, name="tipo_nomina_editar"),
 
@@ -277,6 +282,7 @@ urlpatterns = [
     url(r'^enviar/sucursal/$', views.enviar_sucursal, name="enviar_sucursal"),
 
     url(r'^ver-registro/aumento-salario/$', views.aumento_salario_ver_registro, name="aumento_salario_ver_registro"),
+    url(r'^ver-registro/planilla/$', views.planilla_ver_registro, name="planilla_ver_registro"),
 
     #------------------>>>AJAX<<<-------------------
 
