@@ -3,7 +3,7 @@
 Generar Planilla
 {% endblock titulo %}
 {% block contenido %}
-<div class="row">
+<div class="row planilla-generar">
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -14,7 +14,7 @@ Generar Planilla
                 <div class="panel-body">
                     <div class="col-md-6">
                         <div class="form-group">
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <label for="cboAuEmp" class="control-label">Planilla :</label>
                             </div>
                             <div class="col-md-7">
@@ -26,7 +26,7 @@ Generar Planilla
                                 </select>
                             </div>
                             <div class="col-md-2">
-                                <input type="submit" class="btn btn-default" value="Buscar">
+                                <button id="btnGenerar" class="btn btn-primary">Generar</button>
                             </div>
                         </div>
                     </div>

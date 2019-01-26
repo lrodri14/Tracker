@@ -2438,6 +2438,8 @@ emp_cboTipoSalario.on('change', function() {
     var txtPlFechaPago = $('#frmPlanilla input[name="fecha_pago"]');
     var txtPlDescripcion = $('#frmPlanilla textarea[name="descripcion"]');
 
+    var btnGenerar = $('.planilla-generar #btnGenerar');
+
 
     btnPlGuardar.on('click', function(e) {
         e.preventDefault();
@@ -2495,6 +2497,10 @@ emp_cboTipoSalario.on('change', function() {
             dataType: 'html'
         });
         $('#responsive-modal').modal('toggle');
+    });
+
+    btnGenerar.on('click', function() {
+        console.log("Click");
     });
 
 
