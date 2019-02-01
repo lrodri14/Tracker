@@ -71,6 +71,8 @@ $(document).on('ready', function() {
     var numCuenta = $('input[name="num_cuenta"]');
     var bankSucursal = $('input[name="bankSucursal"]');
     var comentarios = $('textarea[name="comentarios"]');
+    var cboTipoNomina = $('select[name="cboTipoNomina"]');
+    var cboTipoContrato = $('select[name="cboTipoContrato"]');
 
     var token = $('input[name="csrfmiddlewaretoken"]');
     //#endregion
@@ -174,6 +176,8 @@ $(document).on('ready', function() {
                     'numCuenta':numCuenta.val(),
                     'bankSucursal':bankSucursal.val(),
                     'comentarios':comentarios.val(),
+                    'tipo_nomina': cboTipoNomina.val(),
+                    'tipo_contrato': cboTipoContrato.val(),
                     'csrfmiddlewaretoken': token.val(),
                 }, // serializes the form's elements.
                 success: function(data)
@@ -289,6 +293,8 @@ $(document).on('ready', function() {
                 'numCuenta': numCuenta.val(),
                 'bankSucursal': bankSucursal.val(),
                 'comentarios': comentarios.val(),
+                'tipo_nomina': cboTipoNomina.val(),
+                'tipo_contrato': cboTipoContrato.val(),
                 'csrfmiddlewaretoken': token.val(),
             }, // serializes the form's elements.
             success: function (data) {

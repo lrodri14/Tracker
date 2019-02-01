@@ -2,6 +2,13 @@
 {% block titulo %}
 Generar Planilla
 {% endblock titulo %}
+{% block estilo %}
+<style>
+    .progress-bar{
+        color:#000000;
+    }
+</style>
+{% endblock estilo %}
 {% block contenido %}
 <div class="row planilla-generar">
     <div class="col-md-12">
@@ -12,13 +19,14 @@ Generar Planilla
             </div>
             <div class="panel-wrapper">
                 <div class="panel-body">
-                    <div class="col-md-6">
+                {% csrf_token %}
+                    <div class="col-md-12">
                         <div class="form-group">
-                            <div class="col-md-2">
+                            <div class="col-md-2 text-right">
                                 <label for="cboAuEmp" class="control-label">Planilla :</label>
                             </div>
                             <div class="col-md-7">
-                                <select class="form-control select2" name="empleado" id="cboAuEmp">
+                                <select class="form-control select2" name="empleado" id="cboPlanillas">
                                     <option value="0">Seleccionar...</option>
                                     {% for item in planillas %}
                                         <option value="{{item.pk}}">{{item.descripcion}}</option>
@@ -27,6 +35,15 @@ Generar Planilla
                             </div>
                             <div class="col-md-2">
                                 <button id="btnGenerar" class="btn btn-primary">Generar</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-4 col-md-4 col-sm-4 p-r-40">
+                            <h3 class="box-title">Default Progress bars <a class="get-code" data-toggle="collapse" href="#pgr2" aria-expanded="true"><i class="fa fa-code" title="Get Code" data-toggle="tooltip"></i></a></h3>
+                            <div class="collapse m-t-15" id="pgr2"> <pre class="line-numbers language-javascript"><code>&lt;div class="progress progress-lg"&gt;<br/>&lt;div class="progress-bar progress-bar-success" role="progressbar" style="width: 75%; role="progressbar""&gt; 75% &lt;/div&gt;<br/>&lt;/div&gt;</code></pre> </div>
+                            <div class="progress progress-lg">
+                                <div id="loader-bar" class="progress-bar progress-bar-success" style="width: 0%;" role="progressbar">0%</div>
                             </div>
                         </div>
                     </div>

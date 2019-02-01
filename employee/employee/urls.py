@@ -229,6 +229,8 @@ urlpatterns = [
     url(r'^actualizar/tipo-nomina/$', views.tipo_nomina_actualizar, name='tipo_nomina_actualizar'),
     url(r'^actualizar/tipo-salario/$', views.actualizar_tipo_salario, name='actualizar_tipo_salario'),
 
+    url(r'^calcular/planilla-empleado/$', views.planilla_calculos_empleado, name='planilla_calculos_empleado'),
+
     url(r'^editar/aumento-salario/(?P<id>\w+)/$', views.aumento_salario_editar, name="aumento_salario_editar"),
     url(r'^editar/planilla/(?P<id>\w+)/$', views.planilla_editar, name="planilla_editar"),
     url(r'^editar/tipo-contrato/(?P<id>\w+)/$', views.tipo_contrato_editar, name="tipo_contrato_editar"),
@@ -275,6 +277,7 @@ urlpatterns = [
 
     url(r'^obtener/estados/$', views.lista_estados, name="lista_estados"),
     url(r'^obtener/dias-salario/$', views.obtener_dias_salario, name="obtener_dias_salario"),
+    url(r'^obtener/empleados-planilla/$', views.obtener_empleados_planilla, name="obtener_empleados_planilla"),
     url(r'^obtener/salario-ultimo/$', views.obtener_ultimo_salario, name="obtener_ultimo_salario"),
     url(r'^obtener/sucursales/$', views.lista_sucursal, name="lista_sucursal"),
 

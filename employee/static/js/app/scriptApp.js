@@ -2440,7 +2440,6 @@ emp_cboTipoSalario.on('change', function() {
 
     var btnGenerar = $('.planilla-generar #btnGenerar');
 
-
     btnPlGuardar.on('click', function(e) {
         e.preventDefault();
         url = '/guardar/planilla/';
@@ -2499,8 +2498,71 @@ emp_cboTipoSalario.on('change', function() {
         $('#responsive-modal').modal('toggle');
     });
 
-    btnGenerar.on('click', function() {
-        console.log("Click");
+    valor = 0;
+    var cboPlanillas = $('.planilla-generar #cboPlanillas');
+    btnGenerar.on('click', function(e) {
+        e.preventDefault();
+        // var valor_porc = $('#loader-bar').attr('style');
+        // console.log(valor_porc);
+        // valor_porc = valor_porc.replace("%;","");
+        // valor_porc = valor_porc.substring(7);
+        // valor = parseInt(valor_porc);
+        // valor = parseFloat(valor + 5);
+        // if (valor > 100) {
+        //     valor = 0;
+        //     $('#loader-bar').attr('style', 'width: '+valor+'%;');
+        // }else{
+        //     $('#loader-bar').attr('style', 'width: '+valor+'%;');
+        // }
+        // $('#loader-bar').text(valor+'%');
+        // console.log(valor);
+        url = '/obtener/empleados-planilla/';
+        metodo = 'GET';
+        data = {'id':cboPlanillas.val()};
+        $.ajax({
+            type: metodo,
+            url: url,
+            data: data,
+            success: function (data) {
+                if (data.error) {
+                    console.log(data);
+                } else {
+                    var ldatos = data.empleados;
+                    console.log(ldatos.length);
+                    ldatos.forEach(item => {
+                        url = "/calcular/planilla-empleado/";
+                        metodo = 'POST';
+                        data = {
+                            'empleado_id': item.ID,
+                            'planilla_id': cboPlanillas.val(),
+                            'csrfmiddlewaretoken': token.val(),
+                        }
+                        $.ajax({
+                            type: metodo,
+                            url: url,
+                            data: data,
+                            success: function(data){
+                                if (data.error) {
+                                    alert(data.mensaje);
+                                }else{
+                                    alert(data.mensaje);
+                                };
+                            },
+                            error: function(data){
+                                console.log("Error: " + data);
+                            },
+                            dataType: 'json'
+                        });
+
+                        console.log(item.ID);
+                    });
+                }
+            },
+            error: function (data) {
+                console.log(data);
+            },
+            dataType: 'json'
+        });
     });
 
 

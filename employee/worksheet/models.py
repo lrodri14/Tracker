@@ -772,3 +772,27 @@ class Planilla(models.Model):
 
     def __str__(self):
         return self.descripcion + " - " + str(self.fecha_pago)
+
+class PlanillaDetalle(models.Model):
+    planilla = models.ForeignKey("worksheet.Planilla", on_delete=models.PROTECT)
+    empleado = models.ForeignKey("worksheet.Employee", on_delete=models.PROTECT)
+    salario_diario = models.CharField(max_length=50)
+    dias_salario = models.CharField(max_length=50)
+
+    empresa_reg = models.ForeignKey(Empresa, on_delete=models.PROTECT)
+    sucursal_reg = models.ForeignKey(Branch, on_delete=models.PROTECT)
+    user_reg = models.ForeignKey(User, on_delete=models.PROTECT)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT, related_name='plandet_usermod', related_query_name='plandet_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.NullBooleanField()
+
+    class Meta:
+        verbose_name = ("detalle de planilla")
+        verbose_name_plural = ("detalles de planillas")
+
+    def __str__(self):
+        if self.empleado.middleName:
+            return self.planilla.descripcion + " - " + self.empleado.firstName + " " + self.empleado.middleName + " " + self.empleado.lastName
+        else:
+            return self.planilla.descripcion + " - " + self.empleado.firstName + " " + self.empleado.lastName

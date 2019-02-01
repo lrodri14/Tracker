@@ -1249,6 +1249,8 @@ def actualizar_empleado(request):
     oCitizenShip = None
     oSalaryUnits = None
     oEmpCostUnit = None
+    oTipoNomina = None
+    oTipoContrato = None
     oBankCode = None
     try:
         if  request.is_ajax():
@@ -1314,6 +1316,8 @@ def actualizar_empleado(request):
                 numCuenta = request.POST['numCuenta']
                 branchBank = request.POST['bankSucursal']
                 remark = request.POST['comentarios']
+                tipo_nomina = request.POST['tipo_nomina']
+                tipo_contrato = request.POST['tipo_contrato']
 
                 if len(pNom) == 0:
                     mensaje = "El campo 'Primer Nombre' es obligatorio."
@@ -1585,6 +1589,26 @@ def actualizar_empleado(request):
                             }
                             return JsonResponse(data)
 
+                if len(tipo_contrato) > 0:
+                    if int(tipo_contrato) > 0:
+                        oTipoContrato = TipoContrato.objects.get(pk=tipo_contrato)
+                        if not oTipoContrato:
+                            mensaje = "El tipo de contrato no existe en la base de datos."
+                            data = {
+                                'mensaje': mensaje, 'error':True
+                            }
+                            return JsonResponse(data)
+
+                if len(tipo_nomina) > 0:
+                    if int(tipo_nomina) > 0:
+                        oTipoNomina = TipoNomina.objects.get(pk=tipo_nomina)
+                        if not oTipoNomina:
+                            mensaje = "El tipo de nomina no existe en la base de datos."
+                            data = {
+                                'mensaje': mensaje, 'error':True
+                            }
+                            return JsonResponse(data)
+
                 if len(empCostUnit) > 0:
                     if int(empCostUnit) > 0:
                         oEmpCostUnit = CostUnit.objects.get(pk=empCostUnit)
@@ -1676,6 +1700,8 @@ def actualizar_empleado(request):
                 oEmp.bankAccount = numCuenta
                 oEmp.branchBank = branchBank
                 oEmp.remark = remark
+                oEmp.tipo_contrato = oTipoContrato
+                oEmp.tipo_nomina = oTipoNomina
 
                 oEmp.active = activo
                 oEmp.user_mod = request.user
@@ -8466,73 +8492,42 @@ def planilla_generar(request):
 
 #--------------------------------AJAX-----------------------------------
 
-
-def planilla_guardar(request):
+def obtener_empleados_planilla(request):
     try:
+        mensaje = ''
+        codigos =  {}
+        l_empleados = []
         if request.is_ajax():
-            if request.method == 'POST':
-                tipo_planilla_id = request.POST['tipo_planilla']
-                tipo_pago_id = request.POST['tipo_pago']
-                fecha_pago = request.POST['fecha_pago']
-                fecha_inicio = request.POST['fecha_inicio']
-                fecha_fin = request.POST['fecha_fin']
-                descripcion = request.POST['descripcion']
-                
-                if int(tipo_planilla_id) == 0:
-                    return JsonResponse({'error': True, 'mensaje': 'El campo "Tipo de Planilla" es obligatorio.'})
-                else:
-                    tipos_planilla = TipoNomina.objects.filter(pk=tipo_planilla_id)
-                    if tipos_planilla.count() > 0:
-                        o_tipo_planilla = TipoNomina.objects.get(pk=tipo_planilla_id)
-                    else:
-                        return JsonResponse({'error': True, 'mensaje': 'El Tipo de Planilla no existe.'})
-
-                if int(tipo_pago_id) == 0:
-                    return JsonResponse({'error': True, 'mensaje': 'El campo "Tipo de Pago" es obligatorio.'})
-                else:
-                    tipos_pago = SalaryUnit.objects.filter(pk=tipo_pago_id)
-                    if tipos_pago.count() > 0:
-                        o_tipo_pago = SalaryUnit.objects.get(pk=tipo_pago_id)
-                    else:
-                        return JsonResponse({'error': True, 'mensaje': 'El Tipo de Pago no existe.'})
-
-                if len(fecha_pago) == 0:
-                    return JsonResponse({'error': True, 'mensaje': 'El campo "Fecha de Pago" es obligatorio.'})
-                
-                if len(fecha_inicio) == 0:
-                    return JsonResponse({'error': True, 'mensaje': 'El campo "Fecha de Inicio" es obligatorio.'})
-
-                if len(fecha_fin) == 0:
-                    return JsonResponse({'error': True, 'mensaje': 'El campo "Fecha de Fin" es obligatorio.'})
-
-                if len(descripcion) == 0:
-                    return JsonResponse({'error': True, 'mensaje': 'El campo "Descripcion" es obligatorio.'})
-
-                suc = Branch.objects.get(pk=request.session["sucursal"])
-                oPlanilla = Planilla(
-                    correlativo = 1,
-                    tipo_planilla = o_tipo_planilla,
-                    descripcion = descripcion,
-                    frecuencia_pago = o_tipo_pago,
-                    fecha_inicio = fecha_inicio,
-                    fecha_fin = fecha_fin,
-                    fecha_pago = fecha_pago,
-                    cerrada = False,
-                    empresa_reg = suc.empresa,
-                    sucursal_reg = suc,
-                    active=True,
-                    user_reg = request.user
-                )
-                
-                oPlanilla.save()
-                return JsonResponse({'error': False, 'mensaje': 'Se ha guardado el registro de Planilla.'})
+            id = request.GET.get('id')
+            if len(id) < 1:
+                error = True
+                mensaje = "Seleccione una planilla."
             else:
-                return JsonResponse({'error': True, 'mensaje': 'El método no está permitido.'})
+                id = int(id)
+            if id == 0:
+                error = True
+                mensaje = "El registro no existe."
+            else:
+                tot_reg = Planilla.objects.filter(pk=id).count()
+                if tot_reg > 0:
+                    o_planilla = Planilla.objects.get(pk=id)
+                    empleados = Employee.objects.filter(active=True, tipo_nomina=o_planilla.tipo_planilla, salaryUnits=o_planilla.frecuencia_pago)
+                    print empleados
+                    for item in empleados:
+                        codigo = {'ID': item.pk}
+                        l_empleados.append(codigo)
+                    error = False
+                    data = {'error':error, 'empleados':l_empleados}
+                    return JsonResponse(data)
+                else:
+                    error = True
+                    mensaje = "No existe el registro."
         else:
-            pass
-        return JsonResponse({'error': False, 'mensaje': 'Respuesta exitosa'})
+            error = True
+            mensaje = "El método no está permitido."
+        data = {'error': error, 'mensaje':mensaje}
+        return JsonResponse(data)
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': ex.message,
@@ -8612,6 +8607,121 @@ def planilla_actualizar(request):
             'mensaje': ex.message,
         }
         return JsonResponse(data)
+
+def planilla_guardar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                tipo_planilla_id = request.POST['tipo_planilla']
+                tipo_pago_id = request.POST['tipo_pago']
+                fecha_pago = request.POST['fecha_pago']
+                fecha_inicio = request.POST['fecha_inicio']
+                fecha_fin = request.POST['fecha_fin']
+                descripcion = request.POST['descripcion']
+                
+                if int(tipo_planilla_id) == 0:
+                    return JsonResponse({'error': True, 'mensaje': 'El campo "Tipo de Planilla" es obligatorio.'})
+                else:
+                    tipos_planilla = TipoNomina.objects.filter(pk=tipo_planilla_id)
+                    if tipos_planilla.count() > 0:
+                        o_tipo_planilla = TipoNomina.objects.get(pk=tipo_planilla_id)
+                    else:
+                        return JsonResponse({'error': True, 'mensaje': 'El Tipo de Planilla no existe.'})
+
+                if int(tipo_pago_id) == 0:
+                    return JsonResponse({'error': True, 'mensaje': 'El campo "Tipo de Pago" es obligatorio.'})
+                else:
+                    tipos_pago = SalaryUnit.objects.filter(pk=tipo_pago_id)
+                    if tipos_pago.count() > 0:
+                        o_tipo_pago = SalaryUnit.objects.get(pk=tipo_pago_id)
+                    else:
+                        return JsonResponse({'error': True, 'mensaje': 'El Tipo de Pago no existe.'})
+
+                if len(fecha_pago) == 0:
+                    return JsonResponse({'error': True, 'mensaje': 'El campo "Fecha de Pago" es obligatorio.'})
+                
+                if len(fecha_inicio) == 0:
+                    return JsonResponse({'error': True, 'mensaje': 'El campo "Fecha de Inicio" es obligatorio.'})
+
+                if len(fecha_fin) == 0:
+                    return JsonResponse({'error': True, 'mensaje': 'El campo "Fecha de Fin" es obligatorio.'})
+
+                if len(descripcion) == 0:
+                    return JsonResponse({'error': True, 'mensaje': 'El campo "Descripcion" es obligatorio.'})
+
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+                oPlanilla = Planilla(
+                    correlativo = 1,
+                    tipo_planilla = o_tipo_planilla,
+                    descripcion = descripcion,
+                    frecuencia_pago = o_tipo_pago,
+                    fecha_inicio = fecha_inicio,
+                    fecha_fin = fecha_fin,
+                    fecha_pago = fecha_pago,
+                    cerrada = False,
+                    empresa_reg = suc.empresa,
+                    sucursal_reg = suc,
+                    active=True,
+                    user_reg = request.user
+                )
+                
+                oPlanilla.save()
+                return JsonResponse({'error': False, 'mensaje': 'Se ha guardado el registro de Planilla.'})
+            else:
+                return JsonResponse({'error': True, 'mensaje': 'El método no está permitido.'})
+        else:
+            pass
+        return JsonResponse({'error': False, 'mensaje': 'Respuesta exitosa'})
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': ex.message,
+        }
+        return JsonResponse(data)
+
+import time
+def planilla_calculos_empleado(request):
+    data = {}
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                empleado_id = request.POST["empleado_id"]
+                planilla_id = request.POST["planilla_id"]
+                o_empleado = Employee.objects.get(pk=empleado_id)
+                o_planilla = Planilla.objects.get(pk=planilla_id)
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+                o_planilladetalle = PlanillaDetalle(
+                    planilla = o_planilla,
+                    empleado = o_empleado,
+                    salario_diario = o_empleado.salario_diario,
+                    dias_salario = o_planilla.frecuencia_pago.dias_salario,
+                    empresa_reg = suc.empresa,
+                    sucursal_reg = suc,
+                    active = True,
+                    user_reg = request.user
+                )
+                o_planilladetalle.save()
+                data = {
+                    'error': False,
+                    'mensaje': "El proceso ha finalizado.",
+                }
+            else:
+                data = {
+                    'error': True,
+                    'mensaje': "El método no está permitido.",
+                }
+        else:
+            data = {
+                'error': True,
+                'mensaje': "La solicitud no es asíncrona.",
+            }
+    except expression as identifier:
+        data = {
+            'error': True,
+            'mensaje': ex.message,
+        }
+    return JsonResponse(data)
 
 def planilla_ver_registro(request):
     error = False
