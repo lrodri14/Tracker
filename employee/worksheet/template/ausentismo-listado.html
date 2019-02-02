@@ -53,6 +53,7 @@ Datos de Ausentismo
                             {% csrf_token %}
                             <thead>
                                 <tr>
+                                    <th>Empleado</th>
                                     <th>Desde</th>
                                     <th>Hasta</th>
                                     <th>Motivo</th>
@@ -63,6 +64,7 @@ Datos de Ausentismo
                             <tbody>
                                 {% for item in datos %}
                                 <tr>
+                                    <td>{{item.empleado.firstName}} {% if item.empleado.middleName %}{{item.empleado.middleName}}{% endif %} {{item.empleado.lastName}}</td>
                                     <td>{{item.desde|date:"d/m/Y"}}</td>
                                     <td>{{item.hasta|date:"d/m/Y"}}</td>
                                     <td>

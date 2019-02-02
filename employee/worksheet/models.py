@@ -465,6 +465,7 @@ class Ausentismo(models.Model):
     motivo = models.ForeignKey(MotivosAusencia, blank=True, null=True, on_delete=models.DO_NOTHING)
     aprobado = models.ForeignKey(Employee, related_name='au_emp', related_query_name='au_emp', blank=True, null=True)
     empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="au_empreg", related_query_name="au_empreg")
+    sucursal_reg = models.ForeignKey("worksheet.Branch", on_delete=models.PROTECT)
     user_reg = models.ForeignKey(User)
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='au_usermod', related_query_name='au_usermod')
@@ -738,7 +739,6 @@ def post_save_incrementossalariales(sender, instance, **kwargs):
                 dato.date_mod = datetime.datetime.now()
                 dato.save()
                 
-                print "Actualizo empleado"
         d_empleado = Employee.objects.get(pk=instance.empleado.pk)
         d_empleado.salary = str(instance.nuevo_salario)
         if d_empleado.salaryUnits:
@@ -778,6 +778,9 @@ class PlanillaDetalle(models.Model):
     empleado = models.ForeignKey("worksheet.Employee", on_delete=models.PROTECT)
     salario_diario = models.CharField(max_length=50)
     dias_salario = models.CharField(max_length=50)
+    dias_ausentes_sin_pago = models.CharField(max_length=50)
+    dias_ausentes_con_pago = models.CharField(max_length=50)
+
 
     empresa_reg = models.ForeignKey(Empresa, on_delete=models.PROTECT)
     sucursal_reg = models.ForeignKey(Branch, on_delete=models.PROTECT)

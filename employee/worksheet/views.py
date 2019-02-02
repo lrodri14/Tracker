@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.core import serializers
+from django.core.serializers import serialize
+from django.db.models import Count, Min, Sum, Avg
 from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
-from worksheet.models import *
-from worksheet.forms import *
-import datetime
-from django.contrib.auth.decorators import login_required, permission_required
-import datetime
-from django.core.serializers import serialize
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-import json
-from django.core import serializers
-from django.contrib.auth.decorators import permission_required
 from django.utils.decorators import method_decorator
+from worksheet.forms import *
+from worksheet.models import *
+import datetime
+from datetime import date
+import json
 import locale
 locale.setlocale(locale.LC_ALL, '')
 
@@ -447,7 +447,12 @@ def ausentismo_listado(request):
                 empleado = Employee.objects.get(pk=busqueda)
                 print empleado
                 lista = Ausentismo.objects.filter(empleado=empleado, empresa_reg = suc.empresa)
-                print lista
+            else:
+                lista = Ausentismo.objects.filter(sucursal_reg=suc)[:50]
+        else:
+            lista = Ausentismo.objects.filter(sucursal_reg=suc)[:50]
+    else:
+        lista = Ausentismo.objects.filter(sucursal_reg=suc)[:50]
     #lista = Ausentismo.objects.all().order_by('-desde')
     #empleados = Employee.objects.filter(empresa_reg=suc.empresa)
     return render(request, 'ausentismo-listado.html', {'datos':lista, 'empleados': empleados, 'busqueda':busqueda})
@@ -4558,6 +4563,7 @@ def guardar_ausentismo(request):
                     motivo = oMot,
                     aprobado = oAprobo,
                     empresa_reg = suc.empresa,
+                    sucursal_reg = suc,
                     active=activo,
                     user_reg=request.user,
                 )
@@ -8511,14 +8517,18 @@ def obtener_empleados_planilla(request):
                 tot_reg = Planilla.objects.filter(pk=id).count()
                 if tot_reg > 0:
                     o_planilla = Planilla.objects.get(pk=id)
-                    empleados = Employee.objects.filter(active=True, tipo_nomina=o_planilla.tipo_planilla, salaryUnits=o_planilla.frecuencia_pago)
-                    print empleados
-                    for item in empleados:
-                        codigo = {'ID': item.pk}
-                        l_empleados.append(codigo)
-                    error = False
-                    data = {'error':error, 'empleados':l_empleados}
-                    return JsonResponse(data)
+                    suc = Branch.objects.get(pk=request.session["sucursal"])
+                    empleados = Employee.objects.filter(active=True, tipo_nomina=o_planilla.tipo_planilla, salaryUnits=o_planilla.frecuencia_pago, branch=suc)
+                    if empleados.count() > 0:
+                        for item in empleados:
+                            codigo = {'ID': item.pk}
+                            l_empleados.append(codigo)
+                        error = False
+                        data = {'error':error, 'empleados':l_empleados}
+                        return JsonResponse(data)
+                    else:
+                        data = {'error':True, 'mensaje':"No encontraron empleados pertenecientes a la planilla."}
+                        return JsonResponse(data)
                 else:
                     error = True
                     mensaje = "No existe el registro."
@@ -8686,11 +8696,18 @@ def planilla_calculos_empleado(request):
     try:
         if request.is_ajax():
             if request.method == 'POST':
+                total_dias = 0
                 empleado_id = request.POST["empleado_id"]
                 planilla_id = request.POST["planilla_id"]
                 o_empleado = Employee.objects.get(pk=empleado_id)
                 o_planilla = Planilla.objects.get(pk=planilla_id)
                 suc = Branch.objects.get(pk=request.session["sucursal"])
+                ausencias_con_pago = Ausentismo.objects.filter(sucursal_reg=suc, motivo__pagado=True, desde__gte=o_planilla.fecha_inicio, desde__lte=o_planilla.fecha_fin, hasta__gte=o_planilla.fecha_inicio, hasta__lte=o_planilla.fecha_fin)
+                for item in ausencias_con_pago:
+                    a = item.hasta
+                    b = item.desde
+                    total_dias = (a - b).days
+                    print total_dias
                 o_planilladetalle = PlanillaDetalle(
                     planilla = o_planilla,
                     empleado = o_empleado,
@@ -8716,7 +8733,7 @@ def planilla_calculos_empleado(request):
                 'error': True,
                 'mensaje': "La solicitud no es asíncrona.",
             }
-    except expression as identifier:
+    except Exception as ex:
         data = {
             'error': True,
             'mensaje': ex.message,
@@ -9146,6 +9163,7 @@ def validarEntero(dato):
     try:
         dato = int(dato)
         dato += 1
+        dato = dato / 1
         return True
     except TypeError:
         return False

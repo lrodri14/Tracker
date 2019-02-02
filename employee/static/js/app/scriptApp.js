@@ -2527,35 +2527,37 @@ emp_cboTipoSalario.on('change', function() {
                 if (data.error) {
                     console.log(data);
                 } else {
-                    var ldatos = data.empleados;
-                    console.log(ldatos.length);
-                    ldatos.forEach(item => {
-                        url = "/calcular/planilla-empleado/";
-                        metodo = 'POST';
-                        data = {
-                            'empleado_id': item.ID,
-                            'planilla_id': cboPlanillas.val(),
-                            'csrfmiddlewaretoken': token.val(),
-                        }
-                        $.ajax({
-                            type: metodo,
-                            url: url,
-                            data: data,
-                            success: function(data){
-                                if (data.error) {
-                                    alert(data.mensaje);
-                                }else{
-                                    alert(data.mensaje);
-                                };
-                            },
-                            error: function(data){
-                                console.log("Error: " + data);
-                            },
-                            dataType: 'json'
-                        });
+                    if (data.error) {
+                        mensaje("Generar Planilla", data.mensaje, "warning", 3500);
+                    }else{
+                        var ldatos = data.empleados;
 
-                        console.log(item.ID);
-                    });
+                        ldatos.forEach(item => {
+                            url = "/calcular/planilla-empleado/";
+                            metodo = 'POST';
+                            data = {
+                                'empleado_id': item.ID,
+                                'planilla_id': cboPlanillas.val(),
+                                'csrfmiddlewaretoken': token.val(),
+                            }
+                            $.ajax({
+                                type: metodo,
+                                url: url,
+                                data: data,
+                                success: function(data){
+                                    if (data.error) {
+                                        alert(data.mensaje);
+                                    }else{
+                                        alert(data.mensaje);
+                                    };
+                                },
+                                error: function(data){
+                                    console.log("Error: " + data);
+                                },
+                                dataType: 'json'
+                            });
+                        });
+                    }
                 }
             },
             error: function (data) {
