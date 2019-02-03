@@ -8697,22 +8697,31 @@ def planilla_calculos_empleado(request):
         if request.is_ajax():
             if request.method == 'POST':
                 total_dias = 0
+                dias_ausencia_con_pago = 0
+                dias_ausencia_sin_pago = 0
                 empleado_id = request.POST["empleado_id"]
                 planilla_id = request.POST["planilla_id"]
                 o_empleado = Employee.objects.get(pk=empleado_id)
                 o_planilla = Planilla.objects.get(pk=planilla_id)
                 suc = Branch.objects.get(pk=request.session["sucursal"])
-                ausencias_con_pago = Ausentismo.objects.filter(sucursal_reg=suc, motivo__pagado=True, desde__gte=o_planilla.fecha_inicio, desde__lte=o_planilla.fecha_fin, hasta__gte=o_planilla.fecha_inicio, hasta__lte=o_planilla.fecha_fin)
-                for item in ausencias_con_pago:
-                    a = item.hasta
-                    b = item.desde
-                    total_dias = (a - b).days
-                    print total_dias
+                ausencias_con_pago = Ausentismo.objects.filter(empleado=o_empleado, sucursal_reg=suc, motivo__pagado=True, desde__gte=o_planilla.fecha_inicio, desde__lte=o_planilla.fecha_fin, hasta__gte=o_planilla.fecha_inicio, hasta__lte=o_planilla.fecha_fin)
+                if ausencias_con_pago.count() > 0:
+                    dias_ausencia_con_pago = 1
+                    for item in ausencias_con_pago:
+                        dias_ausencia_con_pago = dias_ausencia_con_pago + (item.hasta - item.desde).days
+
+                ausencias_sin_pago = Ausentismo.objects.filter(empleado=o_empleado, sucursal_reg=suc, motivo__pagado=False, desde__gte=o_planilla.fecha_inicio, desde__lte=o_planilla.fecha_fin, hasta__gte=o_planilla.fecha_inicio, hasta__lte=o_planilla.fecha_fin)
+                if ausencias_sin_pago.count() > 0:
+                    dias_ausencia_sin_pago = 1
+                    for item in ausencias_sin_pago:
+                        dias_ausencia_sin_pago = dias_ausencia_sin_pago + (item.hasta - item.desde).days
                 o_planilladetalle = PlanillaDetalle(
                     planilla = o_planilla,
                     empleado = o_empleado,
                     salario_diario = o_empleado.salario_diario,
                     dias_salario = o_planilla.frecuencia_pago.dias_salario,
+                    dias_ausentes_sin_pago = dias_ausencia_sin_pago,
+                    dias_ausentes_con_pago = dias_ausencia_con_pago,
                     empresa_reg = suc.empresa,
                     sucursal_reg = suc,
                     active = True,
