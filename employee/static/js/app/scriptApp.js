@@ -2424,6 +2424,35 @@ emp_cboTipoSalario.on('change', function() {
 
 //#endregion
 
+//#region Código para Ingreso Individual
+
+    var ini_txtIngresoI = $('#ingreso_individual input[name="txtIngresoI"]');
+    var ini_cboTipoI = $('#ingreso_individual select[name="cboTipoIngreso"]');
+    var ini_chkActivo = $('#ingreso_individual input[name="chkActivo"]');
+    var ini_btnGuardar = $('#ingreso_individual #btnGuardar');
+
+
+    ini_btnGuardar.on('click', function(e) {
+        e.preventDefault();
+        if (ini_chkActivo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
+        }
+        url = '/guardar/ingreso-individual/';
+        metodo = 'POST';
+        data = {
+            'ingreso_i': ini_txtIngresoI.val(),
+            'tipo_ingreso': ini_cboTipoI.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Ingreso Individual");
+    });
+
+
+//#endregion
+
 //#region Código para Planilla
 
     var btnPlGuardar = $('#frmPlanilla #btnGuardar');
@@ -2617,6 +2646,60 @@ $('#tipo_contrato #btnActualizar').on('click', function(e) {
 $('#tipo_contrato #btnCancelar').on('click', function(e) {
     e.preventDefault();
     window.location.replace(dns + "/listar/tipo-contrato/");
+});
+
+//#endregion
+
+//#region Código para Tipo de Ingreso
+
+var ti_id = $('#tipo_ingreso input[name="id"]');
+var ti_txtTipoIngreso = $('#tipo_ingreso input[name="txtTipoIngreso"]');
+var ti_txtDescripcion = $('#tipo_ingreso textarea[name="txtDescripcion"]');
+var ti_chkActivo = $('#tipo_ingreso input[name="tipoIngreso_activo"]');
+var ti_btnGuardar = $('#tipo_ingreso #btnGuardar');
+var ti_btnCancelar = $('#tipo_ingreso #btnCancelar');
+var ti_btnActualizar = $('#tipo_ingreso #btnActualizar');
+
+ti_btnGuardar.on('click', function(e) {
+    e.preventDefault();
+    if (ti_chkActivo.is(":checked")) {
+        vActivo = 1;
+    } else {
+        vActivo = 0;
+    }
+    url = '/guardar/tipo-ingreso/';
+    metodo = 'POST';
+    data = {
+        'tipo_ingreso': ti_txtTipoIngreso.val(),
+        'descripcion': ti_txtDescripcion.val(),
+        'activo': vActivo,
+        'csrfmiddlewaretoken': token.val(),
+    };
+    GuardarRegistro(url, metodo, data, "Tipo de Ingreso");
+});
+
+ti_btnActualizar.on('click', function(e) {
+    e.preventDefault();
+    if (ti_chkActivo.is(":checked")) {
+        vActivo = 1;
+    } else {
+        vActivo = 0;
+    }
+    url = '/actualizar/tipo-ingreso/';
+    metodo = 'POST';
+    data = {
+        'id': ti_id.val(),
+        'tipo_ingreso': ti_txtTipoIngreso.val(),
+        'descripcion': ti_txtDescripcion.val(),
+        'activo': vActivo,
+        'csrfmiddlewaretoken': token.val(),
+    };
+    GuardarRegistro(url, metodo, data, "Tipo de Ingreso", true, "/listar/tipo-ingreso/");
+});
+
+ti_btnCancelar.on('click', function(e) {
+    e.preventDefault();
+    window.location.replace(dns + "/listar/tipo-ingreso/");
 });
 
 //#endregion

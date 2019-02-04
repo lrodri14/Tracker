@@ -138,12 +138,16 @@ urlpatterns = [
 
     url(r'^formulario/aumento-salario/$', views.aumento_salario_form, name="aumento_salario_form"),
     url(r'^formulario/planilla/$', views.planilla_form, name="planilla_form"),
+    url(r'^formulario/ingreso-individual/$', views.ingreso_individual_form, name="ingreso_individual_form"),
     url(r'^formulario/tipo-contrato/$', views.tipo_contrato_form, name="tipo_contrato_form"),
+    url(r'^formulario/tipo-ingreso/$', views.tipo_ingreso_form, name="tipo_ingreso_form"),
     url(r'^formulario/tipo-nomina/$', views.tipo_nomina_form, name="tipo_nomina_form"),
 
     url(r'^listar/aumento-salario/$', views.aumento_salario_listado, name="aumento_salario_listado"),
+    url(r'^listar/ingreso-individual/$', views.ingreso_individual_listado, name="ingreso_individual_listado"),
     url(r'^listar/planilla/$', views.planilla_listado, name="planilla_listado"),
     url(r'^listar/tipo-contrato/$', views.tipo_contrato_listado, name="tipo_contrato_listado"),
+    url(r'^listar/tipo-ingreso/$', views.tipo_ingreso_listado, name="tipo_ingreso_listado"),
     url(r'^listar/tipo-nomina/$', views.tipo_nomina_listado, name="tipo_nomina_listar"),
 
     #----------------->>>AJAX<<<------------------
@@ -182,9 +186,10 @@ urlpatterns = [
     url(r'^guardar/planilla/$', views.planilla_guardar, name='planilla_guardar'),
     url(r'^guardar/puesto/$', views.guardar_puesto, name='guardar_puesto'),
     url(r'^guardar/sucursal/$', views.guardar_sucursal, name='guardar_sucursal'),
-    url(r'^guardar/tipo-salario/$', views.guardar_tipo_salario, name='guardar_tipo_salario'),
     url(r'^guardar/tipo-contrato/$', views.tipo_contrato_guardar, name='tipo_contrato_guardar'),
-    url(r'^guardar/tipo-nomina/$', views.tipo_nomina_guardar, name='tipo_nomina_guardar'),
+    url(r'^guardar/tipo-contrato/$', views.tipo_contrato_guardar, name='tipo_contrato_guardar'),
+    url(r'^guardar/tipo-ingreso/$', views.tipo_ingreso_guardar, name='tipo_ingreso_guardar'),
+    url(r'^guardar/tipo-salario/$', views.guardar_tipo_salario, name='guardar_tipo_salario'),
     url(r'^guardar/vendedor/$', views.guardar_vendedor, name='guardar_vendedor'),
 
     url(r'^generar/planilla/$', views.planilla_generar, name='planilla_generar'),
@@ -224,16 +229,18 @@ urlpatterns = [
     url(r'^actualizar/parentesco/$', views.actualizar_parentesco, name='actualizar_parentesco'),
     url(r'^actualizar/puesto/$', views.actualizar_puesto, name='actualizar_puesto'),
     url(r'^actualizar/sucursal/$', views.actualizar_sucursal, name='actualizar_sucursal'),
-    url(r'^actualizar/vendedor/$', views.actualizar_vendedor, name='actualizar_vendedor'),
     url(r'^actualizar/tipo-contrato/$', views.tipo_contrato_actualizar, name='tipo_contrato_actualizar'),
+    url(r'^actualizar/tipo-ingreso/$', views.tipo_ingreso_actualizar, name='tipo_ingreso_actualizar'),
     url(r'^actualizar/tipo-nomina/$', views.tipo_nomina_actualizar, name='tipo_nomina_actualizar'),
     url(r'^actualizar/tipo-salario/$', views.actualizar_tipo_salario, name='actualizar_tipo_salario'),
+    url(r'^actualizar/vendedor/$', views.actualizar_vendedor, name='actualizar_vendedor'),
 
     url(r'^calcular/planilla-empleado/$', views.planilla_calculos_empleado, name='planilla_calculos_empleado'),
 
     url(r'^editar/aumento-salario/(?P<id>\w+)/$', views.aumento_salario_editar, name="aumento_salario_editar"),
     url(r'^editar/planilla/(?P<id>\w+)/$', views.planilla_editar, name="planilla_editar"),
     url(r'^editar/tipo-contrato/(?P<id>\w+)/$', views.tipo_contrato_editar, name="tipo_contrato_editar"),
+    url(r'^editar/tipo-ingreso/(?P<id>\w+)/$', views.tipo_ingreso_editar, name="tipo_ingreso_editar"),
     url(r'^editar/tipo-nomina/(?P<id>\w+)/$', views.tipo_nomina_editar, name="tipo_nomina_editar"),
 
     url(r'^eliminar/activo-asignado/$', views.eliminar_activo_asignado, name='eliminar_activo_asignado'),
@@ -271,6 +278,7 @@ urlpatterns = [
     url(r'^eliminar/puesto/$', views.eliminar_puesto, name='eliminar_puesto'),
     url(r'^eliminar/sucursal/$', views.eliminar_sucursal, name='eliminar_sucursal'),
     url(r'^eliminar/tipo-contrato/$', views.tipo_contrato_eliminar, name='tipo_contrato_eliminar'),
+    url(r'^eliminar/tipo-ingreso/$', views.tipo_ingreso_eliminar, name='tipo_ingreso_eliminar'),
     url(r'^eliminar/tipo-nomina/$', views.tipo_nomina_eliminar, name='tipo_nomina_eliminar'),
     url(r'^eliminar/tipo-salario/$', views.eliminar_tipo_salario, name='eliminar_tipo_salario'),
     url(r'^eliminar/vendedor/$', views.eliminar_vendedor, name='eliminar_vendedor'),
