@@ -2424,16 +2424,69 @@ emp_cboTipoSalario.on('change', function() {
 
 //#endregion
 
+//#region Código para Ingreso General
+
+
+var id = $('#ingreso_general input[name="id"]');
+var ing_txtIngreso = $('#ingreso_general input[name="txtIngresoG"]');
+var ing_cboTipoIngreso = $('#ingreso_general select[name="cboTipoIngreso"]');
+var ing_chkGravable = $('#ingreso_general input[name="ingresog_gravable"]');
+var ing_chkActivo = $('#ingreso_general input[name="chkActivo"]');
+var ing_btnGuardar = $('#ingreso_general #btnGuardar');
+var ing_btnActualizar = $('#ingreso_general #btnActualizar');
+var ing_btnCancelar = $('#ingreso_general #btnCancelar');
+
+ing_btnGuardar.on('click', function(e) {
+    e.preventDefault();
+    if (ing_chkGravable.is(":checked")) {
+        vGravable = 1;
+    } else {
+        vGravable = 0;
+    }
+    if (ing_chkActivo.is(":checked")) {
+        vActivo = 1;
+    } else {
+        vActivo = 0;
+    }
+    url = '/guardar/ingreso-general/';
+    metodo = 'POST';
+    data = {
+        'ingreso_g': ing_txtIngreso.val(),
+        'tipo_ingreso': ing_cboTipoIngreso.val(),
+        'gravable': vGravable,
+        'activo': vActivo,
+        'csrfmiddlewaretoken': token.val(),
+    };
+    GuardarRegistro(url, metodo, data, "Ingreso General");
+});
+
+ing_btnCancelar.on('click', function(e) {
+    e.preventDefault();
+    window.location.replace(dns + "/listar/ingreso-general/");
+});
+
+//#endregion
+
 //#region Código para Ingreso Individual
 
+    var ini_id = $('#ingreso_individual input[name="id"]');
     var ini_txtIngresoI = $('#ingreso_individual input[name="txtIngresoI"]');
     var ini_cboTipoI = $('#ingreso_individual select[name="cboTipoIngreso"]');
+    var ini_chkGravable = $('#ingreso_individual input[name="ingresoi_gravable"]');
     var ini_chkActivo = $('#ingreso_individual input[name="chkActivo"]');
     var ini_btnGuardar = $('#ingreso_individual #btnGuardar');
+    var ini_btnActualizar = $('#ingreso_individual #btnActualizar');
+    var ini_btnCancelar = $('#ingreso_individual #btnCancelar');
+    var vGravable = 0;
 
 
     ini_btnGuardar.on('click', function(e) {
         e.preventDefault();
+        if (ini_chkGravable.is(":checked")) {
+            vGravable = 1;
+        }else{
+            vGravable = 0;
+        }
         if (ini_chkActivo.is(":checked")) {
             vActivo = 1;
         } else {
@@ -2444,10 +2497,42 @@ emp_cboTipoSalario.on('change', function() {
         data = {
             'ingreso_i': ini_txtIngresoI.val(),
             'tipo_ingreso': ini_cboTipoI.val(),
+            'gravable': vGravable,
             'activo': vActivo,
             'csrfmiddlewaretoken': token.val(),
         };
         GuardarRegistro(url, metodo, data, "Ingreso Individual");
+    });
+
+    ini_btnActualizar.on('click', function(e) {
+        e.preventDefault();
+        if (ini_chkActivo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
+        }
+        if (ini_chkGravable.is(":checked")) {
+            vGravable = 1;
+        } else {
+            vGravable = 0;
+        }
+        url = '/actualizar/ingreso-individual/';
+        metodo = 'POST';
+        data = {
+            'id': ini_id.val(),
+            'ingreso_i': ini_txtIngresoI.val(),
+            'tipo_ingreso': ini_cboTipoI.val(),
+            'gravable': vGravable,
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Ingreso Individual", true, "/listar/ingreso-individual/");
+    });
+
+
+    ini_btnCancelar.on('click', function(e) {
+        e.preventDefault();
+        window.location.replace(dns + "/listar/ingreso-individual/");
     });
 
 

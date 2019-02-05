@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block titulo %}
-Ingreso Individual
+Ingreso General
 {% endblock titulo %}
 {% load static %}
 {% block estilo %}
@@ -14,12 +14,12 @@ Ingreso Individual
 </style>
 {% endblock estilo %}
 {% block contenido %}
-<div id="ingreso_individual" class="row">
+<div id="ingreso_general" class="row">
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h2 class="text-bold"><i class="ti-pencil-alt"></i>
-                    Ingreso Individual</h2>
+                    Ingreso General</h2>
             </div>
             <div class="panel-wrapper">
                 <div class="panel-body">
@@ -32,10 +32,10 @@ Ingreso Individual
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <div class="col-md-5 text-right">
-                                        <label class="control-label">Ingreso Individual :</label>
+                                        <label class="control-label">Ingreso General :</label>
                                     </div>
                                     <div class="col-md-7">
-                                        <input name="txtIngresoI" value="{{dato.ingreso_i}}" type="text" class="form-control input" maxlength="50" />
+                                        <input name="txtIngresoG" value="{{dato.ingreso_i}}" type="text" class="form-control input" maxlength="50" />
                                     </div>
                                 </div>
                             </div>
@@ -43,7 +43,7 @@ Ingreso Individual
                                 <div class="form-group">
                                     <div class="col-md-7">
                                         <div class="checkbox checkbox-info">
-                                            <input id="chkGravable" name="ingresoi_gravable" type="checkbox" {% if dato.gravable %}checked{% endif %} class="input">
+                                            <input id="chkGravable" name="ingresog_gravable" type="checkbox" {% if dato.gravable %}checked{% endif %} class="input">
                                             <label class="control-label"> Gravable </label>
                                         </div>
                                     </div>

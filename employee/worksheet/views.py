@@ -8455,33 +8455,41 @@ def obtener_dias_salario(request):
 
 #endregion
 
-#region Código para Ingreso Individual
 
-def ingreso_individual_listado(request):
+#region Código para Ingreso General
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_ingresogeneral', raise_exception=True)
+def ingreso_general_listado(request):
     suc = Branch.objects.get(pk=request.session["sucursal"])
-    if request.user.has_perm("worksheet.see_all_ingresoindividual"):
-        lista = IngresoIndividual.objects.filter(empresa_reg=suc.empresa)
+    if request.user.has_perm("worksheet.see_all_ingresogeneral"):
+        lista = IngresoGeneral.objects.filter(empresa_reg=suc.empresa)
     else:
-        lista = IngresoIndividual.objects.filter(empresa_reg=suc.empresa, active=True)
-    return render(request, 'ingreso-individual-listado.html', {'lista':lista})
+        lista = IngresoGeneral.objects.filter(empresa_reg=suc.empresa, active=True)
+    return render(request, 'ingreso-general-listado.html', {'lista': lista})
 
-def ingreso_individual_form(request):
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_ingresogeneral', raise_exception=True)
+def ingreso_general_form(request):
     suc = Branch.objects.get(pk=request.session["sucursal"])
     tipos_ingresos = TipoIngreso.objects.filter(empresa_reg=suc.empresa, active=True)
-    return render(request, 'ingreso-individual-form.html', {'tipos_ingresos':tipos_ingresos})
+    return render(request, 'ingreso-general-form.html', {'tipos_ingresos': tipos_ingresos})
+
 
 #---------------------AJAX-------------------------------
 
-def ingreso_individual_guardar(request):
+def ingreso_general_guardar(request):
     try:
         if request.is_ajax():
             if request.method == 'POST':
-                ingreso_i = request.POST['ingreso_i']
+                ingreso_g = request.POST['ingreso_g']
                 tipo_ingreso = request.POST['tipo_ingreso']
                 activo = int(request.POST['activo'])
+                gravable = int(request.POST['gravable'])
 
-                if len(ingreso_i) == 0:
-                    mensaje = "El campo 'Ingreso Individual' es obligatorio."
+                if len(ingreso_g) == 0:
+                    mensaje = "El campo 'Ingreso General' es obligatorio."
                     data = {'error': True, 'mensaje': mensaje}
                     return JsonResponse(data)
 
@@ -8491,12 +8499,12 @@ def ingreso_individual_guardar(request):
                     return JsonResponse(data)
 
                 if tipo_ingreso == 0:
-                    mensaje = "El campo 'Tipo Ingreso' tiene como máximo 100 caracteres."
+                    mensaje = "El registro no existe."
                     data = {'error': True, 'mensaje': mensaje}
                     return JsonResponse(data)
 
-                if len(tipo_nomina) > 50:
-                    mensaje = "El campo 'Ingrseo individual' tiene como máximo 100 caracteres."
+                if len(ingreso_g) > 50:
+                    mensaje = "El campo 'Ingreso General' tiene como máximo 50 caracteres."
                     data = {'error': True, 'mensaje': mensaje}
                     return JsonResponse(data)
 
@@ -8505,12 +8513,21 @@ def ingreso_individual_guardar(request):
                 else:
                     activo = False
 
+                if gravable == 1:
+                    gravable = True
+                else:
+                    gravable = False
+
+                o_tipoingreso = TipoIngreso.objects.get(pk=tipo_ingreso)
+
                 suc = Branch.objects.get(pk=request.session["sucursal"])
 
-                oMd = TipoNomina(
-                    tipo_planilla=tipo_nomina,
-                    descripcion=desc,
+                oMd = IngresoGeneral(
+                    ingreso_g=ingreso_g,
+                    tipo_ingreso=o_tipoingreso,
+                    gravable=gravable,
                     empresa_reg=suc.empresa,
+                    sucursal_reg=suc,
                     active=activo,
                     user_reg=request.user,
                 )
@@ -8537,6 +8554,233 @@ def ingreso_individual_guardar(request):
         }
     return JsonResponse(data)
 
+#---------------------AJAX-------------------------------
+
+#endregion
+
+#region Código para Ingreso Individual
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_ingresoindividual', raise_exception=True)
+def ingreso_individual_listado(request):
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    if request.user.has_perm("worksheet.see_all_ingresoindividual"):
+        lista = IngresoIndividual.objects.filter(empresa_reg=suc.empresa)
+    else:
+        lista = IngresoIndividual.objects.filter(empresa_reg=suc.empresa, active=True)
+    return render(request, 'ingreso-individual-listado.html', {'lista':lista})
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_ingresoindividual', raise_exception=True)
+def ingreso_individual_form(request):
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    tipos_ingresos = TipoIngreso.objects.filter(empresa_reg=suc.empresa, active=True)
+    return render(request, 'ingreso-individual-form.html', {'tipos_ingresos':tipos_ingresos})
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_ingresoindividual', raise_exception=True)
+def ingreso_individual_editar(request, id):
+    dato = IngresoIndividual.objects.get(pk=id)
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    tipos_ingresos = TipoIngreso.objects.filter(empresa_reg=suc.empresa, active=True)
+    return render(request, 'ingreso-individual-form.html', {'dato':dato, 'tipos_ingresos':tipos_ingresos, 'editar':True})
+
+#---------------------AJAX-------------------------------
+
+def ingreso_individual_guardar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                ingreso_i = request.POST['ingreso_i']
+                tipo_ingreso = request.POST['tipo_ingreso']
+                activo = int(request.POST['activo'])
+                gravable = int(request.POST['gravable'])
+
+                if len(ingreso_i) == 0:
+                    mensaje = "El campo 'Ingreso Individual' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(tipo_ingreso) == 0:
+                    mensaje = "El campo 'Tipo Ingreso' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if tipo_ingreso == 0:
+                    mensaje = "El registro no existe."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(ingreso_i) > 50:
+                    mensaje = "El campo 'Ingreso Individual' tiene como máximo 50 caracteres."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                if gravable == 1:
+                    gravable = True
+                else:
+                    gravable = False
+
+                o_tipoingreso = TipoIngreso.objects.get(pk=tipo_ingreso)
+
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+
+                oMd = IngresoIndividual(
+                    ingreso_i=ingreso_i,
+                    tipo_ingreso=o_tipoingreso,
+                    gravable=gravable,
+                    empresa_reg=suc.empresa,
+                    sucursal_reg=suc,
+                    active=activo,
+                    user_reg=request.user,
+                )
+                oMd.save()
+                mensaje = 'Se ha guardado el registro'
+                data = {
+                    'mensaje': mensaje, 'error': False
+                }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def ingreso_individual_actualizar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                ingreso_i = request.POST['ingreso_i']
+                tipo_ingreso = request.POST['tipo_ingreso']
+                activo = int(request.POST['activo'])
+                gravable = int(request.POST['gravable'])
+
+                print activo
+
+                if len(ingreso_i) == 0:
+                    mensaje = "El campo 'Ingreso Individual' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(tipo_ingreso) == 0:
+                    mensaje = "El campo 'Tipo Ingreso' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if tipo_ingreso == 0:
+                    mensaje = "El registro no existe."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(ingreso_i) > 50:
+                    mensaje = "El campo 'Ingreso Individual' tiene como máximo 50 caracteres."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                if gravable == 1:
+                    gravable = True
+                else:
+                    gravable = False
+
+                o_tipoingreso = TipoIngreso.objects.get(pk=tipo_ingreso)
+                oMd = IngresoIndividual.objects.get(pk=id)
+                if oMd:
+                    oMd.ingreso_i = ingreso_i
+                    oMd.tipo_ingreso = o_tipoingreso
+                    oMd.gravable = gravable
+                    oMd.active = activo
+                    oMd.user_mod = request.user
+                    oMd.date_mod = datetime.datetime.now()
+                    oMd.save()
+                    mensaje = 'Se ha actualizado el registro.'
+                    data = {
+                        'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "No existe el registro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def ingreso_individual_eliminar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oMd = IngresoIndividual.objects.get(pk=reg_id)
+                    if oMd:
+                        oMd.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
 
 #---------------------AJAX-------------------------------
 
