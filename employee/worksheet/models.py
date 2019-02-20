@@ -660,6 +660,23 @@ class ImagenEmpleado(models.Model):
     def __unicode__(self):
         return self.empleado.firstName + " " + self.empleado.lastName
 
+class TipoDeduccion(models.Model):
+    tipo_deduccion = models.CharField(max_length=50)
+    descripcion = models.TextField()
+    empresa_reg = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING)
+    user_reg = models.ForeignKey(User)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='tded_usermod', related_query_name='tded_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.BooleanField(default=True)
+    
+    class Meta:
+        verbose_name = "Tipo Deduccion"
+        verbose_name_plural = "Tipo Deducciones"
+
+    def __str__(self):
+        return self.tipo_deduccion
+
 class TipoIngreso(models.Model):
     tipo_ingreso = models.CharField(max_length=50)
     descripcion = models.TextField()

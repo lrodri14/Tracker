@@ -9117,11 +9117,11 @@ def planilla_ver_registro(request):
 #region Código para Tipo de Deducciones
 
 @login_required(login_url='/form/iniciar-sesion/')
-@permission_required('worksheet.see_tipodeduccion', raise_exception=True)
+@permission_required('worksheet.see_tiponomina', raise_exception=True)
 def tipo_nomina_listado(request):
     suc = Branch.objects.get(pk=request.session["sucursal"])
     listado = TipoNomina.objects.filter(active=True, empresa_reg=suc.empresa)
-    return render(request, 'tipo-nomina-listado.html', {'listado': listado})
+    return render(request, 'tipo-nomina-listado.html', {'listado':listado})
 
 #endregion 
 
