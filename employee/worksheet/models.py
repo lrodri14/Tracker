@@ -674,7 +674,7 @@ class TipoDeduccion(models.Model):
         verbose_name = "Tipo Deduccion"
         verbose_name_plural = "Tipo Deducciones"
 
-    def __str__(self):
+    def __unicode__(self):
         return self.tipo_deduccion
 
 class TipoIngreso(models.Model):
@@ -721,6 +721,45 @@ class IngresoGeneral(models.Model):
     def __unicode__(self):
         return self.ingreso_g
 
+class DeduccionIndividual(models.Model):
+    deduccion_i = models.CharField(max_length=50)
+    tipo_deduccion = models.ForeignKey("worksheet.TipoDeduccion", verbose_name="deduccion individual", on_delete=models.PROTECT)
+    control_saldo = models.BooleanField(default=True)
+    empresa_reg = models.ForeignKey(Empresa, on_delete=models.PROTECT)
+    sucursal_reg = models.ForeignKey(Branch, on_delete=models.PROTECT)
+    user_reg = models.ForeignKey(User, on_delete=models.PROTECT)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT, related_name='dedind_usermod', related_query_name='dedind_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.NullBooleanField()
+
+    class Meta:
+        verbose_name = "Deduccion Individual"
+        verbose_name_plural = "Deducciones Individuales"
+
+    def __unicode__(self):
+        return 'Model: %s' % self.deduccion_i
+
+    # def __str__(self):
+    #     return self.deduccion_i
+
+class DeduccionGeneral(models.Model):
+    deduccion_g = models.CharField(max_length=50)
+    tipo_deduccion = models.ForeignKey("worksheet.TipoDeduccion", verbose_name="tipo deduccion", on_delete=models.PROTECT)
+    empresa_reg = models.ForeignKey(Empresa, on_delete=models.PROTECT)
+    sucursal_reg = models.ForeignKey(Branch, on_delete=models.PROTECT)
+    user_reg = models.ForeignKey(User, on_delete=models.PROTECT)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT, related_name='deg_usermod', related_query_name='deg_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.NullBooleanField()
+    
+    class Meta:
+        verbose_name = "Deduccion General"
+        verbose_name_plural = "Deduccion Generales"
+
+    def __unicode__(self):
+        return self.deduccion_g
 
 #Transacciones
 class IncrementosSalariales(models.Model):
@@ -744,7 +783,6 @@ class IncrementosSalariales(models.Model):
 
 @receiver(post_save, sender=IncrementosSalariales)
 def post_save_incrementossalariales(sender, instance, **kwargs):
-
     if kwargs['created']:
         tot_reg = IncrementosSalariales.objects.filter(empleado=instance.empleado, active=True, salario_actual=True).count()
         if tot_reg > 0:
@@ -765,6 +803,27 @@ def post_save_incrementossalariales(sender, instance, **kwargs):
                 if o_salary_units.dias_salario > 0:
                     d_empleado.salario_diario = float(instance.nuevo_salario) / float(o_salary_units.dias_salario)
         d_empleado.save()
+
+
+class ImpuestoSobreRenta(models.Model):
+    desde = models.DecimalField(max_digits=15, decimal_places=2)
+    hasta = models.DecimalField(max_digits=15, decimal_places=2)
+    porcentaje = models.DecimalField(max_digits=5, decimal_places=2)
+    porcentaje_label = models.CharField(max_length=50)
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING)
+    user_reg = models.ForeignKey(User, blank=True, null=True)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='isv_usermod', related_query_name='isv_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.NullBooleanField(blank=True, null=True)
+    
+    class Meta:
+        verbose_name ="impuesto sobre renta"
+        verbose_name_plural = "impuestos sobre rentas"
+
+    def __str__(self):
+        return self.porcentaje_label
+
 
 class Planilla(models.Model):
     correlativo = models.CharField(("Correlativo"), max_length=50, blank=True, null=True)

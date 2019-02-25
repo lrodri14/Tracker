@@ -2424,6 +2424,120 @@ emp_cboTipoSalario.on('change', function() {
 
 //#endregion
 
+//#region Código para Deducción General
+
+    var dg_id = $('#deduccion_general input[name="id"]');
+    var dg_deduccion = $('#deduccion_general input[name="deduccion"]');
+    var dg_tipodeduccion = $('#deduccion_general select[name="tipo_deduccion"]');
+    var dg_chkActivo = $('#deduccion_general input[name="activo"]');
+
+    $('#deduccion_general #btnGuardar').on('click', function (e) {
+        e.preventDefault();
+        if (dg_chkActivo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
+        }
+        url = '/guardar/deduccion-general/';
+        metodo = 'POST';
+        data = {
+            'tipo_deduccion': dg_tipodeduccion.val(),
+            'deduccion': dg_deduccion.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Deducción General");
+    });
+
+    $('#deduccion_general #btnActualizar').on('click', function (e) {
+        e.preventDefault();
+        if (dg_chkActivo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
+        }
+        url = '/actualizar/deduccion-general/';
+        metodo = 'POST';
+        data = {
+            'id': dg_id.val(),
+            'tipo_deduccion': dg_tipodeduccion.val(),
+            'deduccion': dg_deduccion.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Deducción General", true, "/listar/deduccion-general/");
+    });
+
+    $('#deduccion_general #btnCancelar').on('click', function (e) {
+        e.preventDefault();
+        window.location.replace(dns + "/listar/deduccion-general/");
+    });
+//#endregion
+
+//#region Código para Deducción Individual
+
+    var di_id = $('#deduccion_individual input[name="id"]');
+    var di_deduccion = $('#deduccion_individual input[name="deduccion"]');
+    var di_tipodeduccion = $('#deduccion_individual select[name="tipo_deduccion"]');
+    var di_controlasaldo = $('#deduccion_individual input[name="controla_saldo"]');
+    var di_chkActivo = $('#deduccion_individual input[name="activo"]');
+
+    $('#deduccion_individual #btnGuardar').on('click', function (e) {
+        e.preventDefault();
+        if (di_controlasaldo.is(":checked")) {
+            vControlaSaldo = 1;
+        } else {
+            vControlaSaldo = 0;
+        }
+        if (di_chkActivo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
+        }
+        url = '/guardar/deduccion-individual/';
+        metodo = 'POST';
+        data = {
+            'tipo_deduccion': di_tipodeduccion.val(),
+            'deduccion': di_deduccion.val(),
+            'controla_saldo': vControlaSaldo,
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Deducción Individual");
+    });
+
+    $('#deduccion_individual #btnActualizar').on('click', function (e) {
+        e.preventDefault();
+        if (di_controlasaldo.is(":checked")) {
+            vControlaSaldo = 1;
+        } else {
+            vControlaSaldo = 0;
+        }
+        if (di_chkActivo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
+        }
+        url = '/actualizar/deduccion-individual/';
+        metodo = 'POST';
+        data = {
+            'id': di_id.val(),
+            'tipo_deduccion': di_tipodeduccion.val(),
+            'deduccion': di_deduccion.val(),
+            'controla_saldo': vControlaSaldo,
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Deducción Individual", true, "/listar/deduccion-individual/");
+    });
+
+    $('#deduccion_individual #btnCancelar').on('click', function (e) {
+        e.preventDefault();
+        window.location.replace(dns + "/listar/deduccion-individual/");
+    });
+
+//#endregion
+
 //#region Código para Ingreso General
 
 
@@ -2731,6 +2845,57 @@ $('#tipo_contrato #btnActualizar').on('click', function(e) {
 $('#tipo_contrato #btnCancelar').on('click', function(e) {
     e.preventDefault();
     window.location.replace(dns + "/listar/tipo-contrato/");
+});
+
+//#endregion
+
+//#region Código para Tipo de Deducción
+
+var td_id = $('#tipo_deduccion input[name="id"]');
+var td_tipoDeduccion = $('#tipo_deduccion input[name="txtTipoDeduccion"]');
+var td_txtDescripcion = $('#tipo_deduccion textarea[name="txtDescripcion"]');
+var td_chkActivo =  $('#tipo_deduccion input[name="tipoDeduccion_activo"]');
+
+$('#tipo_deduccion #btnGuardar').on('click', function (e) {
+    e.preventDefault();
+    if (td_chkActivo.is(":checked")) {
+        vActivo = 1;
+    } else {
+        vActivo = 0;
+    }
+    url = '/guardar/tipo-deduccion/';
+    metodo = 'POST';
+    data = {
+        'tipo_deduccion': td_tipoDeduccion.val(),
+        'descripcion': td_txtDescripcion.val(),
+        'activo': vActivo,
+        'csrfmiddlewaretoken': token.val(),
+    };
+    GuardarRegistro(url, metodo, data, "Tipo de Deducción");
+});
+
+$('#tipo_deduccion #btnActualizar').on('click', function(e) {
+    e.preventDefault();
+    if (td_chkActivo.is(":checked")) {
+        vActivo = 1;
+    } else {
+        vActivo = 0;
+    }
+    url = '/actualizar/tipo-deduccion/';
+    metodo = 'POST';
+    data = {
+        'id': td_id.val(),
+        'tipo_deduccion': td_tipoDeduccion.val(),
+        'descripcion': td_txtDescripcion.val(),
+        'activo': vActivo,
+        'csrfmiddlewaretoken': token.val(),
+    };
+    GuardarRegistro(url, metodo, data, "Tipo de Deducción", true, "/listar/tipo-deduccion/");
+});
+
+$('#tipo_deduccion #btnCancelar').on('click', function (e) {
+    e.preventDefault();
+    window.location.replace(dns + "/listar/tipo-deduccion/");
 });
 
 //#endregion

@@ -173,48 +173,57 @@
                     </li><!--FIN DE OPCIÓN ORGANIZACIÓN-->
                     <li><a href="javascript:void(0)" id="aPersonal" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Personal <span class="fa arrow"></span></span></a>
                         <ul class="nav nav-second-level">
+                            <li><a href="{% url 'articulos_asignados_listar' %}" id="actAsig" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Activo Asignados</span></a></li>
                             {% if perms.worksheet.see_banco %}
                             <li><a href="{% url 'banco_listado' %}" id="aBanco" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Banco</span></a></li>
                             {% endif %}
-                            <li><a href="{% url 'listado_paises' %}" id="aPaises" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Países</span></a></li>
-                            <li><a href="{% url 'listado_deptos' %}" id="aDept" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Departamentos</span></a></li>
                             <li><a href="{% url 'ciudades_listado' %}" id="aCiud" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Ciudades</span></a></li>
-                            <li><a href="{% url 'generos_listado' %}" id="aGenero" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Géneros</span></a></li>
-                            <li><a href="{% url 'estado_civil_listado' %}" id="aEstCiv" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Estado Civil</span></a></li>
-                            <li><a href="{% url 'parentesco_listado' %}" id="aParent" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Parentesco</span></a></li>
-                            <li><a href="{% url 'funcion_trab_listado' %}" id="aFunTrab" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Función de Trabajo</span></a></li>
-                            <li><a href="{% url 'equipo_trabajo_listado' %}" id="aEqTrab" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Equipo de Trabajo</span></a></li>
-                            <li><a href="{% url 'estado_empleado_listado' %}" id="aEsEm" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Estatus Empleado</span></a></li>
-                            <li><a href="{% url 'motivos_ausencia_listado' %}" id="aMAu" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Motivos de Ausencia</span></a></li>
-                            <li><a href="{% url 'motivos_despido_listado' %}" id="aMDes" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Motivos de Despido</span></a></li>
-                            <li><a href="{% url 'motivos_renuncia_listado' %}" id="aMRe" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Motivos de Renuncia</span></a></li>
-                            <li><a href="{% url 'motivo_rescicion_contrato_listar' %}" id="aMReCon" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Motivos Rescisión Contrato</span></a></li>
                             <li><a href="{% url 'clase_educacion_listado' %}" id="aClsEdu" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Clases de Educación</span></a></li>
-                            <li><a href="{% url 'motivos_aumento_sueldo_listado' %}" id="aMas" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Motivos de Aumento de Sueldo</span></a></li>
-                            <li><a href="{% url 'grupo_comisiones_listar' %}" id="grpCom" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Grupo de Comisiones</span></a></li>
-                            <li><a href="{% url 'vendedor_listar' %}" id="Vend" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Vendedores</span></a></li>
+                            {% if perms.worksheet.see_deducciongeneral %}
+                            <li><a href="{% url 'deduccion_general_listado' %}" id="aDeduccionG" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Deducción General</span></a></li>
+                            {% endif %}
+                            {% if perms.worksheet.see_deduccionindividual %}
+                            <li><a href="{% url 'deduccion_individual_listado' %}" id="aDeduccionI" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Deducción Individual</span></a></li>
+                            {% endif %}
+                            <li><a href="{% url 'listado_deptos' %}" id="aDept" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Departamentos</span></a></li>
+                            <li><a href="{% url 'equipo_trabajo_listado' %}" id="aEqTrab" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Equipo de Trabajo</span></a></li>
+                            <li><a href="{% url 'estado_civil_listado' %}" id="aEstCiv" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Estado Civil</span></a></li>
+                            <li><a href="{% url 'estado_empleado_listado' %}" id="aEsEm" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Estatus Empleado</span></a></li>
                             <li><a href="{% url 'feriado_listar' %}" id="Fer" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Feriados</span></a></li>
-                            <li><a href="{% url 'articulos_asignados_listar' %}" id="actAsig" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Activo Asignados</span></a></li>
-                            {% if perms.worksheet.see_employee %}
-                            <li><a href="{% url 'empleados-listado' %}" id="Emp" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Empleado</span></a></li>
-                            {% endif %}
-                            {% if perms.worksheet.see_tipoingreso %}
-                            <li><a href="{% url 'tipo_ingreso_listado' %}" id="aTipoIngreso" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Tipos de Ingreso</span></a></li>
-                            {% endif %}
-                            {% if perms.worksheet.see_tiposalario %}
-                            <li><a href="{% url 'tipo_salario_listar' %}" id="aTiposSalarios" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Tipos de Salario</span></a></li>
-                            {% endif %}
-                            {% if perms.worksheet.see_tiponomina %}
-                            <li><a href="{% url 'tipo_nomina_listar' %}" id="aTipoNomina" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Tipo de Nómina</span></a></li>
-                            {% endif %}
+                            <li><a href="{% url 'funcion_trab_listado' %}" id="aFunTrab" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Función de Trabajo</span></a></li>
+                            <li><a href="{% url 'generos_listado' %}" id="aGenero" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Géneros</span></a></li>
+                            <li><a href="{% url 'grupo_comisiones_listar' %}" id="grpCom" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Grupo de Comisiones</span></a></li>
                             {% if perms.worksheet.see_ingresoindividual %}
                             <li><a href="{% url 'ingreso_individual_listado' %}" id="aIngresoI" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Ingreso Individual</span></a></li>
                             {% endif %}
                             {% if perms.worksheet.see_ingresogeneral %}
                             <li><a href="{% url 'ingreso_general_listado' %}" id="aIngresoG" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Ingreso General</span></a></li>
                             {% endif %}
+                            <li><a href="{% url 'motivos_aumento_sueldo_listado' %}" id="aMas" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Motivos de Aumento de Sueldo</span></a></li>
+                            <li><a href="{% url 'motivos_ausencia_listado' %}" id="aMAu" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Motivos de Ausencia</span></a></li>
+                            <li><a href="{% url 'motivos_despido_listado' %}" id="aMDes" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Motivos de Despido</span></a></li>
+                            <li><a href="{% url 'motivos_renuncia_listado' %}" id="aMRe" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Motivos de Renuncia</span></a></li>
+                            <li><a href="{% url 'motivo_rescicion_contrato_listar' %}" id="aMReCon" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Motivos Rescisión Contrato</span></a></li>
+                            <li><a href="{% url 'parentesco_listado' %}" id="aParent" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Parentesco</span></a></li>
+                            <li><a href="{% url 'listado_paises' %}" id="aPaises" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Países</span></a></li>
                             {% if perms.worksheet.see_tipocontrato %}
                             <li><a href="{% url 'tipo_contrato_listado' %}" id="aTipoContrato" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Tipo de Contrato</span></a></li>
+                            {% endif %}
+                            {% if perms.worksheet.see_tipodeduccion %}
+                            <li><a href="{% url 'tipo_deduccion_listado' %}" id="aTipoDeduccion" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Tipo de Deducción</span></a></li>
+                            {% endif %}
+                            {% if perms.worksheet.see_tipoingreso %}
+                            <li><a href="{% url 'tipo_ingreso_listado' %}" id="aTipoIngreso" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Tipos de Ingreso</span></a></li>
+                            {% endif %}
+                            {% if perms.worksheet.see_tiponomina %}
+                            <li><a href="{% url 'tipo_nomina_listar' %}" id="aTipoNomina" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Tipo de Nómina</span></a></li>
+                            {% endif %}
+                            {% if perms.worksheet.see_tiposalario %}
+                            <li><a href="{% url 'tipo_salario_listar' %}" id="aTiposSalarios" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Tipos de Salario</span></a></li>
+                            {% endif %}
+                            <li><a href="{% url 'vendedor_listar' %}" id="Vend" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Vendedores</span></a></li>
+                            {% if perms.worksheet.see_employee %}
+                            <li><a href="{% url 'empleados-listado' %}" id="Emp" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Empleado</span></a></li>
                             {% endif %}
                         </ul>
                     </li>

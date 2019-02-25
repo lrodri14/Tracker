@@ -8428,6 +8428,390 @@ def aumento_salario_ver_registro(request):
 
 #endregion
 
+#region Código para Deducción Individual
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_deduccionindividual', raise_exception=True)
+def deduccion_individual_listado(request):
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    if request.user.has_perm("worksheet.see_all_deduccionindividual"):
+        listado = DeduccionIndividual.objects.filter(empresa_reg=suc.empresa)
+    else:
+        if request.user.has_perm("worksheet.see_deduccionindividual"):
+            listado = DeduccionIndividual.objects.filter(
+                active=True, empresa_reg=suc.empresa)
+    return render(request, 'deduccion-individual-listado.html', {'listado': listado})
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_deduccionindividual', raise_exception=True)
+def deduccion_individual_form(request):
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    tipos_deducciones = TipoDeduccion.objects.filter(empresa_reg=suc.empresa)
+    return render(request, 'deduccion-individual-form.html', {'tipos_deducciones':tipos_deducciones})
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_deduccionindividual', raise_exception=True)
+def deduccion_individual_editar(request, id):
+    dato = DeduccionIndividual.objects.get(pk=id)
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    tipos_deducciones = TipoDeduccion.objects.filter(empresa_reg=suc.empresa)
+    return render(request, 'deduccion-individual-form.html', {'dato': dato, 'editar': True, 'tipos_deducciones':tipos_deducciones})
+
+#---------------------AJAX-------------------------------
+
+
+def deduccion_individual_guardar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                deduccion = request.POST['deduccion']
+                tipo_deduccion = request.POST['tipo_deduccion']
+                controla_saldo = int(request.POST['controla_saldo'])
+                activo = int(request.POST['activo'])
+
+                if len(deduccion) == 0:
+                    mensaje = "El campo 'Deducción Individual' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(tipo_deduccion) == 0:
+                    mensaje = "El campo 'Tipo Deducción' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(deduccion) > 50:
+                    mensaje = "El campo 'Deducción' tiene como máximo 50 caracteres."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if controla_saldo == 1:
+                    controla_saldo = True
+                else:
+                    controla_saldo = False
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+                o_tipodeduccion = TipoDeduccion.objects.get(pk=tipo_deduccion)
+
+                oMd = DeduccionIndividual(
+                    deduccion_i=deduccion,
+                    tipo_deduccion=o_tipodeduccion,
+                    control_saldo =  controla_saldo,
+                    empresa_reg=suc.empresa,
+                    sucursal_reg=suc,
+                    active=activo,
+                    user_reg=request.user,
+                )
+                oMd.save()
+                mensaje = 'Se ha guardado el registro'
+                data = {
+                    'mensaje': mensaje, 'error': False
+                }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def deduccion_individual_actualizar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                deduccion = request.POST['deduccion']
+                tipo_deduccion = request.POST['tipo_deduccion']
+                controla_saldo = int(request.POST['controla_saldo'])
+                activo = int(request.POST['activo'])
+
+                if len(deduccion) == 0:
+                    mensaje = "El campo 'Deducción Individual' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(tipo_deduccion) == 0:
+                    mensaje = "El campo 'Tipo Deducción' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(deduccion) > 50:
+                    mensaje = "El campo 'Deducción' tiene como máximo 50 caracteres."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if controla_saldo == 1:
+                    controla_saldo = True
+                else:
+                    controla_saldo = False
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+                o_tipodeduccion = TipoDeduccion.objects.get(pk=tipo_deduccion)
+
+                oMd = DeduccionIndividual.objects.get(pk=id)
+                if oMd:
+                    oMd.deduccion_i = deduccion
+                    oMd.tipo_deduccion = o_tipodeduccion
+                    oMd.control_saldo = controla_saldo
+                    oMd.active = activo
+                    oMd.user_mod = request.user
+                    oMd.date_mod = datetime.datetime.now()
+                    oMd.save()
+                    mensaje = 'Se ha actualizado el registro.'
+                    data = {
+                        'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "No existe el registro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def deduccion_individual_eliminar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oMd = DeduccionIndividual.objects.get(pk=reg_id)
+                    if oMd:
+                        oMd.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+#---------------------AJAX-------------------------------
+
+#endregion
+
+#region Código para Deducción General
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_deducciongeneral', raise_exception=True)
+def deduccion_general_listado(request):
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    if request.user.has_perm("worksheet.see_all_deducciongeneral"):
+        listado = DeduccionGeneral.objects.filter(empresa_reg=suc.empresa)
+    else:
+        if request.user.has_perm("worksheet.see_deducciongeneral"):
+            listado = DeduccionGeneral.objects.filter(active=True, empresa_reg=suc.empresa)
+    return render(request, 'deduccion-general-listado.html', {'listado': listado})
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_deducciongenearl', raise_exception=True)
+def deduccion_general_form(request):
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    tipos_deducciones = TipoDeduccion.objects.filter(empresa_reg=suc.empresa)
+    return render(request, 'deduccion-general-form.html', {'tipos_deducciones':tipos_deducciones})
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_deducciongeneral', raise_exception=True)
+def deduccion_general_editar(request, id):
+    dato = DeduccionGeneral.objects.get(pk=id)
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    tipos_deducciones = TipoDeduccion.objects.filter(empresa_reg=suc.empresa)
+    return render(request, 'deduccion-general-form.html', {'dato': dato, 'editar': True, 'tipos_deducciones':tipos_deducciones})
+
+#---------------------AJAX-------------------------------
+
+def deduccion_general_guardar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                deduccion = request.POST['deduccion']
+                tipo_deduccion = request.POST['tipo_deduccion']
+                activo = int(request.POST['activo'])
+
+                if len(deduccion) == 0:
+                    mensaje = "El campo 'Deducción General' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(tipo_deduccion) == 0:
+                    mensaje = "El campo 'Tipo Deducción' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(deduccion) > 50:
+                    mensaje = "El campo 'Deducción General' tiene como máximo 50 caracteres."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+                o_tipodeduccion = TipoDeduccion.objects.get(pk=tipo_deduccion)
+
+                oMd = DeduccionGeneral(
+                    deduccion_g=deduccion,
+                    tipo_deduccion=o_tipodeduccion,
+                    empresa_reg=suc.empresa,
+                    sucursal_reg=suc,
+                    active=activo,
+                    user_reg=request.user,
+                )
+                oMd.save()
+                mensaje = 'Se ha guardado el registro'
+                data = {
+                    'mensaje': mensaje, 'error': False
+                }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+
+def deduccion_general_actualizar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                deduccion = request.POST['deduccion']
+                tipo_deduccion = request.POST['tipo_deduccion']
+                activo = int(request.POST['activo'])
+
+                if len(deduccion) == 0:
+                    mensaje = "El campo 'Deducción General' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(tipo_deduccion) == 0:
+                    mensaje = "El campo 'Tipo Deducción' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(deduccion) > 50:
+                    mensaje = "El campo 'Deducción General' tiene como máximo 50 caracteres."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+                o_tipodeduccion = TipoDeduccion.objects.get(pk=tipo_deduccion)
+
+                oMd = DeduccionGeneral.objects.get(pk=id)
+                if oMd:
+                    oMd.deduccion_g = deduccion
+                    oMd.tipo_deduccion = o_tipodeduccion
+                    oMd.active = activo
+                    oMd.user_mod = request.user
+                    oMd.date_mod = datetime.datetime.now()
+                    oMd.save()
+                    mensaje = 'Se ha actualizado el registro.'
+                    data = {
+                        'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "No existe el registro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+#---------------------AJAX-------------------------------
+
+#endregion
+
 #region Código para Empleado
 
 #---------------------------AJAX-----------------------------
@@ -8454,7 +8838,6 @@ def obtener_dias_salario(request):
 #--------------------------END AJAX -------------------------
 
 #endregion
-
 
 #region Código para Ingreso General
 
@@ -9118,10 +9501,194 @@ def planilla_ver_registro(request):
 
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.see_tipodeduccion', raise_exception=True)
-def tipo_nomina_listado(request):
+def tipo_deduccion_listado(request):
     suc = Branch.objects.get(pk=request.session["sucursal"])
-    listado = TipoNomina.objects.filter(active=True, empresa_reg=suc.empresa)
-    return render(request, 'tipo-nomina-listado.html', {'listado': listado})
+    if request.user.has_perm("worksheet.see_all_tipodeduccion"):
+        listado = TipoDeduccion.objects.filter(empresa_reg=suc.empresa)
+    else:
+        if request.user.has_perm("worksheet.see_tipodeduccion"):
+            listado = TipoDeduccion.objects.filter(active=True, empresa_reg=suc.empresa)
+    return render(request, 'tipo-deduccion-listado.html', {'listado': listado})
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_tipodeduccion', raise_exception=True)
+def tipo_deduccion_form(request):
+    return render(request, 'tipo-deduccion-form.html')
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_tipodeduccion', raise_exception=True)
+def tipo_deduccion_editar(request, id):
+    dato = TipoDeduccion.objects.get(pk=id)
+    return render(request, 'tipo-deduccion-form.html', {'dato': dato, 'editar': True})
+
+#---------------------AJAX-------------------------------
+
+def tipo_deduccion_guardar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                tipo_deduccion = request.POST['tipo_deduccion']
+                desc = request.POST['descripcion']
+                activo = int(request.POST['activo'])
+
+                if len(tipo_deduccion) == 0:
+                    mensaje = "El campo 'Tipo de Deducción' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(desc) == 0:
+                    mensaje = "El campo 'Descripción' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(tipo_deduccion) > 50:
+                    mensaje = "El campo 'Tipo de Deducción' tiene como máximo 50 caracteres."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+
+                oMd = TipoDeduccion(
+                    tipo_deduccion=tipo_deduccion,
+                    descripcion=desc,
+                    empresa_reg=suc.empresa,
+                    active=activo,
+                    user_reg=request.user,
+                )
+                oMd.save()
+                mensaje = 'Se ha guardado el registro'
+                data = {
+                    'mensaje': mensaje, 'error': False
+                }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def tipo_deduccion_actualizar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                tipo_deduccion = request.POST['tipo_deduccion']
+                desc = request.POST['descripcion']
+                activo = int(request.POST['activo'])
+
+                if len(tipo_deduccion) == 0:
+                    mensaje = "El campo 'Tipo de Deducción' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(desc) == 0:
+                    mensaje = "El campo 'Descripción' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(tipo_deduccion) > 100:
+                    mensaje = "El campo 'Tipo de Deduccion' tiene como máximo 50 caracteres."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                oMd = TipoDeduccion.objects.get(pk=id)
+                if oMd:
+                    oMd.tipo_deduccion = tipo_deduccion
+                    oMd.descripcion = desc
+                    oMd.active = activo
+                    oMd.user_mod = request.user
+                    oMd.date_mod = datetime.datetime.now()
+                    oMd.save()
+                    mensaje = 'Se ha actualizado el registro.'
+                    data = {
+                        'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "No existe el registro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def tipo_deduccion_eliminar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oMd = TipoDeduccion.objects.get(pk=reg_id)
+                    if oMd:
+                        oMd.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+#---------------------AJAX-------------------------------
 
 #endregion 
 
