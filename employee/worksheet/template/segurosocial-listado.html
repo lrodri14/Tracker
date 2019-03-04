@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block titulo %}
-Listado de Ingresos Generales
+Listado de Porcentajes de Seguro Social
 {% endblock titulo %}
 {% load static %}
 {% block contenido %}
@@ -9,14 +9,14 @@ Listado de Ingresos Generales
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h2 class="text-bold"><i class="fa fa-list"></i>
-                    Listado de Ingresos Generales</h2>
+                    Listado de Porcentajes en Seguro Social</h2>
             </div>
             <div class="panel-wrapper">
                 <div class="panel-body">
                     <div class="row text-right">
-                        {% if perms.worksheet.add_ingresogeneral %}
+                        {% if perms.worksheet.add_segurosocial %}
                         <div class="col-md-12">
-                            <a href="{% url 'ingreso_general_form' %}" class="btn btn-primary">Agregar</a>
+                            <a href="{% url 'segurosocial_form' %}" class="btn btn-primary">Agregar</a>
                         </div>
                         {% endif %}
                     </div>
@@ -26,31 +26,35 @@ Listado de Ingresos Generales
                             {% csrf_token %}
                             <thead>
                                 <tr>
-                                    <th>Nombre</th>
-                                    <th>Tipo de Ingreso</th>
-                                    <th>Gravable</th>
+                                    <th>Tipo</th>
+                                    <th>Techo</th>
+                                    <th>Porcentaje Empleado(%)</th>
+                                    <th>Valor Empleado</th>
+                                    <th>Estado registro</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for item in lista %}
                                 <tr>
-                                    <td>{{item.ingreso_g}}</td>
-                                    <td>{{item.tipo_ingreso.tipo_ingreso}}</td>
+                                    <td>{{item.tipo}}</td>
+                                    <td>{{item.techo}}</td>
+                                    <td>{{item.porcentaje_e}}</td>
+                                    <td>{{item.valor_e}}</td>
                                     <td>
-                                        {% if item.gravable %}
-                                        <span class="label label-success">SI</span>
+                                        {% if item.active %}
+                                        <span class="label label-success">Habilitado</span>
                                         {% else %}
-                                        <span class="label label-danger">NO</span>
+                                        <span class="label label-danger">Inactivo</span>
                                         {% endif %}
                                     </td>                         
                                     <td class="text-nowrap acciones">
-                                        {% if perms.worksheet.change_ingresogeneral %}
-                                        <a href="{% url 'ingreso_general_editar' item.pk %}" data-toggle="tooltip" data-original-title="Editar">
+                                        {% if perms.worksheet.change_segurosocial %}
+                                        <a href="{% url 'segurosocial_editar' item.pk %}" data-toggle="tooltip" data-original-title="Editar">
                                             <i class="fa fa-pencil text-inverse m-r-10"></i>
                                         </a>
                                         {% endif %}
-                                        {% if perms.worksheet.delete_ingresogeneral %}
+                                        {% if perms.worksheet.delete_segurosocial %}
                                         <a href="#" class="btnEliminar" data="{{item.pk}}" data-toggle="tooltip" data-original-title="Eliminar">
                                             <i class="fa fa-close text-danger"></i>
                                         </a>
@@ -73,7 +77,7 @@ Listado de Ingresos Generales
     //#region Efectos en SideBar
     $('#side-menu a').removeClass('active');
     $('#aPersonal').addClass('active');
-    $('#aIngresoG').addClass('active');
+    $('#aSeguroSocial').addClass('active');
     //#endregion
 
     //#region Eventos Controles
@@ -86,8 +90,8 @@ Listado de Ingresos Generales
 
     //#region Funciones
     function Eliminar(id) {
-        var Encabezado = 'Ingreso General';
-        var url = "/eliminar/ingreso-general/"; // the script where you handle the form input.
+        var Encabezado = 'Seguro Social';
+        var url = "/eliminar/seguro-social/"; // the script where you handle the form input.
         $.ajax({
             type: "POST",
             url: url,

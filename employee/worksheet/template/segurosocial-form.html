@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block titulo %}
-Ingreso General
+Datos de Seguro Social
 {% endblock titulo %}
 {% load static %}
 {% block estilo %}
@@ -14,12 +14,12 @@ Ingreso General
 </style>
 {% endblock estilo %}
 {% block contenido %}
-<div id="ingreso_general" class="row">
+<div id="segurosocial" class="row">
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h2 class="text-bold"><i class="ti-pencil-alt"></i>
-                    Ingreso General</h2>
+                    Datos de Seguro Social</h2>
             </div>
             <div class="panel-wrapper">
                 <div class="panel-body">
@@ -32,20 +32,20 @@ Ingreso General
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <div class="col-md-5 text-right">
-                                        <label class="control-label">Ingreso General :</label>
+                                        <label class="control-label">Tipo :</label>
                                     </div>
                                     <div class="col-md-7">
-                                        <input name="txtIngresoG" value="{{dato.ingreso_g}}" type="text" class="form-control input" maxlength="50" />
+                                        <input name="tipo" value="{{dato.tipo}}" type="text" class="form-control input" maxlength="50" />
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label class="control-label">Techo :</label>
+                                    </div>
                                     <div class="col-md-7">
-                                        <div class="checkbox checkbox-info">
-                                            <input id="chkGravable" name="ingresog_gravable" type="checkbox" {% if dato.gravable %}checked{% endif %} class="input">
-                                            <label class="control-label"> Gravable </label>
-                                        </div>
+                                        <input name="techo" value="{{dato.techo}}" type="text" class="form-control input" maxlength="70" />
                                     </div>
                                 </div>
                             </div>
@@ -54,27 +54,45 @@ Ingreso General
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <div class="col-md-5 text-right">
-                                        <label class="control-label">Tipo de Ingreso :</label>
+                                        <label class="control-label">Porcentaje Empleado:</label>
                                     </div>
                                     <div class="col-md-7">
-                                        <select class="form-control select2" name="cboTipoIngreso">
-                                            <option value="0">Seleccionar...</option>
-                                            {% for item in tipos_ingresos %}
-                                                {% if editar %}
-                                                    {% if item == dato.tipo_ingreso %}
-                                                    <option value="{{item.pk}}" selected>{{item.tipo_ingreso}}</option>
-                                                    {% else %}
-                                                    <option value="{{item.pk}}">{{item.tipo_ingreso}}</option>
-                                                    {% endif %}
-                                                {% else %}
-                                                <option value="{{item.pk}}">{{item.tipo_ingreso}}</option>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </select>
+                                        <input name="porcentaje_e" value="{{dato.porcentaje_e}}" type="text" class="form-control input" maxlength="50" />
                                     </div>
                                 </div>
                             </div>
-                        <div class="col-md-6"></div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label class="control-label">Valor Empleado:</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <input name="valor_e" value="{{dato.valor_e}}" type="text" class="form-control input" maxlength="50" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 margin-bottom-5px">    
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label class="control-label">Porcentaje Patrono:</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <input name="porcentaje_p" value="{{dato.porcentaje_p}}" type="text" class="form-control input" maxlength="50" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label class="control-label">Valor Patrono:</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <input name="valor_p" value="{{dato.valor_p}}" type="text" class="form-control input" maxlength="50" />
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-md-12">
                             <div class="col-md-6">
@@ -82,7 +100,7 @@ Ingreso General
                                     <div class="col-md-5"></div>
                                     <div class="col-md-7">
                                         <div class="checkbox checkbox-success">
-                                            <input id="chkActivo" name="chkActivo" type="checkbox" {% if dato.active %}checked{% endif %} class="input">
+                                            <input id="chkActivo" name="activo" type="checkbox" {% if dato.active %}checked{% endif %} class="input">
                                             <label for="chkActivo" class="control-label"> Activo </label>
                                         </div>
                                     </div>
@@ -108,6 +126,6 @@ Ingreso General
 <script>
     $('#side-menu a').removeClass('active');
     $('#aPersonal').addClass('active');
-    $('#aIngresoI').addClass('active');
+    $('#aSeguroSocial').addClass('active');
 </script>
 {% endblock scripts %}

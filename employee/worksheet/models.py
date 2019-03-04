@@ -824,6 +824,90 @@ class ImpuestoSobreRenta(models.Model):
     def __str__(self):
         return self.porcentaje_label
 
+class SeguroSocial(models.Model):
+    tipo = models.CharField(max_length=50)
+    techo = models.CharField(max_length=70)
+    porcentaje_e = models.CharField(max_length=50)
+    valor_e = models.CharField(max_length=50)
+    porcentaje_p = models.CharField(max_length=50)
+    valor_p = models.CharField(max_length=50)
+    total_p = models.CharField(max_length=50)
+    total_v = models.CharField(max_length=50)
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.PROTECT)
+    user_reg = models.ForeignKey(User, blank=True, null=True)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='ss_usermod', related_query_name='ss_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.NullBooleanField(blank=True, null=True)
+
+    class Meta:
+        verbose_name = "Seguro Social"
+        verbose_name_plural = "Seguro Social"
+
+    def __str__(self):
+        return self.tipo
+
+
+class ImpuestoVecinal(models.Model):
+    desde = models.DecimalField(max_digits=18, decimal_places=2)
+    hasta = models.DecimalField(max_digits=18, decimal_places=2)
+    porcentaje = models.DecimalField(max_digits=18, decimal_places=2)
+    porcentaje_label = models.CharField(max_length=50)
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.PROTECT)
+    user_reg = models.ForeignKey(User, blank=True, null=True)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='iv_usermod', related_query_name='iv_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.NullBooleanField(blank=True, null=True)
+    
+    class Meta:
+        verbose_name = ("Impuesto Vecinal")
+        verbose_name_plural = ("Impuestos Vecinales")
+
+    def __str__(self):
+        return self.name
+
+class HoraExtra(models.Model):
+    jornada = models.CharField(("Jornada"), max_length=50)
+    horaini = models.TimeField(("Hora Inicial"), auto_now=False, auto_now_add=False)
+    horafin = models.TimeField(("Hora Fin"), auto_now=False, auto_now_add=False)
+    horasDiarias = models.DecimalField(("Horas Diarias"), max_digits=10, decimal_places=2)
+    horasSemana = models.DecimalField(("Horas Semana"), max_digits=10, decimal_places=2)
+    noExedeNocturno = models.IntegerField()
+    horaExtra = models.DecimalField(("Hora Extra"), max_digits=10, decimal_places=2)
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.PROTECT)
+    user_reg = models.ForeignKey(User, blank=True, null=True)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='he_usermod', related_query_name='he_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.NullBooleanField(blank=True, null=True)
+
+    class Meta:
+        verbose_name = ("Hora Extra")
+        verbose_name_plural = ("Horas Extras")
+
+    def __str__(self):
+        return self.jornada
+
+
+class SalarioMinimo(models.Model):
+    fecha = models.DateField(("Fecha"), auto_now_add=True)
+    salario_minimo = models.DecimalField(("Salario Minimo"), max_digits=18, decimal_places=2)
+    vigente = models.BooleanField(("Vigente"))
+    empresa_reg = models.ForeignKey(Empresa, on_delete=models.PROTECT)
+    sucursal_reg = models.ForeignKey(Branch, on_delete=models.PROTECT)
+    user_reg = models.ForeignKey(User, on_delete=models.PROTECT)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT, related_name='sm_usermod', related_query_name='sm_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.NullBooleanField()
+
+    class Meta:
+        verbose_name = ("Salario Minimo")
+        verbose_name_plural = ("Salario Minimo")
+
+    def __str__(self):
+        return self.fecha
 
 class Planilla(models.Model):
     correlativo = models.CharField(("Correlativo"), max_length=50, blank=True, null=True)

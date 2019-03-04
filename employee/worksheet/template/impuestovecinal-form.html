@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block titulo %}
-Ingreso General
+Datos de Impuesto Vecinal
 {% endblock titulo %}
 {% load static %}
 {% block estilo %}
@@ -14,12 +14,12 @@ Ingreso General
 </style>
 {% endblock estilo %}
 {% block contenido %}
-<div id="ingreso_general" class="row">
+<div id="impuestovecinal" class="row">
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h2 class="text-bold"><i class="ti-pencil-alt"></i>
-                    Ingreso General</h2>
+                    Datos de Impuesto Vecinal</h2>
             </div>
             <div class="panel-wrapper">
                 <div class="panel-body">
@@ -32,20 +32,20 @@ Ingreso General
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <div class="col-md-5 text-right">
-                                        <label class="control-label">Ingreso General :</label>
+                                        <label class="control-label">Desde :</label>
                                     </div>
                                     <div class="col-md-7">
-                                        <input name="txtIngresoG" value="{{dato.ingreso_g}}" type="text" class="form-control input" maxlength="50" />
+                                        <input name="desde" value="{{dato.desde}}" type="text" class="form-control input" maxlength="50" />
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label class="control-label">Hasta :</label>
+                                    </div>
                                     <div class="col-md-7">
-                                        <div class="checkbox checkbox-info">
-                                            <input id="chkGravable" name="ingresog_gravable" type="checkbox" {% if dato.gravable %}checked{% endif %} class="input">
-                                            <label class="control-label"> Gravable </label>
-                                        </div>
+                                        <input name="hasta" value="{{dato.hasta}}" type="text" class="form-control input" maxlength="70" />
                                     </div>
                                 </div>
                             </div>
@@ -54,27 +54,14 @@ Ingreso General
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <div class="col-md-5 text-right">
-                                        <label class="control-label">Tipo de Ingreso :</label>
+                                        <label class="control-label">Porcentaje:</label>
                                     </div>
                                     <div class="col-md-7">
-                                        <select class="form-control select2" name="cboTipoIngreso">
-                                            <option value="0">Seleccionar...</option>
-                                            {% for item in tipos_ingresos %}
-                                                {% if editar %}
-                                                    {% if item == dato.tipo_ingreso %}
-                                                    <option value="{{item.pk}}" selected>{{item.tipo_ingreso}}</option>
-                                                    {% else %}
-                                                    <option value="{{item.pk}}">{{item.tipo_ingreso}}</option>
-                                                    {% endif %}
-                                                {% else %}
-                                                <option value="{{item.pk}}">{{item.tipo_ingreso}}</option>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </select>
+                                        <input name="porcentaje" value="{{dato.porcentaje}}" type="text" class="form-control input" maxlength="50" />
                                     </div>
                                 </div>
                             </div>
-                        <div class="col-md-6"></div>
+                            <div class="col-md-6"></div>
                         </div>
                         <div class="col-md-12">
                             <div class="col-md-6">
@@ -82,7 +69,7 @@ Ingreso General
                                     <div class="col-md-5"></div>
                                     <div class="col-md-7">
                                         <div class="checkbox checkbox-success">
-                                            <input id="chkActivo" name="chkActivo" type="checkbox" {% if dato.active %}checked{% endif %} class="input">
+                                            <input id="chkActivo" name="activo" type="checkbox" {% if dato.active %}checked{% endif %} class="input">
                                             <label for="chkActivo" class="control-label"> Activo </label>
                                         </div>
                                     </div>
@@ -105,9 +92,13 @@ Ingreso General
 </div>
 {% endblock contenido %}
 {% block scripts %}
+<script src="{% static 'js/lib/jquery.mask.js' %}"></script>
 <script>
     $('#side-menu a').removeClass('active');
     $('#aPersonal').addClass('active');
-    $('#aIngresoI').addClass('active');
+    $('#aIV').addClass('active');
+    $('input[name="desde"]').mask('000,000,000,000,000.00', {reverse: true});
+    $('input[name="hasta"]').mask('000,000,000,000,000.00', {reverse: true});
+    $('input[name="porcentaje"]').mask('##0.00%', {reverse: true});
 </script>
 {% endblock scripts %}

@@ -2538,10 +2538,183 @@ emp_cboTipoSalario.on('change', function() {
 
 //#endregion
 
+//#region Código para Horas Extras
+
+var he_id = $('#horaextra input[name="id"]');
+var he_jornada = $('#horaextra input[name="jornada"]');
+var he_horaini = $('#horaextra input[name="horaini"]');
+var he_horafin = $('#horaextra input[name="horafin"]');
+var he_horasdiarias = $('#horaextra input[name="horasDiarias"]');
+var he_horassemanas = $('#horaextra input[name="horasSemana"]');
+var he_noexede = $('#horaextra input[name="noExedeNocturno"]');
+var he_horaextra = $('#horaextra input[name="horaExtra"]');
+var he_activo = $('#horaextra input[name="activo"]');
+
+$('#horaextra #btnGuardar').on('click', function(e) {
+    e.preventDefault();
+    if (he_activo.is(":checked")) {
+        vActivo = 1;
+    } else {
+        vActivo = 0;
+    }
+    url = '/guardar/he/';
+    metodo = 'POST';
+    data = {
+        'jornada': he_jornada.val(),
+        'horaini': he_horaini.val(),
+        'horafin': he_horafin.val(),
+        'horasDiarias': he_horasdiarias.val(),
+        'horasSemana': he_horassemanas.val(),
+        'noexede': he_noexede.val(),
+        'horaextra': he_horaextra.val(),
+        'activo': vActivo,
+        'csrfmiddlewaretoken': token.val(),
+    };
+    GuardarRegistro(url, metodo, data, "Horas Extras");
+});
+
+$('#horaextra #btnActualizar').on('click', function (e) {
+    e.preventDefault();
+    if (he_activo.is(":checked")) {
+        vActivo = 1;
+    } else {
+        vActivo = 0;
+    }
+    url = '/actualizar/he/';
+    metodo = 'POST';
+    data = {
+        'id': he_id.val(),
+        'jornada': he_jornada.val(),
+        'horaini': he_horaini.val(),
+        'horafin': he_horafin.val(),
+        'horasDiarias': he_horasdiarias.val(),
+        'horasSemana': he_horassemanas.val(),
+        'noexede': he_noexede.val(),
+        'horaextra': he_horaextra.val(),
+        'activo': vActivo,
+        'csrfmiddlewaretoken': token.val(),
+    };
+    GuardarRegistro(url, metodo, data, "Horas Extras", true, "/listar/he/");
+});
+
+$('#horaextra #btnCancelar').on('click', function(e) {
+    e.preventDefault();
+    window.location.replace(dns + "/listar/he/");
+});
+
+//#endregion
+
+//#region Código para ISR
+
+var isr_id = $('#isr input[name="id"]');
+var isr_desde = $('#isr input[name="desde"]');
+var isr_hasta = $('#isr input[name="hasta"]');
+var isr_prcnt = $('#isr input[name="porcentaje"]');
+var isr_activo = $('#isr input[name="activo"]');
+
+$('#isr #btnGuardar').on('click', function(e) {
+    e.preventDefault();
+    if (isr_activo.is(":checked")) {
+        vActivo = 1;
+    } else {
+        vActivo = 0;
+    }
+    url = '/guardar/isr/';
+    metodo = 'POST';
+    data = {
+        'desde': isr_desde.val(),
+        'hasta': isr_hasta.val(),
+        'porcentaje': isr_prcnt.val(),
+        'activo': vActivo,
+        'csrfmiddlewaretoken': token.val(),
+    };
+    GuardarRegistro(url, metodo, data, "Impuesto sobre renta");
+});
+$('#isr #btnActualizar').on('click', function(e) {
+    e.preventDefault();
+    if (isr_activo.is(":checked")) {
+        vActivo = 1;
+    } else {
+        vActivo = 0;
+    }
+    url = '/actualizar/isr/';
+    metodo = 'POST';
+    data = {
+        'id': isr_id.val(),
+        'desde': isr_desde.val(),
+        'hasta': isr_hasta.val(),
+        'porcentaje': isr_prcnt.val(),
+        'activo': vActivo,
+        'csrfmiddlewaretoken': token.val(),
+    };
+    GuardarRegistro(url, metodo, data, "Impuesto sobre renta", true, "/listar/isr/");
+});
+
+$('#isr #btnCancelar').on('click', function(e) {
+    e.preventDefault();
+    window.location.replace(dns + "/listar/isr/");
+});
+
+//#endregion
+
+//#region Código para Impuesto Vecinal
+
+var iv_id = $('#impuestovecinal input[name="id"]');
+var iv_desde = $('#impuestovecinal input[name="desde"]');
+var iv_hasta = $('#impuestovecinal input[name="hasta"]');
+var iv_porcentaje = $('#impuestovecinal input[name="porcentaje"]');
+var iv_activo = $('#impuestovecinal input[name="activo"]');
+
+$('#impuestovecinal #btnGuardar').on('click', function(e) {
+    e.preventDefault();
+    if (iv_activo.is(":checked")) {
+        vActivo = 1;
+    } else {
+        vActivo = 0;
+    }
+    url = '/guardar/impuesto-vecinal/';
+    metodo = 'POST';
+    data = {
+        'desde': iv_desde.val(),
+        'hasta': iv_hasta.val(),
+        'porcentaje': iv_porcentaje.val(),
+        'activo': vActivo,
+        'csrfmiddlewaretoken': token.val(),
+    };
+    GuardarRegistro(url, metodo, data, "Impuesto Vecinal");
+});
+
+$('#impuestovecinal #btnActualizar').on('click', function(e) {
+    e.preventDefault();
+    if (iv_activo.is(":checked")) {
+        vActivo = 1;
+    } else {
+        vActivo = 0;
+    }
+    url = '/actualizar/impuesto-vecinal/';
+    metodo = 'POST';
+    data = {
+        'id': iv_id.val(),
+        'desde': iv_desde.val(),
+        'hasta': iv_hasta.val(),
+        'porcentaje': iv_porcentaje.val(),
+        'activo': vActivo,
+        'csrfmiddlewaretoken': token.val(),
+    };
+    GuardarRegistro(url, metodo, data, "Impuesto Vecinal", true, "/listar/impuesto-vecinal/");
+});
+
+$('#impuestovecinal #btnCancelar').on('click', function(e) {
+    e.preventDefault();
+    window.location.replace(dns + "/listar/impuesto-vecinal/");
+});
+
+//#endregion
+
 //#region Código para Ingreso General
 
 
-var id = $('#ingreso_general input[name="id"]');
+var ing_id = $('#ingreso_general input[name="id"]');
 var ing_txtIngreso = $('#ingreso_general input[name="txtIngresoG"]');
 var ing_cboTipoIngreso = $('#ingreso_general select[name="cboTipoIngreso"]');
 var ing_chkGravable = $('#ingreso_general input[name="ingresog_gravable"]');
@@ -2572,6 +2745,31 @@ ing_btnGuardar.on('click', function(e) {
         'csrfmiddlewaretoken': token.val(),
     };
     GuardarRegistro(url, metodo, data, "Ingreso General");
+});
+
+ing_btnActualizar.on('click', function(e) {
+    e.preventDefault();
+    if (ing_chkActivo.is(":checked")) {
+        vActivo = 1;
+    } else {
+        vActivo = 0;
+    }
+    if (ing_chkGravable.is(":checked")) {
+        vGravable = 1;
+    } else {
+        vGravable = 0;
+    }
+    url = '/actualizar/ingreso-general/';
+    metodo = 'POST';
+    data = {
+        'id': ing_id.val(),
+        'ingreso_g': ing_txtIngreso.val(),
+        'tipo_ingreso': ing_cboTipoIngreso.val(),
+        'gravable': vGravable,
+        'activo': vActivo,
+        'csrfmiddlewaretoken': token.val(),
+    };
+    GuardarRegistro(url, metodo, data, "Ingreso General", true, "/listar/ingreso-general/");
 });
 
 ing_btnCancelar.on('click', function(e) {
@@ -2642,7 +2840,6 @@ ing_btnCancelar.on('click', function(e) {
         };
         GuardarRegistro(url, metodo, data, "Ingreso Individual", true, "/listar/ingreso-individual/");
     });
-
 
     ini_btnCancelar.on('click', function(e) {
         e.preventDefault();
@@ -2794,7 +2991,69 @@ ing_btnCancelar.on('click', function(e) {
             dataType: 'json'
         });
     });
+//#endregion
 
+//#region Código para Seguro Social
+
+var ss_id = $('#segurosocial input[name="id"]');
+var ss_tipo = $('#segurosocial input[name="tipo"]');
+var ss_techo = $('#segurosocial input[name="techo"]');
+var ss_prcnt_e = $('#segurosocial input[name="porcentaje_e"]');
+var ss_valor_e = $('#segurosocial input[name="valor_e"]');
+var ss_prcnt_p = $('#segurosocial input[name="porcentaje_p"');
+var ss_valor_p = $('#segurosocial input[name="valor_e"]');
+var ss_activo = $('#segurosocial input[name="activo"]');
+
+
+$('#segurosocial #btnGuardar').on('click', function(e) {
+    e.preventDefault();
+    if (ss_activo.is(":checked")) {
+        vActivo = 1;
+    } else {
+        vActivo = 0;
+    }
+    url = '/guardar/seguro-social/';
+    metodo = 'POST';
+    data = {
+        'tipo': ss_tipo.val(),
+        'techo': ss_techo.val(),
+        'porcentaje_e': ss_prcnt_e.val(),
+        'porcentaje_p': ss_prcnt_p.val(),
+        'valor_e': ss_valor_e.val(),
+        'valor_p':ss_valor_p.val(),
+        'activo': vActivo,
+        'csrfmiddlewaretoken': token.val(),
+    };
+    GuardarRegistro(url, metodo, data, "Seguro Social");
+});
+
+$('#segurosocial #btnActualizar').on('click', function(e) {
+    e.preventDefault();
+    if (ss_activo.is(":checked")) {
+        vActivo = 1;
+    } else {
+        vActivo = 0;
+    }
+    url = '/actualizar/seguro-social/';
+    metodo = 'POST';
+    data = {
+        'id': ss_id.val(),
+        'tipo': ss_tipo.val(),
+        'techo': ss_techo.val(),
+        'porcentaje_e': ss_prcnt_e.val(),
+        'porcentaje_p': ss_prcnt_p.val(),
+        'valor_e': ss_valor_e.val(),
+        'valor_p':ss_valor_p.val(),
+        'activo': vActivo,
+        'csrfmiddlewaretoken': token.val(),
+    };
+    GuardarRegistro(url, metodo, data, "Seguro Social", true, "/listar/seguro-social/");
+});
+
+$('#segurosocial #btnCancelar').on('click', function(e) {
+    e.preventDefault();
+    window.location.replace(dns + "/listar/seguro-social/");
+});
 
 //#endregion
 

@@ -193,6 +193,15 @@
                             <li><a href="{% url 'funcion_trab_listado' %}" id="aFunTrab" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Función de Trabajo</span></a></li>
                             <li><a href="{% url 'generos_listado' %}" id="aGenero" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Géneros</span></a></li>
                             <li><a href="{% url 'grupo_comisiones_listar' %}" id="grpCom" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Grupo de Comisiones</span></a></li>
+                            {% if perms.worksheet.see_horaextra %}
+                            <li><a href="{% url 'horaextra_listado' %}" id="aHE" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Hora Extra</span></a></li>
+                            {% endif %}
+                            {% if perms.worksheet.see_impuestosobrerenta %}
+                            <li><a href="{% url 'impuestosobrerenta_listado' %}" id="aISR" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">ISR</span></a></li>
+                            {% endif %}
+                            {% if perms.worksheet.see_impuestovecinal %}
+                            <li><a href="{% url 'impuestovecinal_listado' %}" id="aIV" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Impuesto Vecinal</span></a></li>
+                            {% endif %}
                             {% if perms.worksheet.see_ingresoindividual %}
                             <li><a href="{% url 'ingreso_individual_listado' %}" id="aIngresoI" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Ingreso Individual</span></a></li>
                             {% endif %}
@@ -206,6 +215,12 @@
                             <li><a href="{% url 'motivo_rescicion_contrato_listar' %}" id="aMReCon" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Motivos Rescisión Contrato</span></a></li>
                             <li><a href="{% url 'parentesco_listado' %}" id="aParent" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Parentesco</span></a></li>
                             <li><a href="{% url 'listado_paises' %}" id="aPaises" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Países</span></a></li>
+                            {% if perms.worksheet.see_salariominimo %}
+                            <li><a href="{% url 'salariominimo_listado' %}" id="aSalarioMinimo" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Salario Minimo</span></a></li>
+                            {% endif %}
+                            {% if perms.worksheet.see_segurosocial %}
+                            <li><a href="{% url 'segurosocial_listado' %}" id="aSeguroSocial" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Seguro Social</span></a></li>
+                            {% endif %}
                             {% if perms.worksheet.see_tipocontrato %}
                             <li><a href="{% url 'tipo_contrato_listado' %}" id="aTipoContrato" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Tipo de Contrato</span></a></li>
                             {% endif %}

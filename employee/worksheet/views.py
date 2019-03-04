@@ -8411,7 +8411,6 @@ def aumento_salario_ver_registro(request):
             else:
                 error = True
                 mensaje = "No existe el registro."
-
     else:
         error = True
         mensaje = "El método no está permitido."
@@ -8740,7 +8739,6 @@ def deduccion_general_guardar(request):
         }
     return JsonResponse(data)
 
-
 def deduccion_general_actualizar(request):
     try:
         if request.is_ajax():
@@ -8839,6 +8837,497 @@ def obtener_dias_salario(request):
 
 #endregion
 
+#region Código para Horas Extras
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_horaextra', raise_exception=True)
+def horaextra_listado(request):
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    if request.user.has_perm("worksheet.see_all_horaextra"):
+        lista = HoraExtra.objects.filter(empresa_reg=suc.empresa)
+    else:
+        lista = HoraExtra.objects.filter(empresa_reg=suc.empresa, active=True)
+    return render(request, 'horasextras-listado.html', {'lista': lista})
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_horaextra', raise_exception=True)
+def horaextra_form(request):
+    return render(request, 'horaextra-form.html')
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_horaextra', raise_exception=True)
+def horaextra_editar(request, id):
+    dato = HoraExtra.objects.get(pk=id)
+    return render(request, 'horaextra-form.html', {'dato': dato, 'editar': True})
+
+#---------------------AJAX-------------------------------
+
+def horaextra_guardar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                jornada = request.POST['jornada']
+                horaini = request.POST['horaini']
+                horafin = request.POST['horafin']
+                horaDiarias = request.POST['horasDiarias']
+                horaSemanas = request.POST['horasSemana']
+                noexede = request.POST['noexede']
+                horaextra = request.POST['horaextra']
+                activo = int(request.POST['activo'])
+
+                if len(jornada) == 0:
+                    mensaje = "El campo 'Jornada' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(horaini) == 0:
+                    mensaje = "El campo 'Hora Inicial' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(horafin) == 0:
+                    mensaje = "El campo 'Hora Fin' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(horaDiarias) == 0:
+                    mensaje = "El campo 'Horas Diarias' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(horaSemanas) == 0:
+                    mensaje = "El campo 'Hora Semana' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(noexede) == 0:
+                    mensaje = "El campo 'No Exede Nocturno' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(horaextra) == 0:
+                    mensaje = "El campo 'Hora Extra' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                horaextra = horaextra.replace("%", "")
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+
+                oMd = HoraExtra(
+                    jornada=jornada,
+                    horaini=horaini,
+                    horafin=horafin,
+                    horasDiarias=horaDiarias,
+                    horasSemana = horaSemanas,
+                    noExedeNocturno = noexede,
+                    horaExtra = horaextra,
+                    empresa_reg=suc.empresa,
+                    active=activo,
+                    user_reg=request.user,
+                )
+                oMd.save()
+                mensaje = 'Se ha guardado el registro'
+                data = {
+                    'mensaje': mensaje, 'error': False
+                }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def horaextra_actualizar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                jornada = request.POST['jornada']
+                horaini = request.POST['horaini']
+                horafin = request.POST['horafin']
+                horaDiarias = request.POST['horasDiarias']
+                horaSemanas = request.POST['horasSemana']
+                noexede = request.POST['noexede']
+                horaextra = request.POST['horaextra']
+                activo = int(request.POST['activo'])
+
+                if len(jornada) == 0:
+                    mensaje = "El campo 'Jornada' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(horaini) == 0:
+                    mensaje = "El campo 'Hora Inicial' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(horafin) == 0:
+                    mensaje = "El campo 'Hora Fin' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(horaDiarias) == 0:
+                    mensaje = "El campo 'Horas Diarias' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(horaSemanas) == 0:
+                    mensaje = "El campo 'Hora Semana' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(noexede) == 0:
+                    mensaje = "El campo 'No Exede Nocturno' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(horaextra) == 0:
+                    mensaje = "El campo 'Hora Extra' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                horaextra = horaextra.replace("%", "")
+
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+
+                oMd = HoraExtra.objects.get(pk=id)
+                if oMd:
+                    oMd.jornada = jornada
+                    oMd.horaini = horaini
+                    oMd.horafin = horafin
+                    oMd.horasDiarias = horaDiarias
+                    oMd.horasSemana = horaSemanas
+                    oMd.noExedeNocturno = noexede
+                    oMd.horaExtra = horaextra
+                    oMd.active = activo
+                    oMd.user_mod = request.user
+                    oMd.date_mod = datetime.datetime.now()
+                    oMd.save()
+                    mensaje = 'Se ha actualizado el registro.'
+                    data = {
+                        'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "No existe el registro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def horaextra_eliminar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oMd = HoraExtra.objects.get(pk=reg_id)
+                    if oMd:
+                        oMd.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+#---------------------AJAX-------------------------------
+
+#endregion
+
+#region Código para Impuesto sobre Renta
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_impuestosobrerenta', raise_exception=True)
+def impuestosobrerenta_listado(request):
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    if request.user.has_perm("worksheet.see_all_impuestosbrerenta"):
+        lista = ImpuestoSobreRenta.objects.filter(empresa_reg=suc.empresa)
+    else:
+        lista = ImpuestoSobreRenta.objects.filter(empresa_reg=suc.empresa, active=True)
+    return render(request, 'isr-listado.html', {'lista': lista})
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_impuestosobrerenta', raise_exception=True)
+def impuestosobrerenta_form(request):
+    return render(request, 'isr-form.html')
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_ingresogeneral', raise_exception=True)
+def impuestosobrerenta_editar(request, id):
+    dato = ImpuestoSobreRenta.objects.get(pk=id)
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    return render(request, 'isr-form.html', {'dato':dato, 'editar':True})
+
+#---------------------AJAX-------------------------------
+
+def impuestosobrerenta_guardar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                desde = request.POST['desde']
+                hasta = request.POST['hasta']
+                porcentaje = request.POST['porcentaje']
+                activo = int(request.POST['activo'])
+
+                if len(desde) == 0:
+                    mensaje = "El campo 'Desde' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(hasta) == 0:
+                    mensaje = "El campo 'Hasta' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(porcentaje) == 0:
+                    mensaje = "El campo 'Porcentaje' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarDecimal(desde):
+                    mensaje = "El campo 'Desde' es de tipo decimal."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarDecimal(hasta):
+                    mensaje = "El campo 'Desde' es de tipo decimal."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarDecimal(porcentaje):
+                    mensaje = "El campo 'Porcentaje' es de tipo decimal."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+
+                oMd = ImpuestoSobreRenta(
+                    desde=desde,
+                    hasta=hasta,
+                    porcentaje=porcentaje,
+                    porcentaje_label=str(porcentaje) + "%",
+                    empresa_reg=suc.empresa,
+                    active=activo,
+                    user_reg=request.user,
+                )
+                oMd.save()
+                mensaje = 'Se ha guardado el registro'
+                data = {
+                    'mensaje': mensaje, 'error': False
+                }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def impuestosobrerenta_actualizar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                desde = request.POST['desde']
+                hasta = request.POST['hasta']
+                porcentaje = request.POST['porcentaje']
+                activo = int(request.POST['activo'])
+
+                if len(desde) == 0:
+                    mensaje = "El campo 'Desde' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(hasta) == 0:
+                    mensaje = "El campo 'Hasta' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(porcentaje) == 0:
+                    mensaje = "El campo 'Porcentaje' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarDecimal(desde):
+                    mensaje = "El campo 'Desde' es de tipo decimal."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarDecimal(hasta):
+                    mensaje = "El campo 'Desde' es de tipo decimal."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarDecimal(porcentaje):
+                    mensaje = "El campo 'Porcentaje' es de tipo decimal."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                oMd = ImpuestoSobreRenta.objects.get(pk=id)
+                if oMd:
+                    oMd.desde = float(desde)
+                    oMd.hasta = float(hasta)
+                    oMd.porcentaje = float(porcentaje)
+                    oMd.porcentaje_label = str(porcentaje) + "%"
+                    oMd.user_mod = request.user
+                    oMd.date_mod = datetime.datetime.now()
+                    oMd.save()
+                    mensaje = 'Se ha actualizado el registro.'
+                    data = {
+                        'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "No existe el registro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def impuestosobrerenta_eliminar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oMd = ImpuestoSobreRenta.objects.get(pk=reg_id)
+                    if oMd:
+                        oMd.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+#---------------------AJAX-------------------------------
+
+#endregion
+
 #region Código para Ingreso General
 
 @login_required(login_url='/form/iniciar-sesion/')
@@ -8859,6 +9348,13 @@ def ingreso_general_form(request):
     tipos_ingresos = TipoIngreso.objects.filter(empresa_reg=suc.empresa, active=True)
     return render(request, 'ingreso-general-form.html', {'tipos_ingresos': tipos_ingresos})
 
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_ingresogeneral', raise_exception=True)
+def ingreso_general_editar(request, id):
+    dato = IngresoGeneral.objects.get(pk=id)
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    tipos_ingresos = TipoIngreso.objects.filter(empresa_reg=suc.empresa, active=True)
+    return render(request, 'ingreso-general-form.html', {'dato':dato, 'tipos_ingresos':tipos_ingresos, 'editar':True})
 
 #---------------------AJAX-------------------------------
 
@@ -8937,6 +9433,123 @@ def ingreso_general_guardar(request):
         }
     return JsonResponse(data)
 
+def ingreso_general_actualizar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                ingreso_g = request.POST['ingreso_g']
+                tipo_ingreso = request.POST['tipo_ingreso']
+                activo = int(request.POST['activo'])
+                gravable = int(request.POST['gravable'])
+
+                if len(ingreso_g) == 0:
+                    mensaje = "El campo 'Ingreso General' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(tipo_ingreso) == 0:
+                    mensaje = "El campo 'Tipo Ingreso' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if tipo_ingreso == 0:
+                    mensaje = "El registro no existe."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(ingreso_g) > 50:
+                    mensaje = "El campo 'Ingreso General' tiene como máximo 50 caracteres."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                if gravable == 1:
+                    gravable = True
+                else:
+                    gravable = False
+
+                o_tipoingreso = TipoIngreso.objects.get(pk=tipo_ingreso)
+                oMd = IngresoGeneral.objects.get(pk=id)
+                if oMd:
+                    oMd.ingreso_g = ingreso_g
+                    oMd.tipo_ingreso = o_tipoingreso
+                    oMd.gravable = gravable
+                    oMd.active = activo
+                    oMd.user_mod = request.user
+                    oMd.date_mod = datetime.datetime.now()
+                    oMd.save()
+                    mensaje = 'Se ha actualizado el registro.'
+                    data = {
+                        'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "No existe el registro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def ingreso_general_eliminar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oMd = IngresoGeneral.objects.get(pk=reg_id)
+                    if oMd:
+                        oMd.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
 #---------------------AJAX-------------------------------
 
 #endregion
@@ -9497,6 +10110,371 @@ def planilla_ver_registro(request):
 
 #endregion
 
+#region Código para Seguro Social
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_segurosocial', raise_exception=True)
+def segurosocial_listado(request):
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    if request.user.has_perm("worksheet.see_all_ingresogeneral"):
+        lista = SeguroSocial.objects.filter(empresa_reg=suc.empresa)
+    else:
+        lista = SeguroSocial.objects.filter(empresa_reg=suc.empresa, active=True)
+    return render(request, 'segurosocial-listado.html', {'lista': lista})
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_segurosocial', raise_exception=True)
+def segurosocial_form(request):
+    return render(request, 'segurosocial-form.html')
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_segurosocial', raise_exception=True)
+def segurosocial_editar(request, id):
+    dato = SeguroSocial.objects.get(pk=id)
+    return render(request, 'segurosocial-form.html', {'dato':dato, 'editar':True})
+
+#---------------------AJAX-------------------------------
+
+def segurosocial_guardar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                tipo = request.POST['tipo']
+                techo = request.POST['techo']
+                porcentaje_e = request.POST['porcentaje_e']
+                valor_e = request.POST['valor_e']
+                porcentaje_p = request.POST['porcentaje_p']
+                valor_p = request.POST['valor_p']
+                activo = int(request.POST['activo'])
+
+                if len(tipo) == 0:
+                    mensaje = "El campo 'Tipo' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(techo) == 0:
+                    mensaje = "El campo 'Techo' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(porcentaje_e) == 0:
+                    mensaje = "El campo 'Porcentaje Empleado' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(valor_e) == 0:
+                    mensaje = "El campo 'Valor Empleado' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(porcentaje_p) == 0:
+                    mensaje = "El campo 'Porcentaje Patrono' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(valor_p) == 0:
+                    mensaje = "El campo 'Valor Patrono' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(tipo) > 50:
+                    mensaje = "El campo 'Tipo' tiene como máximo 50 caracteres."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(techo) > 70:
+                    mensaje = "El campo 'Techo' tiene como máximo 50 caracteres."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(porcentaje_e) > 50:
+                    mensaje = "El campo 'Porcentaje Empleado' tiene como máximo 50 caracteres."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(valor_e) > 50:
+                    mensaje = "El campo 'Valor Empleado' tiene como máximo 50 caracteres."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(porcentaje_p) > 50:
+                    mensaje = "El campo 'Porcentaje Patrono' tiene como máximo 50 caracteres."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(valor_p) > 50:
+                    mensaje = "El campo 'Valor Patrono' tiene como máximo 50 caracteres."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarDecimal(techo):
+                    mensaje = "El campo 'Techo' es de tipo decimal."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+                
+                if not validarDecimal(porcentaje_e):
+                    mensaje = "El campo 'Porcentaje Empleado' es de tipo decimal."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarDecimal(valor_e):
+                    mensaje = "El campo 'Valor Empleado' es de tipo decimal."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarDecimal(porcentaje_p):
+                    mensaje = "El campo 'Porcentaje patrono' es de tipo decimal."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarDecimal(valor_p):
+                    mensaje = "El campo 'Valor Patrono' es de tipo decimal."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+
+                oMd = SeguroSocial(
+                    tipo=tipo,
+                    techo=techo,
+                    porcentaje_e=porcentaje_e,
+                    valor_e=valor_e,
+                    porcentaje_p=porcentaje_p,
+                    valor_p=valor_p,
+                    total_p=float(porcentaje_e) + float(porcentaje_p),
+                    total_v=float(valor_e)+float(valor_p),
+                    empresa_reg=suc.empresa,
+                    active=activo,
+                    user_reg=request.user,
+                )
+                oMd.save()
+                mensaje = 'Se ha guardado el registro'
+                data = {
+                    'mensaje': mensaje, 'error': False
+                }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def segurosocial_actualizar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                tipo = request.POST['tipo']
+                techo = request.POST['techo']
+                porcentaje_e = request.POST['porcentaje_e']
+                valor_e = request.POST['valor_e']
+                porcentaje_p = request.POST['porcentaje_p']
+                valor_p = request.POST['valor_p']
+                activo = int(request.POST['activo'])
+
+                if len(tipo) == 0:
+                    mensaje = "El campo 'Tipo' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(techo) == 0:
+                    mensaje = "El campo 'Techo' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(porcentaje_e) == 0:
+                    mensaje = "El campo 'Porcentaje Empleado' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(valor_e) == 0:
+                    mensaje = "El campo 'Valor Empleado' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(porcentaje_p) == 0:
+                    mensaje = "El campo 'Porcentaje Patrono' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(valor_p) == 0:
+                    mensaje = "El campo 'Valor Patrono' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(tipo) > 50:
+                    mensaje = "El campo 'Tipo' tiene como máximo 50 caracteres."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(techo) > 70:
+                    mensaje = "El campo 'Techo' tiene como máximo 50 caracteres."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(porcentaje_e) > 50:
+                    mensaje = "El campo 'Porcentaje Empleado' tiene como máximo 50 caracteres."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(valor_e) > 50:
+                    mensaje = "El campo 'Valor Empleado' tiene como máximo 50 caracteres."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(porcentaje_p) > 50:
+                    mensaje = "El campo 'Porcentaje Patrono' tiene como máximo 50 caracteres."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(valor_p) > 50:
+                    mensaje = "El campo 'Valor Patrono' tiene como máximo 50 caracteres."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarDecimal(techo):
+                    mensaje = "El campo 'Techo' es de tipo decimal."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+                
+                if not validarDecimal(porcentaje_e):
+                    mensaje = "El campo 'Porcentaje Empleado' es de tipo decimal."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarDecimal(valor_e):
+                    mensaje = "El campo 'Valor Empleado' es de tipo decimal."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarDecimal(porcentaje_p):
+                    mensaje = "El campo 'Porcentaje patrono' es de tipo decimal."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarDecimal(valor_p):
+                    mensaje = "El campo 'Valor Patrono' es de tipo decimal."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                oMd = SeguroSocial.objects.get(pk=id)
+                if oMd:
+                    oMd.tipo = tipo
+                    oMd.techo = techo
+                    oMd.porcentaje_e = porcentaje_e
+                    oMd.valor_e = valor_e
+                    oMd.porcentaje_p = porcentaje_p
+                    oMd.valor_p = valor_p
+                    oMd.active = activo
+                    oMd.user_mod = request.user
+                    oMd.date_mod = datetime.datetime.now()
+                    oMd.save()
+                    mensaje = 'Se ha actualizado el registro.'
+                    data = {
+                        'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "No existe el registro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def segurosocial_eliminar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oMd = SeguroSocial.objects.get(pk=reg_id)
+                    if oMd:
+                        oMd.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+#---------------------AJAX-------------------------------
+
+#endregion
+
+#region Código para Salario Mínimo
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_segurosocial', raise_exception=True)
+def salariominimo_listado(request):
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    if request.user.has_perm("worksheet.see_all_ingresogeneral"):
+        lista = SalarioMinimo.objects.filter(empresa_reg=suc.empresa)
+    else:
+        lista = SalarioMinimo.objects.filter(empresa_reg=suc.empresa, active=True)
+    return render(request, 'salariominimo-listado.html', {'lista': lista})
+
+#endregion
+
 #region Código para Tipo de Deducciones
 
 @login_required(login_url='/form/iniciar-sesion/')
@@ -10037,6 +11015,232 @@ def tipo_ingreso_eliminar(request):
                 reg_id = request.POST['id']
                 if int(reg_id) > 0:
                     oMd = TipoIngreso.objects.get(pk=reg_id)
+                    if oMd:
+                        oMd.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+#---------------------AJAX-------------------------------
+
+#endregion
+
+#region Código para Impuesto Vecinal
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_impuestosobrerenta', raise_exception=True)
+def impuestovecinal_listado(request):
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    if request.user.has_perm("worksheet.see_all_impuestovecinal"):
+        lista = ImpuestoVecinal.objects.filter(empresa_reg=suc.empresa)
+    else:
+        lista = ImpuestoVecinal.objects.filter(empresa_reg=suc.empresa, active=True)
+    return render(request, 'impuestovecinal-listado.html', {'lista': lista})
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_impuestovecinal', raise_exception=True)
+def impuestovecinal_form(request):
+    return render(request, 'impuestovecinal-form.html')
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_segurosocial', raise_exception=True)
+def impuestovecinal_editar(request, id):
+    dato = ImpuestoVecinal.objects.get(pk=id)
+    return render(request, 'impuestovecinal-form.html', {'dato':dato, 'editar':True})
+
+
+#---------------------AJAX-------------------------------
+
+def impuestovecinal_guardar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                desde = request.POST['desde']
+                hasta = request.POST['hasta']
+                porcentaje = request.POST['porcentaje']                
+                activo = int(request.POST['activo'])
+
+                if len(desde) == 0:
+                    mensaje = "El campo 'Desde' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(hasta) == 0:
+                    mensaje = "El campo 'Hasta' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarDecimal(desde):
+                    mensaje = "El campo 'Techo' es de tipo decimal."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+                
+                if not validarDecimal(hasta):
+                    mensaje = "El campo 'Porcentaje Empleado' es de tipo decimal."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarDecimal(porcentaje):
+                    mensaje = "El campo 'Valor Empleado' es de tipo decimal."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+
+                oMd = ImpuestoVecinal(
+                    desde=desde,
+                    hasta=hasta,
+                    porcentaje=porcentaje,
+                    porcentaje_label=str(porcentaje)+ "%",
+                    empresa_reg=suc.empresa,
+                    active=activo,
+                    user_reg=request.user,
+                )
+                oMd.save()
+                mensaje = 'Se ha guardado el registro'
+                data = {
+                    'mensaje': mensaje, 'error': False
+                }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def impuestovecinal_actualizar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                desde = request.POST['desde']
+                hasta = request.POST['hasta']
+                porcentaje = request.POST['porcentaje']
+                activo = int(request.POST['activo'])
+
+                if len(desde) == 0:
+                    mensaje = "El campo 'Desde' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(hasta) == 0:
+                    mensaje = "El campo 'Hasta' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                desde = desde.replace(",", "")
+                hasta = hasta.replace(",", "")
+                porcentaje = porcentaje.replace(",", "")
+                porcentaje = porcentaje.replace("%", "")
+
+                if not validarDecimal(desde):
+                    mensaje = "El campo 'Techo' es de tipo decimal."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+                
+                if not validarDecimal(hasta):
+                    mensaje = "El campo 'Porcentaje Empleado' es de tipo decimal."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarDecimal(porcentaje):
+                    mensaje = "El campo 'Valor Empleado' es de tipo decimal."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                oMd = ImpuestoVecinal.objects.get(pk=id)
+                if oMd:
+                    oMd.desde = desde
+                    oMd.hasta = hasta
+                    oMd.porcentaje = porcentaje
+                    oMd.porcentaje_label = str(porcentaje) + "%"
+                    oMd.active = activo
+                    oMd.user_mod = request.user
+                    oMd.date_mod = datetime.datetime.now()
+                    oMd.save()
+                    mensaje = 'Se ha actualizado el registro.'
+                    data = {
+                        'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "No existe el registro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def impuestovecinal_eliminar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oMd = ImpuestoVecinal.objects.get(pk=reg_id)
                     if oMd:
                         oMd.delete()
                         mensaje = 'Se ha eliminado el registro.'

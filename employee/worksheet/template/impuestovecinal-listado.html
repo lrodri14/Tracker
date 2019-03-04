@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block titulo %}
-Listado de Ingresos Generales
+Listado de porcentajes Impuesto Vecinal
 {% endblock titulo %}
 {% load static %}
 {% block contenido %}
@@ -9,14 +9,14 @@ Listado de Ingresos Generales
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h2 class="text-bold"><i class="fa fa-list"></i>
-                    Listado de Ingresos Generales</h2>
+                    Listado de Porcentajes en Impuesto Vecinal</h2>
             </div>
             <div class="panel-wrapper">
                 <div class="panel-body">
                     <div class="row text-right">
-                        {% if perms.worksheet.add_ingresogeneral %}
+                        {% if perms.worksheet.add_impuestovecinal %}
                         <div class="col-md-12">
-                            <a href="{% url 'ingreso_general_form' %}" class="btn btn-primary">Agregar</a>
+                            <a href="{% url 'impuestovecinal_form' %}" class="btn btn-primary">Agregar</a>
                         </div>
                         {% endif %}
                     </div>
@@ -26,31 +26,33 @@ Listado de Ingresos Generales
                             {% csrf_token %}
                             <thead>
                                 <tr>
-                                    <th>Nombre</th>
-                                    <th>Tipo de Ingreso</th>
-                                    <th>Gravable</th>
+                                    <th>Desde</th>
+                                    <th>Hasta</th>
+                                    <th>Porcentaje(%)</th>
+                                    <th>Estado registro</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for item in lista %}
                                 <tr>
-                                    <td>{{item.ingreso_g}}</td>
-                                    <td>{{item.tipo_ingreso.tipo_ingreso}}</td>
+                                    <td>{{item.desde}}</td>
+                                    <td>{{item.hasta}}</td>
+                                    <td>{{item.porcentaje_label}}</td>
                                     <td>
-                                        {% if item.gravable %}
-                                        <span class="label label-success">SI</span>
+                                        {% if item.active %}
+                                        <span class="label label-success">Habilitado</span>
                                         {% else %}
-                                        <span class="label label-danger">NO</span>
+                                        <span class="label label-danger">Inactivo</span>
                                         {% endif %}
                                     </td>                         
                                     <td class="text-nowrap acciones">
-                                        {% if perms.worksheet.change_ingresogeneral %}
-                                        <a href="{% url 'ingreso_general_editar' item.pk %}" data-toggle="tooltip" data-original-title="Editar">
+                                        {% if perms.worksheet.change_impuestovecinal %}
+                                        <a href="{% url 'impuestovecinal_editar' item.pk %}" data-toggle="tooltip" data-original-title="Editar">
                                             <i class="fa fa-pencil text-inverse m-r-10"></i>
                                         </a>
                                         {% endif %}
-                                        {% if perms.worksheet.delete_ingresogeneral %}
+                                        {% if perms.worksheet.delete_impuestovecinal %}
                                         <a href="#" class="btnEliminar" data="{{item.pk}}" data-toggle="tooltip" data-original-title="Eliminar">
                                             <i class="fa fa-close text-danger"></i>
                                         </a>
@@ -73,7 +75,7 @@ Listado de Ingresos Generales
     //#region Efectos en SideBar
     $('#side-menu a').removeClass('active');
     $('#aPersonal').addClass('active');
-    $('#aIngresoG').addClass('active');
+    $('#aIV').addClass('active');
     //#endregion
 
     //#region Eventos Controles
@@ -86,8 +88,8 @@ Listado de Ingresos Generales
 
     //#region Funciones
     function Eliminar(id) {
-        var Encabezado = 'Ingreso General';
-        var url = "/eliminar/ingreso-general/"; // the script where you handle the form input.
+        var Encabezado = 'Impuesto Vecinal';
+        var url = "/eliminar/impuesto-vecinal/"; // the script where you handle the form input.
         $.ajax({
             type: "POST",
             url: url,
