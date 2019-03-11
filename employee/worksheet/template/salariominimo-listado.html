@@ -16,7 +16,7 @@ Listado de Salarios Mínimos
                     <div class="row text-right">
                         {% if perms.worksheet.add_salariominimo %}
                         <div class="col-md-12">
-                            <a href="{% url 'horaextra_form' %}" class="btn btn-primary">Agregar</a>
+                            <a href="{% url 'salariominimo_form' %}" class="btn btn-primary">Agregar</a>
                         </div>
                         {% endif %}
                     </div>
@@ -81,7 +81,7 @@ Listado de Salarios Mínimos
     //#region Efectos en SideBar
     $('#side-menu a').removeClass('active');
     $('#aPersonal').addClass('active');
-    $('#aHE').addClass('active');
+    $('#aSalarioMinimo').addClass('active');
     //#endregion
 
     //#region Eventos Controles
@@ -94,8 +94,8 @@ Listado de Salarios Mínimos
 
     //#region Funciones
     function Eliminar(id) {
-        var Encabezado = 'Horas Extras';
-        var url = "/eliminar/he/"; // the script where you handle the form input.
+        var Encabezado = 'Salario Mínimo';
+        var url = "/eliminar/salario-minimo/"; // the script where you handle the form input.
         $.ajax({
             type: "POST",
             url: url,

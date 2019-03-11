@@ -5,6 +5,7 @@ from django.contrib import admin
 from worksheet.models import *
 
 # Register your models here.
+admin.site.register(ActivoAsignado)
 admin.site.register(Ausentismo)
 admin.site.register(Bank)
 admin.site.register(Branch)
@@ -26,6 +27,7 @@ admin.site.register(ImpuestoSobreRenta)
 admin.site.register(IncrementosSalariales)
 admin.site.register(IngresoIndividual)
 admin.site.register(IngresoGeneral)
+admin.site.register(IngresoGeneralDetalle)
 admin.site.register(Planilla)
 admin.site.register(PlanillaDetalle)
 admin.site.register(Permission)

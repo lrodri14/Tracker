@@ -9,6 +9,7 @@ from django.core.serializers import serialize
 from django.db.models import Count, Min, Sum, Avg
 from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from worksheet.forms import *
 from worksheet.models import *
@@ -30,7 +31,6 @@ def verificaSucursal(request):
 def home(request):
     verificaSucursal(request)
     empleados = Employee.objects.all()
-    print request.session["sucursal"]
     return render(request, 'index.html', {'empleados':empleados})
 
 def inicia_sesion(request):
@@ -262,7 +262,6 @@ def puesto_editar(request, id):
 def listadoPuestoTrabajo(request):
     verificaSucursal(request)
     suc = Branch.objects.get(pk=request.session["sucursal"])
-    print suc.empresa_id
     puestos = Position.objects.filter(active=True, empresa_reg=suc.empresa)
     return render(request, 'puestos-listado.html', {'puesto':puestos})
 
@@ -445,7 +444,6 @@ def ausentismo_listado(request):
             if int(emp) > 0:
                 busqueda = int(emp)
                 empleado = Employee.objects.get(pk=busqueda)
-                print empleado
                 lista = Ausentismo.objects.filter(empleado=empleado, empresa_reg = suc.empresa)
             else:
                 lista = Ausentismo.objects.filter(sucursal_reg=suc)[:50]
@@ -7181,11 +7179,30 @@ def guardar_activo_asignado(request):
     try:
         if request.is_ajax():
             if request.method == 'POST':
+                code = request.POST['code']
                 desc = request.POST['desc']
                 activo = int(request.POST['activo'])
 
+                if len(code) == 0:
+                    mensaje = "El campo 'Código' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
                 if len(desc) == 0:
                     mensaje = "El campo 'Descripción' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+                tot_reg = ActivoAsignado.objects.filter(code=code, empresa_reg=suc.empresa).count()
+                if tot_reg > 0:
+                    mensaje = "Ya existe un registro con el código ingresado."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                tot_reg = ActivoAsignado.objects.filter(descripcion=desc, empresa_reg=suc.empresa).count()
+                if tot_reg > 0:
+                    mensaje = "Ya existe un registro con la descripción ingresada."
                     data = {'error': True, 'mensaje': mensaje}
                     return JsonResponse(data)
 
@@ -7195,8 +7212,10 @@ def guardar_activo_asignado(request):
                     activo = False
 
                 oMd = ActivoAsignado(
+                    code=code,
                     descripcion=desc,
                     active=activo,
+                    empresa_reg=suc.empresa,
                     user_reg=request.user,
                 )
                 oMd.save()
@@ -7227,6 +7246,7 @@ def actualizar_activo_asignado(request):
         if request.is_ajax():
             if request.method == 'POST':
                 id = int(request.POST['id'])
+                code = request.POST['code']
                 desc = request.POST['desc']
                 activo = int(request.POST['activo'])
 
@@ -7245,7 +7265,7 @@ def actualizar_activo_asignado(request):
                     oMd.descripcion = desc
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.datetime.now()
+                    oMd.date_mod = timezone.now()
                     oMd.save()
                     mensaje = 'Se ha actualizado el registro.'
                     data = {
@@ -9554,6 +9574,195 @@ def ingreso_general_eliminar(request):
 
 #endregion
 
+#region Código para Ingreso General Detalle
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_ingresogeneraldetalle', raise_exception=True)
+def ingreso_general_detalle_listado(request):
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    if request.user.has_perm("worksheet.see_all_ingresogeneral"):
+        lista = IngresoGeneralDetalle.objects.filter(empresa_reg=suc.empresa)
+    else:
+        lista = IngresoGeneralDetalle.objects.filter(empresa_reg=suc.empresa, active=True)
+    return render(request, 'ingreso-general-detalle-listado.html', {'lista': lista})
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_ingresogeneraldetalle', raise_exception=True)
+def ingreso_general_detalle_form(request):
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    ingresos_generales = IngresoGeneral.objects.filter(empresa_reg=suc.empresa, active=True)
+    planillas = Planilla.objects.filter(sucursal_reg=suc, active=True)
+    tipos_pagos = SalaryUnit.objects.filter(empresa_reg=suc.empresa, active=True)
+    tipos_contratos = TipoContrato.objects.filter(empresa_reg=suc.empresa, active=True)
+    return render(request, 'ingreso-general-detalle-form.html', {'ingresos_generales': ingresos_generales, 'planillas': planillas, 'tipos_pagos':tipos_pagos, 'tipos_contratos':tipos_contratos})
+
+#---------------------AJAX-------------------------------
+
+
+def ingreso_general_detalle_guardar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                ingreso = request.POST['ingreso']
+                nomina = request.POST['nomina']
+                tipo_pago = request.POST['tipo_pago']
+                tipo_contrato = request.POST['tipo_contrato']
+                valor = request.POST['valor']
+                fecha_valida = request.POST['fecha']
+                activo = request.POST['activo']
+
+                if len(ingreso) == 0:
+                    mensaje = "El campo 'Ingreso' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(nomina) == 0:
+                    mensaje = "El campo 'Nómina' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(tipo_pago) == 0:
+                    mensaje = "El campo 'Tipo de Pago' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(tipo_contrato) == 0:
+                    mensaje = "El campo 'Tipo de Contrato' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(valor) == 0:
+                    mensaje = "El campo 'Valor' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(fecha_valida) == 0:
+                    mensaje = "El campo 'Válido hasta' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(activo) == 0:
+                    mensaje = "El campo 'Activo' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                valor = valor.replace(",",  "")
+
+                if not validarEntero(ingreso):
+                    mensaje = "El campo 'Ingreso' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarEntero(nomina):
+                    mensaje = "El campo 'Planilla' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarEntero(tipo_pago):
+                    mensaje = "El campo 'Tipo de Pago' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarEntero(tipo_contrato):
+                    mensaje = "El campo 'Tipo de Contrato' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarDecimal(valor):
+                    mensaje = "El campo 'Valor' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarEntero(activo):
+                    mensaje = "El campo 'Activo' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if ingreso == 0:
+                    mensaje = "El registro del campo 'Ingreso' no existe."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if nomina == 0:
+                    mensaje = "El registro del campo 'Nómina' no existe."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if tipo_pago == 0:
+                    mensaje = "El registro del campo 'Tipo de Pago' no existe."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if tipo_contrato == 0:
+                    mensaje = "El registro del campo 'Tipo de Contrato' no existe."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(valor) > 18:
+                    mensaje = "El campo 'Ingreso General' tiene como máximo 18 caracteres."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if float(valor) == 0:
+                    mensaje = "El campo 'Valor' debe ser mayor a cero (0)."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if int(activo) < 0 and int(valor) > 2:
+                    mensaje = "El valor del campo 'Activo' no es válido."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if int(activo) == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                vingreso = IngresoGeneral.objects.get(pk=ingreso)
+                vnomina = Planilla.objects.get(pk=nomina)
+                vtipopago = SalaryUnit.objects.get(pk=tipo_pago)
+                vtipocontrato = TipoContrato.objects.get(pk=tipo_contrato)
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+
+                oMd = IngresoGeneralDetalle(
+                    ingreso=vingreso,
+                    nomina=vnomina,
+                    tipo_pago=vtipopago,
+                    tipo_contrato=vtipocontrato,
+                    valor=valor,
+                    fecha_valida=fecha_valida,
+                    empresa_reg=suc.empresa,
+                    sucursal_reg=suc,
+                    active=activo,
+                    user_reg=request.user,
+                )
+                oMd.save()
+                mensaje = 'Se ha guardado el registro'
+                data = {
+                    'mensaje': mensaje, 'error': False
+                }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+#---------------------AJAX-------------------------------
+
+#endregion
+
 #region Código para Ingreso Individual
 
 @login_required(login_url='/form/iniciar-sesion/')
@@ -10472,6 +10681,129 @@ def salariominimo_listado(request):
     else:
         lista = SalarioMinimo.objects.filter(empresa_reg=suc.empresa, active=True)
     return render(request, 'salariominimo-listado.html', {'lista': lista})
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_ingresogeneral', raise_exception=True)
+def salariominimo_form(request):
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    tipos_ingresos = TipoIngreso.objects.filter(empresa_reg=suc.empresa, active=True)
+    return render(request, 'salariominimo-form.html', {'tipos_ingresos': tipos_ingresos})
+
+#---------------------AJAX-------------------------------
+
+def salariominimo_guardar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                salario_minimo = request.POST['salario_minimo']
+                activo = int(request.POST['activo'])
+
+                if len(salario_minimo) == 0:
+                    mensaje = "El campo 'Salario Minimo' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                salario_minimo = salario_minimo.replace(",", "")
+
+                if not validarDecimal(salario_minimo):
+                    mensaje = "El campo 'Salario Mínimo' es de tipo decimal."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if salario_minimo == 0:
+                    mensaje = "El campo 'Salario Mínimo' debe ser mayor a cero(0)."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+
+                oMd = SalarioMinimo(
+                    salario_minimo=salario_minimo,
+                    vigente=True,
+                    active=activo,
+                    empresa_reg=suc.empresa,
+                    sucursal_reg=suc,
+                    user_reg=request.user,
+                )
+                oMd.save()
+                mensaje = 'Se ha guardado el registro'
+                data = {
+                    'mensaje': mensaje, 'error': False
+                }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def salariominimo_eliminar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oMd = SalarioMinimo.objects.get(pk=reg_id)
+                    if oMd:
+                        suc = Branch.objects.get(pk=request.session["sucursal"])
+                        oMd.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                        salarios = SalarioMinimo.objects.filter(active=True, empresa_reg=suc.empresa)
+                        if salarios.count() > 0:
+                            salario = salarios[0]
+                            salario.vigente = True
+                            salario.user_mod = request.user
+                            salario.date_mod = datetime.datetime.now()
+                            salario.save()
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+#---------------------AJAX-------------------------------
 
 #endregion
 

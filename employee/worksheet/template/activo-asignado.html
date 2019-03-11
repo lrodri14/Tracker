@@ -24,7 +24,7 @@ Activo Asignado
                                         <label class="control-label">Código :</label>
                                     </div>
                                     <div class="col-md-7">
-                                        <input name="banco_nombre" value="{{dato.code}}" type="text" class="form-control input" maxlength="5" />
+                                        <input name="act_asig_code" value="{{dato.code}}" type="text" class="form-control input" maxlength="5" {% if editar %}disabled{% endif %} />
                                     </div>
                                 </div>
                             </div>
@@ -78,7 +78,6 @@ Activo Asignado
 </div>
 {% endblock contenido %}
 {% block scripts %}
-<script src="{% static 'js/app/scriptApp.js' %}"></script>
 <script>
     //$('.select2').select2();
     $('#side-menu a').removeClass('active');

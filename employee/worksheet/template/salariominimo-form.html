@@ -74,12 +74,7 @@ Datos de Salario Mínimo
 <script>
     $('#side-menu a').removeClass('active');
     $('#aPersonal').addClass('active');
-    $('#aIV').addClass('active');
-    $('input[name="horaini"]').mask('00:00:00');
-    $('input[name="horafin"]').mask('00:00:00');
-    $('input[name="horasDiarias"]').mask('0,000,000,000,000.00', {reverse:true});
-    $('input[name="horasSemana"]').mask('0,000,000,000,000.00', {reverse:true});
-    $('input[name="noExedeNocturno"]').mask('0,000,000,000');
-    $('input[name="horaExtra"]').mask('##0.00%', {reverse: true});
+    $('#aSalarioMinimo').addClass('active');
+    $('input[name="salariominimo"]').mask('0,000,000,000,000.00', {reverse:true});
 </script>
 {% endblock scripts %}

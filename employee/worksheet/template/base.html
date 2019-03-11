@@ -173,11 +173,15 @@
                     </li><!--FIN DE OPCIÓN ORGANIZACIÓN-->
                     <li><a href="javascript:void(0)" id="aPersonal" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Personal <span class="fa arrow"></span></span></a>
                         <ul class="nav nav-second-level">
+                            {% if perms.worksheet.see_activoasignado %}
                             <li><a href="{% url 'articulos_asignados_listar' %}" id="actAsig" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Activo Asignados</span></a></li>
+                            {% endif %}
                             {% if perms.worksheet.see_banco %}
                             <li><a href="{% url 'banco_listado' %}" id="aBanco" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Banco</span></a></li>
                             {% endif %}
+                            {% if perms.worksheet.see_activoasignado %}
                             <li><a href="{% url 'ciudades_listado' %}" id="aCiud" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Ciudades</span></a></li>
+                            {% endif %}
                             <li><a href="{% url 'clase_educacion_listado' %}" id="aClsEdu" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Clases de Educación</span></a></li>
                             {% if perms.worksheet.see_deducciongeneral %}
                             <li><a href="{% url 'deduccion_general_listado' %}" id="aDeduccionG" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Deducción General</span></a></li>
@@ -247,6 +251,9 @@
                             <li><a href="{% url 'ausentismo_listado' %}" id="aAu" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Ausentismo</span></a></li>
                             <li><a href="{% url 'educacion_listar' %}" id="aEdu" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Educación</span></a></li>
                             <li><a href="{% url 'evaluacion_listar' %}" id="aEv" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Evaluación</span></a></li>
+                            {% if perms.worksheet.see_ingresogeneraldetalle %}
+                            <li><a href="{% url 'ingreso_general_detalle_listado' %}" id="aIGD" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Ingreso General Detalle</span></a></li>
+                            {% endif %}
                             {% if perms.worksheet.see_empleoanterior %}
                             <li><a href="{% url 'empleo_anterior_listar' %}" id="empAnt" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Empleos Anteriores</span></a></li>
                             {% endif %}

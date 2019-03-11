@@ -690,7 +690,6 @@ class TipoIngreso(models.Model):
     def __unicode__(self):
         return self.tipo_ingreso
 
-
 class IngresoIndividual(models.Model):
     ingreso_i = models.CharField(max_length=50)
     tipo_ingreso = models.ForeignKey(TipoIngreso, on_delete=models.PROTECT)
@@ -804,7 +803,6 @@ def post_save_incrementossalariales(sender, instance, **kwargs):
                     d_empleado.salario_diario = float(instance.nuevo_salario) / float(o_salary_units.dias_salario)
         d_empleado.save()
 
-
 class ImpuestoSobreRenta(models.Model):
     desde = models.DecimalField(max_digits=15, decimal_places=2)
     hasta = models.DecimalField(max_digits=15, decimal_places=2)
@@ -847,7 +845,6 @@ class SeguroSocial(models.Model):
     def __str__(self):
         return self.tipo
 
-
 class ImpuestoVecinal(models.Model):
     desde = models.DecimalField(max_digits=18, decimal_places=2)
     hasta = models.DecimalField(max_digits=18, decimal_places=2)
@@ -889,7 +886,6 @@ class HoraExtra(models.Model):
     def __str__(self):
         return self.jornada
 
-
 class SalarioMinimo(models.Model):
     fecha = models.DateField(("Fecha"), auto_now_add=True)
     salario_minimo = models.DecimalField(("Salario Minimo"), max_digits=18, decimal_places=2)
@@ -908,6 +904,20 @@ class SalarioMinimo(models.Model):
 
     def __str__(self):
         return self.fecha
+
+
+@receiver(post_save, sender=SalarioMinimo)
+def post_save_salariominimo(sender, instance, **kwargs):
+    if kwargs['created']:
+        tot_reg = SalarioMinimo.objects.filter(empresa_reg=instance.empresa_reg, vigente=True, active=True)
+        if tot_reg > 0:
+            datos = SalarioMinimo.objects.filter(empresa_reg=instance.empresa_reg, vigente=True, active=True).exclude(pk=instance.pk)
+            if datos.count() > 0:
+                dato = datos[0]
+                dato.vigente = False
+                dato.user_mod = instance.user_reg
+                dato.date_mod = datetime.datetime.now()
+                dato.save()
 
 class Planilla(models.Model):
     correlativo = models.CharField(("Correlativo"), max_length=50, blank=True, null=True)
@@ -959,3 +969,25 @@ class PlanillaDetalle(models.Model):
             return self.planilla.descripcion + " - " + self.empleado.firstName + " " + self.empleado.middleName + " " + self.empleado.lastName
         else:
             return self.planilla.descripcion + " - " + self.empleado.firstName + " " + self.empleado.lastName
+
+class IngresoGeneralDetalle(models.Model):
+    ingreso = models.ForeignKey("worksheet.IngresoGeneral", verbose_name=("Ingreso General"), on_delete=models.PROTECT)
+    nomina = models.ForeignKey("worksheet.Planilla", verbose_name=("Planilla"), on_delete=models.PROTECT)
+    tipo_pago = models.ForeignKey("worksheet.SalaryUnit", verbose_name=("Tipo de Pago"), on_delete=models.PROTECT)
+    tipo_contrato = models.ForeignKey("worksheet.TipoContrato", verbose_name=("Tipo de Contrato"), on_delete=models.PROTECT)
+    valor = models.DecimalField(("Valor"), max_digits=18, decimal_places=2)
+    fecha_valida = models.DateField(("Fecha valida"), auto_now=False, auto_now_add=False)
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.PROTECT)
+    sucursal_reg = models.ForeignKey("worksheet.Branch", verbose_name=("Sucursal registro"), on_delete=models.PROTECT)
+    user_reg = models.ForeignKey(User, blank=True, null=True)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='igd_usermod', related_query_name='igd_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.NullBooleanField(blank=True, null=True)
+    
+    class Meta:
+        verbose_name = ("Ingreso general detalle")
+        verbose_name_plural = ("Ingresos generales detalles")
+
+    def __str__(self):
+        return self.ingreso.ingreso_g

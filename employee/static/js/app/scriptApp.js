@@ -1844,6 +1844,7 @@ function validargnrDatos() {
 
     //#region Variables
     var act_asig_id = $("input[name='act_asig_id'");
+    var act_asig_code = $("input[name='act_asig_code'");
     var act_asig_desc = $("textarea[name='act_asig_desc'");
     var act_asig_activo = $('input[name="act_asig_activo"]');
     //#endregion
@@ -1860,6 +1861,7 @@ function validargnrDatos() {
             vActivo = 0;
         }
         data = {
+            'code': act_asig_code.val(),
             'desc': act_asig_desc.val(),
             'activo': vActivo,
             'csrfmiddlewaretoken': token.val(),
@@ -1880,6 +1882,7 @@ function validargnrDatos() {
         //if (validarEdDatos() != false) {
         data = {
             'id': act_asig_id.val(),
+            'code': act_asig_code.val(),
             'desc': act_asig_desc.val(),
             'activo': vActivo,
             'csrfmiddlewaretoken': token.val(),
@@ -2779,6 +2782,46 @@ ing_btnCancelar.on('click', function(e) {
 
 //#endregion
 
+//#region  Código para Ingreso General Detalle
+
+    var igd_id = $('#ingreso_general_detalle input[name="id"]');
+    var igd_ingreso = $('#ingreso_general_detalle select[name="ingreso"]');
+    var igd_nomina = $('#ingreso_general_detalle select[name="nomina"]');
+    var igd_tipo_pago = $('#ingreso_general_detalle select[name="tipo_pago"]');
+    var igd_tipo_contrato = $('#ingreso_general_detalle select[name="tipo_contrato"]');
+    var igd_valor = $('#ingreso_general_detalle input[name="valor"]');
+    var igd_fecha = $('#ingreso_general_detalle input[name="fecha"]');
+    var igd_activa = $('#ingreso_general_detalle input[name="activo"]');
+
+    $('#ingreso_general_detalle #btnGuardar').on('click', function (e) {
+        e.preventDefault();
+        if (igd_activa.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
+        }
+        url = '/guardar/ingreso-general-detalle/';
+        metodo = 'POST';
+        data = {
+            'ingreso': igd_ingreso.val(),
+            'nomina': igd_nomina.val(),
+            'tipo_pago': igd_tipo_pago.val(),
+            'tipo_contrato': igd_tipo_contrato.val(),
+            'valor': igd_valor.val(),
+            'fecha': igd_fecha.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Ingreso General Detalle");
+    });
+
+    $('#ingreso_general_detalle #btnCancelar').on('click', function(e){
+        e.preventDefault();
+        window.location.replace(dns + "/listar/ingreso-general-detalle/");
+    });
+
+//#endregion
+
 //#region Código para Ingreso Individual
 
     var ini_id = $('#ingreso_individual input[name="id"]');
@@ -2991,6 +3034,37 @@ ing_btnCancelar.on('click', function(e) {
             dataType: 'json'
         });
     });
+//#endregion
+
+//#region Código para Salario Minimo
+
+    var sm_id = $('#salariominimo input[name="id"]');
+    var sm_salariominimo = $('#salariominimo input[name="salariominimo"]');
+    var sm_activo = $('#salariominimo input[name="activo"]');
+
+    $('#salariominimo #btnGuardar').on('click', function (e) {
+        e.preventDefault();
+        if (sm_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
+        }
+        url = '/guardar/salario-minimo/';
+        metodo = 'POST';
+        data = {
+            'salario_minimo': sm_salariominimo.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Salario Mínimo");
+    });
+
+    $('#salariominimo #btnCancelar').on('click', function (e) {
+        e.preventDefault();
+        window.location.replace(dns + "/listar/salario-minimo/");
+    });
+
+
 //#endregion
 
 //#region Código para Seguro Social

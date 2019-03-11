@@ -15,7 +15,9 @@ Listado de Activos Asignados
                 <div class="panel-body">
                     <div class="row text-right">
                         <div class="col-md-12">
+                        {% if perms.worksheet.add_activoasignado %}
                             <a href="{% url 'articulo_asignado_form' %}" class="btn btn-primary">Agregar</a>
+                        {% endif %}
                         </div>
                     </div>
                     <br>
@@ -24,6 +26,7 @@ Listado de Activos Asignados
                             {% csrf_token %}
                             <thead>
                                 <tr>
+                                    <th>Código</th>
                                     <th>Descripción</th>
                                     <th>Estado registro</th>
                                     <th>Acciones</th>
@@ -32,6 +35,7 @@ Listado de Activos Asignados
                             <tbody>
                                 {% for item in datos %}
                                 <tr>
+                                    <td>{{item.code}}</td>
                                     <td>{{item.descripcion}}</td>
                                     <td>
                                     {% if item.active %}
@@ -41,12 +45,16 @@ Listado de Activos Asignados
                                     {% endif %}
                                     </td>
                                     <td class="text-nowrap acciones">
+                                        {% if perms.worksheet.change_activoasignado %}
                                         <a href="{% url 'articulo_asignado_editar' item.pk %}" data-toggle="tooltip" data-original-title="Editar">
                                             <i class="fa fa-pencil text-inverse m-r-10"></i>
                                         </a>
+                                        {% endif %}
+                                        {% if perms.worksheet.delete_activoasignado %}
                                         <a href="#" class="btnEliminar" data="{{item.pk}}" data-toggle="tooltip" data-original-title="Eliminar">
                                             <i class="fa fa-close text-danger"></i>
                                         </a>
+                                        {% endif %}
                                     </td>
                                 </tr>
                                 {% endfor %}
