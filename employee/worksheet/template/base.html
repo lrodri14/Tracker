@@ -249,10 +249,22 @@
                     <li><a href="javascript:void(0)" id="aAccionesPer" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Acciones de Personal <span class="fa arrow"></span></span></a>
                         <ul class="nav nav-second-level">
                             <li><a href="{% url 'ausentismo_listado' %}" id="aAu" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Ausentismo</span></a></li>
+                            {% if perms.worksheet.see_deducciongeneraldetalle %}
+                            <li><a href="{% url 'deduccion_general_detalle_listado' %}" id="aDGD" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Deducción General Detalle</span></a></li>
+                            {% endif %}
+                            {% if perms.worksheet.see_deduccionindividualdetalle %}
+                            <li><a href="{% url 'deduccion_individual_detalle_listado' %}" id="aDID" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Deducción Individual Detalle</span></a></li>
+                            {% endif %}
                             <li><a href="{% url 'educacion_listar' %}" id="aEdu" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Educación</span></a></li>
                             <li><a href="{% url 'evaluacion_listar' %}" id="aEv" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Evaluación</span></a></li>
                             {% if perms.worksheet.see_ingresogeneraldetalle %}
                             <li><a href="{% url 'ingreso_general_detalle_listado' %}" id="aIGD" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Ingreso General Detalle</span></a></li>
+                            {% endif %}
+                            {% if perms.worksheet.see_ingresoindividualdetalle %}
+                            <li><a href="{% url 'ingreso_individual_detalle_listado' %}" id="aIID" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Ingreso Individual Detalle</span></a></li>
+                            {% endif %}
+                            {% if perms.worksheet.see_ingresoindividualplanilla %}
+                            <li><a href="{% url 'ingreso_individual_planilla_listado' %}" id="aIIP" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Ingreso Individual a Planilla</span></a></li>
                             {% endif %}
                             {% if perms.worksheet.see_empleoanterior %}
                             <li><a href="{% url 'empleo_anterior_listar' %}" id="empAnt" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Empleos Anteriores</span></a></li>

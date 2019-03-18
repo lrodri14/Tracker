@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block titulo %}
-Listado de Detalle en Ingresos Generales
+Listado de Detalle en Deducciones Individuales
 {% endblock titulo %}
 {% load static %}
 {% block contenido %}
@@ -9,15 +9,15 @@ Listado de Detalle en Ingresos Generales
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h2 class="text-bold"><i class="fa fa-list"></i>
-                    Listado de Detalle en Ingresos Generales</h2>
+                    Listado de Detalle en Deducciones Individuales</h2>
             </div>
             
             <div class="panel-wrapper">
                 <div class="panel-body">
                     <div class="row text-right">
-                        {% if perms.worksheet.add_ingresogeneraldetalle %}
+                        {% if perms.worksheet.add_deduccionindividualdetalle %}
                         <div class="col-md-12">
-                            <a href="{% url 'ingreso_general_detalle_form' %}" class="btn btn-primary">Agregar</a>
+                            <a href="{% url 'deduccion_individual_detalle_form' %}" class="btn btn-primary">Agregar</a>
                         </div>
                         {% endif %}
                     </div>
@@ -27,10 +27,8 @@ Listado de Detalle en Ingresos Generales
                             {% csrf_token %}
                             <thead>
                                 <tr>
-                                    <th>Ingreso</th>
-                                    <th>Nómina</th>
-                                    <th>Tipo de Pago</th>
-                                    <th>Tipo de Contrato</th>
+                                    <th>Empleado</th>
+                                    <th>Deducción</th>
                                     <th>Valor</th>
                                     <th>Fecha válida</th>
                                     <th>Acciones</th>
@@ -39,19 +37,17 @@ Listado de Detalle en Ingresos Generales
                             <tbody>
                                 {% for item in lista %}
                                 <tr>
-                                    <td>{{item.ingreso.ingreso_g}}</td>
-                                    <td>{{item.nomina.descripcion}}</td>
-                                    <td>{{item.tipo_pago.description}}</td>
-                                    <td>{{item.tipo_contrato.tipo_contrato}}</td>   
+                                    <td>{{item.empleado.firstName}}{% if item.empleado.middleName %}{{item.empleado.middleName}}{% endif %} {{item.empleado.lastName}}</td>
+                                    <td>{{item.deduccion.deduccion_i}}</td>
                                     <td>{{item.valor}}</td>                         
                                     <td>{{item.fecha_valida}}</td>   
                                     <td class="text-nowrap acciones">
-                                        {% if perms.worksheet.change_ingresogeneraldetalle %}
-                                        <a href="{% url 'ingreso_general_detalle_editar' item.pk %}" data-toggle="tooltip" data-original-title="Editar">
+                                        {% if perms.worksheet.change_deduccionindividualdetalle %}
+                                        <a href="{% url 'deduccion_indidvidual_detalle_editar' item.pk %}" data-toggle="tooltip" data-original-title="Editar">
                                             <i class="fa fa-pencil text-inverse m-r-10"></i>
                                         </a>
                                         {% endif %}
-                                        {% if perms.worksheet.delete_ingresogeneraldetalle %}
+                                        {% if perms.worksheet.delete_deduccionindividualdetalle %}
                                         <a href="#" class="btnEliminar" data="{{item.pk}}" data-toggle="tooltip" data-original-title="Eliminar">
                                             <i class="fa fa-close text-danger"></i>
                                         </a>
@@ -74,7 +70,7 @@ Listado de Detalle en Ingresos Generales
     //#region Efectos en SideBar
     $('#side-menu a').removeClass('active');
     $('#aAccionesPer').addClass('active');
-    $('#aIGD').addClass('active');
+    $('#aDID').addClass('active');
     //#endregion
 
     //#region Eventos Controles
@@ -87,8 +83,8 @@ Listado de Detalle en Ingresos Generales
 
     //#region Funciones
     function Eliminar(id) {
-        var Encabezado = 'Detalle de Ingreso General';
-        var url = "/eliminar/ingreso-general-detalle/"; // the script where you handle the form input.
+        var Encabezado = 'Detalle de Deducción Individual';
+        var url = "/eliminar/deduccion-individual-detalle/"; // the script where you handle the form input.
         $.ajax({
             type: "POST",
             url: url,

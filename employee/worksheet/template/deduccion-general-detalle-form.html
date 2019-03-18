@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% block titulo %}
+Detalle de Deducción General
+{% endblock titulo %}
+{% load static %}
+{% block estilo %}
+<style>
+    .checkbox{
+        font-weight: 500;
+    }
+    .checkbox label{
+        font-weight: 500;
+    }
+</style>
+{% endblock estilo %}
+{% block contenido %}
+<div id="deduccion_general_detalle" class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="text-bold"><i class="ti-pencil-alt"></i>Detalle de Deducción General</h2>
+            </div>
+            <div class="panel-wrapper">
+                <div class="panel-body">
+                    {% csrf_token %}
+                    {% if editar %}
+                    <input type="hidden" value="{{dato.pk}}" name="id">
+                    {% endif %}
+                    <div class="col-md-12">
+                        <div class="col-md-12 margin-bottom-5px">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label class="control-label">Deducción:</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <select class="form-control select2" name="deduccion">
+                                            <option value="0">Seleccionar...</option>
+                                            {% for item in deducciones %}
+                                                {% if editar %}
+                                                    {% if item == dato.deduccion %}
+                                                    <option value="{{item.pk}}" selected>{{item.deduccion_g}}</option>
+                                                    {% else %}
+                                                    <option value="{{item.pk}}">{{item.deduccion_g}}</option>
+                                                    {% endif %}
+                                                {% else %}
+                                                <option value="{{item.pk}}">{{item.deduccion_g}}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label class="control-label">Planilla:</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <select class="form-control select2" name="planilla">
+                                            <option value="0">Seleccionar...</option>
+                                            {% for item in planillas %}
+                                                {% if editar %}
+                                                    {% if item == dato.nomina %}
+                                                    <option value="{{item.pk}}" selected>{{item.descripcion}}</option>
+                                                    {% else %}
+                                                    <option value="{{item.pk}}">{{item.descripcion}}</option>
+                                                    {% endif %}
+                                                {% else %}
+                                                <option value="{{item.pk}}">{{item.descripcion}}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 margin-bottom-5px">    
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label class="control-label">Tipo de Pago :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <select class="form-control select2" name="tipo_pago">
+                                            <option value="0">Seleccionar...</option>
+                                            {% for item in tipos_pagos %}
+                                                {% if editar %}
+                                                    {% if item == dato.tipo_pago %}
+                                                    <option value="{{item.pk}}" selected>{{item.description}}</option>
+                                                    {% else %}
+                                                    <option value="{{item.pk}}">{{item.description}}</option>
+                                                    {% endif %}
+                                                {% else %}
+                                                <option value="{{item.pk}}">{{item.description}}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label class="control-label">Tipo de Contrato :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <select class="form-control select2" name="tipo_contrato">
+                                            <option value="0">Seleccionar...</option>
+                                            {% for item in tipos_contratos %}
+                                                {% if editar %}
+                                                    {% if item == dato.tipo_contrato %}
+                                                    <option value="{{item.pk}}" selected>{{item.tipo_contrato}}</option>
+                                                    {% else %}
+                                                    <option value="{{item.pk}}">{{item.tipo_contrato}}</option>
+                                                    {% endif %}
+                                                {% else %}
+                                                <option value="{{item.pk}}">{{item.tipo_contrato}}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 margin-bottom-5px">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label class="control-label">Valor :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <input name="valor" value="{{dato.valor}}" type="text" class="form-control input" maxlength="18" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label for="txtFechaVencPasaporte" class="control-label">Válido hasta :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <div class="input-group">
+                                            <input id="txtFechaVencPasaporte" value='{{dato.fecha_valido|date:"Y-m-d"}}' name="fecha" type="text" class="form-control mydatepicker" placeholder="yyyy-mm-dd"> <span class="input-group-addon"><i class="icon-calender"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5"></div>
+                                    <div class="col-md-7">
+                                        <div class="checkbox checkbox-success">
+                                            <input id="chkActivo" name="activo" type="checkbox" {% if dato.active %}checked{% endif %} class="input">
+                                            <label for="chkActivo" class="control-label"> Activo </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-action text-right">
+                            {% if editar %}
+                            <button id="btnActualizar" class="btn btn-success">Actualizar</button>
+                            {% else %}
+                            <button id="btnGuardar" class="btn btn-success">Guardar</button>
+                            {% endif %}
+                            <button id="btnCancelar" class="btn btn-default">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contenido %}
+{% block scripts %}
+<script src="{% static 'js/lib/jquery.mask.js' %}"></script>
+<script>
+    $('#side-menu a').removeClass('active');
+    $('#aPersonal').addClass('active');
+    $('#aDeduccionG').addClass('active');
+    $('input[name="valor"]').mask('0,000,000,000,000.00', {reverse:true});
+
+    $('.mydatepicker, #datepicker').datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose:true,
+        todayHighlight: true,
+    });
+</script>
+{% endblock scripts %}

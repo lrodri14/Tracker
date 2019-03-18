@@ -8667,6 +8667,333 @@ def deduccion_individual_eliminar(request):
 
 #endregion
 
+#region Código para Deducción Individual Detalle
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_deduccionindividualdetalle', raise_exception=True)
+def deduccion_individual_detalle_listado(request):
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    if request.user.has_perm("worksheet.see_all_deduccionindividualdetalle"):
+        lista = DeduccionIndividualDetalle.objects.filter(empresa_reg=suc.empresa)
+    else:
+        lista = DeduccionIndividualDetalle.objects.filter(empresa_reg=suc.empresa, active=True)
+    return render(request, 'deduccion-individual-detalle-listado.html', {'lista':lista})
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_ingresoindividualdetalle', raise_exception=True)
+def deduccion_individual_detalle_form(request):
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    deducciones = DeduccionIndividual.objects.filter(empresa_reg=suc.empresa, active=True)
+    empleados = Employee.objects.filter(empresa_reg=suc.empresa, active=True)
+    return render(request, 'deduccion-individual-detalle-form.html', {'deducciones':deducciones, 'empleados':empleados})
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_ingresogeneraldetalle', raise_exception=True)
+def deduccion_indidvidual_detalle_editar(request, id):
+    dato = DeduccionIndividualDetalle.objects.get(pk=id)
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    deducciones = DeduccionIndividual.objects.filter(empresa_reg=suc.empresa, active=True)
+    empleados = Employee.objects.filter(empresa_reg=suc.empresa, active=True)
+    return render(request, 'deduccion-individual-detalle-form.html', {'dato':dato, 'deducciones':deducciones, 'empleados':empleados, 'editar':True})
+
+#----------------- END AJAX --------------------
+
+def deduccion_individual_detalle_guardar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                deduccion_id = request.POST['deduccion']
+                empleado_id = request.POST['empleado']
+                valor = request.POST['valor']
+                fecha_valida = request.POST['fecha']
+                activo = request.POST['activo']
+
+                if len(deduccion_id) == 0:
+                    mensaje = "El campo 'Deducción' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(empleado_id) == 0:
+                    mensaje = "El campo 'Empleado' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(valor) == 0:
+                    mensaje = "El campo 'Valor' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(fecha_valida) == 0:
+                    mensaje = "El campo 'Válido hasta' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(activo) == 0:
+                    mensaje = "El campo 'Activo' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                valor = valor.replace(",",  "")
+
+                if not validarEntero(deduccion_id):
+                    mensaje = "El campo 'Deducción' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarEntero(empleado_id):
+                    mensaje = "El campo 'Empleado' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarDecimal(valor):
+                    mensaje = "El campo 'Valor' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarEntero(activo):
+                    mensaje = "El campo 'Activo' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if deduccion_id == 0:
+                    mensaje = "El registro del campo 'Deduccion' no existe."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if empleado_id == 0:
+                    mensaje = "El registro del campo 'Empleado' no existe."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(valor) > 18:
+                    mensaje = "El campo 'Valor' tiene como máximo 18 caracteres."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if float(valor) == 0:
+                    mensaje = "El campo 'Valor' debe ser mayor a cero (0)."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if int(activo) < 0 and int(valor) > 2:
+                    mensaje = "El valor del campo 'Activo' no es válido."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if int(activo) == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                vdeduccion = DeduccionIndividual.objects.get(pk=deduccion_id)
+                vempleado = Employee.objects.get(pk=empleado_id)
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+
+                oMd = DeduccionIndividualDetalle(
+                    deduccion=vdeduccion,
+                    empleado=vempleado,
+                    valor=valor,
+                    fecha_valida=fecha_valida,
+                    empresa_reg=suc.empresa,
+                    sucursal_reg=suc,
+                    active=activo,
+                    user_reg=request.user,
+                )
+                oMd.save()
+                mensaje = 'Se ha guardado el registro'
+                data = {
+                    'mensaje': mensaje, 'error': False
+                }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def deduccion_individual_detalle_actualizar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                deduccion_id = request.POST['deduccion']
+                empleado_id = request.POST['empleado']
+                valor = request.POST['valor']
+                fecha_valida = request.POST['fecha']
+                activo = request.POST['activo']
+
+                if len(deduccion_id) == 0:
+                    mensaje = "El campo 'Deducción' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(empleado_id) == 0:
+                    mensaje = "El campo 'Empleado' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(valor) == 0:
+                    mensaje = "El campo 'Valor' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(fecha_valida) == 0:
+                    mensaje = "El campo 'Válido hasta' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(activo) == 0:
+                    mensaje = "El campo 'Activo' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                valor = valor.replace(",",  "")
+
+                if not validarEntero(deduccion_id):
+                    mensaje = "El campo 'Deducción' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarEntero(empleado_id):
+                    mensaje = "El campo 'Empleado' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarDecimal(valor):
+                    mensaje = "El campo 'Valor' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarEntero(activo):
+                    mensaje = "El campo 'Activo' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if deduccion_id == 0:
+                    mensaje = "El registro del campo 'Deducción' no existe."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if empleado_id == 0:
+                    mensaje = "El registro del campo 'Empleado' no existe."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(valor) > 18:
+                    mensaje = "El campo 'Valor' tiene como máximo 18 caracteres."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if float(valor) == 0:
+                    mensaje = "El campo 'Valor' debe ser mayor a cero (0)."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if int(activo) < 0 and int(valor) > 2:
+                    mensaje = "El valor del campo 'Activo' no es válido."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if int(activo) == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                vdeduccion = DeduccionIndividual.objects.get(pk=deduccion_id)
+                vempleado = Employee.objects.get(pk=empleado_id)
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+                oMd = DeduccionIndividualDetalle.objects.get(pk=id)
+                if oMd:
+                    oMd.deduccion = vdeduccion
+                    oMd.empleado = vempleado
+                    oMd.valor = valor
+                    oMd.fecha_valida = fecha_valida
+                    oMd.active = activo
+                    oMd.user_mod = request.user
+                    oMd.date_mod = datetime.datetime.now()
+                    oMd.save()
+                    mensaje = 'Se ha actualizado el registro.'
+                    data = {
+                        'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "No existe el registro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def deduccion_individual_detalle_eliminar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oMd = DeduccionIndividualDetalle.objects.get(pk=reg_id)
+                    if oMd:
+                        oMd.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+#----------------- END AJAX --------------------
+
+#endregion
+
 #region Código para Deducción General
 
 @login_required(login_url='/form/iniciar-sesion/')
@@ -8826,7 +9153,453 @@ def deduccion_general_actualizar(request):
         }
     return JsonResponse(data)
 
+def deduccion_general_eliminar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oMd = DeduccionGeneral.objects.get(pk=reg_id)
+                    if oMd:
+                        oMd.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
 #---------------------AJAX-------------------------------
+
+#endregion
+
+#region Código para Deduccion General Detalle
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_deducciongeneraldetalle', raise_exception=True)
+def deduccion_general_detalle_listado(request):
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    if request.user.has_perm("worksheet.see_all_deducciongeneral"):
+        listado = DeduccionGeneralDetalle.objects.filter(empresa_reg=suc.empresa)
+    else:
+        if request.user.has_perm("worksheet.see_deducciongeneral"):
+            listado = DeduccionGeneralDetalle.objects.filter(active=True, empresa_reg=suc.empresa)
+    return render(request, 'deduccion-general-detalle-listado.html', {'listado': listado})
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_deducciongeneraldetalle', raise_exception=True)
+def deduccion_general_detalle_form(request):
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    deducciones = DeduccionGeneral.objects.filter(empresa_reg=suc.empresa, active=True)
+    planillas = Planilla.objects.filter(sucursal_reg=suc, active=True)
+    tipos_pagos = SalaryUnit.objects.filter(empresa_reg=suc.empresa, active=True)
+    tipos_contratos = TipoContrato.objects.filter(empresa_reg=suc.empresa, active=True)
+    return render(request, 'deduccion-general-detalle-form.html', {'deducciones':deducciones, 'planillas':planillas, 'tipos_pagos':tipos_pagos, 'tipos_contratos':tipos_contratos})
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_deducciongeneral', raise_exception=True)
+def deduccion_general_detalle_editar(request, id):
+    dato = DeduccionGeneralDetalle.objects.get(pk=id)
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    deducciones = DeduccionGeneral.objects.filter(empresa_reg=suc.empresa, active=True)
+    planillas = Planilla.objects.filter(sucursal_reg=suc, active=True)
+    tipos_pagos = SalaryUnit.objects.filter(empresa_reg=suc.empresa, active=True)
+    tipos_contratos = TipoContrato.objects.filter(empresa_reg=suc.empresa, active=True)
+    return render(request, 'deduccion-general-detalle-form.html', {'dato': dato, 'editar': True, 'deducciones':deducciones, 'planillas':planillas, 'tipos_pagos':tipos_pagos, 'tipos_contratos':tipos_contratos})
+
+#---------------------------AJAX-----------------------------
+
+def deduccion_general_detalle_guardar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                deduccion = request.POST['deduccion']
+                nomina = request.POST['nomina']
+                tipo_pago = request.POST['tipo_pago']
+                tipo_contrato = request.POST['tipo_contrato']
+                valor = request.POST['valor']
+                fecha_valida = request.POST['fecha']
+                activo = request.POST['activo']
+
+                if len(deduccion) == 0:
+                    mensaje = "El campo 'Deducción' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(nomina) == 0:
+                    mensaje = "El campo 'Nómina' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(tipo_pago) == 0:
+                    mensaje = "El campo 'Tipo de Pago' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(tipo_contrato) == 0:
+                    mensaje = "El campo 'Tipo de Contrato' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(valor) == 0:
+                    mensaje = "El campo 'Valor' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(fecha_valida) == 0:
+                    mensaje = "El campo 'Válido hasta' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(activo) == 0:
+                    mensaje = "El campo 'Activo' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                valor = valor.replace(",",  "")
+
+                if not validarEntero(deduccion):
+                    mensaje = "El campo 'Deducción' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarEntero(nomina):
+                    mensaje = "El campo 'Planilla' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarEntero(tipo_pago):
+                    mensaje = "El campo 'Tipo de Pago' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarEntero(tipo_contrato):
+                    mensaje = "El campo 'Tipo de Contrato' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarDecimal(valor):
+                    mensaje = "El campo 'Valor' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarEntero(activo):
+                    mensaje = "El campo 'Activo' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if ingreso == 0:
+                    mensaje = "El registro del campo 'Ingreso' no existe."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if nomina == 0:
+                    mensaje = "El registro del campo 'Nómina' no existe."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if tipo_pago == 0:
+                    mensaje = "El registro del campo 'Tipo de Pago' no existe."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if tipo_contrato == 0:
+                    mensaje = "El registro del campo 'Tipo de Contrato' no existe."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(valor) > 18:
+                    mensaje = "El campo 'Ingreso General' tiene como máximo 18 caracteres."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if float(valor) == 0:
+                    mensaje = "El campo 'Valor' debe ser mayor a cero (0)."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if int(activo) < 0 and int(valor) > 2:
+                    mensaje = "El valor del campo 'Activo' no es válido."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if int(activo) == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                vdeduccion = DeduccionGeneral.objects.get(pk=deduccion)
+                vnomina = Planilla.objects.get(pk=nomina)
+                vtipopago = SalaryUnit.objects.get(pk=tipo_pago)
+                vtipocontrato = TipoContrato.objects.get(pk=tipo_contrato)
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+
+                oMd = DeduccionGeneralDetalle(
+                    deduccion=vdeduccion,
+                    nomina=vnomina,
+                    tipo_pago=vtipopago,
+                    tipo_contrato=vtipocontrato,
+                    valor=valor,
+                    fecha_valido=fecha_valida,
+                    empresa_reg=suc.empresa,
+                    sucursal_reg=suc,
+                    active=activo,
+                    user_reg=request.user,
+                )
+                oMd.save()
+                mensaje = 'Se ha guardado el registro'
+                data = {
+                    'mensaje': mensaje, 'error': False
+                }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def deduccion_general_detalle_actualizar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = request.POST['id']
+                deduccion = request.POST['deduccion']
+                nomina = request.POST['nomina']
+                tipo_pago = request.POST['tipo_pago']
+                tipo_contrato = request.POST['tipo_contrato']
+                valor = request.POST['valor']
+                fecha_valida = request.POST['fecha']
+                activo = request.POST['activo']
+
+                if len(deduccion) == 0:
+                    mensaje = "El campo 'Deducción' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(nomina) == 0:
+                    mensaje = "El campo 'Nómina' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(tipo_pago) == 0:
+                    mensaje = "El campo 'Tipo de Pago' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(tipo_contrato) == 0:
+                    mensaje = "El campo 'Tipo de Contrato' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(valor) == 0:
+                    mensaje = "El campo 'Valor' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(fecha_valida) == 0:
+                    mensaje = "El campo 'Válido hasta' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(activo) == 0:
+                    mensaje = "El campo 'Activo' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                valor = valor.replace(",",  "")
+
+                if not validarEntero(deduccion):
+                    mensaje = "El campo 'Deducción' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarEntero(nomina):
+                    mensaje = "El campo 'Planilla' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarEntero(tipo_pago):
+                    mensaje = "El campo 'Tipo de Pago' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarEntero(tipo_contrato):
+                    mensaje = "El campo 'Tipo de Contrato' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarDecimal(valor):
+                    mensaje = "El campo 'Valor' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarEntero(activo):
+                    mensaje = "El campo 'Activo' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if deduccion == 0:
+                    mensaje = "El registro del campo 'Deducción' no existe."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if nomina == 0:
+                    mensaje = "El registro del campo 'Nómina' no existe."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if tipo_pago == 0:
+                    mensaje = "El registro del campo 'Tipo de Pago' no existe."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if tipo_contrato == 0:
+                    mensaje = "El registro del campo 'Tipo de Contrato' no existe."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(valor) > 18:
+                    mensaje = "El campo 'Valor' tiene como máximo 18 caracteres."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if float(valor) == 0:
+                    mensaje = "El campo 'Valor' debe ser mayor a cero (0)."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if int(activo) < 0 and int(valor) > 2:
+                    mensaje = "El valor del campo 'Activo' no es válido."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if int(activo) == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                vdeduccion = DeduccionGeneral.objects.get(pk=deduccion)
+                vnomina = Planilla.objects.get(pk=nomina)
+                vtipopago = SalaryUnit.objects.get(pk=tipo_pago)
+                vtipocontrato = TipoContrato.objects.get(pk=tipo_contrato)
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+                oMd = DeduccionGeneralDetalle.objects.get(pk=id)
+                if oMd:
+                    oMd.deduccion = vdeduccion
+                    oMd.nomina = vnomina
+                    oMd.tipo_pago = vtipopago
+                    oMd.tipo_contrato = vtipocontrato
+                    oMd.valor = valor
+                    oMd.fecha_valido = fecha_valida
+                    oMd.active = activo
+                    oMd.user_mod = request.user
+                    oMd.date_mod = datetime.datetime.now()
+                    oMd.save()
+                    mensaje = 'Se ha actualizado el registro.'
+                    data = {
+                        'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "No existe el registro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def deduccion_general_detalle_eliminar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oMd = DeduccionGeneralDetalle.objects.get(pk=reg_id)
+                    if oMd:
+                        oMd.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+#---------------------------AJAX-----------------------------
 
 #endregion
 
@@ -9596,6 +10369,17 @@ def ingreso_general_detalle_form(request):
     tipos_contratos = TipoContrato.objects.filter(empresa_reg=suc.empresa, active=True)
     return render(request, 'ingreso-general-detalle-form.html', {'ingresos_generales': ingresos_generales, 'planillas': planillas, 'tipos_pagos':tipos_pagos, 'tipos_contratos':tipos_contratos})
 
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_ingresogeneraldetalle', raise_exception=True)
+def ingreso_general_detalle_editar(request, id):
+    dato = IngresoGeneralDetalle.objects.get(pk=id)
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    ingresos_generales = IngresoGeneral.objects.filter(empresa_reg=suc.empresa, active=True)
+    planillas = Planilla.objects.filter(sucursal_reg=suc, active=True)
+    tipos_pagos = SalaryUnit.objects.filter(empresa_reg=suc.empresa, active=True)
+    tipos_contratos = TipoContrato.objects.filter(empresa_reg=suc.empresa, active=True)
+    return render(request, 'ingreso-general-detalle-form.html', {'dato':dato, 'ingresos_generales': ingresos_generales, 'planillas': planillas, 'tipos_pagos':tipos_pagos, 'tipos_contratos':tipos_contratos, 'editar':True})
+
 #---------------------AJAX-------------------------------
 
 
@@ -9748,6 +10532,211 @@ def ingreso_general_detalle_guardar(request):
                 }
         else:
             mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def ingreso_general_detalle_actualizar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                ingreso = request.POST['ingreso']
+                nomina = request.POST['nomina']
+                tipo_pago = request.POST['tipo_pago']
+                tipo_contrato = request.POST['tipo_contrato']
+                valor = request.POST['valor']
+                fecha_valida = request.POST['fecha']
+                activo = request.POST['activo']
+
+                if len(ingreso) == 0:
+                    mensaje = "El campo 'Ingreso' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(nomina) == 0:
+                    mensaje = "El campo 'Nómina' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(tipo_pago) == 0:
+                    mensaje = "El campo 'Tipo de Pago' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(tipo_contrato) == 0:
+                    mensaje = "El campo 'Tipo de Contrato' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(valor) == 0:
+                    mensaje = "El campo 'Valor' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(fecha_valida) == 0:
+                    mensaje = "El campo 'Válido hasta' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(activo) == 0:
+                    mensaje = "El campo 'Activo' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                valor = valor.replace(",",  "")
+
+                if not validarEntero(ingreso):
+                    mensaje = "El campo 'Ingreso' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarEntero(nomina):
+                    mensaje = "El campo 'Planilla' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarEntero(tipo_pago):
+                    mensaje = "El campo 'Tipo de Pago' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarEntero(tipo_contrato):
+                    mensaje = "El campo 'Tipo de Contrato' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarDecimal(valor):
+                    mensaje = "El campo 'Valor' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarEntero(activo):
+                    mensaje = "El campo 'Activo' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if ingreso == 0:
+                    mensaje = "El registro del campo 'Ingreso' no existe."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if nomina == 0:
+                    mensaje = "El registro del campo 'Nómina' no existe."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if tipo_pago == 0:
+                    mensaje = "El registro del campo 'Tipo de Pago' no existe."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if tipo_contrato == 0:
+                    mensaje = "El registro del campo 'Tipo de Contrato' no existe."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(valor) > 18:
+                    mensaje = "El campo 'Ingreso General' tiene como máximo 18 caracteres."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if float(valor) == 0:
+                    mensaje = "El campo 'Valor' debe ser mayor a cero (0)."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if int(activo) < 0 and int(valor) > 2:
+                    mensaje = "El valor del campo 'Activo' no es válido."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if int(activo) == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                vingreso = IngresoGeneral.objects.get(pk=ingreso)
+                vnomina = Planilla.objects.get(pk=nomina)
+                vtipopago = SalaryUnit.objects.get(pk=tipo_pago)
+                vtipocontrato = TipoContrato.objects.get(pk=tipo_contrato)
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+                oMd = IngresoGeneralDetalle.objects.get(pk=id)
+                if oMd:
+                    oMd.ingreso = vingreso
+                    oMd.nomina = vnomina
+                    oMd.tipo_pago = vtipopago
+                    oMd.tipo_contrato = vtipocontrato
+                    oMd.valor = valor
+                    oMd.fecha_valida = fecha_valida
+                    oMd.active = activo
+                    oMd.user_mod = request.user
+                    oMd.date_mod = datetime.datetime.now()
+                    oMd.save()
+                    mensaje = 'Se ha actualizado el registro.'
+                    data = {
+                        'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "No existe el registro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def ingreso_general_detalle_eliminar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oMd = IngresoGeneralDetalle.objects.get(pk=reg_id)
+                    if oMd:
+                        oMd.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
             data = {
                 'mensaje': mensaje, 'error': True
             }
@@ -9953,6 +10942,686 @@ def ingreso_individual_eliminar(request):
                 reg_id = request.POST['id']
                 if int(reg_id) > 0:
                     oMd = IngresoIndividual.objects.get(pk=reg_id)
+                    if oMd:
+                        oMd.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+#---------------------AJAX-------------------------------
+
+#endregion
+
+#region Código para Ingreso Individual Detalle
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_ingresoindividualdetalle', raise_exception=True)
+def ingreso_individual_detalle_listado(request):
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    if request.user.has_perm("worksheet.see_all_ingresoindividualdetalle"):
+        lista = IngresoIndividual.objects.filter(empresa_reg=suc.empresa)
+    else:
+        lista = IngresoIndividualDetalle.objects.filter(empresa_reg=suc.empresa, active=True)
+    return render(request, 'ingreso-individual-detalle-listado.html', {'lista':lista})
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_ingresoindividualdetalle', raise_exception=True)
+def ingreso_individual_detalle_form(request):
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    ingresos = IngresoIndividual.objects.filter(empresa_reg=suc.empresa, active=True)
+    empleados = Employee.objects.filter(empresa_reg=suc.empresa, active=True)
+    return render(request, 'ingreso-individual-detalle-form.html', {'ingresos':ingresos, 'empleados':empleados})
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_ingresogeneraldetalle', raise_exception=True)
+def ingreso_indidvidual_detalle_editar(request, id):
+    dato = IngresoIndividualDetalle.objects.get(pk=id)
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    ingresos = IngresoIndividual.objects.filter(empresa_reg=suc.empresa, active=True)
+    empleados = Employee.objects.filter(empresa_reg=suc.empresa, active=True)
+    return render(request, 'ingreso-individual-detalle-form.html', {'dato':dato, 'ingresos':ingresos, 'empleados':empleados, 'editar':True})
+
+#---------------------AJAX-------------------------------
+
+def ingreso_indidvidual_detalle_guardar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                ingreso_id = request.POST['ingreso']
+                empleado_id = request.POST['empleado']
+                valor = request.POST['valor']
+                fecha_valida = request.POST['fecha']
+                activo = request.POST['activo']
+
+                if len(ingreso_id) == 0:
+                    mensaje = "El campo 'Ingreso' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(empleado_id) == 0:
+                    mensaje = "El campo 'Empleado' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(valor) == 0:
+                    mensaje = "El campo 'Valor' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(fecha_valida) == 0:
+                    mensaje = "El campo 'Válido hasta' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(activo) == 0:
+                    mensaje = "El campo 'Activo' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                valor = valor.replace(",",  "")
+
+                if not validarEntero(ingreso_id):
+                    mensaje = "El campo 'Ingreso' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarEntero(empleado_id):
+                    mensaje = "El campo 'Empleado' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarDecimal(valor):
+                    mensaje = "El campo 'Valor' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarEntero(activo):
+                    mensaje = "El campo 'Activo' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if ingreso_id == 0:
+                    mensaje = "El registro del campo 'Ingreso' no existe."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if empleado_id == 0:
+                    mensaje = "El registro del campo 'Empleado' no existe."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(valor) > 18:
+                    mensaje = "El campo 'Valor' tiene como máximo 18 caracteres."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if float(valor) == 0:
+                    mensaje = "El campo 'Valor' debe ser mayor a cero (0)."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if int(activo) < 0 and int(valor) > 2:
+                    mensaje = "El valor del campo 'Activo' no es válido."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if int(activo) == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                vingreso = IngresoIndividual.objects.get(pk=ingreso_id)
+                vempleado = Employee.objects.get(pk=empleado_id)
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+
+                oMd = IngresoIndividualDetalle(
+                    ingreso=vingreso,
+                    empleado=vempleado,
+                    valor=valor,
+                    fecha_valida=fecha_valida,
+                    empresa_reg=suc.empresa,
+                    sucursal_reg=suc,
+                    active=activo,
+                    user_reg=request.user,
+                )
+                oMd.save()
+                mensaje = 'Se ha guardado el registro'
+                data = {
+                    'mensaje': mensaje, 'error': False
+                }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def ingreso_individual_detalle_actualizar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                ingreso_id = request.POST['ingreso']
+                empleado_id = request.POST['empleado']
+                valor = request.POST['valor']
+                fecha_valida = request.POST['fecha']
+                activo = request.POST['activo']
+
+                if len(ingreso_id) == 0:
+                    mensaje = "El campo 'Ingreso' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(empleado_id) == 0:
+                    mensaje = "El campo 'Empleado' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(valor) == 0:
+                    mensaje = "El campo 'Valor' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(fecha_valida) == 0:
+                    mensaje = "El campo 'Válido hasta' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(activo) == 0:
+                    mensaje = "El campo 'Activo' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                valor = valor.replace(",",  "")
+
+                if not validarEntero(ingreso_id):
+                    mensaje = "El campo 'Ingreso' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarEntero(empleado_id):
+                    mensaje = "El campo 'Empleado' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarDecimal(valor):
+                    mensaje = "El campo 'Valor' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarEntero(activo):
+                    mensaje = "El campo 'Activo' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if ingreso_id == 0:
+                    mensaje = "El registro del campo 'Ingreso' no existe."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if empleado_id == 0:
+                    mensaje = "El registro del campo 'Empleado' no existe."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(valor) > 18:
+                    mensaje = "El campo 'Valor' tiene como máximo 18 caracteres."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if float(valor) == 0:
+                    mensaje = "El campo 'Valor' debe ser mayor a cero (0)."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if int(activo) < 0 and int(valor) > 2:
+                    mensaje = "El valor del campo 'Activo' no es válido."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if int(activo) == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                vingreso = IngresoIndividual.objects.get(pk=ingreso_id)
+                vempleado = Employee.objects.get(pk=empleado_id)
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+                oMd = IngresoIndividualDetalle.objects.get(pk=id)
+                if oMd:
+                    oMd.ingreso = vingreso
+                    oMd.empleado = vempleado
+                    oMd.valor = valor
+                    oMd.fecha_valida = fecha_valida
+                    oMd.active = activo
+                    oMd.user_mod = request.user
+                    oMd.date_mod = datetime.datetime.now()
+                    oMd.save()
+                    mensaje = 'Se ha actualizado el registro.'
+                    data = {
+                        'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "No existe el registro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def ingreso_individual_detalle_eliminar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oMd = IngresoIndividualDetalle.objects.get(pk=reg_id)
+                    if oMd:
+                        oMd.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+#---------------------AJAX-------------------------------
+
+#endregion
+
+#region Código para Ingreso Individual Planilla
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_ingresoindividualplanilla', raise_exception=True)
+def ingreso_individual_planilla_listado(request):
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    if request.user.has_perm("worksheet.see_all_ingresoindividualplanilla"):
+        lista = IngresoIndividualPlanilla.objects.filter(empresa_reg=suc.empresa)
+    else:
+        lista = IngresoIndividualPlanilla.objects.filter(empresa_reg=suc.empresa, active=True)
+    return render(request, 'ingreso-individual-planilla-listado.html', {'lista':lista})
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_ingresoindividualplanilla', raise_exception=True)
+def ingreso_individual_planilla_form(request):
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    ingresos = IngresoIndividual.objects.filter(empresa_reg=suc.empresa, active=True)
+    empleados = Employee.objects.filter(empresa_reg=suc.empresa, active=True)
+    planillas = Planilla.objects.filter(sucursal_reg=suc, active=True)
+    return render(request, 'ingreso-individual-planilla-form.html', {'ingresos':ingresos, 'empleados':empleados, 'planillas':planillas})
+
+@login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_ingresoindividualplanilla', raise_exception=True)
+def ingreso_individual_planilla_editar(request, id):
+    dato = IngresoIndividualPlanilla.objects.get(pk=id)
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    ingresos = IngresoIndividual.objects.filter(empresa_reg=suc.empresa, active=True)
+    empleados = Employee.objects.filter(empresa_reg=suc.empresa, active=True)
+    planillas = Planilla.objects.filter(sucursal_reg=suc, active=True)
+    return render(request, 'ingreso-individual-planilla-form.html', {'dato':dato, 'ingresos':ingresos, 'empleados':empleados, 'planillas':planillas, 'editar':True})
+
+#---------------------AJAX-------------------------------
+
+def ingreso_individual_planilla_guardar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                ingreso_id = request.POST['ingreso']
+                empleado_id = request.POST['empleado']
+                planilla_id = request.POST['planilla']
+                valor = request.POST['valor']
+                activo = request.POST['activo']
+
+                if len(ingreso_id) == 0:
+                    mensaje = "El campo 'Ingreso' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(empleado_id) == 0:
+                    mensaje = "El campo 'Empleado' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(planilla_id) == 0:
+                    mensaje = "El campo 'Planilla' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(valor) == 0:
+                    mensaje = "El campo 'Valor' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(activo) == 0:
+                    mensaje = "El campo 'Activo' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                valor = valor.replace(",",  "")
+
+                if not validarEntero(ingreso_id):
+                    mensaje = "El campo 'Ingreso' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarEntero(empleado_id):
+                    mensaje = "El campo 'Empleado' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarEntero(planilla_id):
+                    mensaje = "El campo 'Planilla' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarDecimal(valor):
+                    mensaje = "El campo 'Valor' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarEntero(activo):
+                    mensaje = "El campo 'Activo' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if ingreso_id == 0:
+                    mensaje = "El registro del campo 'Ingreso' no existe."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if empleado_id == 0:
+                    mensaje = "El registro del campo 'Empleado' no existe."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if planilla_id == 0:
+                    mensaje = "El registro del campo 'Planilla' no existe."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(valor) > 18:
+                    mensaje = "El campo 'Valor' tiene como máximo 18 caracteres."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if float(valor) == 0:
+                    mensaje = "El campo 'Valor' debe ser mayor a cero (0)."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if int(activo) < 0 and int(valor) > 2:
+                    mensaje = "El valor del campo 'Activo' no es válido."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if int(activo) == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                vingreso = IngresoIndividual.objects.get(pk=ingreso_id)
+                vempleado = Employee.objects.get(pk=empleado_id)
+                vplanilla = Planilla.objects.get(pk=planilla_id)
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+
+                oMd = IngresoIndividualPlanilla(
+                    ingreso=vingreso,
+                    empleado=vempleado,
+                    planilla=vplanilla,
+                    valor=valor,
+                    empresa_reg=suc.empresa,
+                    sucursal_reg=suc,
+                    active=activo,
+                    user_reg=request.user,
+                )
+                oMd.save()
+                mensaje = 'Se ha guardado el registro'
+                data = {
+                    'mensaje': mensaje, 'error': False
+                }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def ingreso_individual_planilla_actualizar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                id = int(request.POST['id'])
+                ingreso_id = request.POST['ingreso']
+                empleado_id = request.POST['empleado']
+                planilla_id =  request.POST['planilla']
+                valor = request.POST['valor']
+                activo = request.POST['activo']
+
+                if len(ingreso_id) == 0:
+                    mensaje = "El campo 'Ingreso' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(empleado_id) == 0:
+                    mensaje = "El campo 'Empleado' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(planilla_id) == 0:
+                    mensaje = "El campo 'Planilla' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(valor) == 0:
+                    mensaje = "El campo 'Valor' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(activo) == 0:
+                    mensaje = "El campo 'Activo' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                valor = valor.replace(",",  "")
+
+                if not validarEntero(ingreso_id):
+                    mensaje = "El campo 'Ingreso' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarEntero(empleado_id):
+                    mensaje = "El campo 'Empleado' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarEntero(planilla_id):
+                    mensaje = "El campo 'Planilla' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarDecimal(valor):
+                    mensaje = "El campo 'Valor' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if not validarEntero(activo):
+                    mensaje = "El campo 'Activo' es de tipo Numérico."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if ingreso_id == 0:
+                    mensaje = "El registro del campo 'Ingreso' no existe."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if empleado_id == 0:
+                    mensaje = "El registro del campo 'Empleado' no existe."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if planilla_id == 0:
+                    mensaje = "El registro del campo 'Planilla' no existe."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(valor) > 18:
+                    mensaje = "El campo 'Valor' tiene como máximo 18 caracteres."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if float(valor) == 0:
+                    mensaje = "El campo 'Valor' debe ser mayor a cero (0)."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if int(activo) < 0 and int(valor) > 2:
+                    mensaje = "El valor del campo 'Activo' no es válido."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if int(activo) == 1:
+                    activo = True
+                else:
+                    activo = False
+
+                vingreso = IngresoIndividual.objects.get(pk=ingreso_id)
+                vempleado = Employee.objects.get(pk=empleado_id)
+                vplanilla = Planilla.objects.get(pk=planilla_id)
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+                oMd = IngresoIndividualPlanilla.objects.get(pk=id)
+                if oMd:
+                    oMd.ingreso = vingreso
+                    oMd.empleado = vempleado
+                    oMd.planilla = vplanilla
+                    oMd.valor = valor
+                    oMd.active = activo
+                    oMd.user_mod = request.user
+                    oMd.date_mod = datetime.datetime.now()
+                    oMd.save()
+                    mensaje = 'Se ha actualizado el registro.'
+                    data = {
+                        'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "No existe el registro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "No es una petición AJAX."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        print ex
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
+def ingreso_individual_planilla_eliminar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oMd = IngresoIndividualPlanilla.objects.get(pk=reg_id)
                     if oMd:
                         oMd.delete()
                         mensaje = 'Se ha eliminado el registro.'
