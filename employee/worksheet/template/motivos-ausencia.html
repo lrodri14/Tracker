@@ -2,6 +2,16 @@
 {% block titulo %}
 Motivos Ausencia
 {% endblock titulo %}
+{% block estilo %}
+<style>
+    .checkbox{
+        font-weight: 500;
+    }
+    .checkbox label{
+        font-weight: 500;
+    }
+</style>
+{% endblock estilo %}
 {% load static %}
 {% block contenido %}
 <div class="row">
@@ -25,7 +35,7 @@ Motivos Ausencia
                                         <label for="txtCodeMAu" class="control-label">Código :</label>
                                     </div>
                                     <div class="col-md-7">
-                                        <input id="txtCodeMAu" value='{{dato.code}}' name="mau_code" type="text" maxlength="5" class="form-control input-sm-1">
+                                        <input id="txtCodeMAu" {% if editar %}disabled{% endif %} value='{{dato.code}}' name="mau_code" type="text" maxlength="5" class="form-control">
                                     </div>
                                 </div>
                             </div>
@@ -37,7 +47,7 @@ Motivos Ausencia
                                         <label for="txtDescMAu" class="control-label">Descripción :</label>
                                     </div>
                                     <div class="col-md-7">
-                                        <input id="txtDescMAu" value='{{dato.descripcion}}' name="mau_desc" type="text" class="form-control input-sm-1">
+                                        <input id="txtDescMAu" value='{{dato.descripcion}}' name="mau_desc" type="text" class="form-control">
                                     </div>
                                 </div>
                             </div>

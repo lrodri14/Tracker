@@ -2,6 +2,16 @@
 {% block titulo %}
 Estatus de Empleado
 {% endblock titulo %}
+{% block estilo %}
+<style>
+    .checkbox{
+        font-weight: 500;
+    }
+    .checkbox label{
+        font-weight: 500;
+    }
+</style>
+{% endblock estilo %}
 {% load static %}
 {% block contenido %}
 <div class="row">
@@ -24,7 +34,7 @@ Estatus de Empleado
                                     <label for="txtNombre" class="control-label">Código :</label>
                                 </div>
                                 <div class="col-md-7">
-                                    <input type="text" name="estEm_nombre" value="{{dato.code}}" id="txtNombre" class="form-control input-sm input-sm-1">
+                                    <input type="text" {% if editar %}disabled{% endif %} name="estEm_nombre" value="{{dato.code}}" id="txtNombre" class="form-control">
                                 </div>
                             </div>
                         </div>
@@ -34,7 +44,7 @@ Estatus de Empleado
                                     <label for="txtNombre" class="control-label">Descripción :</label>
                                 </div>
                                 <div class="col-md-7">
-                                    <input type="text" name="estEm_desc" value="{{dato.description}}" id="txtDescripcion" class="form-control input-sm input-sm-1">
+                                    <input type="text" name="estEm_desc" value="{{dato.description}}" id="txtDescripcion" class="form-control">
                                 </div>
                             </div>
                         </div>
@@ -70,7 +80,6 @@ Estatus de Empleado
 </div>
 {% endblock contenido %}
 {% block scripts %}
-<script src="{% static 'js/app/scriptApp.js' %}"></script>
 <script>
     $('#side-menu a').removeClass('active');
     $('#aPersonal').addClass('active');

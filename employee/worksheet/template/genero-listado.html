@@ -15,7 +15,9 @@ Listado de Géneros
                 <div class="panel-body">
                     <div class="row text-right">
                         <div class="col-md-12">
+                            {% if perms.worksheet.add_sex %}
                             <a href="{% url 'genero' %}" class="btn btn-primary">Agregar</a>
+                            {% endif %}
                         </div>
                     </div>
                     <br>
@@ -43,12 +45,16 @@ Listado de Géneros
                                     {% endif %}
                                     </td>
                                     <td class="text-nowrap acciones">
+                                        {% if perms.worksheet.change_sex %}
                                         <a href="{% url 'genero_editar' item.pk %}" data-toggle="tooltip" data-original-title="Edit">
                                             <i class="fa fa-pencil text-inverse m-r-10"></i>
                                         </a>
+                                        {% endif %}
+                                        {% if perms.worksheet.delete_sex %}
                                         <a href="#" class="btnEliminar" data="{{item.pk}}" data-toggle="tooltip" data-original-title="Close">
                                             <i class="fa fa-close text-danger"></i>
                                         </a>
+                                        {% endif %}
                                     </td>
                                 </tr>
                                 {% endfor %}

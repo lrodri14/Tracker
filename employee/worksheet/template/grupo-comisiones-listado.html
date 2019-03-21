@@ -15,7 +15,9 @@ Listado de Vendedores
                 <div class="panel-body">
                     <div class="row text-right">
                         <div class="col-md-12">
+                            {% if perms.worksheet.add_grupocomisiones %}
                             <a href="{% url 'grupo_comision' %}" class="btn btn-primary">Agregar</a>
+                            {% endif %}
                         </div>
                     </div>
                     <br>
@@ -43,8 +45,12 @@ Listado de Vendedores
                                         {% endif %}
                                     </td>
                                     <td class="text-nowrap acciones">
-                                        <a href="{% url 'grupo_comision_ditar' item.pk %}" data-toggle="tooltip" data-original-title="Edit"> <i class="fa fa-pencil text-inverse m-r-10"></i> </a>
+                                        {% if perms.worksheet.change_grupocomisiones %}
+                                        <a href="{% url 'grupo_comision_ditar' item.pk %}" data-toggle="tooltip" data-original-title="Editar"> <i class="fa fa-pencil text-inverse m-r-10"></i> </a>
+                                        {% endif %}
+                                        {% if perms.worksheet.delete_grupocomisiones %}
                                         <a href="#" id="{{item.pk}}" data="{{item.pk}}" class="btnEliminar"  data-toggle="tooltip" data-original-title="Eliminar"> <i class="fa fa-close text-danger"></i> </a>
+                                        {% endif %}
                                     </td>
                                 </tr>
                                 {% endfor %}

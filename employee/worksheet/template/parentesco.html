@@ -2,6 +2,17 @@
 {% block titulo %}
 Parentesco
 {% endblock titulo %}
+{% block estilo %}
+<style>
+    .checkbox {
+        font-weight: 500;
+    }
+
+    .checkbox label {
+        font-weight: 500;
+    }
+</style>
+{% endblock estilo %}
 {% load static %}
 {% block contenido %}
 <div class="row">
@@ -24,7 +35,7 @@ Parentesco
                                     <label for="txtCodigo" class="control-label">Código :</label>
                                 </div>
                                 <div class="col-md-7">
-                                    <input type="text" name="parent_codigo" value="{{dato.code}}" id="txtCodigo" maxlength="5" class="form-control input-sm input-sm-1">
+                                    <input type="text" {% if editar %}disabled{% endif %} name="parent_codigo" value="{{dato.code}}" id="txtCodigo" maxlength="5" class="form-control">
                                 </div>
                             </div>
                         </div>
@@ -34,7 +45,7 @@ Parentesco
                                     <label for="txtNombre" class="control-label">Descripción :</label>
                                 </div>
                                 <div class="col-md-7">
-                                    <input type="text" name="parent_desc" value="{{dato.descripcion}}" id="txtNombre" class="form-control input-sm input-sm-1">
+                                    <input type="text" name="parent_desc" value="{{dato.descripcion}}" id="txtNombre" class="form-control">
                                 </div>
                             </div>
                         </div>
@@ -70,7 +81,6 @@ Parentesco
 </div>
 {% endblock contenido %}
 {% block scripts %}
-<script src="{% static 'js/app/scriptApp.js' %}"></script>
 <script>
     $('#side-menu a').removeClass('active');
     $('#aPersonal').addClass('active');

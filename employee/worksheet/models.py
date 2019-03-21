@@ -211,12 +211,10 @@ class Bank(models.Model):
 class GrupoComisiones(models.Model):
     code = models.CharField(max_length=5, blank=True, null=True)
     descripcion = models.CharField(max_length=150)
-    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING,
-                                    related_name="gpCom_empreg", related_query_name="gpCom_empreg")
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="gpCom_empreg", related_query_name="gpCom_empreg")
     user_reg = models.ForeignKey(User)
     date_reg = models.DateTimeField(auto_now_add=True)
-    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL,
-                                 related_name='grpcom_usermod', related_query_name='grpcom_usermod')
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='grpcom_usermod', related_query_name='grpcom_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.NullBooleanField(blank=True, null=True)
 
@@ -428,7 +426,7 @@ class FuncionesTrabajo(models.Model):
     active = models.BooleanField()
 
     def __unicode__(self):
-        return self.nombre
+        return self.descripcion
 
 class EquipoTrabajo(models.Model):
     code = models.CharField(max_length=5, blank=True, null=True)
@@ -1072,3 +1070,23 @@ class IngresoIndividualPlanilla(models.Model):
 
     def __str__(self):
         return self.planilla.descripcion
+
+class DeduccionIndividualPlanilla(models.Model):
+    planilla = models.ForeignKey("worksheet.Planilla", verbose_name=("Planilla"), on_delete=models.PROTECT)
+    empleado = models.ForeignKey("worksheet.Employee", verbose_name=("Empleado"), on_delete=models.PROTECT)
+    deduccion = models.ForeignKey("worksheet.DeduccionIndividual", verbose_name=("Deduccion"), on_delete=models.PROTECT)
+    valor = models.DecimalField(("Valor"), max_digits=18, decimal_places=2)
+    empresa_reg = models.ForeignKey(Empresa, on_delete=models.PROTECT)
+    sucursal_reg = models.ForeignKey("worksheet.Branch", verbose_name=("Sucursal registro"), on_delete=models.PROTECT)
+    user_reg = models.ForeignKey(User, verbose_name=("Usuario registro"), on_delete=models.PROTECT)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='dip_usermod', related_query_name='dip_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.BooleanField(("Activo"))
+
+    class Meta:
+        verbose_name = ("DeduccionIndividualPlanilla")
+        verbose_name_plural = ("DeduccionesIndividualesPlanillas")
+
+    def __str__(self):
+        return self.name

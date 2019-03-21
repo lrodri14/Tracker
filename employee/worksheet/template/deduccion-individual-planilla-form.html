@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% block titulo %}
-Evaluación
+Deducción Individual en Planilla
 {% endblock titulo %}
+{% load static %}
 {% block estilo %}
 <style>
     .checkbox{
@@ -12,14 +13,13 @@ Evaluación
     }
 </style>
 {% endblock estilo %}
-{% load static %}
 {% block contenido %}
-<div class="row">
+<div id="deduccion_individual_planilla" class="row">
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h2 class="text-bold"><i class="ti-pencil-alt"></i>
-                    Evaluación</h2>
+                    Deducción Individual Planilla</h2>
             </div>
             <div class="panel-wrapper">
                 <div class="panel-body">
@@ -28,14 +28,37 @@ Evaluación
                     <input type="hidden" value="{{dato.pk}}" name="id">
                     {% endif %}
                     <div class="col-md-12">
-                        <div class="col-md-12 margin-bottom-5px">    
+                        <div class="col-md-12 margin-bottom-5px">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <div class="col-md-5 text-right">
-                                        <label for="cboAuEmp" class="control-label">Empleado :</label>
+                                        <label class="control-label">Deducción:</label>
                                     </div>
                                     <div class="col-md-7">
-                                        <select class="form-control select2" name="eV_emp" id="cboEvEmp">
+                                        <select class="form-control select2" name="deduccion">
+                                            <option value="0">Seleccionar...</option>
+                                            {% for item in deducciones %}
+                                                {% if editar %}
+                                                    {% if item == dato.deduccion %}
+                                                    <option value="{{item.pk}}" selected>{{item.deduccion_i}}</option>
+                                                    {% else %}
+                                                    <option value="{{item.pk}}">{{item.deduccion_i}}</option>
+                                                    {% endif %}
+                                                {% else %}
+                                                <option value="{{item.pk}}">{{item.deduccion_i}}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label class="control-label">Empleado:</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <select class="form-control select2" name="empleado">
                                             <option value="0">Seleccionar...</option>
                                             {% for item in empleados %}
                                                 {% if editar %}
@@ -52,84 +75,64 @@ Evaluación
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div class="col-md-12 margin-bottom-5px">    
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <div class="col-md-5 text-right">
-                                        <label for="txtEdDesde" class="control-label">Fecha :</label>
+                                        <label class="control-label">Valor :</label>
                                     </div>
                                     <div class="col-md-7">
-                                        <div class="input-group">
-                                            <input id="txteVFecha" value='{{dato.fecha|date:"Y-m-d"}}' name="eV_fecha" type="text" class="form-control mydatepicker " placeholder="yyyy-mm-dd"> <span class="input-group-addon"><i class="icon-calender"></i></span>
-                                        </div>
+                                        <input name="valor" value="{{dato.valor}}" type="text" class="form-control input" maxlength="18" />
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-md-12 margin-bottom-5px">
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <div class="col-md-5 text-right">
-                                        <label for="cboAuEmp" class="control-label">Gerente :</label>
+                                        <label for="txtFechaVencPasaporte" class="control-label">Planilla :</label>
                                     </div>
                                     <div class="col-md-7">
-                                        <select class="form-control select2" name="eV_gerente" id="cboEvGerente">
+                                        <select class="form-control select2" name="planilla">
                                             <option value="0">Seleccionar...</option>
-                                            {% for item in empleados %}
+                                            {% for item in planillas %}
                                                 {% if editar %}
-                                                    {% if item == dato.gerente %}
-                                                    <option value="{{item.pk}}" selected>{{item.firstName}} {% if item.middleName %}{{item.middleName}}{% endif %} {{item.lastName}}</option>
+                                                    {% if item == dato.planilla %}
+                                                    <option value="{{item.pk}}" selected>{{item.descripcion}}</option>
                                                     {% else %}
-                                                    <option value="{{item.pk}}">{{item.firstName}} {% if item.middleName %}{{item.middleName}}{% endif %} {{item.lastName}}</option>
+                                                    <option value="{{item.pk}}">{{item.descripcion}}</option>
                                                     {% endif %}
                                                 {% else %}
-                                                <option value="{{item.pk}}">{{item.firstName}} {% if item.middleName %}{{item.middleName}}{% endif %} {{item.lastName}}</option>
+                                                <option value="{{item.pk}}">{{item.descripcion}}</option>
                                                 {% endif %}
                                             {% endfor %}
                                         </select>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div class="col-md-12">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <div class="col-md-5 text-right">
-                                        <label for="txtEvGrpSal" class="control-label">Grupo salarial :</label>
-                                    </div>
+                                    <div class="col-md-5"></div>
                                     <div class="col-md-7">
-                                        <input id="txtEvGrpSal" value='{{dato.grupo_salarial}}' name="eV_grpsal" type="text" class="form-control" placeholder="">
+                                        <div class="checkbox checkbox-success">
+                                            <input id="chkActivo" name="activo" type="checkbox" {% if dato.active %}checked{% endif %} class="input">
+                                            <label for="chkActivo" class="control-label"> Activo </label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-12 margin-bottom-5px">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <div class="col-md-5 text-right">
-                                        <label for="txtDescEv" class="control-label">Descripción :</label>
-                                    </div>
-                                    <div class="col-md-7">
-                                        <textarea name="eV_desc" id="txtDescEv" rows="7" class="form-control">{{dato.descripcion}}</textarea>
-                                    </div>
-                                </div>
+                        <div class="col-md-12">
+                            <div class="form-action text-right">
+                                {% if editar %}
+                                <button id="btnActualizar" class="btn btn-success">Actualizar</button>
+                                {% else %}
+                                <button id="btnGuardar" class="btn btn-success">Guardar</button>
+                                {% endif %}
+                                <button id="btnCancelar" class="btn btn-default">Cancelar</button>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <div class="col-md-5 text-right">
-                                        <label for="txtComEv" class="control-label">Comentario :</label>
-                                    </div>
-                                    <div class="col-md-7">
-                                        <textarea name="eV_coment" id="txtComEv" rows="7" class="form-control">{{dato.comentario}}</textarea>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <br>
-                        <div class="form-action col-md-12 text-right">
-                            {% if editar %}
-                            <button id="btnEvActualizar" class="btn btn-success">Actualizar</button>
-                            {% else %}
-                            <button id="btnEvGuardar" class="btn btn-success">Guardar</button>
-                            {% endif %}
-                            <button id="btnEvCancelar" class="btn btn-default">Cancelar</button>
                         </div>
                     </div>
                 </div>
@@ -139,16 +142,11 @@ Evaluación
 </div>
 {% endblock contenido %}
 {% block scripts %}
+<script src="{% static 'js/lib/jquery.mask.js' %}"></script>
 <script>
-    $(".select2").select2();
     $('#side-menu a').removeClass('active');
     $('#aAccionesPer').addClass('active');
-    $('#aEv').addClass('active');
-
-    jQuery('.mydatepicker, #datepicker').datepicker({
-        format: 'yyyy-mm-dd',
-        autoclose:true,
-        todayHighlight: true,
-    });
+    $('#aDIP').addClass('active');
+    $('input[name="valor"]').mask('0,000,000,000,000.00', {reverse:true});
 </script>
 {% endblock scripts %}

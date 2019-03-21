@@ -2,6 +2,24 @@
 {% block titulo %}
 Género
 {% endblock titulo %}
+{% block estilo %}
+<style>
+    .checkbox{
+        font-weight: 500;
+    }
+    .checkbox label{
+        font-weight: 500;
+    }
+</style>
+{% endblock estilo %}
+<style>
+    .checkbox{
+        font-weight: 500;
+    }
+    .checkbox label{
+        font-weight: 500;
+    }
+</style>
 {% load static %}
 {% block contenido %}
 <div class="row">
@@ -24,7 +42,7 @@ Género
                                     <label for="txtNombre" class="control-label">Código :</label>
                                 </div>
                                 <div class="col-md-7">
-                                    <input type="text" name="gnr_code" value="{{dato.code}}" id="txtCodigo" class="form-control input-sm input-sm-1">
+                                    <input type="text" {% if editar %}disabled{% endif %} name="gnr_code" value="{{dato.code}}" id="txtCodigo" class="form-control">
                                 </div>
                             </div>
                         </div>
@@ -34,7 +52,7 @@ Género
                                     <label for="txtNombre" class="control-label">Descripción :</label>
                                 </div>
                                 <div class="col-md-7">
-                                    <input type="text" name="gnr_desc" value="{{dato.description}}" id="txtNombre" class="form-control input-sm input-sm-1">
+                                    <input type="text" name="gnr_desc" value="{{dato.description}}" id="txtNombre" class="form-control">
                                 </div>
                             </div>
                         </div>
@@ -70,7 +88,6 @@ Género
 </div>
 {% endblock contenido %}
 {% block scripts %}
-<script src="{% static 'js/app/scriptApp.js' %}"></script>
 <script>
     $('#side-menu a').removeClass('active');
     $('#aPersonal').addClass('active');

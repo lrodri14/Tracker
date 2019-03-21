@@ -25,7 +25,7 @@ Motivos de Renuncia
                                         <label for="txtCodigo" class="control-label">Código :</label>
                                     </div>
                                     <div class="col-md-7">
-                                        <input type="text" name="mre_codigo" value="{{dato.code}}" id="txtCodigo" maxlength="5" class="form-control input-md">
+                                        <input type="text" {% if editar %}disabled{% endif %} name="mre_codigo" value="{{dato.code}}" id="txtCodigo" maxlength="5" class="form-control input-md">
                                     </div>
                                 </div>
                             </div>
@@ -78,7 +78,6 @@ Motivos de Renuncia
 </div>
 {% endblock contenido %}
 {% block scripts %}
-<script src="{% static 'js/app/scriptApp.js' %}"></script>
 <script>
     $('#side-menu a').removeClass('active');
     $('#aPersonal').addClass('active');

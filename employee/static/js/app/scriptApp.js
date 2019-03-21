@@ -171,43 +171,38 @@ $(document).on('ready', () => {
         e.preventDefault();
         url = '/guardar/pais/';
         metodo = 'POST';
-        if (validarpDatos() != false) {
-            if (p_activo.is(":checked")) {
-                vActivo = 1;
-            } else {
-                vActivo = 0;
-            }
-            data = {
-                'codigo': p_codigo.val(),
-                'nombre': p_nombre.val(),
-                'activo': vActivo,
-                'csrfmiddlewaretoken': token.val(),
-            };
-            GuardarRegistro(url, metodo, data, "País");
+        // if (validarpDatos() != false) {
+        if (p_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
         }
+        data = {
+            'codigo': p_codigo.val(),
+            'nombre': p_nombre.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "País");
+        // }
     });
 
     $('#btnpActualizar').on('click', function(e) {
         e.preventDefault();
         url = '/actualizar/pais/';
         metodo = 'POST';
-        if (validarpDatos() != false) {
-            if (p_activo.is(":checked")) {
-                console.log("Verdadero");
-                vActivo = 1;
-            } else {
-                console.log("Falso");
-                vActivo = 0;
-            }
-            data = {
-                'id': id.val(),
-                'codigo': p_codigo.val(),
-                'nombre': p_nombre.val(),
-                'activo': vActivo,
-                'csrfmiddlewaretoken': token.val(),
-            };
-            GuardarRegistro(url, metodo, data, "Países", true, "/listar/paises/");
+        if (p_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
         }
+        data = {
+            'id': id.val(),
+            'nombre': p_nombre.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Países", true, "/listar/paises/");
     });
 
     $('#btnpCancelar').on('click', (e) => {
@@ -427,41 +422,40 @@ function validarcddDatos() {
         e.preventDefault();
         url = '/guardar/genero/';
         metodo = 'POST';
-        if (validargnrDatos() != false) {
-            if (gnr_activo.is(":checked")) {
-                vActivo = 1;
-            } else {
-                vActivo = 0;
-            }
-            data = {
-                'desc': gnr_desc.val(),
-                'code': gnr_code.val(),
-                'activo': vActivo,
-                'csrfmiddlewaretoken': token.val(),
-            };
-            GuardarRegistro(url, metodo, data, "Géneros");
+        // if (validargnrDatos() != false) {
+        if (gnr_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
         }
+        data = {
+            'desc': gnr_desc.val(),
+            'code': gnr_code.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Géneros");
+        // }
     });
 
     $('#btngnrActualizar').on('click', function(e) {
         e.preventDefault();
         url = '/actualizar/genero/';
         metodo = 'POST';
-        if (validargnrDatos() != false) {
-            if (gnr_activo.is(":checked")) {
-                vActivo = 1;
-            } else {
-                vActivo = 0;
-            }
-            data = {
-                'id': id.val(),
-                'code': gnr_code.val(),
-                'desc': gnr_desc.val(),
-                'activo': vActivo,
-                'csrfmiddlewaretoken': token.val(),
-            };
-            GuardarRegistro(url, metodo, data, "Géneros", true, "/listar/generos/");
+        // if (validargnrDatos() != false) {
+        if (gnr_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
         }
+        data = {
+            'id': id.val(),
+            'desc': gnr_desc.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Géneros", true, "/listar/generos/");
+        // }
     });
 
     $('#btngnrCancelar').on('click', (e) => {
@@ -574,41 +568,36 @@ function validargnrDatos() {
         e.preventDefault();
         url = '/guardar/parentesco/';
         metodo = 'POST';
-        if (validarparntDatos() != false) {
-            if (parnt_activo.is(":checked")) {
-                vActivo = 1;
-            } else {
-                vActivo = 0;
-            }
-            data = {
-                'desc': parnt_desc.val(),
-                'code': parnt_code.val(),
-                'activo': vActivo,
-                'csrfmiddlewaretoken': token.val(),
-            };
-            GuardarRegistro(url, metodo, data, "Parentesco");
+        if (parnt_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
         }
+        data = {
+            'desc': parnt_desc.val(),
+            'code': parnt_code.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Parentesco");
     });
 
     $('#btnparentActualizar').on('click', function(e) {
         e.preventDefault();
         url = '/actualizar/parentesco/';
         metodo = 'POST';
-        if (validarparntDatos() != false) {
-            if (parnt_activo.is(":checked")) {
-                vActivo = 1;
-            } else {
-                vActivo = 0;
-            }
-            data = {
-                'id': id.val(),
-                'desc': parnt_desc.val(),
-                'code':parnt_code.val(),
-                'activo': vActivo,
-                'csrfmiddlewaretoken': token.val(),
-            };
-            GuardarRegistro(url, metodo, data, "Parentesco", true, "/listar/parentesco/");
+        if (parnt_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
         }
+        data = {
+            'id': id.val(),
+            'desc': parnt_desc.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Parentesco", true, "/listar/parentesco/");
     });
 
     $('#btnparentCancelar').on('click', (e) => {
@@ -637,7 +626,6 @@ function validargnrDatos() {
 //#region Código para registra Función de Trabajo
 
     //#region Variables
-    var fun_nombre = $('input[name="fun_desc"]');
     var fun_desc = $('input[name="fun_desc"]');
     var fun_activo = $('input[name="fun_activo"]');
     var fun_code = $('input[name="fun_code"]');
@@ -648,42 +636,40 @@ function validargnrDatos() {
         e.preventDefault();
         url = '/guardar/funcion/';
         metodo = 'POST';
-        if (validarfunDatos() != false) {
-            if (fun_activo.is(":checked")) {
-                vActivo = 1;
-            } else {
-                vActivo = 0;
-            }
-            data = {
-                'desc': fun_desc.val(),
-                'code': fun_code.val(),
-                'activo': vActivo,
-                'csrfmiddlewaretoken': token.val(),
-            };
-            GuardarRegistro(url, metodo, data, "Función de Trabajo");
+        // if (validarfunDatos() != false) {
+        if (fun_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
         }
+        data = {
+            'desc': fun_desc.val(),
+            'code': fun_code.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Función de Trabajo");
+        // }
     });
 
     $('#btnfunActualizar').on('click', function(e) {
         e.preventDefault();
         url = '/actualizar/funcion/';
         metodo = 'POST';
-        if (validarfunDatos() != false) {
-            if (fun_activo.is(":checked")) {
-                vActivo = 1;
-            } else {
-                vActivo = 0;
-            }
-            data = {
-                'id': id.val(),
-                'nombre': fun_nombre.val(),
-                'desc': fun_desc.val(),
-                'code': fun_code.val(),
-                'activo': vActivo,
-                'csrfmiddlewaretoken': token.val(),
-            };
-            GuardarRegistro(url, metodo, data, "Función de Trabajo", true, "/listar/funciones/");
+        // if (validarfunDatos() != false) {
+        if (fun_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
         }
+        data = {
+            'id': id.val(),
+            'desc': fun_desc.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Función de Trabajo", true, "/listar/funciones/");
+        // }
     });
 
     $('#btnfunCancelar').on('click', (e) => {
@@ -812,41 +798,36 @@ function validargnrDatos() {
         e.preventDefault();
         url = '/guardar/estatus-empleado/';
         metodo = 'POST';
-        if (validarestEmDatos() != false) {
-            if (estEm_activo.is(":checked")) {
-                vActivo = 1;
-            } else {
-                vActivo = 0;
-            }
-            data = {
-                'nombre': estEm_nombre.val(),
-                'desc': estEm_desc.val(),
-                'activo': vActivo,
-                'csrfmiddlewaretoken': token.val(),
-            };
-            GuardarRegistro(url, metodo, data, "Estados de Empleado");
+        if (estEm_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
         }
+        data = {
+            'nombre': estEm_nombre.val(),
+            'desc': estEm_desc.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Estados de Empleado");
     });
 
     $('#btnestEmActualizar').on('click', function(e) {
         e.preventDefault();
         url = '/actualizar/estatus-empleado/';
         metodo = 'POST';
-        if (validarestEmDatos() != false) {
-            if (estEm_activo.is(":checked")) {
-                vActivo = 1;
-            } else {
-                vActivo = 0;
-            }
-            data = {
-                'id': id.val(),
-                'nombre': estEm_nombre.val(),
-                'desc': estEm_desc.val(),
-                'activo': vActivo,
-                'csrfmiddlewaretoken': token.val(),
-            };
-            GuardarRegistro(url, metodo, data, "Estados de Empleado", true, "/listar/estatus-empleado/");
+        if (estEm_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
         }
+        data = {
+            'id': id.val(),
+            'desc': estEm_desc.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Estados de Empleado", true, "/listar/estatus-empleado/");
     });
 
     $('#btnestEmCancelar').on('click', (e) => {
@@ -1023,7 +1004,6 @@ function validargnrDatos() {
         }
         data = {
             'id': id.val(),
-            'code':mAu_code.val(),
             'desc': mAu_desc.val(),
             'pagado': vPagado,
             'activo': vActivo,
@@ -1066,43 +1046,37 @@ function validargnrDatos() {
         e.preventDefault();
         url = '/guardar/motivo-despido/';
         metodo = 'POST';
-        if (validarmAuDatos() != false) {
-            if (mdes_activo.is(":checked")) {
-                vActivo = 1;
-            } else {
-                vActivo = 0;
-            }
-            data = {
-                'desc': mdes_desc.val(),
-                'code': mdes_code.val(),
-                'activo': vActivo,
-                'csrfmiddlewaretoken': token.val(),
-            };
-            GuardarRegistro(url, metodo, data, "Motivos de Despido");
-            
+        if (mdes_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
         }
+        data = {
+            'desc': mdes_desc.val(),
+            'code': mdes_code.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Motivos de Despido");
     });
 
     $('#btnmDesActualizar').on('click', function(e) {
         e.preventDefault();
         url = '/actualizar/motivo-despido/';
         metodo = 'POST';
-        if (validarmAuDatos() != false) {
-            if (mdes_activo.is(":checked")) {
-                vActivo = 1;
-            } else {
-                vActivo = 0;
-            }
-            data = {
-                'id': id.val(),
-                'desc': mdes_desc.val(),
-                'code': mdes_code.val(),
-                'pagado': vPagado,
-                'activo': vActivo,
-                'csrfmiddlewaretoken': token.val(),
-            };
-            GuardarRegistro(url, metodo, data, "Motivo de Despido", true, "/listar/motivos-despido/");
+        if (mdes_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
         }
+        data = {
+            'id': id.val(),
+            'desc': mdes_desc.val(),
+            'pagado': vPagado,
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Motivo de Despido", true, "/listar/motivos-despido/");
     });
 
     $('#btnmDesCancelar').on('click', function(e) {
@@ -1137,28 +1111,24 @@ function validargnrDatos() {
         e.preventDefault();
         url = '/guardar/motivo-renuncia/';
         metodo = 'POST';
-        if (validarmReDatos() != false) {
-            if (mre_activo.is(":checked")) {
-                vActivo = 1;
-            } else {
-                vActivo = 0;
-            }
-            data = {
-                'desc': mre_desc.val(),
-                'code': mre_code.val(),
-                'activo': vActivo,
-                'csrfmiddlewaretoken': token.val(),
-            };
-            GuardarRegistro(url, metodo, data, "Motivos de Renuncia");
-            
+        if (mre_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
         }
+        data = {
+            'desc': mre_desc.val(),
+            'code': mre_code.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Motivos de Renuncia");
     });
 
     $('#btnmReActualizar').on('click', function(e) {
         e.preventDefault();
         url = '/actualizar/motivo-renuncia/';
         metodo = 'POST';
-        if (validarmReDatos() != false) {
             if (mre_activo.is(":checked")) {
                 vActivo = 1;
             } else {
@@ -1167,12 +1137,10 @@ function validargnrDatos() {
             data = {
                 'id': id.val(),
                 'desc': mre_desc.val(),
-                'code': mre_code.val(),
                 'activo': vActivo,
                 'csrfmiddlewaretoken': token.val(),
             };
             GuardarRegistro(url, metodo, data, "Motivo de Renuncia", true, "/listar/motivos-renuncia/");
-        }
     });
 
     $('#btnmReCancelar').on('click', function(e) {
@@ -1494,16 +1462,13 @@ function validargnrDatos() {
         } else {
             vActivo = 0;
         }
-        //if (validarEvDatos() != false) {
         data = {
             'id': id.val(),
-            'code': mas_code.val(),
             'desc': mas_desc.val(),
             'activo': vActivo,
             'csrfmiddlewaretoken': token.val(),
         };
         GuardarRegistro(url, metodo, data, "Motivos para Aumento de Sueldo", true, "/listar/motivos-aumento-sueldo/");
-        //}
     });
 
     $('#btnmasCancelar').on('click', function (e) {
@@ -1706,7 +1671,6 @@ function validargnrDatos() {
     var vnd_nombre = $("input[name='ven_nombre'");
     var vnd_grpcom = $('select[name="vend_grpcom"]');
     var vnd_porcen = $('input[name="ven_porc"]');
-    var vnd_emplea = $('select[name="vend_emp"]');
     var vnd_telefo = $('input[name="vend_tel"]');
     var vnd_telmov = $('input[name="vend_movil"]');
     var vnd_correo = $('input[name="vend_correo"]');
@@ -1730,7 +1694,6 @@ function validargnrDatos() {
             'nombre': vnd_nombre.val(),
             'grupo_com': vnd_grpcom.val(),
             'porcentaje': vnd_porcen.val(),
-            'emp': vnd_emplea.val(),
             'tel': vnd_telefo.val(),
             'movil':vnd_telmov.val(),
             'correo': vnd_correo.val(),
@@ -1757,7 +1720,6 @@ function validargnrDatos() {
             'nombre': vnd_nombre.val(),
             'grupo_com': vnd_grpcom.val(),
             'porcentaje': vnd_porcen.val(),
-            'emp': vnd_emplea.val(),
             'tel': vnd_telefo.val(),
             'movil': vnd_telmov.val(),
             'correo': vnd_correo.val(),
@@ -2658,6 +2620,63 @@ $('#deduccion_individual_detalle #btnCancelar').on('click', function (e) {
     e.preventDefault();
     window.location.replace(dns + "/listar/deduccion-individual-detalle/");
 });
+
+//#endregion
+
+//#region Código para Deducción Individual Planilla
+
+    var dip_id = $('#deduccion_individual_planilla input[name="id"]');
+    var dip_deduccion = $('#deduccion_individual_planilla select[name="deduccion"]');
+    var dip_empleado = $('#deduccion_individual_planilla select[name="empleado"]');
+    var dip_valor = $('#deduccion_individual_planilla input[name="valor"]');
+    var dip_planilla = $('#deduccion_individual_planilla select[name="planilla"]');
+    var dip_activo = $('#deduccion_individual_planilla input[name="activo"]');
+
+    $('#deduccion_individual_planilla #btnGuardar').on('click', function (e) {
+        e.preventDefault();
+        if (dip_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
+        }
+        url = '/guardar/deduccion-individual-planilla/';
+        metodo = 'POST';
+        data = {
+            'deduccion': dip_deduccion.val(),
+            'empleado': dip_empleado.val(),
+            'valor': dip_valor.val(),
+            'planilla': dip_planilla.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Deducción Individual ");
+    });
+
+    $('#deduccion_individual_planilla #btnActualizar').on('click', function (e) {
+        e.preventDefault();
+        if (dip_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
+        }
+        url = '/actualizar/deduccion-individual-planilla/';
+        metodo = 'POST';
+        data = {
+            'id': dip_id.val(),
+            'deduccion': dip_deduccion.val(),
+            'empleado': dip_empleado.val(),
+            'valor': dip_valor.val(),
+            'planilla': dip_planilla.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Deducción Individual en Planilla", true, "/listar/deduccion-individual-planilla/");
+    });
+
+    $('#deduccion_individual_planilla #btnCancelar').on('click', function (e) {
+        e.preventDefault();
+        window.location.replace(dns + "/listar/deduccion-individual-planilla/");
+    });
 
 //#endregion
 

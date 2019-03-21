@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block titulo %}
-Listado de Estado de Empleado
+Listado Deducciones Individuales en Planilla
 {% endblock titulo %}
 {% load static %}
 {% block contenido %}
@@ -9,16 +9,17 @@ Listado de Estado de Empleado
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h2 class="text-bold"><i class="fa fa-list"></i>
-                    Listado de Estados de Empleado</h2>
+                    Listado Deducciones Individuales de Planilla</h2>
             </div>
+            
             <div class="panel-wrapper">
                 <div class="panel-body">
                     <div class="row text-right">
+                        {% if perms.worksheet.add_deduccionindividualplanilla %}
                         <div class="col-md-12">
-                            {% if perms.worksheet.add_statusemp %}
-                            <a href="{% url 'estado_empleado' %}" class="btn btn-primary">Agregar</a>
-                            {% endif %}
+                            <a href="{% url 'deduccion_individual_planilla_form' %}" class="btn btn-primary">Agregar</a>
                         </div>
+                        {% endif %}
                     </div>
                     <br>
                     <div class="table-responsive">
@@ -26,31 +27,31 @@ Listado de Estado de Empleado
                             {% csrf_token %}
                             <thead>
                                 <tr>
-                                    <th>Código</th>
-                                    <th>Descripción</th>
-                                    <th>Estado Registro</th>
+                                    <th>Empleado</th>
+                                    <th>Planilla</th>
+                                    <th>Deducción</th>
+                                    <th>Valor</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for item in lista %}
                                 <tr>
-                                    <td>{{item.code}}</td>
-                                    <td>{{item.description}}</td>
-                                    <td>
-                                    {% if item.active %}
-                                    <span class="label label-success">Habilitado</span>
-                                    {% else %}
-                                    <span class="label label-danger">Inactivo</span>
-                                    {% endif %}
-                                    </td>
+                                    <td>{{item.empleado.firstName}}{% if item.empleado.middleName %}{{item.empleado.middleName}}{% endif %} {{item.empleado.lastName}}</td>
+                                    <td>{{item.planilla.descripcion}}</td>
+                                    <td>{{item.deduccion.deduccion_i}}</td>
+                                    <td>{{item.valor}}</td>                         
                                     <td class="text-nowrap acciones">
-                                        <a href="{% url 'estado_empleado_editar' item.pk %}" data-toggle="tooltip" data-original-title="Edit">
+                                        {% if perms.worksheet.change_deduccionindividualplanilla %}
+                                        <a href="{% url 'deduccion_indidvidual_planilla_editar' item.pk %}" data-toggle="tooltip" data-original-title="Editar">
                                             <i class="fa fa-pencil text-inverse m-r-10"></i>
                                         </a>
-                                        <a href="#" class="btnEliminar" data="{{item.pk}}" data-toggle="tooltip" data-original-title="Close">
+                                        {% endif %}
+                                        {% if perms.worksheet.delete_deduccionindividualplanilla %}
+                                        <a href="#" class="btnEliminar" data="{{item.pk}}" data-toggle="tooltip" data-original-title="Eliminar">
                                             <i class="fa fa-close text-danger"></i>
                                         </a>
+                                        {% endif %}
                                     </td>
                                 </tr>
                                 {% endfor %}
@@ -68,8 +69,8 @@ Listado de Estado de Empleado
     var token = $('input[name="csrfmiddlewaretoken"]');
     //#region Efectos en SideBar
     $('#side-menu a').removeClass('active');
-    $('#aPersonal').addClass('active');
-    $('#aEsEm').addClass('active');
+    $('#aAccionesPer').addClass('active');
+    $('#aDIP').addClass('active');
     //#endregion
 
     //#region Eventos Controles
@@ -82,8 +83,8 @@ Listado de Estado de Empleado
 
     //#region Funciones
     function Eliminar(id) {
-        var Encabezado = 'Equipos de Trabajo';
-        var url = "/eliminar/estatus-empleado/"; // the script where you handle the form input.
+        var Encabezado = 'Deducción Individual en Planilla';
+        var url = "/eliminar/deduccion-individual-planilla/"; // the script where you handle the form input.
         $.ajax({
             type: "POST",
             url: url,

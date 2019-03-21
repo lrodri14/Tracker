@@ -2,6 +2,16 @@
 {% block titulo %}
 Feriado
 {% endblock titulo %}
+{% block estilo %}
+<style>
+    .checkbox{
+        font-weight: 500;
+    }
+    .checkbox label{
+        font-weight: 500;
+    }
+</style>
+{% endblock estilo %}
 {% load static %}
 {% block contenido %}
 <div class="row">
@@ -25,7 +35,7 @@ Feriado
                                     </div>
                                     <div class="col-md-7">
                                         <div class="input-group">
-                                            <input value='{{dato.fecha|date:"Y-m-d"}}' name="fer_fecha" type="text" class="form-control mydatepicker"
+                                            <input value='{{dato.fecha|date:"Y-m-d"}}' {% if editar %}disabled{% endif %} name="fer_fecha" type="text" class="form-control mydatepicker"
                                                 placeholder="yyyy-mm-dd"> <span class="input-group-addon"><i class="icon-calender"></i></span>
                                         </div>
                                     </div>
@@ -46,7 +56,7 @@ Feriado
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <div class="col-md-5 text-right">
-                                        <label class="control-label">Descripción :</label>
+                                        <label class="control-label">Comentario :</label>
                                     </div>
                                     <div class="col-md-7">
                                         <textarea name="fer_coment" rows="7" class="form-control">{{dato.descripcion}}</textarea>
@@ -84,7 +94,6 @@ Feriado
 </div>
 {% endblock contenido %}
 {% block scripts %}
-<script src="{% static 'js/app/scriptApp.js' %}"></script>
 <script>
     //$('.select2').select2();
     $('#side-menu a').removeClass('active');

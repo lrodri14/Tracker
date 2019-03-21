@@ -35,14 +35,14 @@ Registro de País
                                     <label for="txtpCodigo" class="control-label">Código :</label>
                                 </div>
                                 <div class="col-md-7">
-                                    <input type="text" name="p_codigo" value="{{dato.code}}" id="txtpCodigo" maxlength="250" class="form-control input-md ">
+                                    <input type="text" name="p_codigo" {% if editar %}disabled{% endif %} value="{{dato.code}}" id="txtpCodigo" maxlength="250" class="form-control input-md ">
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-12 margin-bottom-5px">
                             <div class="form-group">
                                 <div class="col-md-5 text-right">
-                                <label for="txtpNombre" class="control-label">Nombre :</label>
+                                <label for="txtpNombre" class="control-label">Descripción :</label>
                                 </div>
                                 <div class="col-md-7">
                                     <input type="text" name="p_nombre" value="{{dato.name}}" id="txtpNombre" maxlength="250" class="form-control input-md">
@@ -89,5 +89,4 @@ Registro de País
     $('#sPaises1').addClass('active');
     //#endregion
 </script>
-<script src="{% static 'js/app/scriptApp.js' %}"></script>
 {% endblock scripts %}

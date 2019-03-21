@@ -46,7 +46,9 @@ Datos de Aumento de Salario
                         </div>
                         {% if perms.worksheet.add_incrementossalariales %}
                         <div class="col-md-6 text-right">
+                            {% if perms.worksheet.see_motivoausencia %}
                             <a href="{% url 'aumento_salario_form' %}" class="btn btn-primary">Agregar</a>
+                            {% endif %}
                         </div>
                         {% endif %}
                     </div>
