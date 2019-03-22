@@ -2,6 +2,16 @@
 {% block titulo %}
 Estado Civil
 {% endblock titulo %}
+{% block estilo %}
+<style>
+    .checkbox{
+        font-weight: 500;
+    }
+    .checkbox label{
+        font-weight: 500;
+    }
+</style>
+{% endblock estilo %}
 {% load static %}
 {% block contenido %}
 <div class="row">
@@ -24,7 +34,7 @@ Estado Civil
                                     <label for="txtCodigo" class="control-label">Código :</label>
                                 </div>
                                 <div class="col-md-7">
-                                    <input type="text" name="estcv_code" value="{{dato.code}}" id="txtCodigo" class="form-control input-sm input-sm-1">
+                                    <input type="text" {% if editar %}disabled{% endif %} name="estcv_code" value="{{dato.code}}" id="txtCodigo" class="form-control">
                                 </div>
                             </div>
                         </div>
@@ -34,7 +44,7 @@ Estado Civil
                                     <label for="txtNombre" class="control-label">Descripción :</label>
                                 </div>
                                 <div class="col-md-7">
-                                    <input type="text" name="estcv_desc" value="{{dato.description}}" id="txtNombre" class="form-control input-sm input-sm-1">
+                                    <input type="text" name="estcv_desc" value="{{dato.description}}" id="txtNombre" class="form-control">
                                 </div>
                             </div>
                         </div>
@@ -70,7 +80,6 @@ Estado Civil
 </div>
 {% endblock contenido %}
 {% block scripts %}
-<script src="{% static 'js/app/scriptApp.js' %}"></script>
 <script>
     $('#side-menu a').removeClass('active');
     $('#aPersonal').addClass('active');

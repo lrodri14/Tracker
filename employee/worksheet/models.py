@@ -439,7 +439,7 @@ class EquipoTrabajo(models.Model):
     active = models.BooleanField()
 
     def __unicode__(self):
-        return self.nombre
+        return self.descripcion
 
 class MotivosAusencia(models.Model):
     code = models.CharField(max_length=5, blank=True, null=True)

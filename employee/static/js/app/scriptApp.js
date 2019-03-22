@@ -495,41 +495,36 @@ function validargnrDatos() {
         e.preventDefault();
         url = '/guardar/estado-civil/';
         metodo = 'POST';
-        if (validarestcvDatos() != false) {
-            if (estcv_activo.is(":checked")) {
-                vActivo = 1;
-            } else {
-                vActivo = 0;
-            }
-            data = {
-                'desc': estcv_desc.val(),
-                'code': estcv_code.val(),
-                'activo': vActivo,
-                'csrfmiddlewaretoken': token.val(),
-            };
-            GuardarRegistro(url, metodo, data, "Estado Civil");
+        if (estcv_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
         }
+        data = {
+            'desc': estcv_desc.val(),
+            'code': estcv_code.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Estado Civil");
     });
 
     $('#btnestcvActualizar').on('click', function(e) {
         e.preventDefault();
         url = '/actualizar/estado-civil/';
         metodo = 'POST';
-        if (validarestcvDatos() != false) {
-            if (estcv_activo.is(":checked")) {
-                vActivo = 1;
-            } else {
-                vActivo = 0;
-            }
-            data = {
-                'id': id.val(),
-                'desc': estcv_desc.val(),
-                'code': estcv_code.val(),
-                'activo': vActivo,
-                'csrfmiddlewaretoken': token.val(),
-            };
-            GuardarRegistro(url, metodo, data, "Estado Civil", true, "/listar/estado-civil/");
+        if (estcv_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
         }
+        data = {
+            'id': id.val(),
+            'desc': estcv_desc.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Estado Civil", true, "/listar/estado-civil/");
     });
 
     $('#btnestcvCancelar').on('click', (e) => {
@@ -717,41 +712,36 @@ function validargnrDatos() {
         e.preventDefault();
         url = '/guardar/equipo/';
         metodo = 'POST';
-        if (validareqDatos() != false) {
-            if (eqT_activo.is(":checked")) {
-                vActivo = 1;
-            } else {
-                vActivo = 0;
-            }
-            data = {
-                'code': eqT_code.val(),
-                'desc': eqT_desc.val(),
-                'activo': vActivo,
-                'csrfmiddlewaretoken': token.val(),
-            };
-            GuardarRegistro(url, metodo, data, "Equipos de Trabajo");
+        if (eqT_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
         }
+        data = {
+            'code': eqT_code.val(),
+            'desc': eqT_desc.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Equipos de Trabajo");
     });
 
     $('#btneqTActualizar').on('click', function(e) {
         e.preventDefault();
         url = '/actualizar/equipo/';
         metodo = 'POST';
-        if (validareqDatos() != false) {
-            if (eqT_activo.is(":checked")) {
-                vActivo = 1;
-            } else {
-                vActivo = 0;
-            }
-            data = {
-                'id': id.val(),
-                'code': eqT_code.val(),
-                'desc': eqT_desc.val(),
-                'activo': vActivo,
-                'csrfmiddlewaretoken': token.val(),
-            };
-            GuardarRegistro(url, metodo, data, "Equipos de Trabajo", true, "/listar/equipos/");
+        if (eqT_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
         }
+        data = {
+            'id': id.val(),
+            'desc': eqT_desc.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Equipos de Trabajo", true, "/listar/equipos/");
     });
 
     $('#btneqTCancelar').on('click', (e) => {

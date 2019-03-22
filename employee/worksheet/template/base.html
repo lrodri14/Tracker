@@ -190,7 +190,9 @@
                             <li><a href="{% url 'deduccion_individual_listado' %}" id="aDeduccionI" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Deducción Individual</span></a></li>
                             {% endif %}
                             <li><a href="{% url 'listado_deptos' %}" id="aDept" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Departamentos</span></a></li>
+                            {% if perms.worksheet.see_equipotrabajo %}
                             <li><a href="{% url 'equipo_trabajo_listado' %}" id="aEqTrab" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Equipo de Trabajo</span></a></li>
+                            {% endif %}
                             {% if perms.worksheet.see_civilstatus %}
                             <li><a href="{% url 'estado_civil_listado' %}" id="aEstCiv" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Estado Civil</span></a></li>
                             {% endif %}
