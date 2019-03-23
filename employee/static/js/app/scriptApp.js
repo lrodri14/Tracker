@@ -90,51 +90,46 @@ $(document).on('ready', () => {
     //#endregion
 
     //#region Eventos Controles
-    $('#btnccGuardar').on('click', (e) => {
+    $('#btnccGuardar').on('click', function(e) {
         e.preventDefault();
         url = '/guardar/centro-costo/';
         metodo = 'POST';
-        if (validarccDatos() != false) {
-            if (cc_activo.is(":checked")) {
-                vActivo = 1;
-            } else {
-                vActivo = 0;
-            }
-            data = {
-                'descripcion': cc_desc.val(),
-                'code': cc_code.val(),
-                'activo': vActivo,
-                'csrfmiddlewaretoken': token.val(),
-            };
-            GuardarRegistro(url, metodo, data, "Centro de Costos");
+        if (cc_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
         }
+        data = {
+            'descripcion': cc_desc.val(),
+            'code': cc_code.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Centro de Costos");
     });
 
     $('#btnccActualizar').on('click', function(e) {
         e.preventDefault();
         url = '/actualizar/centro-costo/';
         metodo = 'POST';
-        if (validarccDatos() != false) {
-            if (cc_activo.is(":checked")) {
-                console.log("Verdadero");
-                vActivo = 1;
-            } else {
-                console.log("Falso");
-                vActivo = 0;
-            }
-            data = {
-                'id': id.val(),
-                'desc': cc_desc.val(),
-                'code': cc_code.val(),
-                'activo': vActivo,
-                'csrfmiddlewaretoken': token.val(),
-            };
-            GuardarRegistro(url, metodo, data, "Centro de Costos", true, "/listar/centro-costos/");
+        if (cc_activo.is(":checked")) {
+            console.log("Verdadero");
+            vActivo = 1;
+        } else {
+            console.log("Falso");
+            vActivo = 0;
         }
+        data = {
+            'id': id.val(),
+            'desc': cc_desc.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Centro de Costos", true, "/listar/centro-costos/");
     });
     
 
-    $('#btnccCancelar').on('click', (e) => {
+    $('#btnccCancelar').on('click', function(e) {
         e.preventDefault();
         window.location.replace(dns + "/listar/centro-costos/");
     });
@@ -252,28 +247,25 @@ $(document).on('ready', () => {
         e.preventDefault();
         url = '/guardar/depto-pais/';
         metodo = 'POST';
-        if (validardeptDatos() != false) {
-            if (dept_activo.is(":checked")) {
-                vActivo = 1;
-            } else {
-                vActivo = 0;
-            }
-            data = {
-                'codigo': dept_codigo.val(),
-                'nombre': dept_nombre.val(),
-                'pais': dept_pais.val(),
-                'activo': vActivo,
-                'csrfmiddlewaretoken': token.val(),
-            };
-            GuardarRegistro(url, metodo, data, "Departamento/Estado");
+        if (dept_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
         }
+        data = {
+            'codigo': dept_codigo.val(),
+            'nombre': dept_nombre.val(),
+            'pais': dept_pais.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Departamento/Estado");
     });
 
     $('#btndeptActualizar').on('click', function(e) {
         e.preventDefault();
         url = '/actualizar/deptos-pais/';
         metodo = 'POST';
-        if (validardeptDatos() != false) {
             if (dept_activo.is(":checked")) {
                 vActivo = 1;
             } else {
@@ -281,14 +273,12 @@ $(document).on('ready', () => {
             }
             data = {
                 'id': id.val(),
-                'codigo': dept_codigo.val(),
                 'nombre': dept_nombre.val(),
                 'pais': dept_pais.val(),
                 'activo': vActivo,
                 'csrfmiddlewaretoken': token.val(),
             };
             GuardarRegistro(url, metodo, data, "Departamento/Estado", true, "/listar/deptos-estados/");
-        }
     });
 
     $('#btndeptCancelar').on('click', (e) => {
@@ -2050,7 +2040,6 @@ function validargnrDatos() {
         e.preventDefault();
         url = '/guardar/empresa-usuario/';
         metodo = 'POST';
-        //if (validarEdDatos() != false) {
         if (empUs_activo.is(":checked")) {
             vActivo = 1;
         } else {
@@ -2063,7 +2052,6 @@ function validargnrDatos() {
             'csrfmiddlewaretoken': token.val(),
         };
         GuardarRegistro(url, metodo, data, "Asignar empresa a usuario");
-        //}
     });
 
     $('#btnempUserActualizar').on('click', function (e) {
@@ -2075,7 +2063,6 @@ function validargnrDatos() {
         } else {
             vActivo = 0;
         }
-        //if (validarEdDatos() != false) {
         data = {
             'id': empUs_id.val(),
             'empresa': empUs_empresa.val(),
@@ -2084,7 +2071,6 @@ function validargnrDatos() {
             'csrfmiddlewaretoken': token.val(),
         };
         GuardarRegistro(url, metodo, data, "Asignar empresa a usuario", true, "/listar/empresas-usuario/");
-        //}
     });
 
     $('#btnempUserCancelar').on('click', function (e) {

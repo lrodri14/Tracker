@@ -2,6 +2,16 @@
 {% block titulo %}
 Ciudades
 {% endblock titulo %}
+{% block estilo %}
+<style>
+    .checkbox{
+        font-weight: 500;
+    }
+    .checkbox label{
+        font-weight: 500;
+    }
+</style>
+{% endblock estilo %}
 {% load static %}
 {% block contenido %}
 <div class="row">
@@ -24,7 +34,7 @@ Ciudades
                                     <label for="txtCodigo" class="control-label">Código :</label>
                                 </div>
                                 <div class="col-md-7">
-                                    <input type="text" name="cdd_ID" value="{{dato.code}}" id="txtCodigo" class="form-control input-sm input-sm-1">
+                                    <input type="text" name="cdd_ID" value="{{dato.code}}" id="txtCodigo" class="form-control">
                                 </div>
                             </div>
                         </div>
@@ -34,7 +44,7 @@ Ciudades
                                     <label for="txtNombre" class="control-label">Nombre :</label>
                                 </div>
                                 <div class="col-md-7">
-                                    <input type="text" name="cdd_nombre" value="{{dato.nombre}}" id="txtNombre" class="form-control input-sm input-sm-1">
+                                    <input type="text" name="cdd_nombre" value="{{dato.nombre}}" id="txtNombre" class="form-control">
                                 </div>
                             </div>
                         </div>

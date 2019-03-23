@@ -31,56 +31,40 @@ $(document).on('ready', () => {
     //#endregion
     //#region Funciones
     function GuardarRegistro(){
-        
-        if (validarDatos() != false) {
+        if (activo.is(":checked"))
+        {
+            vActivo = 1;
+        }else{
+            vActivo = 0;
+        }
 
-            if (activo.is(":checked"))
+        var url = "/guardar/departamento/"; // the script where you handle the form input.
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {
+                'nombre':nombre.val(),
+                'descripcion':descripcion.val(),
+                'activo':vActivo,
+                'csrfmiddlewaretoken': token.val(),
+            }, // serializes the form's elements.
+            success: function(data)
             {
-                vActivo = 1;
-            }else{
-                vActivo = 0;
-            }
-
-            var url = "/guardar/departamento/"; // the script where you handle the form input.
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: {
-                    'nombre':nombre.val(),
-                    'descripcion':descripcion.val(),
-                    'activo':vActivo,
-                    'csrfmiddlewaretoken': token.val(),
-                }, // serializes the form's elements.
-                success: function(data)
-                {
-                    if(data.error == false){
-                        $.toast({
-                            heading: 'Departamentos',
-                            text: 'Se ha registrado un nuevo Departamento de la Empresa.',
-                            position: 'top-right',
-                            loaderBg: '#ff6849',
-                            icon: 'success',
-                            hideAfter: 5000,
-                            stack: 6
-                        });
-                        LimpiarControles();
-                    }else{
-                        $.toast({
-                            heading: 'Departamentos',
-                            text: data.mensaje,
-                            position: 'top-right',
-                            loaderBg: '#ff6849',
-                            icon: 'error',
-                            hideAfter: 5000,
-                            stack: 6
-                        });
-                    }
-                },
-                error: function(data) {
-                    console.log(data);
+                if(data.error == false){
                     $.toast({
                         heading: 'Departamentos',
-                        text: data.status + ' - ' + data.statusText,
+                        text: 'Se ha registrado un nuevo Departamento de la Empresa.',
+                        position: 'top-right',
+                        loaderBg: '#ff6849',
+                        icon: 'success',
+                        hideAfter: 5000,
+                        stack: 6
+                    });
+                    LimpiarControles();
+                }else{
+                    $.toast({
+                        heading: 'Departamentos',
+                        text: data.mensaje,
                         position: 'top-right',
                         loaderBg: '#ff6849',
                         icon: 'error',
@@ -88,61 +72,57 @@ $(document).on('ready', () => {
                         stack: 6
                     });
                 }
-            });
-        }
+            },
+            error: function(data) {
+                console.log(data);
+                $.toast({
+                    heading: 'Departamentos',
+                    text: data.status + ' - ' + data.statusText,
+                    position: 'top-right',
+                    loaderBg: '#ff6849',
+                    icon: 'error',
+                    hideAfter: 5000,
+                    stack: 6
+                });
+            }
+        });
     }
     function ActualizarRegistro() {
-        if (validarDatos() != false) {
+        if (activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
+        }
 
-            if (activo.is(":checked")) {
-                vActivo = 1;
-            } else {
-                vActivo = 0;
-            }
-
-            var url = "/actualizar/departamento/"; // the script where you handle the form input.
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: {
-                    'id': id.val(),
-                    'nombre':nombre.val(),
-                    'desc': descripcion.val(),
-                    'activo': vActivo,
-                    'csrfmiddlewaretoken': token.val(),
-                }, // serializes the form's elements.
-                success: function (data) {
-                    if (data.error == false) {
-                        $.toast({
-                            heading: 'Departamentos',
-                            text: 'Se ha actualizado el registro.',
-                            position: 'top-right',
-                            loaderBg: '#ff6849',
-                            icon: 'success',
-                            hideAfter: 2500,
-                            stack: 6
-                        });
-                        setTimeout(function () {
-                            window.location.replace(dns +"/listar/departamentos/");
-                        }, 2500);
-                        //LimpiarControles();
-                    } else {
-                        $.toast({
-                            heading: 'Departamentos',
-                            text: data.mensaje,
-                            position: 'top-right',
-                            loaderBg: '#ff6849',
-                            icon: 'error',
-                            hideAfter: 5000,
-                            stack: 6
-                        });
-                    }
-                },
-                error: function (data) {
-                    console.log(data);
+        var url = "/actualizar/departamento/"; // the script where you handle the form input.
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {
+                'id': id.val(),
+                'desc': descripcion.val(),
+                'activo': vActivo,
+                'csrfmiddlewaretoken': token.val(),
+            }, // serializes the form's elements.
+            success: function (data) {
+                if (data.error == false) {
                     $.toast({
                         heading: 'Departamentos',
-                        text: data.status + ' - ' + data.statusText,
+                        text: 'Se ha actualizado el registro.',
+                        position: 'top-right',
+                        loaderBg: '#ff6849',
+                        icon: 'success',
+                        hideAfter: 2500,
+                        stack: 6
+                    });
+                    setTimeout(function () {
+                        window.location.replace(dns +"/listar/departamentos/");
+                    }, 2500);
+                    //LimpiarControles();
+                } else {
+                    $.toast({
+                        heading: 'Departamentos',
+                        text: data.mensaje,
                         position: 'top-right',
                         loaderBg: '#ff6849',
                         icon: 'error',
@@ -150,8 +130,20 @@ $(document).on('ready', () => {
                         stack: 6
                     });
                 }
-            });
-        }
+            },
+            error: function (data) {
+                console.log(data);
+                $.toast({
+                    heading: 'Departamentos',
+                    text: data.status + ' - ' + data.statusText,
+                    position: 'top-right',
+                    loaderBg: '#ff6849',
+                    icon: 'error',
+                    hideAfter: 5000,
+                    stack: 6
+                });
+            }
+        });
     }
 
     function LimpiarControles() {

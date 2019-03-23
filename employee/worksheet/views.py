@@ -250,35 +250,52 @@ def listadoDepartamentos(request):
     return render(request, 'departamento-listado.html', {'deptos':deptos})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_position', raise_exception=True)
 def puestoTrabajo(request):
+    verificaSucursal(request)
     return render(request, 'puesto-trabajo.html')
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_position', raise_exception=True)
 def puesto_editar(request, id):
+    verificaSucursal(request)
     dato = Position.objects.get(pk=id)
     return render(request, 'puesto-trabajo.html', {'editar':True, 'dato':dato})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_position', raise_exception=True)
 def listadoPuestoTrabajo(request):
     verificaSucursal(request)
     suc = Branch.objects.get(pk=request.session["sucursal"])
-    puestos = Position.objects.filter(active=True, empresa_reg=suc.empresa)
-    return render(request, 'puestos-listado.html', {'puesto':puestos})
+    if request.user.has_perm("worksheet.see_all_position"):
+        listado = Position.objects.filter(empresa_reg=suc.empresa)
+    else:
+        if request.user.has_perm("worksheet.see_position"):
+            listado = Position.objects.filter(active=True, empresa_reg=suc.empresa)
+    return render(request, 'puestos-listado.html', {'puesto':listado})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_centroscostos', raise_exception=True)
 def centro_costos(request):
     return render(request, 'centro-costos.html')
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_centroscostos', raise_exception=True)
 def centro_costo_editar(request, id):
     dato = CentrosCostos.objects.get(pk=id)
     return render(request, 'centro-costos.html', {'editar':True, 'dato':dato})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_centroscostos', raise_exception=True)
 def listadoCentroCostos(request):
+    listado = None
     suc = Branch.objects.get(pk=request.session["sucursal"])
-    ccostos = CentrosCostos.objects.filter(empresa_reg=suc.empresa)
-    return render(request, 'ccostos-listado.html', {'ccostos':ccostos})
+    if request.user.has_perm("worksheet.see_all_centroscostos"):
+        listado = CentrosCostos.objects.filter(empresa_reg=suc.empresa)
+    else:
+        if request.user.has_perm("worksheet.see_centroscostos"):
+            listado = CentrosCostos.objects.filter(active=True, empresa_reg=suc.empresa)
+    return render(request, 'ccostos-listado.html', {'ccostos':listado})
 
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.add_country', raise_exception=True)
@@ -299,12 +316,14 @@ def listadoPaises(request):
     return render(request, 'paises-listado.html', {'paises':paises})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_state', raise_exception=True)
 def deptos_pais(request):
     suc = Branch.objects.get(pk=request.session["sucursal"])
     paises = Country.objects.filter(empresa_reg=suc.empresa)
     return render(request, 'deptos-pais.html', {'paises':paises})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_state', raise_exception=True)
 def deptos_pais_editar(request, id):
     suc = Branch.objects.get(pk=request.session["sucursal"])
     dato = State.objects.get(pk=id)
@@ -312,10 +331,16 @@ def deptos_pais_editar(request, id):
     return render(request, 'deptos-pais.html', {'editar':True, 'dato':dato, 'paises':paises})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_state', raise_exception=True)
 def deptos_pais_listado(request):
+    listado = None
     suc = Branch.objects.get(pk=request.session["sucursal"])
-    deptos = State.objects.filter(empresa_reg=suc.empresa)
-    return render(request, 'deptos-pais-listado.html', {'deptos': deptos})
+    if request.user.has_perm("worksheet.see_all_state"):
+        listado = State.objects.filter(empresa_reg=suc.empresa)
+    else:
+        if request.user.has_perm("worksheet.see_state"):
+            listado = State.objects.filter(active=True, empresa_reg=suc.empresa)
+    return render(request, 'deptos-pais-listado.html', {'deptos': listado})
 
 @login_required(login_url='/form/iniciar-sesion/')
 def ciudad(request):
@@ -795,19 +820,26 @@ def tipo_salario_listar(request):
     return render(request, 'tipo-salario-listado.html', {'lista':lista})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_costunit', raise_exception=True)
 def tipo_costo_empleado_form(request):
     return render(request, 'costo-empleado-form.html')
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_costunit', raise_exception=True)
 def tipo_costo_empleado_editar(request, id):
     dato = CostUnit.objects.get(pk=id)
     return render(request, 'costo-empleado-form.html', {'editar': True, 'dato': dato})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_costunit', raise_exception=True)
 def tipo_costo_empleado_listar(request):
     suc = Branch.objects.get(pk=request.session["sucursal"])
-    lista = CostUnit.objects.filter(empresa_reg=suc.empresa)
-    return render(request, 'costo-empleado-listado.html', {'lista':lista})
+    if request.user.has_perm("worksheet.see_all_costunit"):
+        listado = CostUnit.objects.filter(empresa_reg=suc.empresa)
+    else:
+        if request.user.has_perm("worksheet.see_costunit"):
+            listado = CostUnit.objects.filter(active=True, empresa_reg=suc.empresa)
+    return render(request, 'costo-empleado-listado.html', {'lista':listado})
 
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.add_banco', raise_exception=True)
@@ -827,6 +859,7 @@ def banco_listado(request):
     return render(request, 'banco-listado.html', {'lista':lista})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_usuarioempresa', raise_exception=True)
 def usuario_empresa_form(request):
     frm = UsuarioEmpresaForm()
     users = User.objects.all()
@@ -834,11 +867,18 @@ def usuario_empresa_form(request):
     return render(request, 'usuario-empresa.html', {'frm':frm, 'users':users, 'empresas':empresas})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_usuarioempresa', raise_exception=True)
 def usuario_empresa_listar(request):
-    lista = UsuarioEmpresa.objects.all()
-    return render(request, 'usuario-empresa-listado.html', {'lista': lista})
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    if request.user.has_perm("worksheet.see_all_termreason"):
+        listado = UsuarioEmpresa.objects.filter(empresa_reg=suc.empresa)
+    else:
+        if request.user.has_perm("worksheet.see_termreason"):
+            listado = UsuarioEmpresa.objects.filter(active=True, empresa_reg=suc.empresa)
+    return render(request, 'usuario-empresa-listado.html', {'lista': listado})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_usuarioempresa', raise_exception=True)
 def usuario_empresa_editar(request, id):
     dato = UsuarioEmpresa.objects.get(pk=id)
     users = User.objects.all()
@@ -2507,44 +2547,66 @@ def guardar_departamento(request):
                 descripcion = request.POST['descripcion']
                 activo = int(request.POST['activo'])
 
-                if activo == 1:
-                    activo = True
-                else:
-                    activo = False
-
-                if len(nombre) > 5:
-                    mensaje = "El campo 'Código' debe ser tener como máximo 6 caracteres."
+                if len(nombre) == 0:
+                    mensaje = "El campo 'Código' es obligatorio."
                     data = {
                         'mensaje': mensaje, 'error': True
                     }
                     return JsonResponse(data)
 
-                suc = Branch.objects.get(pk=request.session["sucursal"])
-                
-                if len(nombre) > 0 and len(descripcion) > 0:
-                    oDeparment = Department(
-                        code = nombre,
-                        description = descripcion,
-                        empresa_reg = suc.empresa,
-                        active = activo,
-                        user_reg=request.user,
-                    )
-                    oDeparment.save()
-                    grupo = {
-                        'pk':oDeparment.pk,
-                        'codigo':oDeparment.code,
-                        'descripcion':oDeparment.description,
-                        'activo':oDeparment.active,
-                    }
-                    mensaje = 'Se ha guardado el registro del Departamento'
+                if len(nombre) > 5:
+                    mensaje = "El campo 'Código' debe ser tener como máximo 5 caracteres."
                     data = {
-                        'grupo':grupo, 'mensaje':mensaje, 'error': False
+                        'mensaje': mensaje, 'error': True
                     }
+                    return JsonResponse(data)
+
+                if len(descripcion) == 0:
+                    mensaje = "El campo 'Descripción' es obligatorio."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(descripcion) > 150:
+                    mensaje = "El campo 'Descripción' tiene como máximo 150 caracteres."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if activo == 1:
+                    activo = True
                 else:
-                    mensaje = "Complete los campos requeridos."
+                    activo = False
+
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+                tot_reg = Department.objects.filter(code=nombre, empresa_reg=suc.empresa).count()
+                if tot_reg > 0:
+                    mensaje = "Ya existen registros con el código ingresado."
                     data = {
-                        'mensaje':mensaje, 'error': True
+                        'mensaje': mensaje, 'error': True
                     }
+                    return JsonResponse(data)
+                
+                oDeparment = Department(
+                    code = nombre,
+                    description = descripcion,
+                    empresa_reg = suc.empresa,
+                    active = activo,
+                    user_reg=request.user,
+                )
+                oDeparment.save()
+                grupo = {
+                    'pk':oDeparment.pk,
+                    'codigo':oDeparment.code,
+                    'descripcion':oDeparment.description,
+                    'activo':oDeparment.active,
+                }
+                mensaje = 'Se ha guardado el registro del Departamento'
+                data = {
+                    'grupo':grupo, 'mensaje':mensaje, 'error': False
+                }
             else:
                 mensaje = "Metodo no permitido."
                 data = {
@@ -2568,42 +2630,48 @@ def actualizar_departamento(request):
         if request.is_ajax():
             if request.method == 'POST':
                 id = request.POST['id']
-                nombre = request.POST['nombre']
                 desc = request.POST['desc']
                 activo = int(request.POST['activo'])
+
+                if len(descripcion) == 0:
+                    mensaje = "El campo 'Descripción' es obligatorio."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(descripcion) > 150:
+                    mensaje = "El campo 'Descripción' tiene como máximo 150 caracteres."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
 
                 if activo == 1:
                     activo = True
                 else:
                     activo = False
 
-                if len(desc) > 0:
-                    oDep = Department.objects.get(pk=id)
+                oDep = Department.objects.get(pk=id)
 
-                    if oDep:
-                        oDep.code = nombre
-                        oDep.description = desc
-                        oDep.active = activo
-                        oDep.user_mod = request.user
-                        oDep.date_mod = datetime.datetime.now()
-                        oDep.save()
-                        dep = {
-                            'pk': oDep.pk,
-                            'name':oDep.code,
-                            'desc': oDep.description,
-                            'activo': oDep.active,
-                        }
-                        mensaje = 'Se ha actualizado el registro.'
-                        data = {
-                            'departamento': dep, 'mensaje': mensaje, 'error': False
-                        }
-                    else:
-                        mensaje = "No existe el registro."
-                        data = {
-                            'mensaje': mensaje, 'error': True
-                        }
+                if oDep:
+                    oDep.description = desc
+                    oDep.active = activo
+                    oDep.user_mod = request.user
+                    oDep.date_mod = datetime.datetime.now()
+                    oDep.save()
+                    dep = {
+                        'pk': oDep.pk,
+                        'name':oDep.code,
+                        'desc': oDep.description,
+                        'activo': oDep.active,
+                    }
+                    mensaje = 'Se ha actualizado el registro.'
+                    data = {
+                        'departamento': dep, 'mensaje': mensaje, 'error': False
+                    }
                 else:
-                    mensaje = "Complete los campos requeridos."
+                    mensaje = "No existe el registro."
                     data = {
                         'mensaje': mensaje, 'error': True
                     }
@@ -2681,10 +2749,12 @@ def guardar_puesto(request):
                 descripcion = request.POST['descripcion']
                 activo = int(request.POST['activo'])
 
-                if activo == 1:
-                    activo = True
-                else:
-                    activo = False
+                if len(nombre) == 0:
+                    data = {
+                        'error': True,
+                        'mensaje': 'El campo "Código" es obligatorio.',
+                    }
+                    return JsonResponse(data)
 
                 if len(nombre) > 5:
                     data = {
@@ -2693,7 +2763,34 @@ def guardar_puesto(request):
                     }
                     return JsonResponse(data)
 
+                if len(descripcion) == 0:
+                    data = {
+                        'error': True,
+                        'mensaje': 'El campo "Descripción" es obligatorio.',
+                    }
+                    return JsonResponse(data)
+
+                if len(descripcion) > 150:
+                    data = {
+                        'error': True,
+                        'mensaje': 'El campo "Descripción" debe tener un máximo de 150 caracteres.',
+                    }
+                    return JsonResponse(data)
+
+                if activo == 1:
+                    activo = True
+                else:
+                    activo = False
+
                 suc = Branch.objects.get(pk=request.session["sucursal"])
+                tot_reg = Position.objects.filter(code=nombre, empresa_reg=suc.empresa).count()
+                if tot_reg > 0:
+                    data = {
+                        'error': True,
+                        'mensaje': 'Ya existen registros con el código ingresado.',
+                    }
+                    return JsonResponse(data)
+
                 if len(nombre) > 0 and len(descripcion) > 0:
                     oPuesto = Position(
                         code=nombre,
@@ -2739,50 +2836,48 @@ def actualizar_puesto(request):
         if request.is_ajax():
             if request.method == 'POST':
                 id = int(request.POST['id'])
-                nombre = request.POST['nombre']
                 desc = request.POST['desc']
                 activo = int(request.POST['activo'])
+
+                if len(descripcion) == 0:
+                    data = {
+                        'error': True,
+                        'mensaje': 'El campo "Descripción" es obligatorio.',
+                    }
+                    return JsonResponse(data)
+
+                if len(descripcion) > 150:
+                    data = {
+                        'error': True,
+                        'mensaje': 'El campo "Descripción" debe tener un máximo de 150 caracteres.',
+                    }
+                    return JsonResponse(data)
 
                 if activo == 1:
                     activo = True
                 else:
                     activo = False
-
-                if len(nombre) > 5:
-                    data = {
-                        'error': True,
-                        'mensaje': 'El campo "Código" debe tener un máximo de 5 caracteres.',
-                    }
-                    return JsonResponse(data)
                 
-                
-                if len(nombre) > 0 and len(desc) > 0:
                     oPos = Position.objects.get(pk=id)
 
-                    if oPos:
-                        oPos.code = nombre
-                        oPos.description = desc
-                        oPos.active = activo
-                        oPos.user_mod = request.user
-                        oPos.date_mod = datetime.datetime.now()
-                        oPos.save()
-                        pos = {
-                            'pk': oPos.pk,
-                            'name':oPos.code,
-                            'desc': oPos.description,
-                            'activo': oPos.active,
-                        }
-                        mensaje = 'Se ha actualizado el registro.'
-                        data = {
-                            'puesto': pos, 'mensaje': mensaje, 'error': False
-                        }
-                    else:
-                        mensaje = "No existe el registro."
-                        data = {
-                            'mensaje': mensaje, 'error': True
-                        }
+                if oPos:
+                    oPos.description = desc
+                    oPos.active = activo
+                    oPos.user_mod = request.user
+                    oPos.date_mod = datetime.datetime.now()
+                    oPos.save()
+                    pos = {
+                        'pk': oPos.pk,
+                        'name':oPos.code,
+                        'desc': oPos.description,
+                        'activo': oPos.active,
+                    }
+                    mensaje = 'Se ha actualizado el registro.'
+                    data = {
+                        'puesto': pos, 'mensaje': mensaje, 'error': False
+                    }
                 else:
-                    mensaje = "Complete los campos requeridos."
+                    mensaje = "No existe el registro."
                     data = {
                         'mensaje': mensaje, 'error': True
                     }
@@ -2853,50 +2948,78 @@ def eliminar_puesto(request):
     return JsonResponse(data)
 
 def guardar_ccosto(request):
+    print "Entra a la funcion principal"
     try:
+        print "Entra a la funcion"
         if request.is_ajax():
+            print "Entra si es ajax"
             if request.method == 'POST':
+                print "Entra si es post en el metodo"
                 code = request.POST['code']
                 descripcion = request.POST['descripcion']
                 activo = int(request.POST['activo'])
+
+                if len(code) == 0:
+                    mensaje = 'El campo "Código" es obligatorio.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(code) > 5:
+                    mensaje = 'El campo "Código" tiene como máximo 5 caracteres.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(descripcion) == 0:
+                    mensaje = 'El campo "Descripción" es obligatorio.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(descripcion) > 150:
+                    mensaje = 'El campo "Descripción" tiene como máximo 150 caracteres.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
 
                 if activo == 1:
                     activo = True
                 else:
                     activo = False
 
-                if len(code) > 5:
-                    mensaje = 'El campo "Código" tiene un máximo de 5 caracteres'
-                    data = {
-                        'mensaje': mensaje, 'error': False
-                    }
-                    return JsonResponse(data)
-
                 suc = Branch.objects.get(pk=request.session["sucursal"])
-
-                if len(descripcion) > 0:
-                    oCCosto = CentrosCostos(
-                        code = code,
-                        descripcion=descripcion,
-                        empresa_reg = suc.empresa,
-                        active=activo,
-                        user_reg=request.user,
-                    )
-                    oCCosto.save()
-                    grupo = {
-                        'pk': oCCosto.pk,
-                        'descripcion': oCCosto.descripcion,
-                        'activo': oCCosto.active,
-                    }
-                    mensaje = 'Se ha guardado el registro del Centro de Costos'
-                    data = {
-                        'grupo': grupo, 'mensaje': mensaje, 'error': False
-                    }
-                else:
-                    mensaje = "Complete los campos requeridos."
+                tot_reg = CentrosCostos.objects.filter(code=code, empresa_reg=suc.empresa).count()
+                if tot_reg > 0:
+                    mensaje = 'Ya existe un registro con el código ingresado.'
                     data = {
                         'mensaje': mensaje, 'error': True
                     }
+                    return JsonResponse(data)
+
+                print "Llego hasta aqui"
+
+                oCCosto = CentrosCostos(
+                    code = code,
+                    descripcion=descripcion,
+                    empresa_reg = suc.empresa,
+                    active=activo,
+                    user_reg=request.user,
+                )
+                oCCosto.save()
+                grupo = {
+                    'pk': oCCosto.pk,
+                    'descripcion': oCCosto.descripcion,
+                    'activo': oCCosto.active,
+                }
+                mensaje = 'Se ha guardado el registro del Centro de Costos'
+                data = {
+                    'grupo': grupo, 'mensaje': mensaje, 'error': False
+                }
             else:
                 mensaje = "Método no permitido."
                 data = {
@@ -2911,7 +3034,7 @@ def guardar_ccosto(request):
         print ex
         data = {
             'error': True,
-            'mensaje': 'error',
+            'mensaje': ex.message,
         }
     return JsonResponse(data)
 
@@ -2920,41 +3043,47 @@ def actualizar_ccosto(request):
         if request.is_ajax():
             if request.method == 'POST':
                 id = int(request.POST['id'])
-                code = request.POST['code']
                 desc = request.POST['desc']
                 activo = int(request.POST['activo'])
+
+                if len(desc) == 0:
+                    mensaje = 'El campo "Descripción" es obligatorio.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(desc) > 150:
+                    mensaje = 'El campo "Descripción" tiene como máximo 150 caracteres.'
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
 
                 if activo == 1:
                     activo = True
                 else:
                     activo = False
                 
-                if len(desc) > 0:
-                    oCC = CentrosCostos.objects.get(pk=id)
+                oCC = CentrosCostos.objects.get(pk=id)
 
-                    if oCC:
-                        oCC.descripcion = desc
-                        oCC.code = code
-                        oCC.active = activo
-                        oCC.user_mod = request.user
-                        oCC.date_mod = datetime.datetime.now()
-                        oCC.save()
-                        CC = {
-                            'pk': oCC.pk,
-                            'desc': oCC.descripcion,
-                            'activo': oCC.active,
-                        }
-                        mensaje = 'Se ha actualizado el registro.'
-                        data = {
-                            'puesto': CC, 'mensaje': mensaje, 'error': False
-                        }
-                    else:
-                        mensaje = "No existe el registro."
-                        data = {
-                            'mensaje': mensaje, 'error': True
-                        }
+                if oCC:
+                    oCC.descripcion = desc
+                    oCC.active = activo
+                    oCC.user_mod = request.user
+                    oCC.date_mod = datetime.datetime.now()
+                    oCC.save()
+                    CC = {
+                        'pk': oCC.pk,
+                        'desc': oCC.descripcion,
+                        'activo': oCC.active,
+                    }
+                    mensaje = 'Se ha actualizado el registro.'
+                    data = {
+                        'puesto': CC, 'mensaje': mensaje, 'error': False
+                    }
                 else:
-                    mensaje = "Complete los campos requeridos."
+                    mensaje = "No existe el registro."
                     data = {
                         'mensaje': mensaje, 'error': True
                     }
@@ -2972,7 +3101,7 @@ def actualizar_ccosto(request):
         print ex
         data = {
             'error': True,
-            'mensaje': 'error',
+            'mensaje': ex.message,
         }
     return JsonResponse(data)
 
@@ -3256,6 +3385,34 @@ def guardar_deptos(request):
                     }
                     return JsonResponse(data)
 
+                if len(nombre) == 0:
+                    mensaje = "El campo 'Nombre' es obligatorio."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(nombre) > 150:
+                    mensaje = "El campo 'Nombre' tiene como máximo 150 caracteres."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(pais) == 0:
+                    mensaje = "El campo 'País' es obligatorio."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if not validarEntero(pais):
+                    mensaje = "El valor del campo 'País' no es válido."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
                 if pais == 0:
                     mensaje = "El campo 'País' es obligatorio."
                     data = {
@@ -3263,34 +3420,36 @@ def guardar_deptos(request):
                     }
                     return JsonResponse(data)
 
+
                 suc = Branch.objects.get(pk=request.session["sucursal"])
                 pais = Country.objects.get(pk=pais)
-
-                if len(nombre) > 0 and len(codigo) > 0:
-                    oDepto = State(
-                        code = codigo,
-                        name = nombre,
-                        empresa_reg = suc.empresa,
-                        active=activo,
-                        pais = pais,
-                        user_reg=request.user,
-                    )
-                    oDepto.save()
-                    grupo = {
-                        'pk': oDepto.pk,
-                        'code': oDepto.code,
-                        'name': oDepto.name,
-                        'activo': oDepto.active,
-                    }
-                    mensaje = 'Se ha guardado el registro'
-                    data = {
-                        'grupo': grupo, 'mensaje': mensaje, 'error': False
-                    }
-                else:
-                    mensaje = "Complete los campos requeridos."
+                tot_reg = State.objects.filter(code=codigo, empresa_reg=suc.empresa).count()
+                if tot_reg > 0:
+                    mensaje = "Ya existe un registro con el código ingresado."
                     data = {
                         'mensaje': mensaje, 'error': True
                     }
+                    return JsonResponse(data)
+
+                oDepto = State(
+                    code = codigo,
+                    name = nombre,
+                    empresa_reg = suc.empresa,
+                    active=activo,
+                    pais = pais,
+                    user_reg=request.user,
+                )
+                oDepto.save()
+                grupo = {
+                    'pk': oDepto.pk,
+                    'code': oDepto.code,
+                    'name': oDepto.name,
+                    'activo': oDepto.active,
+                }
+                mensaje = 'Se ha guardado el registro'
+                data = {
+                    'grupo': grupo, 'mensaje': mensaje, 'error': False
+                }
             else:
                 mensaje = "Método no permitido."
                 data = {
@@ -3314,13 +3473,40 @@ def actualizar_deptos(request):
         if request.is_ajax():
             if request.method == 'POST':
                 id = int(request.POST['id'])
-                cod = request.POST['codigo']
                 pais = request.POST['pais']
                 nombre = request.POST['nombre']
                 activo = int(request.POST['activo'])
 
+                if len(nombre) == 0:
+                    mensaje = "El campo 'Nombre' es obligatorio."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(nombre) > 150:
+                    mensaje = "El campo 'Nombre' tiene como máximo 150 caracteres."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(pais) == 0:
+                    mensaje = "El campo 'País' es obligatorio."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if not validarEntero(pais):
+                    mensaje = "El valor del campo 'País' no es válido."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
                 if pais == 0:
-                    mensaje = "Complete los campos requeridos."
+                    mensaje = "El campo 'País' es obligatorio."
                     data = {
                         'mensaje': mensaje, 'error': True
                     }
@@ -3333,33 +3519,26 @@ def actualizar_deptos(request):
 
                 pais = Country.objects.get(pk=pais)
                 
-                if len(cod) > 0 and len(nombre) > 0:
-                    oDept = State.objects.get(pk=id)
-                    if oDept:
-                        oDept.code = cod
-                        oDept.name = nombre
-                        oDept.pais = pais
-                        oDept.active = activo
-                        oDept.user_mod = request.user
-                        oDept.date_mod = datetime.datetime.now()
-                        oDept.save()
-                        estado = {
-                            'pk': oDept.pk,
-                            'codigo':oDept.code,
-                            'nombre': oDept.name,
-                            'activo': oDept.active,
-                        }
-                        mensaje = 'Se ha actualizado el registro.'
-                        data = {
-                            'puesto': estado, 'mensaje': mensaje, 'error': False
-                        }
-                    else:
-                        mensaje = "No existe el registro."
-                        data = {
-                            'mensaje': mensaje, 'error': True
-                        }
+                oDept = State.objects.get(pk=id)
+                if oDept:
+                    oDept.name = nombre
+                    oDept.pais = pais
+                    oDept.active = activo
+                    oDept.user_mod = request.user
+                    oDept.date_mod = datetime.datetime.now()
+                    oDept.save()
+                    estado = {
+                        'pk': oDept.pk,
+                        'codigo':oDept.code,
+                        'nombre': oDept.name,
+                        'activo': oDept.active,
+                    }
+                    mensaje = 'Se ha actualizado el registro.'
+                    data = {
+                        'puesto': estado, 'mensaje': mensaje, 'error': False
+                    }
                 else:
-                    mensaje = "Complete los campos requeridos."
+                    mensaje = "No existe el registro."
                     data = {
                         'mensaje': mensaje, 'error': True
                     }
@@ -3377,7 +3556,7 @@ def actualizar_deptos(request):
         print ex
         data = {
             'error': True,
-            'mensaje': 'error',
+            'mensaje': ex.message,
         }
     return JsonResponse(data)
 
@@ -4423,12 +4602,11 @@ def guardar_equipos(request):
                     return JsonResponse(data)
 
                 if len(desc) == 0:
-                    if len(code) > 5:
-                        mensaje = "El campo 'código' tiene como máximo 5 caracteres."
-                        data = {
-                            'mensaje': mensaje, 'error': True
-                        }
-                        return JsonResponse(data)
+                    mensaje = "El campo 'descripción' es obligatorio."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
 
                 if len(desc) > 150:
                     mensaje = "El campo 'descripción' tiene como máximo 150 caracteres."
@@ -4444,6 +4622,13 @@ def guardar_equipos(request):
                     activo = False
 
                 suc = Branch.objects.get(pk=request.session["sucursal"])
+                tot_reg = EquipoTrabajo.objects.filter(code=code, empresa_reg=suc.empresa).count()
+                if tot_reg > 0:
+                    mensaje = "Ya existe un registro con el código ingresado."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
 
                 oEq = EquipoTrabajo(
                     code = code,
@@ -7964,7 +8149,7 @@ def guardar_costo_empleado(request):
                 activo = int(request.POST['activo'])
 
                 if len(nombre) == 0:
-                    mensaje = "El campo 'Nombre' es obligatorio."
+                    mensaje = "El campo 'Código' es obligatorio."
                     data = {'error': True, 'mensaje': mensaje}
                     return JsonResponse(data)
 
@@ -7978,12 +8163,23 @@ def guardar_costo_empleado(request):
                     data = {'error': True, 'mensaje': mensaje}
                     return JsonResponse(data)
 
+                if len(desc) > 150:
+                    mensaje = "El campo 'Descripción' tiene un máximo de 150 carateres."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
                 if activo == 1:
                     activo = True
                 else:
                     activo = False
 
                 suc = Branch.objects.get(pk=request.session["sucursal"])
+                tot_reg = CostUnit.objects.filter(code=nombre, empresa_reg=suc.empresa).count()
+
+                if tot_reg > 0:
+                    mensaje = "Ya existe un registro con el código ingresado."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
 
                 oMd = CostUnit(
                     code=nombre,
@@ -8021,16 +8217,15 @@ def actualizar_costo_empleado(request):
             if request.method == 'POST':
                 id = int(request.POST['id'])
                 desc = request.POST['desc']
-                nombre = request.POST['nombre']
                 activo = int(request.POST['activo'])
-
-                if len(nombre) == 0:
-                    mensaje = "El campo 'Nombre' es obligatorio."
-                    data = {'error': True, 'mensaje': mensaje}
-                    return JsonResponse(data)
 
                 if len(desc) == 0:
                     mensaje = "El campo 'Descripción' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(desc) > 150:
+                    mensaje = "El campo 'Descripción' tiene como máximo 150 caracteres."
                     data = {'error': True, 'mensaje': mensaje}
                     return JsonResponse(data)
 
@@ -8042,7 +8237,6 @@ def actualizar_costo_empleado(request):
                 oMd = CostUnit.objects.get(pk=id)
                 if oMd:
                     oMd.description = desc
-                    oMd.name = nombre
                     oMd.active = activo
                     oMd.user_mod = request.user
                     oMd.date_mod = datetime.datetime.now()

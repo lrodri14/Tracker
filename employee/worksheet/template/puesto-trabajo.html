@@ -35,7 +35,7 @@ Puesto de Trabajo
                                 <label for="txtptNombre" class="control-label">Código :</label>
                                 </div>
                                 <div class="col-md-7">
-                                    <input type="text" name="pt_nombre" value="{{dato.code}}" id="txtptNombre" class="form-control input-sm input-sm-1" maxlength="5">
+                                    <input type="text" {% if editar %}disabled{% endif %} name="pt_nombre" value="{{dato.code}}" id="txtptNombre" class="form-control" maxlength="5">
                                 </div>
                             </div>
                         </div>
@@ -45,7 +45,7 @@ Puesto de Trabajo
                                 <label for="txtptDescripcion" class="control-label">Descripción :</label>
                                 </div>
                                 <div class="col-md-7">
-                                    <input type="text" name="pt_descripcion" value="{{dato.description}}" id="txtptDescripcion" class="form-control input-sm input-sm-1">
+                                    <input type="text" name="pt_descripcion" value="{{dato.description}}" id="txtptDescripcion" class="form-control">
                                 </div>
                             </div>
                         </div>
@@ -89,5 +89,4 @@ Puesto de Trabajo
     $('#sPuesto1').addClass('active');
     //#endregion
 </script>
-<script src="{% static 'js/app/scriptApp.js' %}"></script>
 {% endblock scripts %}

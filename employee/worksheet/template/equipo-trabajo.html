@@ -34,7 +34,7 @@ Equipos de Trabajo
                                     <label for="txtCodigo" class="control-label">Código :</label>
                                 </div>
                                 <div class="col-md-7">
-                                    <input type="text" name="eqT_codigo" value="{{dato.code}}" id="txtCodigo" maxlength="5" class="form-control input-sm input-sm-1">
+                                    <input type="text" {% if editar %}disabled{% endif %} name="eqT_codigo" value="{{dato.code}}" id="txtCodigo" maxlength="5" class="form-control">
                                 </div>
                             </div>
                         </div>
@@ -44,7 +44,7 @@ Equipos de Trabajo
                                     <label for="txtNombre" class="control-label">Descripción :</label>
                                 </div>
                                 <div class="col-md-7">
-                                    <input type="text" name="eqT_desc" value="{{dato.descripcion}}" id="txtDescripcion" class="form-control input-sm input-sm-1">
+                                    <input type="text" name="eqT_desc" value="{{dato.descripcion}}" id="txtDescripcion" class="form-control">
                                 </div>
                             </div>
                         </div>
@@ -80,7 +80,6 @@ Equipos de Trabajo
 </div>
 {% endblock contenido %}
 {% block scripts %}
-<script src="{% static 'js/app/scriptApp.js' %}"></script>
 <script>
     $('#side-menu a').removeClass('active');
     $('#aPersonal').addClass('active');
