@@ -299,28 +299,41 @@ $(document).on('ready', function() {
             }, // serializes the form's elements.
             success: function (data) {
                 if (data.error == false) {
-                    $.toast({
-                        heading: 'Empleado',
-                        text: 'Se ha actualizado el registro de empleado.',
-                        position: 'top-right',
-                        loaderBg: '#ff6849',
-                        icon: 'success',
-                        hideAfter: 5000,
-                        stack: 6
-                    });
-                    window.location.replace(dns + "/listar/empleados/");
-                    LimpiarControles();
+                    mensaje("Empleado", "Se ha actualizado el registro.", "ok", 3500);
+                    if (data.editar) {
+                        setTimeout(function () {
+                            window.location.replace(dns + "/listar/empleados/");
+                        }, 3500);
+                    }else{
+                        LimpiarControles();
+                    }
                 } else {
-                    $.toast({
-                        heading: 'Empleado',
-                        text: data.mensaje,
-                        position: 'top-right',
-                        loaderBg: '#ff6849',
-                        icon: 'error',
-                        hideAfter: 5000,
-                        stack: 6
-                    });
+                    mensaje("Empleado", data.mensaje, "error", 3500);
+                    console.log(data.mensaje);
                 }
+                // if (data.error == false) {
+                //     $.toast({
+                //         heading: 'Empleado',
+                //         text: 'Se ha actualizado el registro de empleado.',
+                //         position: 'top-right',
+                //         loaderBg: '#ff6849',
+                //         icon: 'success',
+                //         hideAfter: 5000,
+                //         stack: 6
+                //     });
+                //     window.location.replace(dns + "/listar/empleados/");
+                //     LimpiarControles();
+                // } else {
+                //     $.toast({
+                //         heading: 'Empleado',
+                //         text: data.mensaje,
+                //         position: 'top-right',
+                //         loaderBg: '#ff6849',
+                //         icon: 'error',
+                //         hideAfter: 5000,
+                //         stack: 6
+                //     });
+                // }
             },
             error: function (data) {
                 console.log(data);
@@ -342,6 +355,26 @@ $(document).on('ready', function() {
         $('input[type="checkbox"]').removeAttr('checked');
         $('select').val(0);
         $('textarea').val(null);
+    }
+
+    function mensaje(encabezado, texto, tipomsj, tiempo) {
+        vicon = "warning";
+        if (tipomsj == "warning") {
+            vicon = "warning";
+        } else if (tipomsj == "ok") {
+            vicon = "success";
+        } else if (tipomsj == "error") {
+            vicon = "error";
+        }
+        $.toast({
+            heading: encabezado,
+            text: texto,
+            position: 'top-right',
+            loaderBg: '#ff6849',
+            icon: vicon,
+            hideAfter: tiempo,
+            stack: 6
+        });
     }
     //#endregion
 

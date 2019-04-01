@@ -2,6 +2,16 @@
 {% block titulo %}
 Registro de Sucursal
 {% endblock titulo %}
+{% block estilo %}
+<style>
+    .checkbox{
+        font-weight: 500;
+    }
+    .checkbox label{
+        font-weight: 500;
+    }
+</style>
+{% endblock estilo %}
 {% load static %}
 {% block contenido %}
 <div class="row">
@@ -15,38 +25,47 @@ Registro de Sucursal
                 <div class="panel-body">
                     {% csrf_token %}
                     <input type="hidden" name="id" value="{{dato.pk}}">
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <div class="col-md-12 margin-bottom-5px">
-                            <div class="form-group">
-                                <div class="col-md-5 text-right">
-                                    <label for="txtRazonSocial" class="control-label">Código :</label>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label for="txtRazonSocial" class="control-label">Código :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <input type="text" {% if editar %}disabled{% endif %} name="nombre" id="txtNombre" value="{{dato.code}}" class="form-control" maxlength="5">
+                                    </div>
                                 </div>
-                                <div class="col-md-7">
-                                    <input type="text" name="nombre" id="txtNombre" value="{{dato.code}}" class="form-control input-sm" maxlength="5">
-                                </div>
+                            </div>
+                            <div class="col-md-6">
                             </div>
                         </div>
                         <div class="col-md-12 margin-bottom-5px">
-                            <div class="form-group">
-                                <div class="col-md-5 text-right">
-                                    <label for="txtNombreComercial" class="control-label">Descripción :</label>
-                                </div>
-                                <div class="col-md-7">
-                                        <textarea name="descripcion" id="txtDescipcion" rows="7" class="form-control">{{dato.description}}</textarea>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label for="txtNombreComercial" class="control-label">Descripción :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                            <textarea name="descripcion" id="txtDescipcion" rows="7" class="form-control">{{dato.description}}</textarea>
+                                    </div>
                                 </div>
                             </div>
+                            
                         </div>
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <div class="col-md-5"></div>
-                                <div class="col-md-7">
-                                    <div class="checkbox checkbox-success">
-                                         {% if dato.active %}
-                                         <input id="chkActivo" name="activo" type="checkbox" checked class="input-sm">
-                                         {% else %}
-                                         <input id="chkActivo" name="activo" type="checkbox" class="input-sm">
-                                         {% endif %}
-                                        <label for="chkActivo" class="control-label"> Activo </label>
+                        <div class="col-md-12 margin-bottom-5px">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5"></div>
+                                    <div class="col-md-7">
+                                        <div class="checkbox checkbox-success">
+                                            {% if dato.active %}
+                                            <input id="chkActivo" name="activo" type="checkbox" checked class="input-sm">
+                                            {% else %}
+                                            <input id="chkActivo" name="activo" type="checkbox" class="input-sm">
+                                            {% endif %}
+                                            <label for="chkActivo" class="control-label"> Activo </label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

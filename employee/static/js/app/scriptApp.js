@@ -2009,7 +2009,6 @@ function validargnrDatos() {
         //if (validarEdDatos() != false) {
         data = {
             'id': banco_id.val(),
-            'nombre': banco_nombre.val(),
             'desc': banco_desc.val(),
             'activo': vActivo,
             'csrfmiddlewaretoken': token.val(),

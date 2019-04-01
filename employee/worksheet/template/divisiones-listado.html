@@ -15,7 +15,9 @@ Listado de Divisiones de la Empresa
                 <div class="panel-body">
                     <div class="row text-right">
                         <div class="col-md-12">
+                            {% if perms.worksheet.add_divisiones %}
                             <a href="{% url 'divisiones' %}" class="btn btn-primary">Agregar</a>
+                            {% endif %}
                         </div>
                     </div>
                     <br>
@@ -43,12 +45,16 @@ Listado de Divisiones de la Empresa
                                         {% endif %}
                                     </td>
                                     <td class="text-nowrap acciones">
-                                        <a href="{% url 'division_editar' item.pk %}" data-toggle="tooltip" data-original-title="Edit">
+                                        {% if perms.worksheet.change_divisiones %}
+                                        <a href="{% url 'division_editar' item.pk %}" data-toggle="tooltip" data-original-title="Editar">
                                             <i class="fa fa-pencil text-inverse m-r-10"></i>
                                         </a>
-                                        <a href="#" class="btnEliminar" data="{{item.pk}}" data-toggle="tooltip" data-original-title="Close">
+                                        {% endif %}
+                                        {% if perms.worksheet.delete_divisiones %}
+                                        <a href="#" class="btnEliminar" data="{{item.pk}}" data-toggle="tooltip" data-original-title="Eliminar">
                                             <i class="fa fa-close text-danger"></i>
                                         </a>
+                                        {% endif %}
                                     </td>
                                 </tr>
                                 {% endfor %}

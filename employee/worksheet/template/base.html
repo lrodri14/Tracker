@@ -157,10 +157,18 @@
                     <li><a id="aInicio" href="{% url 'home' %}" class="waves-effect"><i data-icon="7" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Inicio </span></a> </li>
                     <li><a href="javascript:void(0)" id="aCorporativo" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Organización<span class="fa arrow"></span></span></a>
                         <ul class="nav nav-second-level">
+                            {% if perms.worksheet.see_empresa %}
                             <li><a href="{% url 'listado_corporativos' %}" id="aCorporativo2" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Grupos Corporativos</span></a></li>
+                            {% endif %}
+                            {% if perms.worksheet.see_empresa %}
                             <li><a href="{% url 'listado_empresas' %}" id="aEmpresa" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Empresas</span></a></li>
+                            {% endif %}
+                            {% if perms.worksheet.see_branch %}
                             <li><a href="{% url 'listado_sucursal' %}" id="aSucursal" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Sucursales</a></li>
+                            {% endif %}
+                            {% if perms.worksheet.see_divisiones %}
                             <li><a href="{% url 'listado_divisiones' %}" id="aDivision" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Divisiones</span></a></li>
+                            {% endif %}
                             {% if perms.worksheet.see_department %}
                             <li><a href="{% url 'listado_departamentos' %}" id="aDepartamentos" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Departamentos</span></a></li>
                             {% endif %}
@@ -429,6 +437,7 @@
         });
     </script>
     <script src="{% static 'js/app/scriptApp.js' %}"></script>
+    <script src="{% static 'js/app/datos.js' %}"></script>t></script>t></script>
 </body>
 
 </html>

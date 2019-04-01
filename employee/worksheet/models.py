@@ -8,6 +8,19 @@ import datetime
 from django.db import models
 
 # Create your models here.
+
+class GrupoCorporativo(models.Model):
+    razonSocial = models.CharField(max_length=100, blank=True, null=True)
+    nombreComercial = models.CharField(max_length=100, blank=True, null=True)
+    user_reg = models.ForeignKey(User)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='gcom_usermod', related_query_name='gcom_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.BooleanField()
+
+    def __unicode__(self):
+        return self.nombreComercial
+
 class Group(models.Model):
     name = models.CharField(max_length=100)
     active = models.BooleanField(default=False)
@@ -24,7 +37,7 @@ class Group(models.Model):
 class Empresa(models.Model):
     razonSocial = models.CharField(max_length=100, blank=True, null=True)
     nombreComercial = models.CharField(max_length=100, blank=True, null=True)
-    grupo = models.ForeignKey(Group, blank=True, null=True)
+    grupo = models.ForeignKey(GrupoCorporativo, blank=True, null=True)
     user_reg = models.ForeignKey(User)
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='empr_usermod', related_query_name='empr_usermod')
@@ -350,19 +363,6 @@ class Employee(models.Model):
     def __unicode__(self):
         return self.firstName + ' ' + self.lastName
 
-class GrupoCorporativo(models.Model):
-    razonSocial = models.CharField(max_length=100, blank=True, null=True)
-    nombreComercial = models.CharField(max_length=100, blank=True, null=True)
-    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="group_empreg", related_query_name="group_empreg")
-    user_reg = models.ForeignKey(User)
-    date_reg = models.DateTimeField(auto_now_add=True)
-    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='gcom_usermod', related_query_name='gcom_usermod')
-    date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.BooleanField()
-
-    def __unicode__(self):
-        return self.nombreComercial
-
 class Divisiones(models.Model):
     code = models.CharField(max_length=5, blank=True, null=True)
     descripcion = models.CharField(max_length=250, blank=True, null=True)
@@ -621,7 +621,6 @@ class ActivoAsignado(models.Model):
 class UsuarioEmpresa(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='usemp_user', related_query_name='usemp_user')
     empresa = models.ForeignKey(Empresa)
-    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="usemp_empreg", related_query_name="usemp_empreg")
     user_reg = models.ForeignKey(User)
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='usemp_usermod', related_query_name='usemp_usermod')
@@ -634,7 +633,6 @@ class UsuarioEmpresa(models.Model):
 class UsuarioSucursal(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='usbranch_user', related_query_name='usbranch_user')
     sucursal = models.ForeignKey(Branch, blank=True, null=True)
-    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="usbranch_empreg", related_query_name="usbranch_empreg")
     user_reg = models.ForeignKey(User)
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='usbranc_usermod', related_query_name='usbranch_usermod')
@@ -947,7 +945,8 @@ class PlanillaDetalle(models.Model):
     dias_salario = models.CharField(max_length=50)
     dias_ausentes_sin_pago = models.CharField(max_length=50)
     dias_ausentes_con_pago = models.CharField(max_length=50)
-
+    total_ingresos = models.DecimalField(("Total Ingresos"), max_digits=18, decimal_places=2, blank=True, null=True)
+    total_deducciones = models.DecimalField(("Total Deducciones"), max_digits=18, decimal_places=2, blank=True, null=True)
 
     empresa_reg = models.ForeignKey(Empresa, on_delete=models.PROTECT)
     sucursal_reg = models.ForeignKey(Branch, on_delete=models.PROTECT)
@@ -966,6 +965,40 @@ class PlanillaDetalle(models.Model):
             return self.planilla.descripcion + " - " + self.empleado.firstName + " " + self.empleado.middleName + " " + self.empleado.lastName
         else:
             return self.planilla.descripcion + " - " + self.empleado.firstName + " " + self.empleado.lastName
+
+class PlanillaDetalleDeducciones(models.Model):
+    empleado = models.ForeignKey("worksheet.Employee", verbose_name=("Empleado"), on_delete=models.PROTECT)
+    planilla = models.ForeignKey("worksheet.Planilla", verbose_name=("Planilla"), on_delete=models.PROTECT)
+    deduccion = models.CharField(("Deduccion"), max_length=250)
+    valor = models.DecimalField(("Valor"), max_digits=18, decimal_places=2)
+    empresa_reg = models.ForeignKey(Empresa, on_delete=models.PROTECT)
+    sucursal_reg = models.ForeignKey(Branch, on_delete=models.PROTECT)
+    user_reg = models.ForeignKey(User, on_delete=models.PROTECT)
+    date_reg = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = ("PlanillaDetalleDeducciones")
+        verbose_name_plural = ("PlanillaDetalleDeducciones")
+
+    def __str__(self):
+        return self.empleado.firstName + " " + self.empleado.lastName + " | " +  self.planilla.descripcion + " | " + self.deduccion
+
+class PlanillaDetalleIngresos(models.Model):
+    empleado = models.ForeignKey("worksheet.Employee", verbose_name=("Empleado"), on_delete=models.PROTECT)
+    planilla = models.ForeignKey("worksheet.Planilla", verbose_name=("Planilla"), on_delete=models.PROTECT)
+    ingreso = models.CharField(("Deduccion"), max_length=250)
+    valor = models.DecimalField(("Valor"), max_digits=18, decimal_places=2)
+    empresa_reg = models.ForeignKey(Empresa, on_delete=models.PROTECT)
+    sucursal_reg = models.ForeignKey(Branch, on_delete=models.PROTECT)
+    user_reg = models.ForeignKey(User, on_delete=models.PROTECT)
+    date_reg = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = ("PlanillaDetalleIngresos")
+        verbose_name_plural = ("PlanillaDetalleIngresos")
+
+    def __str__(self):
+        return self.empleado.firstName + " " + self.empleado.lastName + " | " +  self.planilla.descripcion + " | " + self.ingreso
 
 class IngresoGeneralDetalle(models.Model):
     ingreso = models.ForeignKey("worksheet.IngresoGeneral", verbose_name=("Ingreso General"), on_delete=models.PROTECT)
@@ -1090,3 +1123,21 @@ class DeduccionIndividualPlanilla(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class UsuarioCorporacion(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='uscorp_user', related_query_name='uscorp_user')
+    corporacion = models.ForeignKey("worksheet.GrupoCorporativo", verbose_name=("Grupo Corporativo"), on_delete=models.PROTECT)
+    user_reg = models.ForeignKey(User)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='uscorp_usermod', related_query_name='uscorp_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.NullBooleanField(blank=True, null=True)
+    
+
+    class Meta:
+        verbose_name = ("Usuario Corporacion")
+        verbose_name_plural = ("Usuarios Corporaciones")
+
+    def __str__(self):
+        return self.usuario.username + " - " + self.corporacion.nombreComercial

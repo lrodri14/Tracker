@@ -34,7 +34,7 @@ Registro de Empresa
                                     <label for="txtRazonSocial" class="control-label">Razón social :</label>
                                 </div>
                                 <div class="col-md-7">
-                                    <input type="text" name="razonSocial" id="txtRazonSocial" value="{{dato.razonSocial}}" class="form-control input-md">
+                                    <input type="text" {% if editar %}disabled{% endif %} name="razonSocial" id="txtRazonSocial" value="{{dato.razonSocial}}" class="form-control input-md">
                                 </div>
                             </div>
                         </div>

@@ -2,6 +2,16 @@
 {% block titulo %}
 Registro de División
 {% endblock titulo %}
+{% block estilo %}
+<style>
+    .checkbox{
+        font-weight: 500;
+    }
+    .checkbox label{
+        font-weight: 500;
+    }
+</style>
+{% endblock estilo %}
 {% load static %}
 {% block contenido %}
 <div class="row">
@@ -24,7 +34,7 @@ Registro de División
                                     <label for="txtRazonSocial" class="control-label">Código :</label>
                                 </div>
                                 <div class="col-md-7">
-                                    <input type="text" name="codigo" value="{{dato.code}}" id="txtCodigo" class="form-control input-sm input-sm-1">
+                                    <input type="text" {% if editar %}disabled{% endif %} name="codigo" value="{{dato.code}}" id="txtCodigo" class="form-control">
                                 </div>
                             </div>
                         </div>
@@ -34,7 +44,7 @@ Registro de División
                                     <label for="txtRazonSocial" class="control-label">Descripción :</label>
                                 </div>
                                 <div class="col-md-7">
-                                    <input type="text" name="descripcion" value="{{dato.descripcion}}" id="txtDescripcion" class="form-control input-sm input-sm-1">
+                                    <input type="text" name="descripcion" value="{{dato.descripcion}}" id="txtDescripcion" class="form-control">
                                 </div>
                             </div>
                         </div>

@@ -2,6 +2,16 @@
 {% block titulo %}
 Registro de Departamentos de la Empresa
 {% endblock titulo %}
+{% block estilo %}
+<style>
+    .checkbox{
+        font-weight: 500;
+    }
+    .checkbox label{
+        font-weight: 500;
+    }
+</style>
+{% endblock estilo %}
 {% load static %}
 {% block contenido %}
 <div class="row">
@@ -24,7 +34,7 @@ Registro de Departamentos de la Empresa
                                     <label for="txtNombre" class="control-label">Código :</label>
                                 </div>
                                 <div class="col-md-7">
-                                    <input type="text" {% if editar %}disabled{% endif %} name="nombre" value="{{dato.name}}" id="txtNombre" class="form-control" maxlength="5">
+                                    <input type="text" {% if editar %}disabled{% endif %} name="nombre" value="{{dato.code}}" id="txtNombre" class="form-control" maxlength="5">
                                 </div>
                             </div>
                         </div>

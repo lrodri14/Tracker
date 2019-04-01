@@ -110,7 +110,6 @@ $(document).on('ready', () => {
                 url: url,
                 data: {
                     'id': id.val(),
-                    'nombre': nombre.val(),
                     'desc': descripcion.val(),
                     'activo': vActivo,
                     'csrfmiddlewaretoken': token.val(),

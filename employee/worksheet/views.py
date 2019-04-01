@@ -36,19 +36,6 @@ def home(request):
 def inicia_sesion(request):
     return render(request, 'iniciar-sesion.html')
 
-# def login(request):
-#     print "Entra aqui"
-#     logout(request)
-#     username = password = ''
-#     username = request.POST['username']
-#     password = request.POST['password']
-#     user = authenticate(username=username, password=password)
-#     if user is not None:
-#         if user.is_active:
-#             login(user)
-#             return HttpResponseRedirect('/')
-#     return render(request, 'index.html')
-
 def ingresar(request):
     Sucursales = None
 
@@ -177,77 +164,119 @@ def empleado_perfil(request, id):
     return render(request, 'perfil-empleado.html', {'dato':dato, 'imagen': imagen})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_grupocorporativo', raise_exception=True)
 def corporativo(request):
     return render(request, 'corporativo.html')
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_grupocorporativo', raise_exception=True)
 def corporativo_editar(request, reg_id):
     dato = GrupoCorporativo.objects.get(pk=reg_id)
     return render(request, 'corporativo.html', {'dato':dato, 'editar':True})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_grupocorporativo', raise_exception=True)
 def listadoCorporativo(request):
+    listado = None
     suc = Branch.objects.get(pk=request.session["sucursal"])
-    corporativos = GrupoCorporativo.objects.filter(empresa_reg=suc.empresa).order_by('date_reg')
-    return render(request, 'corporativo-listado.html', {'corporativos':corporativos})
+    if request.user.has_perm("worksheet.see_all_empresa"):
+        listado = GrupoCorporativo.objects.filter(razonSocial=suc.empresa.grupo.razonSocial).order_by('date_reg')
+    else:
+        if request.user.has_perm("worksheet.see_empresa"):
+            listado = GrupoCorporativo.objects.filter(active=True, razonSocial=suc.empresa.grupo.razonSocial).order_by('date_reg')
+    return render(request, 'corporativo-listado.html', {'corporativos':listado})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_empresa', raise_exception=True)
 def empresa(request):
     return render(request, 'empresa.html')
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_empresa', raise_exception=True)
 def empresa_editar(request, emp_id):
     dato = Empresa.objects.get(pk=emp_id)
     return render(request, 'empresa.html', {'dato':dato, 'editar':True} )
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_empresa', raise_exception=True)
 def listadoEmpresa(request):
-    empresas = Empresa.objects.all()
-    return render(request, 'empresa-listado.html', {'empresas':empresas})
+    listado = None
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    if request.user.has_perm("worksheet.see_all_empresa"):
+        listado = empresas = Empresa.objects.filter(grupo=suc.empresa.grupo)
+    else:
+        if request.user.has_perm("worksheet.see_empresa"):
+            listado = empresas = Empresa.objects.filter(active=True, grupo=suc.empresa.grupo)
+    return render(request, 'empresa-listado.html', {'empresas':listado})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_branch', raise_exception=True)
 def sucursal(request):
     return render(request, 'sucursal.html')
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_branch', raise_exception=True)
 def sucursal_editar(request, id):
     dato = Branch.objects.get(pk=id)
     return render(request, 'sucursal.html', {'editar':True, 'dato':dato})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_branch', raise_exception=True)
 def listadoSucursal(request):
-    sucursales = Branch.objects.all()
-    return render(request, 'sucursal-listado.html', {'sucursales':sucursales})
+    listado = None
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    if request.user.has_perm("worksheet.see_all_branch"):
+        listado = Branch.objects.filter(empresa=suc.empresa)
+    else:
+        if request.user.has_perm("worksheet.see_branch"):
+            listado = Branc.objects.filter(active=True, empresa=suc.empresa)
+    return render(request, 'sucursal-listado.html', {'sucursales':listado})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_divisiones', raise_exception=True)
 def divisiones(request):
     return render(request, 'divisiones.html')
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_divisiones', raise_exception=True)
 def division_editar(request, id):
     dato = Divisiones.objects.get(pk=id)
     return render(request, 'divisiones.html', {'editar':True, 'dato':dato})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_divisiones', raise_exception=True)
 def listadoDivisiones(request):
+    listado = None
     suc = Branch.objects.get(pk=request.session["sucursal"])
-    divisiones = Divisiones.objects.filter(empresa_reg=suc.empresa)
-    return render(request, 'divisiones-listado.html', {'divisiones':divisiones})
+    if request.user.has_perm("worksheet.see_all_divisiones"):
+        listado = Divisiones.objects.filter(empresa_reg=suc.empresa)
+    else:
+        if request.user.has_perm("worksheet.see_divisiones"):
+            listado = Divisiones.objects.filter(active=True, empresa_reg=suc.empresa)
+    return render(request, 'divisiones-listado.html', {'divisiones':listado})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_department', raise_exception=True)
 def departamentos(request):
     return render(request, 'departamentos.html')
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_department', raise_exception=True)
 def departamento_editar(request, id):
     dato = Department.objects.get(pk=id)
     return render(request, 'departamentos.html', {'editar':True, 'dato':dato})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_department', raise_exception=True)
 def listadoDepartamentos(request):
+    listado = None
     suc = Branch.objects.get(pk=request.session["sucursal"])
-    deptos = Department.objects.filter(empresa_reg=suc.empresa, active=True)
-    return render(request, 'departamento-listado.html', {'deptos':deptos})
+    if request.user.has_perm("worksheet.see_all_department"):
+        listado = Department.objects.filter(empresa_reg=suc.empresa)
+    else:
+        if request.user.has_perm("worksheet.see_department"):
+            listado = Department.objects.filter(active=True, empresa_reg=suc.empresa)
+    return render(request, 'departamento-listado.html', {'deptos':listado})
 
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.add_position', raise_exception=True)
@@ -311,8 +340,13 @@ def paises_editar(request, id):
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.see_country', raise_exception=True)
 def listadoPaises(request):
+    listado = None
     suc = Branch.objects.get(pk=request.session["sucursal"])
-    paises = Country.objects.filter(empresa_reg=suc.empresa)
+    if request.user.has_perm("worksheet.see_all_country"):
+        listado = CentrosCostos.objects.filter(empresa_reg=suc.empresa)
+    else:
+        if request.user.has_perm("worksheet.see_country"):
+            listado = Country.objects.filter(active=True, empresa_reg=suc.empresa)
     return render(request, 'paises-listado.html', {'paises':paises})
 
 @login_required(login_url='/form/iniciar-sesion/')
@@ -343,18 +377,25 @@ def deptos_pais_listado(request):
     return render(request, 'deptos-pais-listado.html', {'deptos': listado})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_ciudad', raise_exception=True)
 def ciudad(request):
     return render(request, 'ciudad.html')
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_ciudad', raise_exception=True)
 def ciudad_editar(request, id):
     dato = Ciudad.objects.get(pk=id)
     return render(request, 'ciudad.html', {'editar':True, 'dato':dato})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_ciudad', raise_exception=True)
 def ciudades_listado(request):
     suc = Branch.objects.get(pk=request.session["sucursal"])
-    ciudades = Ciudad.objects.filter(empresa_reg=suc.empresa)
+    if request.user.has_perm("worksheet.see_all_ciudad"):
+        listado = Ciudad.objects.filter(empresa_reg=suc.empresa)
+    else:
+        if request.user.has_perm("worksheet.see_ciudad"):
+            listado = Ciudad.objects.filter(active=True, empresa_reg=suc.empresa)
     return render(request, 'ciudades-listado.html', {'ciudades':ciudades})
 
 @login_required(login_url='/form/iniciar-sesion/')
@@ -372,7 +413,11 @@ def genero_editar(request, id):
 @permission_required('worksheet.see_sex', raise_exception=True)
 def generos_listado(request):
     suc = Branch.objects.get(pk=request.session["sucursal"])
-    generos = Sex.objects.filter(empresa_reg=suc.empresa, active=True)
+    if request.user.has_perm("worksheet.see_all_sex"):
+        listado = Sex.objects.filter(empresa_reg=suc.empresa)
+    else:
+        if request.user.has_perm("worksheet.see_sex"):
+            listado = Sex.objects.filter(active=True, empresa_reg=suc.empresa)
     return render(request, 'genero-listado.html', {'generos':generos})
 
 @login_required(login_url='/form/iniciar-sesion/')
@@ -435,7 +480,11 @@ def funcion_trabajo_editar(request, id):
 @permission_required('worksheet.see_funcionestrabajo', raise_exception=True)
 def funcion_trab_listado(request):
     suc = Branch.objects.get(pk=request.session["sucursal"])
-    funciones = FuncionesTrabajo.objects.filter(empresa_reg=suc.empresa)
+    if request.user.has_perm("worksheet.see_all_funcionestrabajo"):
+        listado = FuncionesTrabajo.objects.filter(empresa_reg=suc.empresa)
+    else:
+        if request.user.has_perm("worksheet.see_funcionestrabajo"):
+            listado = FuncionesTrabajo.objects.filter(active=True, empresa_reg=suc.empresa)
     return render(request, 'funciones-trabajo-listado.html', {'funciones': funciones})
 
 @login_required(login_url='/form/iniciar-sesion/')
@@ -484,6 +533,7 @@ def estado_empleado_listado(request):
     return render(request, 'estado-empleado-listado.html', {'lista':listado})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_ausentismo', raise_exception=True)
 def ausentismo(request):
     suc = Branch.objects.get(pk=request.session["sucursal"])
     empleados = Employee.objects.filter(active=True, empresa_reg=suc.empresa)
@@ -491,6 +541,7 @@ def ausentismo(request):
     return render(request, 'ausentismo.html', {'empleados':empleados, 'motivos':motivos})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_ausentismo', raise_exception=True)
 def ausentismo_editar(request, id):
     suc = Branch.objects.get(pk=request.session["sucursal"])
     dato = Ausentismo.objects.get(pk=id)
@@ -498,8 +549,10 @@ def ausentismo_editar(request, id):
     return render(request, 'ausentismo.html', {'editar':True, 'dato':dato, 'empleados':empleados})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_ausentismo', raise_exception=True)
 def ausentismo_listado(request):
     lista = []
+    listado = None
     busqueda = None
     suc = Branch.objects.get(pk=request.session["sucursal"])
     empleados = Employee.objects.all()
@@ -509,7 +562,11 @@ def ausentismo_listado(request):
             if int(emp) > 0:
                 busqueda = int(emp)
                 empleado = Employee.objects.get(pk=busqueda)
-                lista = Ausentismo.objects.filter(empleado=empleado, empresa_reg = suc.empresa)
+                if request.user.has_perm("worksheet.see_all_ausentismo"):
+                    listado = Ausentismo.objects.filter(pk=busqueda, empresa_reg=suc.empresa)
+                else:
+                    if request.user.has_perm("worksheet.see_ausentismo"):
+                        listado = Ausentismo.objects.filter(pk=busqueda, active=True, empresa_reg=suc.empresa)
             else:
                 lista = Ausentismo.objects.filter(sucursal_reg=suc)[:50]
         else:
@@ -557,6 +614,7 @@ def motivo_despido_editar(request, id):
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.see_motivosdespido', raise_exception=True)
 def motivos_despido_listado(request):
+    listado = None
     suc = Branch.objects.get(pk=request.session["sucursal"])
     if request.user.has_perm("worksheet.see_all_motivosdespido"):
         listado = MotivosDespido.objects.filter(empresa_reg=suc.empresa)
@@ -588,19 +646,27 @@ def motivos_renuncia_listado(request):
     return render(request, 'motivos-renuncia-listado.html', {'lista':listado})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_claseeducacion', raise_exception=True)
 def clase_educacion(request):
     return render(request, 'clase-educacion.html')
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_calseeducacion', raise_exception=True)
 def clase_educacion_editar(request, id):
     dato = ClaseEducacion.objects.get(pk=id)
     return render(request, 'clase-educacion.html', {'editar':True, 'dato':dato})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_claseeduacion', raise_exception=True)
 def clase_educacion_listado(request):
+    listado = None
     suc = Branch.objects.get(pk=request.session["sucursal"])
-    lista = ClaseEducacion.objects.filter(empresa_reg=suc.empresa)
-    return render(request, 'clase-educacion-listado.html',{'lista':lista})
+    if request.user.has_perm("worksheet.see_all_claseeducacion"):
+        listado = Ciudad.objects.filter(empresa_reg=suc.empresa)
+    else:
+        if request.user.has_perm("worksheet.see_claseeducacion"):
+            listado = Ciudad.objects.filter(active=True, empresa_reg=suc.empresa)
+    return render(request, 'clase-educacion-listado.html',{'lista':listado})
 
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.add_motivoaumentosueldo', raise_exception=True)
@@ -626,6 +692,7 @@ def motivo_aumento_sueldo_editar(request, id):
     return render(request, 'motivos-aumento-sueldo.html', {'editar': True, 'dato': dato})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_educacion', raise_exception=True)
 def educacion(request):
     suc = Branch.objects.get(pk=request.session["sucursal"])
     empleados = Employee.objects.filter(active=True, empresa_reg=suc.empresa)
@@ -633,6 +700,7 @@ def educacion(request):
     return render(request, 'educacion.html', {'empleados': empleados, 'clasesEducacion':clases_educacion})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_educacion', raise_exception=True)
 def educacion_editar(request, id):
     suc = Branch.objects.get(pk=request.session["sucursal"])
     empleados = Employee.objects.filter(active=True, empresa_reg=suc.empresa)
@@ -641,6 +709,7 @@ def educacion_editar(request, id):
     return render(request, 'educacion.html', {'editar':True, 'dato':dato, 'empleados':empleados, 'clasesEducacion':clases_educacion})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_educacion', raise_exception=True)
 def educacion_listar(request):
     datos = []
     busqueda = None
@@ -652,16 +721,23 @@ def educacion_listar(request):
         if len(emp) > 0:
             if int(emp) > 0:
                 busqueda = int(emp)
-                datos = Educacion.objects.filter(empleado__pk=emp, empresa_reg=suc.empresa)
-    return render(request, 'educacion-listado.html', {'datos':datos, 'empleados':empleados, 'busqueda':busqueda})
+                if request.user.has_perm("worksheet.see_all_motivosdespido"):
+                    listado = Educacion.objects.filter(empresa_reg=suc.empresa, empleado__pk=emp)
+                else:
+                    if request.user.has_perm("worksheet.see_motivosdespido"):
+                        listado = Eduacion.objects.filter(empleado__pk=emp, active=True, empresa_reg=suc.empresa)
+
+    return render(request, 'educacion-listado.html', {'datos':listado, 'empleados':empleados, 'busqueda':busqueda})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_evaluacion', raise_exception=True)
 def evaluacion(request):
     suc = Branch.objects.get(pk=request.session["sucursal"])
     empleados = Employee.objects.filter(active=True, empresa_reg=suc.empresa)
     return render(request, 'evaluacion.html', {'empleados':empleados})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_evaluacion', raise_exception=True)
 def evaluacion_listar(request):
     datos = []
     busqueda = None
@@ -672,22 +748,29 @@ def evaluacion_listar(request):
         if len(emp) > 0:
             if int(emp) > 0:
                 busqueda = int(emp)
-                datos = Evaluacion.objects.filter(empleado__pk=emp, empresa_reg=suc.empresa)
+                if request.user.has_perm("worksheet.see_all_evaluacion"):
+                    datos = Evaluacion.objects.filter(empleado__pk=emp, empresa_reg=suc.empresa)
+                else:
+                    if request.user.has_perm("worksheet.see_evaluacion"):
+                        datos = Evaluacion.objects.filter(empleado__pk=emp, empresa_reg=suc.empresa, active=True)
     return render(request, 'evaluaciones-listado.html', {'datos':datos, 'empleados':empleados, 'busqueda': busqueda})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_evaluacion', raise_exception=True)
 def evaluacion_editar(request, id):
     empleados = Employee.objects.filter(active=True)
     dato = Evaluacion.objects.get(pk=id)
     return render(request, 'evaluacion.html', {'editar': True, 'dato': dato, 'empleados': empleados})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_empleosanteriores', raise_exception=True)
 def empleo_anterior_form(request):
     suc = Branch.objects.get(pk=request.session["sucursal"])
     empleados = Employee.objects.filter(active=True, empresa_reg=suc.empresa)
     return render(request, 'empleos-anteriores.html', {'empleados':empleados})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_empleosanteriores', raise_exception=True)
 def empleo_anterior_editar(request, id):
     suc = Branch.objects.get(pk=request.session["sucursal"])
     empleados = Employee.objects.filter(active=True, empresa_reg=suc.empresa)
@@ -695,6 +778,7 @@ def empleo_anterior_editar(request, id):
     return render(request, 'empleos-anteriores.html', {'editar': True, 'dato': dato, 'empleados': empleados})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_empleosanteriores', raise_exception=True)
 def empleo_anterior_listar(request):
     suc = Branch.objects.get(pk=request.session["sucursal"])
     datos = []
@@ -705,24 +789,38 @@ def empleo_anterior_listar(request):
         if len(emp) > 0:
             if int(emp) > 0:
                 busqueda = int(emp)
-                datos = EmpleosAnteriores.objects.filter(empleado__pk=emp)
+                if request.user.has_perm("worksheet.see_all_evaluacion"):
+                    datos = EmpleosAnteriores.objects.filter(empleado__pk=emp, empresa_reg=suc.empresa)
+                else:
+                    if request.user.has_perm("worksheet.see_evaluacion"):
+                        datos = EmpleosAnteriores.objects.filter(empleado__pk=emp, empresa_reg=suc.empresa, active=True)
     return render(request, 'empleos-anteriores-listado.html', {'datos':datos, 'empleados':empleados, 'busqueda':busqueda})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_grupocomisiones', raise_exception=True)
 def grupo_comision(request):
     return render(request, 'grupo-comisiones.html')
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_grupocomisiones', raise_exception=True)
 def grupo_comision_ditar(request, id):
     dato = GrupoComisiones.objects.get(pk=id)
     return render(request, 'grupo-comisiones.html', {'editar': True, 'dato': dato})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_grupocomisiones', raise_exception=True)
 def grupo_comisiones_listar(request):
-    datos = GrupoComisiones.objects.all()
-    return render(request, 'grupo-comisiones-listado.html', {'datos':datos})
+    listado = None
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    if request.user.has_perm("worksheet.see_all_grupocomisiones"):
+        listado = GrupoComisiones.objects.filter(empresa_reg=suc.empresa)
+    else:
+        if request.user.has_perm("worksheet.see_grupocomisiones"):
+            listado = GrupoComisiones.objects.filter(active=True, empresa_reg=suc.empresa)
+    return render(request, 'grupo-comisiones-listado.html', {'datos':listado})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_vendedor', raise_exception=True)
 def vendedor_form(request):
     suc = Branch.objects.get(pk=request.session["sucursal"])
     grp_com = GrupoComisiones.objects.filter(empresa_reg=suc.empresa)
@@ -732,6 +830,7 @@ def vendedor_form(request):
     return render(request, 'vendedor.html', {'grp_com':grp_com, 'editar':False})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_vendedor', raise_exception=True)
 def vendedor_editar(request, id):
     empleados = Employee.objects.filter(active=True)
     grp_com = GrupoComisiones.objects.all()
@@ -739,10 +838,16 @@ def vendedor_editar(request, id):
     return render(request, 'vendedor.html', {'editar': True, 'dato': dato, 'empleados': empleados, 'grp_com': grp_com})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_vendedor', raise_exception=True)
 def vendedor_listar(request):
+    listado = None
     suc = Branch.objects.get(pk=request.session["sucursal"])
-    datos = Vendedor.objects.filter(empresa_reg=suc.empresa)
-    return render(request, 'vendedor-listado.html', {'datos':datos})
+    if request.user.has_perm("worksheet.see_all_vendedor"):
+        listado = Vendedor.objects.filter(empresa_reg=suc.empresa)
+    else:
+        if request.user.has_perm("worksheet.see_vendedor"):
+            listado = Vendedor.objects.filter(active=True, empresa_reg=suc.empresa)
+    return render(request, 'vendedor-listado.html', {'datos':listado})
 
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.add_feriado', raise_exception=True)
@@ -767,19 +872,27 @@ def feriado_listar(request):
     return render(request, 'feriado-listado.html', {'datos':listado})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_activoasignado', raise_exception=True)
 def articulo_asignado_form(request):
     return render(request, 'activo-asignado.html')
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_activoasignado', raise_exception=True)
 def articulo_asignado_editar(request, id):
     dato = ActivoAsignado.objects.get(pk=id)
     return render(request, 'activo-asignado.html', {'editar': True, 'dato': dato})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_activoasignado', raise_exception=True)
 def articulos_asignados_listar(request):
+    listado = None
     suc = Branch.objects.get(pk=request.session["sucursal"])
-    datos = ActivoAsignado.objects.filter(empresa_reg=suc.empresa)
-    return render(request, 'activos-asignados-listado.html', {'datos':datos})
+    if request.user.has_perm("worksheet.see_all_activoasignado"):
+        listado = ActivoAsignado.objects.filter(empresa_reg=suc.empresa)
+    else:
+        if request.user.has_perm("worksheet.see_activoasignado"):
+            listado = ActivoAsignado.objects.filter(active=True, empresa_reg=suc.empresa)
+    return render(request, 'activos-asignados-listado.html', {'datos':listado})
 
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.add_termreason', raise_exception=True)
@@ -805,19 +918,27 @@ def motivo_rescicion_contrato_listar(request):
     return render(request, 'motivo-rescision-contrato-listado.html', {'lista':listado})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.add_salaryunit', raise_exception=True)
 def tipo_salario_form(request):
     return render(request, 'tipo-salario-form.html')
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_salaryunit', raise_exception=True)
 def tipo_salario_editar(request, id):
     dato = SalaryUnit.objects.get(pk=id)
     return render(request, 'tipo-salario-form.html', {'editar':True, 'dato':dato})
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.see_salaryunit', raise_exception=True)
 def tipo_salario_listar(request):
+    listado = None
     suc = Branch.objects.get(pk=request.session["sucursal"])
-    lista = SalaryUnit.objects.filter(empresa_reg=suc.empresa)
-    return render(request, 'tipo-salario-listado.html', {'lista':lista})
+    if request.user.has_perm("worksheet.see_all_salaryunit"):
+        listado = SalaryUnit.objects.filter(empresa_reg=suc.empresa)
+    else:
+        if request.user.has_perm("worksheet.see_salaryunit"):
+            listado = SalaryUnit.objects.filter(active=True, empresa_reg=suc.empresa)
+    return render(request, 'tipo-salario-listado.html', {'lista':listado})
 
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.add_costunit', raise_exception=True)
@@ -842,33 +963,40 @@ def tipo_costo_empleado_listar(request):
     return render(request, 'costo-empleado-listado.html', {'lista':listado})
 
 @login_required(login_url='/form/iniciar-sesion/')
-@permission_required('worksheet.add_banco', raise_exception=True)
+@permission_required('worksheet.add_bank', raise_exception=True)
 def banco_form(request):
     return render(request, 'banco-form.html')
 
 @login_required(login_url='/form/iniciar-sesion/')
+@permission_required('worksheet.change_bank', raise_exception=True)
 def banco_editar(request, id):
     dato = Bank.objects.get(pk=id)
     return render(request, 'banco-form.html', {'editar':True, 'dato':dato})
 
 @login_required(login_url='/form/iniciar-sesion/')
-@permission_required('worksheet.see_banco', raise_exception=True)
+@permission_required('worksheet.see_bank', raise_exception=True)
 def banco_listado(request):
     suc = Branch.objects.get(pk=request.session["sucursal"])
-    lista = Bank.objects.filter(empresa_reg=suc.empresa)
-    return render(request, 'banco-listado.html', {'lista':lista})
+    if request.user.has_perm("worksheet.see_all_bank"):
+        listado = Bank.objects.filter(empresa_reg=suc.empresa)
+    else:
+        if request.user.has_perm("worksheet.see_bank"):
+            listado = Bank.objects.filter(active=True, empresa_reg=suc.empresa)
+    return render(request, 'banco-listado.html', {'lista':listado})
 
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.add_usuarioempresa', raise_exception=True)
 def usuario_empresa_form(request):
     frm = UsuarioEmpresaForm()
-    users = User.objects.all()
-    empresas = Empresa.objects.all()
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    users = UsuarioEmpresa.objects.filter(empresa__grupo=suc.empresa.grupo)
+    empresas = Empresa.objects.filter(grupo=suc.empresa.grupo)
     return render(request, 'usuario-empresa.html', {'frm':frm, 'users':users, 'empresas':empresas})
 
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.see_usuarioempresa', raise_exception=True)
 def usuario_empresa_listar(request):
+    listado = None
     suc = Branch.objects.get(pk=request.session["sucursal"])
     if request.user.has_perm("worksheet.see_all_termreason"):
         listado = UsuarioEmpresa.objects.filter(empresa_reg=suc.empresa)
@@ -1839,7 +1967,7 @@ def actualizar_empleado(request):
                 
                 mensaje = 'Se ha actualizado el registro del Empleado'
                 data = {
-                    'mensaje':mensaje, 'error': False
+                    'mensaje':mensaje, 'error': False, 'editar':True
                 }
             else:
                 mensaje = "Metodo no permitido."
@@ -2061,34 +2189,75 @@ def guardar_empresa(request):
                 nombre = request.POST['organiz']
                 activo = int(request.POST['activo'])
 
+                if len(razon) == 0:
+                    mensaje = "El campo 'Razón social' es obligatorio."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(razon) > 100:
+                    mensaje = "El campo 'Razón social' tiene como máximo 100 caracteres."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(nombre) == 0:
+                    mensaje = "El campo 'Nombre comercial' es obligatorio."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(nombre) > 100:
+                    mensaje = "El campo 'Nombre comercial' tiene como máximo 100 caracteres."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
                 if activo == 1:
                     activo = True
                 else:
                     activo = False
+
+                tot_reg = Empresa.objects.filter(razonSocial=razon).count()
+                if tot_reg > 0:
+                    mensaje = "Ya existe un registro con la razón social ingresada."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                tot_reg = Empresa.objects.filter(nombreComercial=nombre).count()
+                if tot_reg > 0:
+                    mensaje = "Ya existe un registro con el nombre comercial ingresado."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                suc = Branch.objects.get(pk=request.session["sucursal"])
                 
-                if len(razon) > 0:
-                    oEmpresa = Empresa(
-                        razonSocial = razon,
-                        nombreComercial = nombre,
-                        active = activo,
-                        user_reg=request.user,
-                    )
-                    oEmpresa.save()
-                    grupo = {
-                        'pk':oEmpresa.pk,
-                        'razon':oEmpresa.razonSocial,
-                        'nombre':oEmpresa.nombreComercial,
-                        'activo':oEmpresa.active,
-                    }
-                    mensaje = 'Se ha guardado el registro de la empresa'
-                    data = {
-                        'grupo':grupo, 'mensaje':mensaje, 'error': False
-                    }
-                else:
-                    mensaje = "Complete los campos requeridos."
-                    data = {
-                        'mensaje':mensaje, 'error': True
-                    }
+                oEmpresa = Empresa(
+                    razonSocial = razon,
+                    nombreComercial = nombre,
+                    grupo=suc.empresa.grupo,
+                    active = activo,
+                    user_reg=request.user,
+                )
+                oEmpresa.save()
+                grupo = {
+                    'pk':oEmpresa.pk,
+                    'razon':oEmpresa.razonSocial,
+                    'nombre':oEmpresa.nombreComercial,
+                    'activo':oEmpresa.active,
+                }
+                mensaje = 'Se ha guardado el registro de la empresa'
+                data = {
+                    'grupo':grupo, 'mensaje':mensaje, 'error': False
+                }
             else:
                 mensaje = "Metodo no permitido."
                 data = {
@@ -2112,43 +2281,49 @@ def actualizar_empresa(request):
         if request.is_ajax():
             if request.method == 'POST':
                 id = request.POST['id']
-                razon = request.POST['razon']
                 nombre = request.POST['organiz']
                 activo = int(request.POST['activo'])
+
+                if len(nombre) == 0:
+                    mensaje = "El campo 'Nombre comercial' es obligatorio."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(nombre) > 100:
+                    mensaje = "El campo 'Nombre comercial' tiene como máximo 100 caracteres."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
 
                 if activo == 1:
                     activo = True
                 else:
                     activo = False
 
-                if len(razon) > 0:
-                    oEmp = Empresa.objects.get(pk=id)
-                    if oEmp:
-                        oEmp.razonSocial = razon
-                        oEmp.nombreComercial = nombre
-                        oEmp.active = activo
-                        oEmp.user_mod = request.user
-                        oEmp.date_mod = datetime.datetime.now()
-                        oEmp.save()
-                        emp = {
-                            'pk': oEmp.pk,
-                            'razon': oEmp.razonSocial,
-                            'nombre': oEmp.nombreComercial,
-                            'activo': oEmp.active,
-                        }
-                        mensaje = 'Se ha actualizado el registro de la empresa'
-                        data = {
-                            'emp': emp, 'mensaje': mensaje, 'error': False
-                        }
-                    else:
-                        mensaje = 'El registro no existe.'
-                        data = {
-                            'mensaje': mensaje, 'error': False
-                        }
-                else:
-                    mensaje = "Complete los campos requeridos."
+                oEmp = Empresa.objects.get(pk=id)
+                if oEmp:                       
+                    oEmp.nombreComercial = nombre
+                    oEmp.active = activo
+                    oEmp.user_mod = request.user
+                    oEmp.date_mod = datetime.datetime.now()
+                    oEmp.save()
+                    emp = {
+                        'pk': oEmp.pk,
+                        'razon': oEmp.razonSocial,
+                        'nombre': oEmp.nombreComercial,
+                        'activo': oEmp.active,
+                    }
+                    mensaje = 'Se ha actualizado el registro de la empresa'
                     data = {
-                        'mensaje': mensaje, 'error': True
+                        'emp': emp, 'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = 'El registro no existe.'
+                    data = {
+                        'mensaje': mensaje, 'error': False
                     }
             else:
                 mensaje = "Metodo no permitido."
@@ -2164,7 +2339,7 @@ def actualizar_empresa(request):
         print ex
         data = {
             'error': True,
-            'mensaje': 'error',
+            'mensaje': ex.message,
         }
     return JsonResponse(data)
 
@@ -2216,8 +2391,29 @@ def guardar_sucursal(request):
                 descripcion = request.POST['descripcion']
                 activo = int(request.POST['activo'])
 
+                if len(nombre) == 0:
+                    mensaje = "El campo 'Código' es obligatorio."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
                 if len(nombre) > 5:
-                    mensaje = "El campo 'Código' tiene como máximo 6 caracteres."
+                    mensaje = "El campo 'Código' tiene como máximo 5 caracteres."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(descripcion) == 0:
+                    mensaje = "El campo 'Descripción' es obligatorio."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(descripcion) > 150:
+                    mensaje = "El campo 'Descripción' tiene como máximo 150 caracteres."
                     data = {
                         'mensaje': mensaje, 'error': True
                     }
@@ -2227,30 +2423,34 @@ def guardar_sucursal(request):
                     activo = True
                 else:
                     activo = False
+
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+                tot_reg = Branch.objects.filter(code=nombre, empresa=suc.empresa).count()
+                if tot_reg > 0:
+                    mensaje = "Ya existe un registro con el código ingresado."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
                 
-                if len(nombre) > 0:
-                    oSucursal = Branch(
-                        code = nombre,
-                        description = descripcion,
-                        active = activo,
-                        user_reg=request.user,
-                    )
-                    oSucursal.save()
-                    grupo = {
-                        'pk':oSucursal.pk,
-                        'nombre':oSucursal.name,
-                        'descripcion':oSucursal.description,
-                        'activo':oSucursal.active,
-                    }
-                    mensaje = 'Se ha guardado el registro de la sucursal'
-                    data = {
-                        'grupo':grupo, 'mensaje':mensaje, 'error': False
-                    }
-                else:
-                    mensaje = "Complete los campos requeridos."
-                    data = {
-                        'mensaje':mensaje, 'error': True
-                    }
+                oSucursal = Branch(
+                    code = nombre,
+                    description = descripcion,
+                    empresa = suc.empresa,
+                    active = activo,
+                    user_reg=request.user,
+                )
+                oSucursal.save()
+                grupo = {
+                    'pk':oSucursal.pk,
+                    'nombre':oSucursal.code,
+                    'descripcion':oSucursal.description,
+                    'activo':oSucursal.active,
+                }
+                mensaje = 'Se ha guardado el registro de la sucursal'
+                data = {
+                    'grupo':grupo, 'mensaje':mensaje, 'error': False
+                }
             else:
                 mensaje = "Metodo no permitido."
                 data = {
@@ -2265,7 +2465,7 @@ def guardar_sucursal(request):
         print ex
         data = {
             'error':True,
-            'mensaje': 'error',
+            'mensaje': ex.message,
         }
     return JsonResponse(data)
 
@@ -2274,50 +2474,49 @@ def actualizar_sucursal(request):
         if request.is_ajax():
             if request.method == 'POST':
                 id = request.POST['id']
-                nombre = request.POST['nombre']
                 desc = request.POST['desc']
                 activo = int(request.POST['activo'])
 
-                if activo == 1:
-                    activo = True
-                else:
-                    activo = False
+                if len(desc) == 0:
+                    mensaje = "El campo 'Descripción' es obligatorio."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
 
-                if len(nombre) > 5:
-                    mensaje = "Complete los campos requeridos."
+                if len(desc) > 150:
+                    mensaje = "El campo 'Descripción' tiene como máximo 150 caracteres."
                     data = {
                         'mensaje': mensaje, 'error': True
                     }
                     return JsonResponse(data)
 
 
-                if len(nombre) > 0 and len(desc) > 0:
-                    oSucursal = Branch.objects.get(pk=id)
-
-                    if oSucursal:
-                        oSucursal.code = nombre
-                        oSucursal.description = desc
-                        oSucursal.active = activo
-                        oSucursal.user_mod = request.user
-                        oSucursal.date_mod = datetime.datetime.now()
-                        oSucursal.save()
-                        sucursal = {
-                            'pk': oSucursal.pk,
-                            'desc': oSucursal.description,
-                            'nombre': oSucursal.code,
-                            'activo': oSucursal.active,
-                        }
-                        mensaje = 'Se ha actualizado el registro de la Sucursal'
-                        data = {
-                            'sucursal': sucursal, 'mensaje': mensaje, 'error': False
-                        }
-                    else:
-                        mensaje = "No existe el registro."
-                        data = {
-                            'mensaje': mensaje, 'error': True
-                        }
+                if activo == 1:
+                    activo = True
                 else:
-                    mensaje = "Complete los campos requeridos."
+                    activo = False
+
+                oSucursal = Branch.objects.get(pk=id)
+
+                if oSucursal:
+                    oSucursal.description = desc
+                    oSucursal.active = activo
+                    oSucursal.user_mod = request.user
+                    oSucursal.date_mod = datetime.datetime.now()
+                    oSucursal.save()
+                    sucursal = {
+                        'pk': oSucursal.pk,
+                        'desc': oSucursal.description,
+                        'nombre': oSucursal.code,
+                        'activo': oSucursal.active,
+                    }
+                    mensaje = 'Se ha actualizado el registro de la Sucursal'
+                    data = {
+                        'sucursal': sucursal, 'mensaje': mensaje, 'error': False
+                    }
+                else:
+                    mensaje = "No existe el registro."
                     data = {
                         'mensaje': mensaje, 'error': True
                     }
@@ -2335,7 +2534,7 @@ def actualizar_sucursal(request):
         print ex
         data = {
             'error': True,
-            'mensaje': 'error',
+            'mensaje': ex.message,
         }
     return JsonResponse(data)
 
@@ -2370,7 +2569,7 @@ def eliminar_sucursal(request):
         print ex
         data = {
             'error': True,
-            'mensaje': 'error',
+            'mensaje': ex.message,
         }
     return JsonResponse(data)
 
@@ -2382,10 +2581,12 @@ def guardar_division(request):
                 descripcion = request.POST['descripcion']
                 activo = int(request.POST['activo'])
 
-                if activo == 1:
-                    activo = True
-                else:
-                    activo = False
+                if len(code) == 0:
+                    mensaje = "El campo 'Código' es obligatorio."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
 
                 if len(code) > 5:
                     mensaje = "El campo 'Código' tiene un maximo de 5 caracteres."
@@ -2394,31 +2595,51 @@ def guardar_division(request):
                     }
                     return JsonResponse(data)
 
-                suc = Branch.objects.get(pk=request.session["sucursal"])
-                
-                if len(descripcion) > 0:
-                    oDivision = Divisiones(
-                        code = code,
-                        descripcion = descripcion,
-                        empresa_reg = suc.empresa,
-                        active = activo,
-                        user_reg=request.user,
-                    )
-                    oDivision.save()
-                    grupo = {
-                        'pk':oDivision.pk,
-                        'descripcion':oDivision.descripcion,
-                        'activo':oDivision.active,
-                    }
-                    mensaje = 'Se ha guardado el registro de la División'
+                if len(descripcion) == 0:
+                    mensaje = "El campo 'Descripción' es obligatorio."
                     data = {
-                        'grupo':grupo, 'mensaje':mensaje, 'error': False
+                        'mensaje': mensaje, 'error': True
                     }
+                    return JsonResponse(data)
+
+                if len(descripcion) > 150:
+                    mensaje = "El campo 'Descripción' tiene un maximo de 150 caracteres."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if activo == 1:
+                    activo = True
                 else:
-                    mensaje = "Complete los campos requeridos."
+                    activo = False
+
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+                tot_reg = Divisiones.objects.filter(code=code, empresa_reg=suc.empresa).count()
+                if tot_reg > 0:
+                    mensaje = "Ya existe un registro con el código ingresado."
                     data = {
-                        'mensaje':mensaje, 'error': True
+                        'mensaje': mensaje, 'error': True
                     }
+                    return JsonResponse(data)
+                
+                oDivision = Divisiones(
+                    code = code,
+                    descripcion = descripcion,
+                    empresa_reg = suc.empresa,
+                    active = activo,
+                    user_reg=request.user,
+                )
+                oDivision.save()
+                grupo = {
+                    'pk':oDivision.pk,
+                    'descripcion':oDivision.descripcion,
+                    'activo':oDivision.active,
+                }
+                mensaje = 'Se ha guardado el registro de la División'
+                data = {
+                    'grupo':grupo, 'mensaje':mensaje, 'error': False
+                }
             else:
                 mensaje = "Metodo no permitido."
                 data = {
@@ -2442,41 +2663,47 @@ def actualizar_division(request):
         if request.is_ajax():
             if request.method == 'POST':
                 id = request.POST['id']
-                code = request.POST['code']
                 desc = request.POST['desc']
                 activo = int(request.POST['activo'])
+
+                if len(desc) == 0:
+                    mensaje = "El campo 'Descripción' es obligatorio."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
+
+                if len(desc) > 150:
+                    mensaje = "El campo 'Descripción' tiene un maximo de 150 caracteres."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
 
                 if activo == 1:
                     activo = True
                 else:
                     activo = False
 
-                if len(desc) > 0:
-                    oDiv = Divisiones.objects.get(pk=id)
+                oDiv = Divisiones.objects.get(pk=id)
 
-                    if oDiv:
-                        oDiv.code = code
-                        oDiv.descripcion = desc
-                        oDiv.active = activo
-                        oDiv.user_mod = request.user
-                        oDiv.date_mod = datetime.datetime.now()
-                        oDiv.save()
-                        division = {
-                            'pk': oDiv.pk,
-                            'desc': oDiv.descripcion,
-                            'activo': oDiv.active,
-                        }
-                        mensaje = 'Se ha actualizado el registro.'
-                        data = {
-                            'division': division, 'mensaje': mensaje, 'error': False
-                        }
-                    else:
-                        mensaje = "No existe el registro."
-                        data = {
-                            'mensaje': mensaje, 'error': True
-                        }
+                if oDiv:
+                    oDiv.descripcion = desc
+                    oDiv.active = activo
+                    oDiv.user_mod = request.user
+                    oDiv.date_mod = datetime.datetime.now()
+                    oDiv.save()
+                    division = {
+                        'pk': oDiv.pk,
+                        'desc': oDiv.descripcion,
+                        'activo': oDiv.active,
+                    }
+                    mensaje = 'Se ha actualizado el registro.'
+                    data = {
+                        'division': division, 'mensaje': mensaje, 'error': False
+                    }
                 else:
-                    mensaje = "Complete los campos requeridos."
+                    mensaje = "No existe el registro."
                     data = {
                         'mensaje': mensaje, 'error': True
                     }
@@ -2633,14 +2860,14 @@ def actualizar_departamento(request):
                 desc = request.POST['desc']
                 activo = int(request.POST['activo'])
 
-                if len(descripcion) == 0:
+                if len(desc) == 0:
                     mensaje = "El campo 'Descripción' es obligatorio."
                     data = {
                         'mensaje': mensaje, 'error': True
                     }
                     return JsonResponse(data)
 
-                if len(descripcion) > 150:
+                if len(desc) > 150:
                     mensaje = "El campo 'Descripción' tiene como máximo 150 caracteres."
                     data = {
                         'mensaje': mensaje, 'error': True
@@ -8376,7 +8603,6 @@ def actualizar_banco(request):
             if request.method == 'POST':
                 id = int(request.POST['id'])
                 desc = request.POST['desc']
-                nombre = request.POST['nombre']
                 activo = int(request.POST['activo'])
 
                 if len(nombre) == 0:
@@ -8397,7 +8623,6 @@ def actualizar_banco(request):
                 oMd = Bank.objects.get(pk=id)
                 if oMd:
                     oMd.description = desc
-                    oMd.code = nombre
                     oMd.active = activo
                     oMd.user_mod = request.user
                     oMd.date_mod = datetime.datetime.now()
@@ -8795,6 +9020,29 @@ def obtener_ultimo_salario(request):
                 return JsonResponse({'error': False, 'mensaje': 'Respuesta exitosa', 'salario_anterior':o_aumento.nuevo_salario})
             else:
                 return JsonResponse({'error': False, 'mensaje': 'Respuesta exitosa', 'salario_anterior': 0.00})
+        else:
+            return JsonResponse({'error': True, 'mensaje': 'El método no es asíncrono'})
+    except Exception as ex:
+        data = {
+            'error': True,
+            'mensaje': ex.message,
+        }
+        return JsonResponse(data)
+
+def grafico1(request):
+    ldeptos = []
+    ltotalemp = []
+    try:
+        if request.is_ajax():
+            suc = Branch.objects.get(pk=request.session["sucursal"])
+            deptos = Department.objects.filter(empresa_reg=suc.empresa)
+            for item in deptos:
+                tot_emp = 0
+                tot_emp = Employee.objects.filter(dept=item).count()
+                ldeptos.append(item.description)
+                ltotalemp.append(tot_emp)
+
+            return JsonResponse({'error': False, 'mensaje': 'Se obtuvieron los datos', 'departamentos':ldeptos, 'total_emp':ltotalemp})
         else:
             return JsonResponse({'error': True, 'mensaje': 'El método no es asíncrono'})
     except Exception as ex:
@@ -10309,8 +10557,8 @@ def deduccion_general_detalle_guardar(request):
                     data = {'error': True, 'mensaje': mensaje}
                     return JsonResponse(data)
 
-                if ingreso == 0:
-                    mensaje = "El registro del campo 'Ingreso' no existe."
+                if deduccion == 0:
+                    mensaje = "El registro del campo 'Deducción' no existe."
                     data = {'error': True, 'mensaje': mensaje}
                     return JsonResponse(data)
 
@@ -12900,6 +13148,13 @@ def planilla_calculos_empleado(request):
                 total_dias = 0
                 dias_ausencia_con_pago = 0
                 dias_ausencia_sin_pago = 0
+                tot_ded_ind = 0
+                tot_ind_ded = 0
+                tot_ind_ing = 0
+                tot_gen_ing = 0
+                tot_gen_ded = 0
+                tot_pla_ing = 0
+                tot_pla_ded = 0
                 empleado_id = request.POST["empleado_id"]
                 planilla_id = request.POST["planilla_id"]
                 o_empleado = Employee.objects.get(pk=empleado_id)
@@ -12916,6 +13171,37 @@ def planilla_calculos_empleado(request):
                     dias_ausencia_sin_pago = 1
                     for item in ausencias_sin_pago:
                         dias_ausencia_sin_pago = dias_ausencia_sin_pago + (item.hasta - item.desde).days
+                #Deduccion Individual Detalle
+                deducciones_individuales = DeduccionIndividualDetalle.objects.filter(empleado=o_empleado, fecha_valida__gte=o_planilla.fecha_inicio, fecha_valida__lte=o_planilla.fecha_fin, active=True)
+                for item in deducciones_individuales:
+                    tot_ind_ded = tot_ind_ded + item.valor
+
+                #Ingreso Individual Detalle
+                ingresos_individuales = IngresoIndividualDetalle.objects.filter(empleado=o_empleado, fecha_valida__gte=o_planilla.fecha_inicio, fecha_valida__lte=o_planilla.fecha_fin, active=True)
+                for item in ingresos_individuales:
+                    tot_ind_ing = tot_ind_ing + item.valor
+
+                #Ingreso general
+                ingresos_generales = IngresoGeneralDetalle.objects.filter(nomina=o_planilla, tipo_pago=o_planilla.frecuencia_pago, tipo_contrato=o_empleado.tipo_contrato, fecha_valida__gte=o_planilla.fecha_inicio, fecha_valida__lte=o_planilla.fecha_fin, active=True)
+                for item in ingresos_generales:
+                    tot_gen_ing = tot_gen_ing + item.valor
+
+                #Deduccion general
+                deducciones_generales = DeduccionGeneralDetalle.objects.filter(nomina=o_planilla, tipo_pago=o_planilla.frecuencia_pago, tipo_contrato=o_empleado.tipo_contrato, fecha_valido__gte=o_planilla.fecha_inicio, fecha_valido__lte=o_planilla.fecha_fin, active=True)
+                for item in deducciones_generales:
+                    tot_gen_ded = tot_gen_ded + item.valor
+
+                #Ingreso Individual Planilla
+                ingresos_planilla = IngresoIndividualPlanilla.objects.filter(empleado=o_empleado, planilla=o_planilla, active=True)
+                for item in ingresos_planilla:
+                    tot_pla_ing = tot_pla_ing + item.valor
+
+                #Deducción Individual Planilla
+                deducciones_planilla = DeduccionIndividualPlanilla.objects.filter(empleado=o_empleado, planilla=o_planilla, active=True)
+                for item in deducciones_planilla:
+                    tot_pla_ded = tot_pla_ded + item.valor
+
+                
                 o_planilladetalle = PlanillaDetalle(
                     planilla = o_planilla,
                     empleado = o_empleado,
@@ -12923,12 +13209,86 @@ def planilla_calculos_empleado(request):
                     dias_salario = o_planilla.frecuencia_pago.dias_salario,
                     dias_ausentes_sin_pago = dias_ausencia_sin_pago,
                     dias_ausentes_con_pago = dias_ausencia_con_pago,
+                    total_deducciones = tot_ind_ded + tot_gen_ded + tot_pla_ded,
+                    total_ingresos = tot_ind_ing + tot_gen_ing + tot_pla_ing,
                     empresa_reg = suc.empresa,
                     sucursal_reg = suc,
                     active = True,
                     user_reg = request.user
                 )
                 o_planilladetalle.save()
+                for item in deducciones_generales:
+                    o_pladetded = PlanillaDetalleDeducciones(
+                        empleado = o_empleado,
+                        planilla = o_planilla,
+                        deduccion = item.deduccion.deduccion_g,
+                        valor = item.valor,
+                        empresa_reg = suc.empresa,
+                        sucursal_reg = suc,
+                        user_reg = request.user
+                    )
+                    o_pladetded.save()
+
+                for item in deducciones_individuales:
+                    o_pladetded = PlanillaDetalleDeducciones(
+                        empleado = o_empleado,
+                        planilla = o_planilla,
+                        deduccion = item.deduccion.deduccion_i,
+                        valor = item.valor,
+                        empresa_reg = suc.empresa,
+                        sucursal_reg = suc,
+                        user_reg = request.user
+                    )
+                    o_pladetded.save()
+
+                for item in deducciones_planilla:
+                    o_pladetded = PlanillaDetalleDeducciones(
+                        empleado = o_empleado,
+                        planilla = o_planilla,
+                        deduccion = item.deduccion.deduccion_i,
+                        valor = item.valor,
+                        empresa_reg = suc.empresa,
+                        sucursal_reg = suc,
+                        user_reg = request.user
+                    )
+                    o_pladetded.save()
+
+                for item in ingresos_generales:
+                    o_ing = PlanillaDetalleIngresos(
+                        empleado = o_empleado,
+                        planilla = o_planilla,
+                        ingreso = item.ingreso.ingreso_g,
+                        valor = item.valor,
+                        empresa_reg = suc.empresa,
+                        sucursal_reg = suc,
+                        user_reg = request.user
+                    )
+                    o_ing.save()
+
+                for item in ingresos_individuales:
+                    o_ing = PlanillaDetalleIngresos(
+                        empleado = o_empleado,
+                        planilla = o_planilla,
+                        ingreso = item.ingreso.ingreso_i,
+                        valor = item.valor,
+                        empresa_reg = suc.empresa,
+                        sucursal_reg = suc,
+                        user_reg = request.user
+                    )
+                    o_ing.save()
+
+                for item in ingresos_planilla:
+                    o_ing = PlanillaDetalleIngresos(
+                        empleado = o_empleado,
+                        planilla = o_planilla,
+                        ingreso = item.ingreso.ingreso_i,
+                        valor = item.valor,
+                        empresa_reg = suc.empresa,
+                        sucursal_reg = suc,
+                        user_reg = request.user
+                    )
+                    o_ing.save()
+
                 data = {
                     'error': False,
                     'mensaje': "El proceso ha finalizado.",

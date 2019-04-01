@@ -40,12 +40,12 @@ Empresas por Usuario
                                         {% for item in users %}
                                             {% if editar %}
                                                 {% if item == dato.usuario %}
-                                                <option value="{{item.pk}}" selected>{{item.username}}</option>
+                                                <option value="{{item.usuario.pk}}" selected>{{item.usuario.username}}</option>
                                                 {% else %}
-                                                <option value="{{item.pk}}">{{item.username}}</option>
+                                                <option value="{{item.usuario.pk}}">{{item.usuario.username}}</option>
                                                 {% endif %}
                                             {% else %}
-                                            <option value="{{item.pk}}">{{item.username}}</option>
+                                            <option value="{{item.usuario.pk}}">{{item.usuario.username}}</option>
                                             {% endif %}
                                         {% endfor %}
                                     </select>
