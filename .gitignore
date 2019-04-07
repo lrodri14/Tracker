@@ -1,4 +1,5 @@
 employee/employee/*.pyc
+employee/employee/settings.py
 employee/worksheet/*.pyc
 employee/worksheet/migrations/*.pyc
 employee/*.sqlite3

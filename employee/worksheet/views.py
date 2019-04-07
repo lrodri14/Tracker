@@ -11264,6 +11264,13 @@ def impuestosobrerenta_actualizar(request):
                     data = {'error': True, 'mensaje': mensaje}
                     return JsonResponse(data)
 
+                desde = desde.replace(".", "")
+                desde = desde.replace(",", ".")
+                hasta = hasta.replace(".", "")
+                hasta = hasta.replace(",", ".")
+                porcentaje = porcentaje.replace(".", "")
+                porcentaje = porcentaje.replace(",", ".")
+
                 if not validarDecimal(desde):
                     mensaje = "El campo 'Desde' es de tipo decimal."
                     data = {'error': True, 'mensaje': mensaje}
@@ -11290,6 +11297,7 @@ def impuestosobrerenta_actualizar(request):
                     oMd.hasta = float(hasta)
                     oMd.porcentaje = float(porcentaje)
                     oMd.porcentaje_label = str(porcentaje) + "%"
+                    oMd.active = activo
                     oMd.user_mod = request.user
                     oMd.date_mod = datetime.datetime.now()
                     oMd.save()
@@ -13160,6 +13168,9 @@ def planilla_calculos_empleado(request):
                 o_empleado = Employee.objects.get(pk=empleado_id)
                 o_planilla = Planilla.objects.get(pk=planilla_id)
                 suc = Branch.objects.get(pk=request.session["sucursal"])
+
+                salario_mes = float(o_empleado.salario_diario) * 30
+
                 ausencias_con_pago = Ausentismo.objects.filter(empleado=o_empleado, sucursal_reg=suc, motivo__pagado=True, desde__gte=o_planilla.fecha_inicio, desde__lte=o_planilla.fecha_fin, hasta__gte=o_planilla.fecha_inicio, hasta__lte=o_planilla.fecha_fin)
                 if ausencias_con_pago.count() > 0:
                     dias_ausencia_con_pago = 1
@@ -13202,6 +13213,25 @@ def planilla_calculos_empleado(request):
                     tot_pla_ded = tot_pla_ded + item.valor
 
                 
+
+                #Deducciones de ley
+                deduccion_ihss = 0
+                tipos_ihss = SeguroSocial.objects.filter(active=True)
+                for item in tipos_ihss:
+                    if salario_mes > float(item.techo):
+                        salario_mes = float(item.techo)
+                    deduccion_ihss = deduccion_ihss + (salario_mes * (float(item.porcentaje_e) / 100))
+
+                deduccion_isr = 0
+                # print "Salario: " + str(salario_mes)
+                tipo_isr = ImpuestoSobreRenta.objects.filter(desde__lte=o_empleado.salary*12, hasta__gte=o_empleado.salary*12)
+                
+                
+                print tipo_isr
+                #     deduccion_isr = salario_mes *  (float(tipo_isr[0].porcentaje) / 100)
+                # else:
+                #     deduccion_isr = 0
+ 
                 o_planilladetalle = PlanillaDetalle(
                     planilla = o_planilla,
                     empleado = o_empleado,
@@ -13209,7 +13239,7 @@ def planilla_calculos_empleado(request):
                     dias_salario = o_planilla.frecuencia_pago.dias_salario,
                     dias_ausentes_sin_pago = dias_ausencia_sin_pago,
                     dias_ausentes_con_pago = dias_ausencia_con_pago,
-                    total_deducciones = tot_ind_ded + tot_gen_ded + tot_pla_ded,
+                    total_deducciones = tot_ind_ded + tot_gen_ded + tot_pla_ded + deduccion_ihss,
                     total_ingresos = tot_ind_ing + tot_gen_ing + tot_pla_ing,
                     empresa_reg = suc.empresa,
                     sucursal_reg = suc,
@@ -13289,6 +13319,28 @@ def planilla_calculos_empleado(request):
                     )
                     o_ing.save()
 
+                o_pladetded = PlanillaDetalleDeducciones(
+                    empleado = o_empleado,
+                    planilla = o_planilla,
+                    deduccion = "I.H.S.S.",
+                    valor = deduccion_ihss,
+                    empresa_reg = suc.empresa,
+                    sucursal_reg = suc,
+                    user_reg = request.user
+                )
+                o_pladetded.save()
+
+                o_pladetded = PlanillaDetalleDeducciones(
+                    empleado = o_empleado,
+                    planilla = o_planilla,
+                    deduccion = "I.S.R.",
+                    valor = deduccion_isr,
+                    empresa_reg = suc.empresa,
+                    sucursal_reg = suc,
+                    user_reg = request.user
+                )
+                o_pladetded.save()
+
                 data = {
                     'error': False,
                     'mensaje': "El proceso ha finalizado.",
@@ -13304,9 +13356,10 @@ def planilla_calculos_empleado(request):
                 'mensaje': "La solicitud no es asíncrona.",
             }
     except Exception as ex:
+        print ex
         data = {
             'error': True,
-            'mensaje': ex.message,
+            'mensaje': ex,
         }
     return JsonResponse(data)
 
