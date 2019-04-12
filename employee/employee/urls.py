@@ -17,7 +17,8 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
-from django.contrib.auth.views import logout
+#from django.contrib.auth.views import logout
+from django.contrib.auth import views as auth_views
 from worksheet import views
 
 urlpatterns = [
@@ -27,8 +28,10 @@ urlpatterns = [
     url(r'^ingresar/$', views.ingresar, name="ingresar"),
     url(r'^seleccionar/sucursal/$', views.seleccionar_sucursal, name="selecciona_sucursal"),
     url(r'^recibir/sucursal/$', views.recibir_sucursal, name="recibir_sucursal"),
-    url(r'^salir/$', logout, name="salir", kwargs={'next_page': '/'}),
+    url(r'^salir/$', auth_views.LogoutView.as_view(), name='salir'),
+    #url(r'^salir/$', logout, name="salir", kwargs={'next_page': '/'}),
     url(r'^login/$', views.login, name="login"),
+
     url(r'^forms/empleado/$', views.empleado_form, name="empleados-form"),
     url(r'^editar/empleado/(?P<id>\w+)/$', views.empleado_editar, name="empleado_editar"),
     url(r'^perfil/empleado/(?P<id>\w+)/$', views.empleado_perfil, name="empleado-perfil"),
@@ -386,6 +389,7 @@ urlpatterns = [
     url(r'^enviar/aumento-salario/$', views.aumento_salario_guardar, name="aumento_salario_guardar"),
     url(r'^enviar/sucursal/$', views.enviar_sucursal, name="enviar_sucursal"),
 
+
     url(r'^ver-registro/aumento-salario/$', views.aumento_salario_ver_registro, name="aumento_salario_ver_registro"),
     url(r'^ver-registro/planilla/$', views.planilla_ver_registro, name="planilla_ver_registro"),
 
@@ -394,4 +398,4 @@ urlpatterns = [
     #url(r'^seguridad/', include('django.contrib.auth.urls')),
     # url(r'^seguridad/logout/$', include('django.contrib.auth.views.login'), {'next_page': '/'}),
     # url(r'^seguridad/logout/$', include('django.contrib.auth.views.logout'), {'next_page': '/segurida/login/'}),
-]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

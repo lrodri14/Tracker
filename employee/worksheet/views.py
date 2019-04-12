@@ -24,7 +24,7 @@ def verificaSucursal(request):
     if not "sucursal" in request.session:
         return HttpResponseRedirect("/salir/")
     else:
-        if request.session["sucursal"] < 1:
+        if int(request.session["sucursal"]) < 1:
             return HttpResponseRedirect("/salir/")
 
 @login_required(login_url='/form/iniciar-sesion/')
@@ -1387,7 +1387,6 @@ def guardar_empleado(request):
 
                 if len(banco) > 0:
                     if int(banco) > 0:
-                        print "LLego aqui"
                         oBankCode = Bank.objects.get(pk=banco)
                         
                         if not oBankCode:
@@ -1484,7 +1483,6 @@ def guardar_empleado(request):
             'error':True,
             'mensaje': 'Error: ' + ex.message,
         }
-        print ex
         return JsonResponse(data)
 
 def actualizar_empleado(request):
@@ -1878,7 +1876,6 @@ def actualizar_empleado(request):
 
                 if len(banco) > 0:
                     if int(banco) > 0:
-                        print "LLego aqui"
                         oBankCode = Bank.objects.get(pk=banco)
 
                         if not oBankCode:
@@ -1980,7 +1977,6 @@ def actualizar_empleado(request):
                 'mensaje':mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error':True,
             'mensaje': 'error',
@@ -2015,7 +2011,6 @@ def eliminar_empleado(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -2073,7 +2068,6 @@ def guardar_corporativo(request):
                 'mensaje':mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error':True,
             'mensaje': 'error',
@@ -2136,7 +2130,6 @@ def actualizar_corporativo(request):
                 'mensaje':mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error':True,
             'mensaje': 'error',
@@ -2149,10 +2142,8 @@ def eliminar_corporativo(request):
             if request.method == 'POST':
                 reg_id = request.POST['id']
                 if int(reg_id) > 0:
-                    print "Entro"
                     oGrupo = GrupoCorporativo.objects.get(pk=reg_id)
                     oGrupo.delete()
-                    print "Elimino"
                     mensaje = 'Se ha eliminado el registro del Grupo Corporativo'
                     data = {
                         'mensaje':mensaje, 'error': False
@@ -2173,7 +2164,6 @@ def eliminar_corporativo(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error':True,
             'mensaje': 'error',
@@ -2269,7 +2259,6 @@ def guardar_empresa(request):
                 'mensaje':mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error':True,
             'mensaje': 'error',
@@ -2336,7 +2325,6 @@ def actualizar_empresa(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': ex.message,
@@ -2462,7 +2450,6 @@ def guardar_sucursal(request):
                 'mensaje':mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error':True,
             'mensaje': ex.message,
@@ -2531,7 +2518,6 @@ def actualizar_sucursal(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': ex.message,
@@ -2566,7 +2552,6 @@ def eliminar_sucursal(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': ex.message,
@@ -2651,7 +2636,6 @@ def guardar_division(request):
                 'mensaje':mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error':True,
             'mensaje': 'error',
@@ -2718,7 +2702,6 @@ def actualizar_division(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -2759,7 +2742,6 @@ def eliminar_division(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -2845,7 +2827,6 @@ def guardar_departamento(request):
                 'mensaje':mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error':True,
             'mensaje': 'error',
@@ -2913,7 +2894,6 @@ def actualizar_departamento(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -2961,7 +2941,6 @@ def eliminar_departamento(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -3119,7 +3098,6 @@ def actualizar_puesto(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -3167,7 +3145,6 @@ def eliminar_puesto(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -3175,13 +3152,9 @@ def eliminar_puesto(request):
     return JsonResponse(data)
 
 def guardar_ccosto(request):
-    print "Entra a la funcion principal"
     try:
-        print "Entra a la funcion"
         if request.is_ajax():
-            print "Entra si es ajax"
             if request.method == 'POST':
-                print "Entra si es post en el metodo"
                 code = request.POST['code']
                 descripcion = request.POST['descripcion']
                 activo = int(request.POST['activo'])
@@ -3228,8 +3201,6 @@ def guardar_ccosto(request):
                     }
                     return JsonResponse(data)
 
-                print "Llego hasta aqui"
-
                 oCCosto = CentrosCostos(
                     code = code,
                     descripcion=descripcion,
@@ -3258,7 +3229,6 @@ def guardar_ccosto(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': ex.message,
@@ -3325,7 +3295,6 @@ def actualizar_ccosto(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': ex.message,
@@ -3366,7 +3335,6 @@ def eliminar_ccosto(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -3459,7 +3427,6 @@ def guardar_pais(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -3526,7 +3493,6 @@ def actualizar_pais(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -3577,7 +3543,6 @@ def eliminar_pais(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': ex.message,
@@ -3688,7 +3653,6 @@ def guardar_deptos(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -3780,7 +3744,6 @@ def actualizar_deptos(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': ex.message,
@@ -3829,7 +3792,6 @@ def eliminar_depto(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -3893,7 +3855,6 @@ def guardar_ciudades(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -3954,7 +3915,6 @@ def actualizar_ciudad(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -3995,7 +3955,6 @@ def eliminar_ciudad(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -4081,7 +4040,6 @@ def guardar_genero(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex.message
         data = {
             'error': True,
             'mensaje': ex.message,
@@ -4139,7 +4097,6 @@ def actualizar_genero(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -4187,7 +4144,6 @@ def eliminar_genero(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -4278,7 +4234,6 @@ def guardar_estado_civil(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -4350,7 +4305,6 @@ def actualizar_estado_civil(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -4398,7 +4352,6 @@ def eliminar_estado_civil(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -4490,7 +4443,6 @@ def guardar_parentesco(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -4562,7 +4514,6 @@ def actualizar_parentesco(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -4603,7 +4554,6 @@ def eliminar_parentesco(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -4691,7 +4641,6 @@ def guardar_funciones(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': ex.message,
@@ -4758,7 +4707,6 @@ def actualizar_funcion(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': ex.message,
@@ -4799,7 +4747,6 @@ def eliminar_funcion_trabajo(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -4886,7 +4833,6 @@ def guardar_equipos(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -4953,7 +4899,6 @@ def actualizar_equipos(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -4994,7 +4939,6 @@ def eliminar_equipo_trabajo(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -5081,7 +5025,6 @@ def guardar_estado_empleado(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -5154,7 +5097,6 @@ def actualizar_estatus_empleado(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -5195,7 +5137,6 @@ def eliminar_estatus_empleado(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -5322,7 +5263,6 @@ def guardar_ausentismo(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -5397,8 +5337,6 @@ def actualizar_ausentismo(request):
                     activo = True
                 else:
                     activo = False
-
-                print oEmp
                 
                 oMd = Ausentismo.objects.get(pk=id)
                 if oMd:
@@ -5439,7 +5377,6 @@ def actualizar_ausentismo(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -5480,7 +5417,6 @@ def eliminar_ausentismo(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -5574,7 +5510,6 @@ def guardar_motivo_ausencia(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -5648,7 +5583,6 @@ def actualizar_motivo_ausencia(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -5689,7 +5623,6 @@ def eliminar_motivo_ausencia(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': ex.message,
@@ -5775,7 +5708,6 @@ def guardar_motivo_despido(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -5848,7 +5780,6 @@ def actualizar_motivo_despido(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -5889,7 +5820,6 @@ def eliminar_motivo_despido(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -5976,7 +5906,6 @@ def guardar_motivo_renuncia(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -6049,7 +5978,6 @@ def actualizar_motivo_renuncia(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -6090,7 +6018,6 @@ def eliminar_motivo_renuncia(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -6162,7 +6089,6 @@ def guardar_clase_educacion(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -6223,7 +6149,6 @@ def actualizar_clase_educacion(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -6264,7 +6189,6 @@ def eliminar_clase_educacion(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -6391,7 +6315,6 @@ def guardar_educacion(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -6479,7 +6402,6 @@ def actualizar_educacion(request):
                     return JsonResponse(data)
                 
                 oMd = Educacion.objects.get(pk=id)
-                print "Valor empleado en educacion: " + str(oEmp)
                 if oMd:
                     oMd.empleado = oEmp
                     oMd.clase_edu = oClsEdu
@@ -6521,7 +6443,6 @@ def actualizar_educacion(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -6562,7 +6483,6 @@ def eliminar_educacion(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -6673,7 +6593,6 @@ def guardar_evaluacion(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -6691,7 +6610,6 @@ def actualizar_evaluacion(request):
                 grupo_asal = request.POST['grupo_asal']
                 desc = request.POST['desc']
                 coment = request.POST['coment']
-                print "Empleado: " + emp
 
                 if len(emp) == 0:
                     mensaje = 'Seleccione un empleado.'
@@ -6757,7 +6675,6 @@ def actualizar_evaluacion(request):
                 oEmple = Employee.objects.get(pk=int(emp))
                 oGerent = Employee.objects.get(pk=gerente)
                 oMd = Evaluacion.objects.get(pk=id)
-                print "Valor empleado: " + str(oEmple)
                 if oMd:
                     oMd.empleado = oEmple
                     oMd.gerente = oGerent
@@ -6789,7 +6706,6 @@ def actualizar_evaluacion(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': ex.message,
@@ -6830,7 +6746,6 @@ def eliminar_evaluacion(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -6911,7 +6826,6 @@ def guardar_motivo_aumento_sueldo(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': ex.message,
@@ -6972,7 +6886,6 @@ def actualizar_motivo_aumento_sueldo(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -7013,7 +6926,6 @@ def eliminar_motivo_aumento_sueldo(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': ex.message,
@@ -7094,7 +7006,6 @@ def guardar_motivo_rescision_contrato(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -7155,7 +7066,6 @@ def actualizar_motivo_rescision_contrato(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -7196,7 +7106,6 @@ def eliminar_motivo_rescision_contrato(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -7296,7 +7205,6 @@ def guardar_empleo_anterior(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -7404,7 +7312,6 @@ def actualizar_empleo_anterior(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -7445,7 +7352,6 @@ def eliminar_empleo_anterior(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -7524,7 +7430,6 @@ def guardar_grupo_comision(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': ex.message,
@@ -7579,7 +7484,6 @@ def actualizar_grupo_comision(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -7620,7 +7524,6 @@ def eliminar_grupo_comision(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -7719,7 +7622,6 @@ def guardar_vendedor(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': ex.message,
@@ -7798,7 +7700,6 @@ def actualizar_vendedor(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': ex.message,
@@ -7839,7 +7740,6 @@ def eliminar_vendedor(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -7917,7 +7817,6 @@ def guardar_feriado(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -7985,7 +7884,6 @@ def actualizar_feriado(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -8026,7 +7924,6 @@ def eliminar_feriado(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -8092,7 +7989,6 @@ def guardar_activo_asignado(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -8145,7 +8041,6 @@ def actualizar_activo_asignado(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -8186,7 +8081,6 @@ def eliminar_activo_asignado(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -8253,7 +8147,6 @@ def guardar_tipo_salario(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -8319,7 +8212,6 @@ def actualizar_tipo_salario(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -8360,7 +8252,6 @@ def eliminar_tipo_salario(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -8431,7 +8322,6 @@ def guardar_costo_empleado(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -8488,7 +8378,6 @@ def actualizar_costo_empleado(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -8529,7 +8418,6 @@ def eliminar_costo_empleado(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -8590,7 +8478,6 @@ def guardar_banco(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -8647,7 +8534,6 @@ def actualizar_banco(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -8688,7 +8574,6 @@ def eliminar_banco(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -8783,7 +8668,6 @@ def guardar_empresa_usuario(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -8885,7 +8769,6 @@ def actualizar_empresa_usuario(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -8926,7 +8809,6 @@ def eliminar_empresa_usuario(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -8961,12 +8843,10 @@ def guardar_foto_perfil(request):
                     form = ImagenEmpleadoForm(request.POST, request.FILES, instance=instancia)
                     # data = serializers.serialize("json", [instancia,])
                     # data = data.strip("[]")
-                    # print data["fields"]
                 else:
                     form = ImagenEmpleadoForm(request.POST, request.FILES)
                 
                 if form.is_valid():
-                    print "Entra tambien aqui"
                     form.save()
                     instancia = ImagenEmpleado.objects.get(empleado__id=empleado_id)
                     return render(request, 'ajax/imagen-perfil.html', {'imagen':instancia})
@@ -8979,7 +8859,6 @@ def guardar_foto_perfil(request):
         else:
             return JsonResponse({'error': True, 'mensaje': 'El método no es asíncrono'})
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': ex.message,
@@ -8989,7 +8868,6 @@ def guardar_foto_perfil(request):
 def enviar_sucursal(request):
     try:
         if request.is_ajax():
-            print "Entro a enviar_sucursal"
             IdSucursal = request.GET.get("idSucursal")
             totreg = Branch.objects.filter(pk=IdSucursal).count()
             if totreg > 0:
@@ -9066,9 +8944,7 @@ def aumento_salario_listado(request):
             if int(emp) > 0:
                 busqueda = int(emp)
                 empleado = Employee.objects.get(pk=busqueda)
-                print empleado
                 lista = IncrementosSalariales.objects.filter(empleado=empleado, empresa_reg = suc.empresa)
-                print lista
             else:
                 lista = IncrementosSalariales.objects.filter(empresa_reg = suc.empresa)
     else:
@@ -9283,7 +9159,6 @@ def aumento_salario_eliminar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -9429,7 +9304,6 @@ def deduccion_individual_guardar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -9503,7 +9377,6 @@ def deduccion_individual_actualizar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -9544,7 +9417,6 @@ def deduccion_individual_eliminar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -9703,7 +9575,6 @@ def deduccion_individual_detalle_guardar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -9831,7 +9702,6 @@ def deduccion_individual_detalle_actualizar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -9872,7 +9742,6 @@ def deduccion_individual_detalle_eliminar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -10046,7 +9915,6 @@ def deduccion_individual_planilla_guardar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -10185,7 +10053,6 @@ def deduccion_individual_planilla_actualizar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -10227,7 +10094,6 @@ def deduccion_individual_planilla_eliminar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -10323,7 +10189,6 @@ def deduccion_general_guardar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -10390,7 +10255,6 @@ def deduccion_general_actualizar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -10431,7 +10295,6 @@ def deduccion_general_eliminar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -10631,7 +10494,6 @@ def deduccion_general_detalle_guardar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -10795,7 +10657,6 @@ def deduccion_general_detalle_actualizar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -10836,7 +10697,6 @@ def deduccion_general_detalle_eliminar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -10984,7 +10844,6 @@ def horaextra_guardar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -11082,7 +10941,6 @@ def horaextra_actualizar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -11123,7 +10981,6 @@ def horaextra_eliminar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -11232,7 +11089,6 @@ def impuestosobrerenta_guardar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -11321,7 +11177,6 @@ def impuestosobrerenta_actualizar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -11362,7 +11217,6 @@ def impuestosobrerenta_eliminar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -11471,7 +11325,6 @@ def ingreso_general_guardar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -11548,7 +11401,6 @@ def ingreso_general_actualizar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -11589,7 +11441,6 @@ def ingreso_general_eliminar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -11788,7 +11639,6 @@ def ingreso_general_detalle_guardar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -11952,7 +11802,6 @@ def ingreso_general_detalle_actualizar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -11993,7 +11842,6 @@ def ingreso_general_detalle_eliminar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -12101,7 +11949,6 @@ def ingreso_individual_guardar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -12117,8 +11964,6 @@ def ingreso_individual_actualizar(request):
                 tipo_ingreso = request.POST['tipo_ingreso']
                 activo = int(request.POST['activo'])
                 gravable = int(request.POST['gravable'])
-
-                print activo
 
                 if len(ingreso_i) == 0:
                     mensaje = "El campo 'Ingreso Individual' es obligatorio."
@@ -12180,7 +12025,6 @@ def ingreso_individual_actualizar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -12221,7 +12065,6 @@ def ingreso_individual_eliminar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -12380,7 +12223,6 @@ def ingreso_indidvidual_detalle_guardar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -12508,7 +12350,6 @@ def ingreso_individual_detalle_actualizar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -12549,7 +12390,6 @@ def ingreso_individual_detalle_eliminar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -12721,7 +12561,6 @@ def ingreso_individual_planilla_guardar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -12860,7 +12699,6 @@ def ingreso_individual_planilla_actualizar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -12901,7 +12739,6 @@ def ingreso_individual_planilla_eliminar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -13140,7 +12977,6 @@ def planilla_guardar(request):
             pass
         return JsonResponse({'error': False, 'mensaje': 'Respuesta exitosa'})
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': ex.message,
@@ -13223,11 +13059,9 @@ def planilla_calculos_empleado(request):
                     deduccion_ihss = deduccion_ihss + (salario_mes * (float(item.porcentaje_e) / 100))
 
                 deduccion_isr = 0
-                # print "Salario: " + str(salario_mes)
                 tipo_isr = ImpuestoSobreRenta.objects.filter(desde__lte=o_empleado.salary*12, hasta__gte=o_empleado.salary*12)
                 
                 
-                print tipo_isr
                 #     deduccion_isr = salario_mes *  (float(tipo_isr[0].porcentaje) / 100)
                 # else:
                 #     deduccion_isr = 0
@@ -13356,7 +13190,6 @@ def planilla_calculos_empleado(request):
                 'mensaje': "La solicitud no es asíncrona.",
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': ex,
@@ -13555,7 +13388,6 @@ def segurosocial_guardar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -13697,7 +13529,6 @@ def segurosocial_actualizar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -13738,7 +13569,6 @@ def segurosocial_eliminar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -13825,7 +13655,6 @@ def salariominimo_guardar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -13874,7 +13703,6 @@ def salariominimo_eliminar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -13964,7 +13792,6 @@ def tipo_deduccion_guardar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -14028,7 +13855,6 @@ def tipo_deduccion_actualizar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -14069,7 +13895,6 @@ def tipo_deduccion_eliminar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -14154,7 +13979,6 @@ def tipo_nomina_guardar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -14218,7 +14042,6 @@ def tipo_nomina_actualizar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -14259,7 +14082,6 @@ def tipo_nomina_eliminar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -14347,7 +14169,6 @@ def tipo_ingreso_guardar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -14411,7 +14232,6 @@ def tipo_ingreso_actualizar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -14452,7 +14272,6 @@ def tipo_ingreso_eliminar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -14555,7 +14374,6 @@ def impuestovecinal_guardar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -14637,7 +14455,6 @@ def impuestovecinal_actualizar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -14678,7 +14495,6 @@ def impuestovecinal_eliminar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -14767,7 +14583,6 @@ def tipo_contrato_guardar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -14831,7 +14646,6 @@ def tipo_contrato_actualizar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
@@ -14872,7 +14686,6 @@ def tipo_contrato_eliminar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
-        print ex
         data = {
             'error': True,
             'mensaje': 'error',
