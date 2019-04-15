@@ -1,7 +1,6 @@
-employee/employee/*.pyc
 employee/employee/settings.py
+employee/employee/*.pyc
 employee/worksheet/*.pyc
 employee/worksheet/migrations/*.pyc
 employee/*.sqlite3
 .vscode
-employee/employee/settings.py

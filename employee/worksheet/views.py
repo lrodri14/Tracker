@@ -396,7 +396,7 @@ def ciudades_listado(request):
     else:
         if request.user.has_perm("worksheet.see_ciudad"):
             listado = Ciudad.objects.filter(active=True, empresa_reg=suc.empresa)
-    return render(request, 'ciudades-listado.html', {'ciudades':ciudades})
+    return render(request, 'ciudades-listado.html', {'ciudades':listado})
 
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.add_sex', raise_exception=True)
@@ -412,13 +412,14 @@ def genero_editar(request, id):
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.see_sex', raise_exception=True)
 def generos_listado(request):
+    listado = None
     suc = Branch.objects.get(pk=request.session["sucursal"])
     if request.user.has_perm("worksheet.see_all_sex"):
         listado = Sex.objects.filter(empresa_reg=suc.empresa)
     else:
         if request.user.has_perm("worksheet.see_sex"):
             listado = Sex.objects.filter(active=True, empresa_reg=suc.empresa)
-    return render(request, 'genero-listado.html', {'generos':generos})
+    return render(request, 'genero-listado.html', {'generos':listado})
 
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.add_civilstatus', raise_exception=True)
@@ -479,13 +480,14 @@ def funcion_trabajo_editar(request, id):
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.see_funcionestrabajo', raise_exception=True)
 def funcion_trab_listado(request):
+    listado = None
     suc = Branch.objects.get(pk=request.session["sucursal"])
     if request.user.has_perm("worksheet.see_all_funcionestrabajo"):
         listado = FuncionesTrabajo.objects.filter(empresa_reg=suc.empresa)
     else:
         if request.user.has_perm("worksheet.see_funcionestrabajo"):
             listado = FuncionesTrabajo.objects.filter(active=True, empresa_reg=suc.empresa)
-    return render(request, 'funciones-trabajo-listado.html', {'funciones': funciones})
+    return render(request, 'funciones-trabajo-listado.html', {'funciones': listado})
 
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.add_equipotrabajo', raise_exception=True)
@@ -713,6 +715,7 @@ def educacion_editar(request, id):
 def educacion_listar(request):
     datos = []
     busqueda = None
+    listado = None
 
     suc = Branch.objects.get(pk=request.session["sucursal"])
     empleados = Employee.objects.filter(empresa_reg=suc.empresa)
@@ -999,10 +1002,10 @@ def usuario_empresa_listar(request):
     listado = None
     suc = Branch.objects.get(pk=request.session["sucursal"])
     if request.user.has_perm("worksheet.see_all_termreason"):
-        listado = UsuarioEmpresa.objects.filter(empresa_reg=suc.empresa)
+        listado = UsuarioEmpresa.objects.filter(usuario=request.user)
     else:
         if request.user.has_perm("worksheet.see_termreason"):
-            listado = UsuarioEmpresa.objects.filter(active=True, empresa_reg=suc.empresa)
+            listado = UsuarioEmpresa.objects.filter(active=True, usuario=request.user)
     return render(request, 'usuario-empresa-listado.html', {'lista': listado})
 
 @login_required(login_url='/form/iniciar-sesion/')
