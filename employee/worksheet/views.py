@@ -8906,7 +8906,7 @@ def obtener_ultimo_salario(request):
     except Exception as ex:
         data = {
             'error': True,
-            'mensaje': ex.message,
+            'mensaje': ex,
         }
         return JsonResponse(data)
 
@@ -8929,7 +8929,7 @@ def grafico1(request):
     except Exception as ex:
         data = {
             'error': True,
-            'mensaje': ex.message,
+            'mensaje': 'ex',
         }
         return JsonResponse(data)
 
@@ -13052,7 +13052,8 @@ def planilla_calculos_empleado(request):
                     tot_pla_ded = tot_pla_ded + item.valor
 
                 
-
+                print("Ya registro las deducciones de planilla\n")
+                print("")
                 #Deducciones de ley
                 deduccion_ihss = 0
                 tipos_ihss = SeguroSocial.objects.filter(active=True)
@@ -13062,7 +13063,8 @@ def planilla_calculos_empleado(request):
                     deduccion_ihss = deduccion_ihss + (salario_mes * (float(item.porcentaje_e) / 100))
 
                 deduccion_isr = 0
-                tipo_isr = ImpuestoSobreRenta.objects.filter(desde__lte=o_empleado.salary*12, hasta__gte=o_empleado.salary*12)
+                tipo_isr = ImpuestoSobreRenta.objects.filter(desde__lte=float(o_empleado.salary)*12, hasta__gte=float(o_empleado.salary)*12)
+                print(tipo_isr)
                 
                 
                 #     deduccion_isr = salario_mes *  (float(tipo_isr[0].porcentaje) / 100)
@@ -13083,7 +13085,7 @@ def planilla_calculos_empleado(request):
                     active = True,
                     user_reg = request.user
                 )
-                o_planilladetalle.save()
+                #o_planilladetalle.save()
                 for item in deducciones_generales:
                     o_pladetded = PlanillaDetalleDeducciones(
                         empleado = o_empleado,
@@ -13094,7 +13096,7 @@ def planilla_calculos_empleado(request):
                         sucursal_reg = suc,
                         user_reg = request.user
                     )
-                    o_pladetded.save()
+                    #o_pladetded.save()
 
                 for item in deducciones_individuales:
                     o_pladetded = PlanillaDetalleDeducciones(
@@ -13106,7 +13108,7 @@ def planilla_calculos_empleado(request):
                         sucursal_reg = suc,
                         user_reg = request.user
                     )
-                    o_pladetded.save()
+                    #o_pladetded.save()
 
                 for item in deducciones_planilla:
                     o_pladetded = PlanillaDetalleDeducciones(
@@ -13118,7 +13120,7 @@ def planilla_calculos_empleado(request):
                         sucursal_reg = suc,
                         user_reg = request.user
                     )
-                    o_pladetded.save()
+                    #o_pladetded.save()
 
                 for item in ingresos_generales:
                     o_ing = PlanillaDetalleIngresos(
@@ -13130,7 +13132,7 @@ def planilla_calculos_empleado(request):
                         sucursal_reg = suc,
                         user_reg = request.user
                     )
-                    o_ing.save()
+                    #o_ing.save()
 
                 for item in ingresos_individuales:
                     o_ing = PlanillaDetalleIngresos(
@@ -13142,7 +13144,7 @@ def planilla_calculos_empleado(request):
                         sucursal_reg = suc,
                         user_reg = request.user
                     )
-                    o_ing.save()
+                    #o_ing.save()
 
                 for item in ingresos_planilla:
                     o_ing = PlanillaDetalleIngresos(
@@ -13154,7 +13156,7 @@ def planilla_calculos_empleado(request):
                         sucursal_reg = suc,
                         user_reg = request.user
                     )
-                    o_ing.save()
+                    #o_ing.save()
 
                 o_pladetded = PlanillaDetalleDeducciones(
                     empleado = o_empleado,
@@ -13165,7 +13167,7 @@ def planilla_calculos_empleado(request):
                     sucursal_reg = suc,
                     user_reg = request.user
                 )
-                o_pladetded.save()
+                #o_pladetded.save()
 
                 o_pladetded = PlanillaDetalleDeducciones(
                     empleado = o_empleado,
@@ -13176,7 +13178,7 @@ def planilla_calculos_empleado(request):
                     sucursal_reg = suc,
                     user_reg = request.user
                 )
-                o_pladetded.save()
+                #o_pladetded.save()
 
                 data = {
                     'error': False,
@@ -13193,9 +13195,10 @@ def planilla_calculos_empleado(request):
                 'mensaje': "La solicitud no es asíncrona.",
             }
     except Exception as ex:
+        print(ex)
         data = {
             'error': True,
-            'mensaje': ex,
+            'mensaje': 'Error',
         }
     return JsonResponse(data)
 

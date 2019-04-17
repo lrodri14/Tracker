@@ -3219,6 +3219,10 @@ $('#ingreso_individual_planilla #btnCancelar').on('click', function(e) {
 
     valor = 0;
     var cboPlanillas = $('.planilla-generar #cboPlanillas');
+
+    function sleep(time) {
+        return new Promise((resolve) => setTimeout(resolve, time));
+    }
     btnGenerar.on('click', function(e) {
         e.preventDefault();
         // var valor_porc = $('#loader-bar').attr('style');
@@ -3238,6 +3242,8 @@ $('#ingreso_individual_planilla #btnCancelar').on('click', function(e) {
         url = '/obtener/empleados-planilla/';
         metodo = 'GET';
         data = {'id':cboPlanillas.val()};
+        var prog = 0;
+        var prog2 = 0;
         $.ajax({
             type: metodo,
             url: url,
@@ -3250,8 +3256,11 @@ $('#ingreso_individual_planilla #btnCancelar').on('click', function(e) {
                         mensaje("Generar Planilla", data.mensaje, "warning", 3500);
                     }else{
                         var ldatos = data.empleados;
+                        var totalD = ldatos.length;
 
                         ldatos.forEach(item => {
+                            
+
                             url = "/calcular/planilla-empleado/";
                             metodo = 'POST';
                             data = {
@@ -3259,6 +3268,8 @@ $('#ingreso_individual_planilla #btnCancelar').on('click', function(e) {
                                 'planilla_id': cboPlanillas.val(),
                                 'csrfmiddlewaretoken': token.val(),
                             }
+                            
+
                             $.ajax({
                                 type: metodo,
                                 url: url,
@@ -3267,7 +3278,11 @@ $('#ingreso_individual_planilla #btnCancelar').on('click', function(e) {
                                     if (data.error) {
                                         alert(data.mensaje);
                                     }else{
-                                        alert(data.mensaje);
+                                        prog = prog + 1;
+                                        console.log(prog / totalD);
+                                        prog2 = (prog / totalD) * 100;
+                                        $('#loader-bar').attr("style", "width: " + prog2 + "%");
+                                        $('#loader-bar').html(prog2 + "%");
                                     };
                                 },
                                 error: function(data){

@@ -1121,7 +1121,7 @@ class DeduccionIndividualPlanilla(models.Model):
         verbose_name_plural = ("DeduccionesIndividualesPlanillas")
 
     def __str__(self):
-        return self.name
+        return self.planilla.descripcion
 
 
 class UsuarioCorporacion(models.Model):
