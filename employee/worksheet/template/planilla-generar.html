@@ -22,10 +22,10 @@ Generar Planilla
                 {% csrf_token %}
                     <div class="col-md-12">
                         <div class="form-group">
-                            <div class="col-md-2 text-right">
+                            <div class="col-md-1 col-md-offset-2 text-right">
                                 <label for="cboAuEmp" class="control-label">Planilla :</label>
                             </div>
-                            <div class="col-md-7">
+                            <div class="col-md-6">
                                 <select class="form-control select2" name="empleado" id="cboPlanillas">
                                     <option value="0">Seleccionar...</option>
                                     {% for item in planillas %}
@@ -33,19 +33,22 @@ Generar Planilla
                                     {% endfor %}
                                 </select>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-1">
                                 <button id="btnGenerar" class="btn btn-primary">Generar</button>
                             </div>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-lg-4 col-md-4 col-sm-4 p-r-40">
-                            <h3 class="box-title">Default Progress bars <a class="get-code" data-toggle="collapse" href="#pgr2" aria-expanded="true"><i class="fa fa-code" title="Get Code" data-toggle="tooltip"></i></a></h3>
-                            <div class="collapse m-t-15" id="pgr2"> <pre class="line-numbers language-javascript"><code>&lt;div class="progress progress-lg"&gt;<br/>&lt;div class="progress-bar progress-bar-success" role="progressbar" style="width: 75%; role="progressbar""&gt; 75% &lt;/div&gt;<br/>&lt;/div&gt;</code></pre> </div>
+                        <div class="progreso-ejecucion scol-md-offset-3 col-lg-offset-3 col-sm-offset-3 col-lg-6 col-md-6 col-sm-6 p-r-40">
+                            <h3 class="box-title">Progreso de ejecución</h3>
                             <div class="progress progress-lg">
-                                <div id="loader-bar" class="progress-bar progress-bar-success" style="width: 0%;" role="progressbar">0%</div>
+                                <div id="loader-bar" class="progress-bar progress-bar-success" style="width: 0%;" role="progressbar"><span class="text-center">0%</span></div>
                             </div>
+                            <span>Registros procesados: <label id="registros_procesados_planilla"></label></span>
                         </div>
+                    </div>
+                    <div class="row">
+                        
                     </div>
                 </div>
             </div>

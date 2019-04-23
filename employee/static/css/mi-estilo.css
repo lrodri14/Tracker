@@ -13,6 +13,9 @@ select.input-sm-1{
     height: 24px;
 }
 
+.progreso-ejecucion{
+    margin-top: 5%
+}
 
 .toolTip{
     background: rgba(20,20,20,0.9) url('img/info.gif') center left 5px no-repeat;

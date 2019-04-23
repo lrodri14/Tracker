@@ -3223,22 +3223,9 @@ $('#ingreso_individual_planilla #btnCancelar').on('click', function(e) {
     function sleep(time) {
         return new Promise((resolve) => setTimeout(resolve, time));
     }
+    
     btnGenerar.on('click', function(e) {
         e.preventDefault();
-        // var valor_porc = $('#loader-bar').attr('style');
-        // console.log(valor_porc);
-        // valor_porc = valor_porc.replace("%;","");
-        // valor_porc = valor_porc.substring(7);
-        // valor = parseInt(valor_porc);
-        // valor = parseFloat(valor + 5);
-        // if (valor > 100) {
-        //     valor = 0;
-        //     $('#loader-bar').attr('style', 'width: '+valor+'%;');
-        // }else{
-        //     $('#loader-bar').attr('style', 'width: '+valor+'%;');
-        // }
-        // $('#loader-bar').text(valor+'%');
-        // console.log(valor);
         url = '/obtener/empleados-planilla/';
         metodo = 'GET';
         data = {'id':cboPlanillas.val()};
@@ -3259,8 +3246,6 @@ $('#ingreso_individual_planilla #btnCancelar').on('click', function(e) {
                         var totalD = ldatos.length;
 
                         ldatos.forEach(item => {
-                            
-
                             url = "/calcular/planilla-empleado/";
                             metodo = 'POST';
                             data = {
@@ -3268,8 +3253,6 @@ $('#ingreso_individual_planilla #btnCancelar').on('click', function(e) {
                                 'planilla_id': cboPlanillas.val(),
                                 'csrfmiddlewaretoken': token.val(),
                             }
-                            
-
                             $.ajax({
                                 type: metodo,
                                 url: url,
@@ -3279,7 +3262,6 @@ $('#ingreso_individual_planilla #btnCancelar').on('click', function(e) {
                                         alert(data.mensaje);
                                     }else{
                                         prog = prog + 1;
-                                        console.log(prog / totalD);
                                         prog2 = (prog / totalD) * 100;
                                         $('#loader-bar').attr("style", "width: " + prog2 + "%");
                                         $('#loader-bar').html(prog2 + "%");
@@ -3291,6 +3273,7 @@ $('#ingreso_individual_planilla #btnCancelar').on('click', function(e) {
                                 dataType: 'json'
                             });
                         });
+                        $('#registros_procesados_planilla').text(prog);
                     }
                 }
             },
