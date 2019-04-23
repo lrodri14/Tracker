@@ -3224,13 +3224,17 @@ $('#ingreso_individual_planilla #btnCancelar').on('click', function(e) {
         return new Promise((resolve) => setTimeout(resolve, time));
     }
     
+    var prog = 0;
+    var prog2 = 0;
+    var errores = 0;
+    var requests = [];
+    var totalD = 0;
+    var ldatos;
     btnGenerar.on('click', function(e) {
         e.preventDefault();
         url = '/obtener/empleados-planilla/';
         metodo = 'GET';
         data = {'id':cboPlanillas.val()};
-        var prog = 0;
-        var prog2 = 0;
         $.ajax({
             type: metodo,
             url: url,
@@ -3242,38 +3246,10 @@ $('#ingreso_individual_planilla #btnCancelar').on('click', function(e) {
                     if (data.error) {
                         mensaje("Generar Planilla", data.mensaje, "warning", 3500);
                     }else{
-                        var ldatos = data.empleados;
-                        var totalD = ldatos.length;
-
+                        ldatos = data.empleados;
+                        totalID = ldatos.length;
                         ldatos.forEach(item => {
-                            url = "/calcular/planilla-empleado/";
-                            metodo = 'POST';
-                            data = {
-                                'empleado_id': item.ID,
-                                'planilla_id': cboPlanillas.val(),
-                                'csrfmiddlewaretoken': token.val(),
-                            }
-                            $.ajax({
-                                type: metodo,
-                                url: url,
-                                data: data,
-                                success: function(data){
-                                    if (data.error) {
-                                        alert(data.mensaje);
-                                    }else{
-                                        prog = prog + 1;
-                                        prog2 = (prog / totalD) * 100;
-                                        $('#loader-bar').attr("style", "width: " + prog2 + "%");
-                                        $('#loader-bar').html(prog2 + "%");
-                                    };
-                                },
-                                error: function(data){
-                                    console.log("Error: " + data);
-                                },
-                                dataType: 'json'
-                            });
                         });
-                        $('#registros_procesados_planilla').text(prog);
                     }
                 }
             },
@@ -3281,7 +3257,46 @@ $('#ingreso_individual_planilla #btnCancelar').on('click', function(e) {
                 console.log(data);
             },
             dataType: 'json'
+        }).done(function() {
+            enviar(0);
         });
+
+        function enviar(indice) {
+            if (indice < ldatos.length) {
+                url = "/calcular/planilla-empleado/";
+                metodo = 'POST';
+                data = {
+                    'empleado_id': ldatos[indice].ID,
+                    'planilla_id': cboPlanillas.val(),
+                    'csrfmiddlewaretoken': token.val(),
+                }
+                $.ajax({
+                    type: metodo,
+                    url: url,
+                    data: data,
+                    success: function (data) {
+                        if (data.error) {
+                            alert(data.mensaje);
+                            errores = errores + 1;
+                        } else {
+                            prog2 = ((indice + 1) / ldatos.length) * 100;
+                            $('#loader-bar').attr("style", "width: " + prog2 + "%");
+                            $('#loader-bar').html(prog2 + "%");
+                        };
+                    },
+                    error: function (data) {
+                        errores = errores + 1;
+                        console.log("Error: " + data);
+                    },
+                    dataType: 'json'
+                }).done(function () {
+                    enviar(indice + 1);
+                });
+            } else {
+                $('#registros_procesados_planilla').text(indice);
+                $('#registros_planilla_error').text(errores);
+            }
+        }
     });
 //#endregion
 

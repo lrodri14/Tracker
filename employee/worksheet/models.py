@@ -1061,7 +1061,7 @@ class DeduccionGeneralDetalle(models.Model):
         verbose_name_plural = ("Deducciones Generales Detalles")
 
     def __str__(self):
-        return self.deduccion.deduccion_g
+        return self.deduccion.deduccion_i
 
 class DeduccionIndividualDetalle(models.Model):
     empleado = models.ForeignKey("worksheet.Employee", verbose_name=("Empleado"), on_delete=models.PROTECT)

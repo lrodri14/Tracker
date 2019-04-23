@@ -13070,6 +13070,10 @@ def planilla_calculos_empleado(request):
                 #     deduccion_isr = salario_mes *  (float(tipo_isr[0].porcentaje) / 100)
                 # else:
                 #     deduccion_isr = 0
+
+                detalles_planillas = PlanillaDetalle.objects.filter(planilla=o_planilla)
+                if detalles_planillas.count() > 0:
+                    detalles_planillas.delete()
  
                 o_planilladetalle = PlanillaDetalle(
                     planilla = o_planilla,
@@ -13085,7 +13089,12 @@ def planilla_calculos_empleado(request):
                     active = True,
                     user_reg = request.user
                 )
-                #o_planilladetalle.save()
+                o_planilladetalle.save()
+
+                detalles_planillas_deducciones = PlanillaDetalleDeducciones.objects.filter(planilla=o_planilla)
+                if detalles_planillas_deducciones.count() > 0:
+                    detalles_planillas_deducciones.delete()
+
                 for item in deducciones_generales:
                     o_pladetded = PlanillaDetalleDeducciones(
                         empleado = o_empleado,
@@ -13096,7 +13105,7 @@ def planilla_calculos_empleado(request):
                         sucursal_reg = suc,
                         user_reg = request.user
                     )
-                    #o_pladetded.save()
+                    o_pladetded.save()
 
                 for item in deducciones_individuales:
                     o_pladetded = PlanillaDetalleDeducciones(
@@ -13108,7 +13117,7 @@ def planilla_calculos_empleado(request):
                         sucursal_reg = suc,
                         user_reg = request.user
                     )
-                    #o_pladetded.save()
+                    o_pladetded.save()
 
                 for item in deducciones_planilla:
                     o_pladetded = PlanillaDetalleDeducciones(
@@ -13120,7 +13129,11 @@ def planilla_calculos_empleado(request):
                         sucursal_reg = suc,
                         user_reg = request.user
                     )
-                    #o_pladetded.save()
+                    o_pladetded.save()
+
+                regs_planilla_ingresos = PlanillaDetalleIngresos.objects.filter(planilla=o_planilla)
+                if regs_planilla_ingresos.count() > 0:
+                    regs_planilla_ingresos.delete()
 
                 for item in ingresos_generales:
                     o_ing = PlanillaDetalleIngresos(
@@ -13132,7 +13145,7 @@ def planilla_calculos_empleado(request):
                         sucursal_reg = suc,
                         user_reg = request.user
                     )
-                    #o_ing.save()
+                    o_ing.save()
 
                 for item in ingresos_individuales:
                     o_ing = PlanillaDetalleIngresos(
@@ -13144,7 +13157,7 @@ def planilla_calculos_empleado(request):
                         sucursal_reg = suc,
                         user_reg = request.user
                     )
-                    #o_ing.save()
+                    o_ing.save()
 
                 for item in ingresos_planilla:
                     o_ing = PlanillaDetalleIngresos(
@@ -13156,7 +13169,7 @@ def planilla_calculos_empleado(request):
                         sucursal_reg = suc,
                         user_reg = request.user
                     )
-                    #o_ing.save()
+                    o_ing.save()
 
                 o_pladetded = PlanillaDetalleDeducciones(
                     empleado = o_empleado,
@@ -13167,7 +13180,7 @@ def planilla_calculos_empleado(request):
                     sucursal_reg = suc,
                     user_reg = request.user
                 )
-                #o_pladetded.save()
+                o_pladetded.save()
 
                 o_pladetded = PlanillaDetalleDeducciones(
                     empleado = o_empleado,
@@ -13178,7 +13191,7 @@ def planilla_calculos_empleado(request):
                     sucursal_reg = suc,
                     user_reg = request.user
                 )
-                #o_pladetded.save()
+                o_pladetded.save()
 
                 data = {
                     'error': False,
@@ -13232,6 +13245,18 @@ def planilla_ver_registro(request):
         titulo = "Ver registro"
     return render(request, 'ajax/planilla-modal.html', {'error':error, 'mensaje': mensaje, 'titulo':titulo, 'dato':dato})
 
+def planilla_generada(request):
+    if request.is_ajax():
+        planilla_id = request.GET.get("planilla")
+        if planilla_id == 0:
+            error = True
+            mensaje = "El registro no existe."
+        else:
+            detalle_planilla = PlanillaDetalle.objects.filter(planilla__pk=planilla_id)
+    else:
+        pass
+
+    return render(request, 'ajax/planilla_empleados_lista.html', {'error':error, 'mensaje':mensaje, 'detalle_planilla': detalle_planilla})
 #------------------------------END AJAX---------------------------------
 
 #endregion

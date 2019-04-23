@@ -9,6 +9,10 @@
     font-weight: bolder;
 }
 
+.lista-empleados{
+    margin-top: 15px;
+}
+
 select.input-sm-1{
     height: 24px;
 }
