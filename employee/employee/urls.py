@@ -383,6 +383,7 @@ urlpatterns = [
     url(r'^obtener/dias-salario/$', views.obtener_dias_salario, name="obtener_dias_salario"),
     url(r'^obtener/empleados-planilla/$', views.obtener_empleados_planilla, name="obtener_empleados_planilla"),
     url(r'^obtener/grafico1/$', views.grafico1, name="grafico1"),
+    url(r'^obtener/planilla-generada/$', views.planilla_generada, name="planilla_generada"),
     url(r'^obtener/salario-ultimo/$', views.obtener_ultimo_salario, name="obtener_ultimo_salario"),
     url(r'^obtener/sucursales/$', views.lista_sucursal, name="lista_sucursal"),
 

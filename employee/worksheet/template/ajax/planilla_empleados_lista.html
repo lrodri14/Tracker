@@ -3,18 +3,20 @@
     <div class="col-md-3 text-center"><label>Ingresos: </label></div>
     <div class="col-md-3 text-center"><label>Deducciones: </label></div>
 </div>
+{% for item in detalle_planilla %}
 <div class="col-md-12">
     <a href="#detalle1" role="button" data-toggle="collapse">
         <div>
-            <div class="col-md-6">MALCO JOSUÉ BAQUEDANO</div>
-            <div class="col-md-3 text-right">3,366.90</div>
-            <div class="col-md-3 text-right">2,154.89</div>
+            <div class="col-md-6">{{item.empleado.firstName}} {% if item.empleado.middleName %}{{item.empleado.middleName}}{% endif %} {{item.empleado.lastName}}</div>
+            <div class="col-md-3 text-right">{{item.total_ingresos}}</div>
+            <div class="col-md-3 text-right">{{item.total_deducciones}}</div>
         </div>
     </a>
     <div id="detalle1" class="collapse">
         <div class="col-md-12"><label>DESCRIPCIÓN</label></div>
-        <div class="col-md-6">PRÉSTAMO</div>
+        <div class="col-md-6">SALARIO</div>
+        <div class="col-md-3 text-right">{{item.total_salario}}</div>
         <div class="col-md-3 text-right">0.00</div>
-        <div class="col-md-3 text-right">1,500.00</div>
     </div>
 </div>
+{% endfor %}

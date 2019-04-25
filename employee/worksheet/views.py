@@ -13052,8 +13052,6 @@ def planilla_calculos_empleado(request):
                     tot_pla_ded = tot_pla_ded + item.valor
 
                 
-                print("Ya registro las deducciones de planilla\n")
-                print("")
                 #Deducciones de ley
                 deduccion_ihss = 0
                 tipos_ihss = SeguroSocial.objects.filter(active=True)
@@ -13063,9 +13061,7 @@ def planilla_calculos_empleado(request):
                     deduccion_ihss = deduccion_ihss + (salario_mes * (float(item.porcentaje_e) / 100))
 
                 deduccion_isr = 0
-                tipo_isr = ImpuestoSobreRenta.objects.filter(desde__lte=float(o_empleado.salary)*12, hasta__gte=float(o_empleado.salary)*12)
-                print(tipo_isr)
-                
+                tipo_isr = ImpuestoSobreRenta.objects.filter(desde__lte=float(o_empleado.salary)*12, hasta__gte=float(o_empleado.salary)*12)   
                 
                 #     deduccion_isr = salario_mes *  (float(tipo_isr[0].porcentaje) / 100)
                 # else:
@@ -13090,7 +13086,7 @@ def planilla_calculos_empleado(request):
                     user_reg = request.user
                 )
                 o_planilladetalle.save()
-
+                print("Hasta aqui llego")
                 detalles_planillas_deducciones = PlanillaDetalleDeducciones.objects.filter(planilla=o_planilla)
                 if detalles_planillas_deducciones.count() > 0:
                     detalles_planillas_deducciones.delete()
@@ -13104,7 +13100,7 @@ def planilla_calculos_empleado(request):
                         empresa_reg = suc.empresa,
                         sucursal_reg = suc,
                         user_reg = request.user
-                    )
+                    ) 
                     o_pladetded.save()
 
                 for item in deducciones_individuales:
@@ -13211,7 +13207,7 @@ def planilla_calculos_empleado(request):
         print(ex)
         data = {
             'error': True,
-            'mensaje': 'Error',
+            'mensaje': str(ex),
         }
     return JsonResponse(data)
 
@@ -13246,17 +13242,37 @@ def planilla_ver_registro(request):
     return render(request, 'ajax/planilla-modal.html', {'error':error, 'mensaje': mensaje, 'titulo':titulo, 'dato':dato})
 
 def planilla_generada(request):
+    datos = []
+    detalle_planilla = None
     if request.is_ajax():
-        planilla_id = request.GET.get("planilla")
+        planilla_id = int(request.GET.get("Id"))
         if planilla_id == 0:
             error = True
             mensaje = "El registro no existe."
         else:
             detalle_planilla = PlanillaDetalle.objects.filter(planilla__pk=planilla_id)
+            for item in detalle_planilla:
+                dias_trabajo = 0
+                dias_trabajo = float(item.dias_salario) - float(item.dias_ausentes_sin_pago)
+                total_salario = float(dias_trabajo) * float(item.salario_diario)
+                objeto = {
+                    'empleado': item.empleado,
+                    'planilla': item.planilla,
+                    'salario_diario': item.salario_diario,
+                    'dias_ausentes_sin_pago': item.dias_ausentes_sin_pago,
+                    'dias_ausentes_con_pago': item.dias_ausentes_con_pago,
+                    #'total_ingresos': locale.format("%.2f", float(item.total_ingresos) + float(total_salario), grouping=True),
+                    'total_deducciones': locale.format("%.2f", item.total_deducciones, grouping=True),
+                    'total_salario': locale.format("%.2f", total_salario, grouping=True),
+                }
+                datos.append(objeto)
+            error = False
+            mensaje = "Datos encontrados"
     else:
-        pass
+        error = True
+        mensaje = "Método no permitido"
 
-    return render(request, 'ajax/planilla_empleados_lista.html', {'error':error, 'mensaje':mensaje, 'detalle_planilla': detalle_planilla})
+    return render(request, 'ajax/planilla_empleados_lista.html', {'detalle_planilla': datos})
 #------------------------------END AJAX---------------------------------
 
 #endregion

@@ -2193,7 +2193,7 @@ $(document).ready(function () {
                 emp_dias_salario = data.dias_salario;
                 if (emp_dias_salario > 0) {
                     if (emp_txtSalario.val() > 0) {
-                        sal_dia = parseFloat(emp_txtSalario.val() / emp_dias_salario).toFixed(2);
+                        sal_dia = parseFloat(emp_txtSalario.val() / emp_dias_salario).toFixed(4);
                         emp_txtSalarioDiario.val(formatNumber.new(sal_dia));
                     }
                 }
@@ -2212,7 +2212,7 @@ $(document).ready(function () {
 emp_txtSalario.on('change', function() {
     if (emp_dias_salario > 0) {
         if (emp_txtSalario.val() > 0) {
-            sal_dia = parseFloat(emp_txtSalario.val() / emp_dias_salario).toFixed(2);
+            sal_dia = parseFloat(emp_txtSalario.val() / emp_dias_salario).toFixed(4);
             emp_txtSalarioDiario.val(formatNumber.new(sal_dia));
         }
     }
@@ -2230,7 +2230,7 @@ emp_cboTipoSalario.on('change', function() {
                 emp_dias_salario = data.dias_salario;
                 if (emp_dias_salario > 0) {
                     if (emp_txtSalario.val() > 0) {
-                        sal_dia = parseFloat(emp_txtSalario.val() / emp_dias_salario).toFixed(2);
+                        sal_dia = parseFloat(emp_txtSalario.val() / emp_dias_salario).toFixed(4);
                         emp_txtSalarioDiario.val(formatNumber.new(sal_dia));
                     }
                 }
@@ -2334,11 +2334,11 @@ emp_cboTipoSalario.on('change', function() {
             salario_anterior = Number($('input[name="salario_anterior"]').val());
         }
         if (txtIncremento.val().length > 0) {
-            inc = parseFloat($('input[name="incremento"]').val()).toFixed(2);
+            inc = parseFloat($('input[name="incremento"]').val()).toFixed(4);
             incremento = Number($('input[name="incremento"]').val());
         }
         nuevo_sal = Number(salant) + Number(inc);
-        nuevo_sal = parseFloat(nuevo_sal).toFixed(2);
+        nuevo_sal = parseFloat(nuevo_sal).toFixed(4);
         txtNuevoSalario.val(formatNumber.new(nuevo_sal));
     }
 
@@ -2350,7 +2350,7 @@ emp_cboTipoSalario.on('change', function() {
             success: function (data) {
                 if (data.error == false) {
                     
-                    $('.aumento-salario input[name="salario_anterior"]').val(formatNumber.new(parseFloat(Number(data.salario_anterior)).toFixed(2)));
+                    $('.aumento-salario input[name="salario_anterior"]').val(formatNumber.new(parseFloat(Number(data.salario_anterior)).toFixed(4)));
                     calcular_nuevo_sueldo();
                 } else {
                     mensaje("Aumento de salario", data.mensaje, "error", 3500);
@@ -3295,7 +3295,30 @@ $('#ingreso_individual_planilla #btnCancelar').on('click', function(e) {
             } else {
                 $('#registros_procesados_planilla').text(indice);
                 $('#registros_planilla_error').text(errores);
+                obtener_planilla_generada(cboPlanillas.val());
             }
+        }
+
+        function obtener_planilla_generada(Id_Planilla) {
+            $.ajax({
+                type: "GET",
+                url: "/obtener/planilla-generada/",
+                data: {'Id': Id_Planilla},
+                success: function (data) {
+                    if (data.error) {
+                        console.log(data.mensaje);
+                    }else{
+                        $('.lista-empleados').html(data);
+                    };
+                },
+                error: function (data) {
+                    errores = errores + 1;
+                    console.log("Error: " + data);
+                },
+                dataType: 'html'
+            }).done(function () {
+                
+            });
         }
     });
 //#endregion

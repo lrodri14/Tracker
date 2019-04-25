@@ -18,7 +18,7 @@ class GrupoCorporativo(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.nombreComercial
 
 class Group(models.Model):
@@ -30,7 +30,7 @@ class Group(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField(default=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 class Empresa(models.Model):
@@ -43,7 +43,7 @@ class Empresa(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.nombreComercial
 
 class Branch(models.Model):
@@ -57,7 +57,7 @@ class Branch(models.Model):
     active = models.BooleanField(default=True)
 
 
-    def __unicode__(self):
+    def __str__(self):
         return self.description
 
 class Position(models.Model):
@@ -70,7 +70,7 @@ class Position(models.Model):
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='pos_usermod', related_query_name='pos_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
     
-    def __unicode__(self):
+    def __str__(self):
         return self.description
 
 class Department(models.Model):
@@ -83,7 +83,7 @@ class Department(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField(default=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.description	
 
 class SalesPerson(models.Model):
@@ -96,7 +96,7 @@ class SalesPerson(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField(default=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.slpName
 
 class Country(models.Model):
@@ -111,7 +111,7 @@ class Country(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField(default=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 class State(models.Model):
@@ -125,7 +125,7 @@ class State(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField(default=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 class StatusEmp(models.Model):
@@ -138,7 +138,7 @@ class StatusEmp(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField(default=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.description
 
 class TermReason(models.Model):
@@ -151,7 +151,7 @@ class TermReason(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField(default=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.description
 
 class Sex(models.Model):
@@ -164,7 +164,7 @@ class Sex(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField(default=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.description
 
 class CivilStatus(models.Model):
@@ -177,7 +177,7 @@ class CivilStatus(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField(default=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.description
 
 class SalaryUnit(models.Model):
@@ -191,7 +191,7 @@ class SalaryUnit(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField(default=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.description
 
 class CostUnit(models.Model):
@@ -204,7 +204,7 @@ class CostUnit(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField(default=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.description
 
 class Bank(models.Model):
@@ -217,7 +217,7 @@ class Bank(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField(default=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.description
 
 class GrupoComisiones(models.Model):
@@ -230,7 +230,7 @@ class GrupoComisiones(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.NullBooleanField(blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.descripcion
 
 class Vendedor(models.Model):
@@ -251,7 +251,7 @@ class Vendedor(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.nombre
 
 
@@ -266,7 +266,7 @@ class TipoNomina(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.NullBooleanField(blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.tipo_planilla
 
 
@@ -280,7 +280,7 @@ class TipoContrato(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.NullBooleanField(blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.tipo_contrato
 
 class Employee(models.Model):
@@ -359,8 +359,11 @@ class Employee(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField()
 
-    def __unicode__(self):
-        return self.firstName + ' ' + self.lastName
+    def __str__(self):
+        return self.firstName + " " + self.lastName
+
+    # def __str__(self):
+    #     return self.firstName + ' ' + self.lastName
 
 class Divisiones(models.Model):
     code = models.CharField(max_length=5, blank=True, null=True)
@@ -372,7 +375,7 @@ class Divisiones(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.descripcion
 
 class CentrosCostos(models.Model):
@@ -385,7 +388,7 @@ class CentrosCostos(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.descripcion
 
 class Ciudad(models.Model):
@@ -398,7 +401,7 @@ class Ciudad(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.nombre
 
 class Parentesco(models.Model):
@@ -411,7 +414,7 @@ class Parentesco(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.descripcion
 
 class FuncionesTrabajo(models.Model):
@@ -424,7 +427,7 @@ class FuncionesTrabajo(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.descripcion
 
 class EquipoTrabajo(models.Model):
@@ -437,7 +440,7 @@ class EquipoTrabajo(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.descripcion
 
 class MotivosAusencia(models.Model):
@@ -451,11 +454,11 @@ class MotivosAusencia(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.descripcion
 
 class Ausentismo(models.Model):
-    empleado = models.ForeignKey(Employee, on_delete=models.PROTECT)
+    empleado = models.ForeignKey("worksheet.Employee", on_delete=models.PROTECT)
     desde = models.DateField(blank=True, null=True)
     hasta = models.DateField(blank=True, null=True)
     motivo = models.ForeignKey(MotivosAusencia, blank=True, null=True, on_delete=models.DO_NOTHING)
@@ -468,7 +471,7 @@ class Ausentismo(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.empleado.firstName + ' ' + self.empleado.lastName + ' - ' + str(self.desde) + ' | ' + str(self.hasta)
 
 class MotivosDespido(models.Model):
@@ -481,8 +484,8 @@ class MotivosDespido(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField()
 
-    def __unicode__(self):
-        return self.nombre
+    def __str__(self):
+        return self.descripcion
 
 class MotivosRenuncia(models.Model):
     code = models.CharField(max_length=5, blank=True, null=True)
@@ -494,7 +497,7 @@ class MotivosRenuncia(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.descripcion
 
 class ClaseEducacion(models.Model):
@@ -507,8 +510,8 @@ class ClaseEducacion(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField()
 
-    def __unicode__(self):
-        return self.nombre
+    def __str__(self):
+        return self.descripcion
 
 class Educacion(models.Model):
     empleado = models.ForeignKey(Employee, on_delete=models.PROTECT)
@@ -525,7 +528,7 @@ class Educacion(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.empleado.firstName + ' ' + self.empleado.lastName + ' | ' + self.clase_edu.nombre
 
 class Evaluacion(models.Model):
@@ -543,7 +546,7 @@ class Evaluacion(models.Model):
     active = models.BooleanField(default=True)
 
 
-    def __unicode__(self):
+    def __str__(self):
         return self.empleado.firstName + ' ' + self.empleado.lastName + ' | ' + str(self.fecha)
 
 class MotivoAumentoSueldo(models.Model):
@@ -557,7 +560,7 @@ class MotivoAumentoSueldo(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.descripcion
 
 class EmpleosAnteriores(models.Model):
@@ -574,7 +577,7 @@ class EmpleosAnteriores(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.empleado.firstName
 
 class Banco(models.Model):
@@ -587,7 +590,7 @@ class Banco(models.Model):
     cuenta_bancaria = models.CharField(max_length=100)
     sucursal = models.CharField(max_length=100)
     
-    def __unicode__(self):
+    def __str__(self):
         return self.codigo + ' ' + self.nombre + ' ' + self.pais.name
 
 class Feriado(models.Model):
@@ -601,7 +604,7 @@ class Feriado(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField()
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.fecha)
 
 class ActivoAsignado(models.Model):
@@ -614,7 +617,7 @@ class ActivoAsignado(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.NullBooleanField(blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.descripcion
     
 class UsuarioEmpresa(models.Model):
@@ -626,7 +629,7 @@ class UsuarioEmpresa(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.NullBooleanField(blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.usuario.username + " - " + self.empresa.nombreComercial
 
 class UsuarioSucursal(models.Model):
@@ -638,7 +641,7 @@ class UsuarioSucursal(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.NullBooleanField(blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.usuario.username + " - " + self.sucursal.description
 
 class ImagenEmpleado(models.Model):
@@ -651,7 +654,7 @@ class ImagenEmpleado(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.NullBooleanField(blank=True, null=True)
     
-    def __unicode__(self):
+    def __str__(self):
         return self.empleado.firstName + " " + self.empleado.lastName
 
 class TipoDeduccion(models.Model):
@@ -668,7 +671,7 @@ class TipoDeduccion(models.Model):
         verbose_name = "Tipo Deduccion"
         verbose_name_plural = "Tipo Deducciones"
 
-    def __unicode__(self):
+    def __str__(self):
         return self.tipo_deduccion
 
 class TipoIngreso(models.Model):
@@ -681,7 +684,7 @@ class TipoIngreso(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.NullBooleanField(blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.tipo_ingreso
 
 class IngresoIndividual(models.Model):
@@ -696,7 +699,7 @@ class IngresoIndividual(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.NullBooleanField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.ingreso_i
 
 class IngresoGeneral(models.Model):
@@ -711,7 +714,7 @@ class IngresoGeneral(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.NullBooleanField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.ingreso_g
 
 class DeduccionIndividual(models.Model):
@@ -730,7 +733,7 @@ class DeduccionIndividual(models.Model):
         verbose_name = "Deduccion Individual"
         verbose_name_plural = "Deducciones Individuales"
 
-    def __unicode__(self):
+    def __str__(self):
         return 'Model: %s' % self.deduccion_i
 
     # def __str__(self):
@@ -751,7 +754,7 @@ class DeduccionGeneral(models.Model):
         verbose_name = "Deduccion General"
         verbose_name_plural = "Deduccion Generales"
 
-    def __unicode__(self):
+    def __str__(self):
         return self.deduccion_g
 
 #Transacciones
@@ -759,9 +762,9 @@ class IncrementosSalariales(models.Model):
     empleado = models.ForeignKey("worksheet.employee", verbose_name="Empleado", on_delete=models.DO_NOTHING)
     fecha_incremento = models.DateField()
     motivo_aumento = models.ForeignKey(MotivoAumentoSueldo, on_delete=models.DO_NOTHING)
-    salario_anterior = models.DecimalField(max_digits=18, decimal_places=3)
-    incremento = models.DecimalField(max_digits=18, decimal_places=3)
-    nuevo_salario = models.DecimalField(max_digits=18, decimal_places=3)
+    salario_anterior = models.DecimalField(max_digits=18, decimal_places=4)
+    incremento = models.DecimalField(max_digits=18, decimal_places=4)
+    nuevo_salario = models.DecimalField(max_digits=18, decimal_places=4)
     comentarios = models.TextField(blank=True, null=True)
     salario_actual = models.BooleanField(blank=False, null=False, default=True)
     empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING)
@@ -771,7 +774,7 @@ class IncrementosSalariales(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.NullBooleanField(blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.empleado.firstName + ' ' + self.empleado.lastName + ' | ' + str(self.fecha_incremento)
 
 @receiver(post_save, sender=IncrementosSalariales)
@@ -882,7 +885,7 @@ class HoraExtra(models.Model):
 
 class SalarioMinimo(models.Model):
     fecha = models.DateField(("Fecha"), auto_now_add=True)
-    salario_minimo = models.DecimalField(("Salario Minimo"), max_digits=18, decimal_places=2)
+    salario_minimo = models.DecimalField(("Salario Minimo"), max_digits=18, decimal_places=4)
     vigente = models.BooleanField(("Vigente"))
     empresa_reg = models.ForeignKey(Empresa, on_delete=models.PROTECT)
     sucursal_reg = models.ForeignKey(Branch, on_delete=models.PROTECT)
