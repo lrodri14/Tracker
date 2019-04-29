@@ -13067,7 +13067,7 @@ def planilla_calculos_empleado(request):
                 # else:
                 #     deduccion_isr = 0
 
-                detalles_planillas = PlanillaDetalle.objects.filter(planilla=o_planilla)
+                detalles_planillas = PlanillaDetalle.objects.filter(planilla=o_planilla, empleado=o_empleado)
                 if detalles_planillas.count() > 0:
                     detalles_planillas.delete()
  
@@ -13086,7 +13086,7 @@ def planilla_calculos_empleado(request):
                     user_reg = request.user
                 )
                 o_planilladetalle.save()
-                print("Hasta aqui llego")
+                print(o_planilladetalle)
                 detalles_planillas_deducciones = PlanillaDetalleDeducciones.objects.filter(planilla=o_planilla)
                 if detalles_planillas_deducciones.count() > 0:
                     detalles_planillas_deducciones.delete()
@@ -13261,7 +13261,7 @@ def planilla_generada(request):
                     'salario_diario': item.salario_diario,
                     'dias_ausentes_sin_pago': item.dias_ausentes_sin_pago,
                     'dias_ausentes_con_pago': item.dias_ausentes_con_pago,
-                    #'total_ingresos': locale.format("%.2f", float(item.total_ingresos) + float(total_salario), grouping=True),
+                    'total_ingresos': locale.format("%.2f", float(item.total_ingresos) + float(total_salario), grouping=True),
                     'total_deducciones': locale.format("%.2f", item.total_deducciones, grouping=True),
                     'total_salario': locale.format("%.2f", total_salario, grouping=True),
                 }
