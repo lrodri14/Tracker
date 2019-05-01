@@ -342,12 +342,12 @@ def paises_editar(request, id):
 def listadoPaises(request):
     listado = None
     suc = Branch.objects.get(pk=request.session["sucursal"])
-    if request.user.has_perm("worksheet.see_all_country"):
-        listado = CentrosCostos.objects.filter(empresa_reg=suc.empresa)
+    if request.user.has_perm("worksheet.see_all_country") or request.user.is_superuser:
+        listado = Country.objects.filter(empresa_reg=suc.empresa)
     else:
         if request.user.has_perm("worksheet.see_country"):
             listado = Country.objects.filter(active=True, empresa_reg=suc.empresa)
-    return render(request, 'paises-listado.html', {'paises':paises})
+    return render(request, 'paises-listado.html', {'paises':listado})
 
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.add_state', raise_exception=True)

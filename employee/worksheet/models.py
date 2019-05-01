@@ -18,6 +18,10 @@ class GrupoCorporativo(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField()
 
+    class Meta:
+        verbose_name = "Grupo Corporativo"
+        verbose_name_plural = "Grupos Corporativos"
+
     def __str__(self):
         return self.nombreComercial
 
@@ -43,6 +47,10 @@ class Empresa(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField()
 
+    class Meta:
+        verbose_name = "Empresa"
+        verbose_name_plural = "Empresas"
+
     def __str__(self):
         return self.nombreComercial
 
@@ -56,6 +64,9 @@ class Branch(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField(default=True)
 
+    class Meta:
+        verbose_name = "Sucursal"
+        verbose_name_plural = "Sucursales"
 
     def __str__(self):
         return self.description

@@ -112,12 +112,12 @@
                     {% endcomment %}
                     
                     <li class="dropdown">
-                        <a class="dropdown-toggle profile-pic" data-toggle="dropdown" href="#"> <img src="{% static 'plugins/images/users/varun.jpg' %}" alt="user-img" width="36" class="img-circle"><b class="hidden-xs">{{ user.username }}</b><span class="caret"></span> </a>
+                        <a class="dropdown-toggle profile-pic" data-toggle="dropdown" href="#"> <img src="{% static 'images/usuarios.png' %}" alt="user-img" width="36" class="img-circle"><b class="hidden-xs">{{ user.username }}</b><span class="caret"></span> </a>
                         <ul class="dropdown-menu dropdown-user animated flipInY">
                             <li>
                                 <div class="dw-user-box">
-                                    <div class="u-img"><img src="{% static 'plugins/images/users/varun.jpg' %}" alt="user" /></div>
-                                    <div class="u-text"><h4>{{ user.username }}</h4><p class="text-muted">varun@gmail.com</p>
+                                    <div class="u-img"><img src="{% static 'images/usuarios.png' %}" alt="user" /></div>
+                                    <div class="u-text"><h4>{{ user.username }}</h4><p class="text-muted">{% if user.email %}{{user.email}}{% endif %}</p>
                                     <p>Empresa/Sucursal: {% if request.session.sucursal %}{{request.session.nombre_sucursal}}{% endif %}</p>
                                         {% comment "" %}
                                         <a href="profile.html" class="btn btn-rounded btn-danger btn-sm">View Profile</a></div>
@@ -132,8 +132,10 @@
                             <li><a href="#"><i class="ti-email"></i> Inbox</a></li>
                             <li role="separator" class="divider"></li>
                             {% endcomment %}
+                            {% comment '' %}
                             <li><a href="#"><i class="ti-settings"></i> Configurar Perfíl</a></li>
                             <li role="separator" class="divider"></li>
+                            {% endcomment %}
                             <li><a href="{% url 'salir' %}"><i class="ti-out"></i> Salir</a></li>  
                         </ul>
                         <!-- /.dropdown-user -->
