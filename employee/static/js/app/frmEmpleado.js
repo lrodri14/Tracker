@@ -86,17 +86,26 @@ $(document).on('ready', function() {
     //#region Eventos Botones
     $('#btnGuardar').on('click', function(e) {
         e.preventDefault();
+        $(this).addClass('disabled')
         GuardarEmpleado();
     });
 
     $('#btnActualizar').on('click', function(e) {
         e.preventDefault();
+        $(this).addClass('disabled')
         Actualizar();
     });
 
     $('#btnCancelar').on('click', function(e) {
         e.preventDefault();
         window.location.replace(dns + "/listar/empleados/");
+    });
+
+    pos.on('change', function() {
+        var valor = $(this).val();
+        if (valor != 0) {
+            puesto.val($("#cboPosicion option:selected").text());
+        }
     });
     //#endregion
 
@@ -204,6 +213,7 @@ $(document).on('ready', function() {
                             stack: 6
                         });
                     }
+                    $("#btnGuardar").removeClass('disabled');
                 },
                 error: function(data) {
                     console.log(data);
@@ -216,6 +226,7 @@ $(document).on('ready', function() {
                         hideAfter: 5000,
                         stack: 6
                     });
+                    $("#btnGuardar").removeClass('disabled');
                 }
             });
         }

@@ -76,7 +76,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <div class="checkbox checkbox-success">
-                                                <input id="chkActivo" type="checkbox" {% if dato.active %}checked{% endif %} class="input-sm">
+                                                <input id="chkActivo" type="checkbox"{% if editar %}{% if dato.active %}checked{% endif %}{% else %}checked{% endif %}  class="input-sm">
                                                 <label for="chkActivo" class="control-label"> Activo </label>
                                             </div>
                                         </div>

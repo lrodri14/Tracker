@@ -58,7 +58,7 @@ def ingresar(request):
                         return HttpResponseRedirect('/seleccionar/sucursal/')
                     else:
                         sucursal = UsuarioSucursal.objects.get(usuario=request.user, active=True)
-                        request.session["nombre_sucursal"] = sucursal.sucursal.name
+                        request.session["nombre_sucursal"] = sucursal.sucursal.description
                         request.session["sucursal"] = sucursal.sucursal.pk
                         return HttpResponseRedirect('/')
                 else:
@@ -1121,7 +1121,7 @@ def guardar_empleado(request):
                     return JsonResponse(data)
 
                 if len(puesto) == 0:
-                    mensaje = "El campo 'Puesto de trabajo' es obligatorio."
+                    mensaje = "El campo 'Denominación de Función' es obligatorio."
                     data = {
                         'mensaje': mensaje, 'error': True
                     }
