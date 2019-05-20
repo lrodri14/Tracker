@@ -105,6 +105,8 @@ $(document).on('ready', function() {
         var valor = $(this).val();
         if (valor != 0) {
             puesto.val($("#cboPosicion option:selected").text());
+        }else{
+            puesto.val(null);
         }
     });
     //#endregion

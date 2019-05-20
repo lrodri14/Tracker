@@ -7,6 +7,10 @@ $(document).on('ready', () => {
     var token = $('input[name="csrfmiddlewaretoken"]');
     var dns = window.location.protocol+"//"+window.location.host;
     var id = $('input[name="id"]');
+
+    $(".btn").on('click', function() {
+        $(this).addClass('disabled');
+    });
     //#endregion
 
     //#region Código para Puestos de Trabajo
@@ -1979,6 +1983,7 @@ function validargnrDatos() {
     //#region Eventos Controles
     $('#btnbancoGuardar').on('click', function (e) {
         e.preventDefault();
+        $(this).addClass('disabled');
         url = '/guardar/banco/';
         metodo = 'POST';
         //if (validarEdDatos() != false) {
@@ -1999,6 +2004,7 @@ function validargnrDatos() {
 
     $('#btnbancoActualizar').on('click', function (e) {
         e.preventDefault();
+        $(this).addClass('disabled');
         url = '/actualizar/banco/';
         metodo = 'POST';
         if (banco_activo.is(":checked")) {
@@ -3652,9 +3658,15 @@ $('#tipo_nomina #btnTipoNominaCancelar').on('click', function(e) {
                     mensaje(encabezado, data.mensaje, "error", tiempo);
                     console.log(data.mensaje);
                 }
+                if (editar != true) {
+                    $(".btn").removeClass("disabled");
+                }
             },
             error: function (data) {
                 mensaje(encabezado, data.statusText, "error", tiempo);
+                if (editar != true) {
+                    $(".btn").removeClass("disabled");
+                }
             }
         });
     }

@@ -8436,7 +8436,7 @@ def guardar_banco(request):
                 activo = int(request.POST['activo'])
 
                 if len(nombre) == 0:
-                    mensaje = "El campo 'Nombre' es obligatorio."
+                    mensaje = "El campo 'Código' es obligatorio."
                     data = {'error': True, 'mensaje': mensaje}
                     return JsonResponse(data)
 
@@ -8494,11 +8494,6 @@ def actualizar_banco(request):
                 desc = request.POST['desc']
                 activo = int(request.POST['activo'])
 
-                if len(nombre) == 0:
-                    mensaje = "El campo 'Nombre' es obligatorio."
-                    data = {'error': True, 'mensaje': mensaje}
-                    return JsonResponse(data)
-
                 if len(desc) == 0:
                     mensaje = "El campo 'Descripción' es obligatorio."
                     data = {'error': True, 'mensaje': mensaje}
@@ -8536,6 +8531,7 @@ def actualizar_banco(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
+        print(ex)
         data = {
             'error': True,
             'mensaje': 'error',
