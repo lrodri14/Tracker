@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block titulo %}
+Ciudades
+{% endblock titulo %}
+{% block estilo %}
+<style>
+    .checkbox{
+        font-weight: 500;
+    }
+    .checkbox label{
+        font-weight: 500;
+    }
+</style>
+{% endblock estilo %}
+{% load static %}
+{% block contenido %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="text-bold"><i class="ti-pencil-alt"></i>
+                    Registro de Ciudades</h2>
+            </div>
+            <div class="panel-wrapper">
+                <div class="panel-body">
+                    {% csrf_token %}
+                    {% if editar %}
+                    <input type="hidden" value="{{dato.pk}}" name="id">
+                    {% endif %}
+                    <div class="col-md-6">
+                        <div class="col-md-12 margin-bottom-5px">
+                            <div class="form-group">
+                                <div class="col-md-5 text-right">
+                                    <label for="txtCodigo" class="control-label">Código :</label>
+                                </div>
+                                <div class="col-md-7">
+                                    <input type="text" name="cdd_ID" value="{{dato.code}}" id="txtCodigo" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 margin-bottom-5px">
+                            <div class="form-group">
+                                <div class="col-md-5 text-right">
+                                    <label for="txtNombre" class="control-label">Nombre :</label>
+                                </div>
+                                <div class="col-md-7">
+                                    <input type="text" name="cdd_nombre" value="{{dato.nombre}}" id="txtNombre" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <div class="col-md-5"></div>
+                                <div class="col-md-7">
+                                    <div class="checkbox checkbox-success">
+                                        {% if dato.active %}
+                                        <input id="chkActivo" name="cdd_activo" type="checkbox" checked class="input-sm">
+                                        {% else %}
+                                        <input id="chkActivo" name="cdd_activo" type="checkbox" class="input-sm">
+                                        {% endif %}
+                                        <label for="chkActivo" class="control-label"> Activo </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="form-action col-md-12 text-right">
+                            {% if editar %}
+                            <button id="btncddActualizar" class="btn btn-success">Actualizar</button>
+                            {% else %}
+                            <button id="btncddGuardar" class="btn btn-success">Guardar</button>
+                            {% endif %}
+                            <button id="btncddCancelar" class="btn btn-default">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contenido %}
+{% block scripts %}
+<script>
+    //#region Efectos en SideBar
+    $('#side-menu a').removeClass('active');
+    $('#aPersonal').addClass('active');
+    $('#aCiud').addClass('active');
+</script>
+{% endblock scripts %}

@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% block titulo %}
+Aumento de Salario{% endblock titulo %}
+{% load humanize %}
+{% load static %}
+
+{% block contenido %}
+<div class="row aumento-salario">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="text-bold"><i class="ti-pencil-alt"></i>
+                    Aumento de Salario</h2>
+            </div>
+            <div class="panel-wrapper">
+                <div class="panel-body">
+                    <form id="frmAumentoSalario">
+                        {% csrf_token %}
+                        {% if editar %}
+                        <input type="hidden" value="{{dato.pk}}" name="id">
+                        {% endif %}
+                        <div class="col-md-12">
+                            <div class="col-md-12 margin-bottom-5px">    
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <div class="col-md-5 text-right">
+                                            <label for="cboAuEmp" class="control-label">Empleado :</label>
+                                        </div>
+                                        <div class="col-md-7">
+                                            {% if editar %}
+                                                <input id="txtNombre" readonly value='{{dato.empleado.firstName}} {{dato.empleado.lastName}}' type="text" class="form-control" />
+                                            {% else %}
+                                                <select class="form-control select2" name="empleado" id="cboIncEmp">
+                                                    <option value="0">Seleccionar...</option>
+                                                    {% for item in empleados %}
+                                                        {% if editar %}
+                                                            {% if item == dato.empleado %}
+                                                            <option value="{{item.pk}}" selected>{{item.firstName}} {% if item.middleName %}{{item.middleName}}{% endif %} {{item.lastName}}</option>
+                                                            {% else %}
+                                                            <option value="{{item.pk}}">{{item.firstName}} {% if item.middleName %}{{item.middleName}}{% endif %} {{item.lastName}}</option>
+                                                            {% endif %}
+                                                        {% else %}
+                                                        <option value="{{item.pk}}">{{item.firstName}} {% if item.middleName %}{{item.middleName}}{% endif %} {{item.lastName}}</option>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </select>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <div class="col-md-5 text-right">
+                                            <label class="control-label">Fecha :</label>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <div class="input-group">
+                                                <input id="txtFecha" value='{{dato.fecha_incremento|date:"Y-m-d"}}' name="fecha_incremento" type="text" class="form-control mydatepicker" placeholder="yyyy-mm-dd"> <span class="input-group-addon"><i class="icon-calender"></i></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 margin-bottom-5px">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <div class="col-md-5 text-right">
+                                            <label class="control-label">Motivo :</label>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <select class="form-control select2" name="motivo_aumento">
+                                                <option value="0">Seleccionar...</option>
+                                                {% for item in motivos %}
+                                                    {% if editar %}
+                                                        {% if item == dato.motivo_aumento %}
+                                                        <option value="{{item.pk}}" selected>{{item.code}} - {{item.descripcion}}</option>
+                                                        {% else %}
+                                                        <option value="{{item.pk}}">{{item.code}} - {{item.descripcion}}</option>
+                                                        {% endif %}
+                                                    {% else %}
+                                                    <option value="{{item.pk}}">{{item.code}} - {{item.descripcion}}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <div class="col-md-5 text-right">
+                                            <label for="txtEdHasta" class="control-label">Salario anterior :</label>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <input type="text" name="salario_anterior" readonly value="{{ dato.salario_anterior }}" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 margin-bottom-5px">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <div class="col-md-5 text-right">
+                                            <label class="control-label">Incremento :</label>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <input type="text" name="incremento" value="{{dato.incremento}}" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <div class="col-md-5 text-right">
+                                            <label class="control-label">Nuevo salario :</label>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <input type="text" name="nuevo_salario" readonly value="{{dato.nuevo_salario}}" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <div class="col-md-5 text-right">
+                                            <label class="control-label">Comentarios :</label>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <textarea name="comentarios" rows="7" class="form-control">{{dato.comentarios}}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6"></div>
+                            </div>
+                            <hr>
+                            <div class="form-action col-md-12 text-right">
+                                {% if editar %}
+                                <button id="btnIncActualizar" class="btn btn-success">Actualizar</button>
+                                {% else %}
+                                <button id="btnIncGuardar" class="btn btn-success">Guardar</button>
+                                {% endif %}
+                                <button id="btnIncCancelar" class="btn btn-default">Cancelar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contenido %}
+{% block scripts %}
+<script>
+    $(".select2").select2();
+    $('#side-menu a').removeClass('active');
+    $('#aAccionesPer').addClass('active');
+    $('#aAumSal').addClass('active');
+
+    jQuery('.mydatepicker, #datepicker').datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose:true,
+        todayHighlight: true,
+    });
+</script>
+{% endblock scripts %}

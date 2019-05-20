@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block titulo %}
+Ingreso Individual
+{% endblock titulo %}
+{% load static %}
+{% block estilo %}
+<style>
+    .checkbox{
+        font-weight: 500;
+    }
+    .checkbox label{
+        font-weight: 500;
+    }
+</style>
+{% endblock estilo %}
+{% block contenido %}
+<div id="ingreso_individual" class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="text-bold"><i class="ti-pencil-alt"></i>
+                    Ingreso Individual</h2>
+            </div>
+            <div class="panel-wrapper">
+                <div class="panel-body">
+                    {% csrf_token %}
+                    {% if editar %}
+                    <input type="hidden" value="{{dato.pk}}" name="id">
+                    {% endif %}
+                    <div class="col-md-12">
+                        <div class="col-md-12 margin-bottom-5px">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label class="control-label">Ingreso Individual :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <input name="txtIngresoI" value="{{dato.ingreso_i}}" type="text" class="form-control input" maxlength="50" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-7">
+                                        <div class="checkbox checkbox-info">
+                                            <input id="chkGravable" name="ingresoi_gravable" type="checkbox" {% if dato.gravable %}checked{% endif %} class="input">
+                                            <label class="control-label"> Gravable </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 margin-bottom-5px">    
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label class="control-label">Tipo de Ingreso :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <select class="form-control select2" name="cboTipoIngreso">
+                                            <option value="0">Seleccionar...</option>
+                                            {% for item in tipos_ingresos %}
+                                                {% if editar %}
+                                                    {% if item == dato.tipo_ingreso %}
+                                                    <option value="{{item.pk}}" selected>{{item.tipo_ingreso}}</option>
+                                                    {% else %}
+                                                    <option value="{{item.pk}}">{{item.tipo_ingreso}}</option>
+                                                    {% endif %}
+                                                {% else %}
+                                                <option value="{{item.pk}}">{{item.tipo_ingreso}}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        <div class="col-md-6"></div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5"></div>
+                                    <div class="col-md-7">
+                                        <div class="checkbox checkbox-success">
+                                            <input id="chkActivo" name="chkActivo" type="checkbox" {% if dato.active %}checked{% endif %} class="input">
+                                            <label for="chkActivo" class="control-label"> Activo </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-action text-right">
+                                    {% if editar %}
+                                    <button id="btnActualizar" class="btn btn-success">Actualizar</button>
+                                    {% else %}
+                                    <button id="btnGuardar" class="btn btn-success">Guardar</button>
+                                    {% endif %}
+                                    <button id="btnCancelar" class="btn btn-default">Cancelar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contenido %}
+{% block scripts %}
+<script>
+    $('#side-menu a').removeClass('active');
+    $('#aPersonal').addClass('active');
+    $('#aIngresoI').addClass('active');
+</script>
+{% endblock scripts %}

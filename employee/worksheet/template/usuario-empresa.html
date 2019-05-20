@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block titulo %}
+Empresas por Usuario
+{% endblock titulo %}
+{% load static %}
+{% block estilo %}
+<style>
+    .checkbox {
+        font-weight: 500;
+    }
+
+    .checkbox label {
+        font-weight: 500;
+    }
+</style>
+{% endblock estilo %}
+{% block contenido %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="text-bold"><i class="ti-user"></i>
+                    Registro de Empresas por Usuario</h2>
+            </div>
+            <div class="panel-wrapper">
+                <div class="panel-body">
+                    {% csrf_token %}
+                    {% if editar %}
+                    <input type="hidden" value="{{dato.pk}}" name="id">
+                    {% endif %}
+                    <div class="col-md-6">
+                        <div class="col-md-12 margin-bottom-5px">
+                            <div class="form-group">
+                                <div class="col-md-5 text-right">
+                                <label for="txtptDescripcion" class="control-label">Usuario :</label>
+                                </div>
+                                <div class="col-md-7">
+                                    <select class="form-control select2" name="userEmp_usuario">
+                                        <option value="0">Seleccionar...</option>
+                                        {% for item in users %}
+                                            {% if editar %}
+                                                {% if item == dato.usuario %}
+                                                <option value="{{item.usuario.pk}}" selected>{{item.usuario.username}}</option>
+                                                {% else %}
+                                                <option value="{{item.usuario.pk}}">{{item.usuario.username}}</option>
+                                                {% endif %}
+                                            {% else %}
+                                            <option value="{{item.usuario.pk}}">{{item.usuario.username}}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 margin-bottom-5px">
+                            <div class="form-group">
+                                <div class="col-md-5 text-right">
+                                    <label for="txtptDescripcion" class="control-label">Empresa :</label>
+                                </div>
+                                <div class="col-md-7">
+                                    <select class="form-control select2" name="userEmp_empresa">
+                                        <option value="0">Seleccionar...</option>
+                                        {% for item in empresas %}
+                                            {% if editar %}
+                                                {% if item == dato.empresa %}
+                                                <option value="{{item.pk}}" selected>{{item.nombreComercial}}</option>
+                                                {% else %}
+                                                <option value="{{item.pk}}">{{item.nombreComercial}}</option>
+                                                {% endif %}
+                                            {% else %}
+                                            <option value="{{item.pk}}">{{item.nombreComercial}}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <div class="col-md-5"></div>
+                                <div class="col-md-7">
+                                    <div class="checkbox checkbox-success">
+                                        {% if dato.active %}
+                                        <input id="chkActivo" name="userEmp_activo" type="checkbox" checked class="input-sm">
+                                        {% else %}
+                                        <input id="chkActivo" name="userEmp_activo" type="checkbox" class="input-sm">
+                                        {% endif %}
+                                        <label for="chkptActivo" class="control-label"> Activo </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="form-action col-md-12 text-right">
+                            {% if editar %}
+                            <button id="btnempUserActualizar" class="btn btn-success">Actualizar</button>
+                            {% else %}
+                            <button id="btnempUserGuardar" class="btn btn-success">Guardar</button>
+                            {% endif %}
+                            <button id="btnempUserCancelar" class="btn btn-default">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contenido %}
+{% block scripts %}
+<script>
+    //#region Efectos en SideBar
+    $('#side-menu a').removeClass('active');
+    $('#aCorporativo').addClass('active');
+    $('#aUsuarioEmpresa').addClass('active');
+    $('label').addClass('control-label');
+    $('select').addClass('form-control input');
+    $(".select2").select2();
+    //#endregion
+</script>
+<script src="{% static 'js/app/scriptApp.js' %}"></script>
+{% endblock scripts %}

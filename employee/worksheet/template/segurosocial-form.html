@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block titulo %}
+Datos de Seguro Social
+{% endblock titulo %}
+{% load static %}
+{% block estilo %}
+<style>
+    .checkbox{
+        font-weight: 500;
+    }
+    .checkbox label{
+        font-weight: 500;
+    }
+</style>
+{% endblock estilo %}
+{% block contenido %}
+<div id="segurosocial" class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="text-bold"><i class="ti-pencil-alt"></i>
+                    Datos de Seguro Social</h2>
+            </div>
+            <div class="panel-wrapper">
+                <div class="panel-body">
+                    {% csrf_token %}
+                    {% if editar %}
+                    <input type="hidden" value="{{dato.pk}}" name="id">
+                    {% endif %}
+                    <div class="col-md-12">
+                        <div class="col-md-12 margin-bottom-5px">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label class="control-label">Tipo :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <input name="tipo" value="{{dato.tipo}}" type="text" class="form-control input" maxlength="50" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label class="control-label">Techo :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <input name="techo" value="{{dato.techo}}" type="text" class="form-control input" maxlength="70" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 margin-bottom-5px">    
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label class="control-label">Porcentaje Empleado:</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <input name="porcentaje_e" value="{{dato.porcentaje_e}}" type="text" class="form-control input" maxlength="50" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label class="control-label">Valor Empleado:</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <input name="valor_e" value="{{dato.valor_e}}" type="text" class="form-control input" maxlength="50" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 margin-bottom-5px">    
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label class="control-label">Porcentaje Patrono:</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <input name="porcentaje_p" value="{{dato.porcentaje_p}}" type="text" class="form-control input" maxlength="50" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label class="control-label">Valor Patrono:</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <input name="valor_p" value="{{dato.valor_p}}" type="text" class="form-control input" maxlength="50" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5"></div>
+                                    <div class="col-md-7">
+                                        <div class="checkbox checkbox-success">
+                                            <input id="chkActivo" name="activo" type="checkbox" {% if dato.active %}checked{% endif %} class="input">
+                                            <label for="chkActivo" class="control-label"> Activo </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-action text-right">
+                                    {% if editar %}
+                                    <button id="btnActualizar" class="btn btn-success">Actualizar</button>
+                                    {% else %}
+                                    <button id="btnGuardar" class="btn btn-success">Guardar</button>
+                                    {% endif %}
+                                    <button id="btnCancelar" class="btn btn-default">Cancelar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contenido %}
+{% block scripts %}
+<script>
+    $('#side-menu a').removeClass('active');
+    $('#aPersonal').addClass('active');
+    $('#aSeguroSocial').addClass('active');
+</script>
+{% endblock scripts %}

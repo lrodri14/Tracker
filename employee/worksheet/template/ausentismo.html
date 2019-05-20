@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% block titulo %}
+Ausentismo
+{% endblock titulo %}
+{% load static %}
+{% block estilo %}
+<style>
+    .checkbox {
+        font-weight: 500;
+    }
+
+    .checkbox label {
+        font-weight: 500;
+    }
+</style>
+{% endblock estilo %}
+{% block contenido %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="text-bold"><i class="ti-pencil-alt"></i>
+                    Ausentismo</h2>
+            </div>
+            <div class="panel-wrapper">
+                <div class="panel-body">
+                    {% csrf_token %}
+                    {% if editar %}
+                    <input type="hidden" value="{{dato.pk}}" name="id">
+                    {% endif %}
+                    <div class="col-md-12">
+                        <div class="col-md-12 margin-bottom-5px">    
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label for="txtNombre" class="control-label">Empleado :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <select class="form-control select2 input" name="au_emp" id="cboAuEmp">
+                                            <option value="0">Seleccionar...</option>
+                                            {% for item in empleados %}
+                                                {% if editar %}
+                                                    {% if item == dato.empleado %}
+                                                    <option value="{{item.pk}}" selected>{{item.firstName}}{% if item.middleName %}{{item.middleName}}{% endif %} {{item.lastName}}</option>
+                                                    {% else %}
+                                                    <option value="{{item.pk}}">{{item.firstName}}{% if item.middleName %}{{item.middleName}}{% endif %} {{item.lastName}}</option>
+                                                    {% endif %}
+                                                {% else %}
+                                                <option value="{{item.pk}}">{{item.firstName}}{% if item.middleName %}{{item.middleName}}{% endif %} {{item.lastName}}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6"></div>
+                        </div>
+                        <div class="col-md-12 margin-bottom-5px">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label for="txtFechaVencPasaporte" class="control-label">Desde :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <div class="input-group">
+                                            <input id="txtFechaVencPasaporte" value='{{dato.desde|date:"Y-m-d"}}' name="au_desde" type="text" class="form-control mydatepicker" placeholder="yyyy-mm-dd"> <span class="input-group-addon"><i class="icon-calender"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                    <div class="form-group">
+                                        <div class="col-md-5 text-right">
+                                            <label for="txtFechaVencPasaporte" class="control-label">Hasta :</label>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <div class="input-group">
+                                                <input id="txtFechaVencPasaporte" value='{{dato.hasta|date:"Y-m-d"}}' name="au_hasta" type="text" class="form-control mydatepicker" placeholder="yyyy-mm-dd"> <span class="input-group-addon"><i class="icon-calender"></i></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
+                        <div class="col-md-12 margin-bottom-5px">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label for="txtNombre" class="control-label">Motivo :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <select class="form-control select2 input" name="au_motivos" id="cboAuEmp">
+                                            <option value="0">Seleccionar...</option>
+                                            {% for item in motivos %} {% if editar %} {% if item == dato.empleado %}
+                                            <option value="{{item.pk}}" selected>{{item.descripcion}}</option>
+                                            {% else %}
+                                            <option value="{{item.pk}}">{{item.descripcion}}</option>
+                                            {% endif %} {% else %}
+                                            <option value="{{item.pk}}">{{item.descripcion}}</option>
+                                            {% endif %} {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label for="txtNombre" class="control-label">Aprobó :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <select class="form-control select2 input" name="au_aprobo" id="cboAuAp">
+                                            <option value="0">Seleccionar...</option>
+                                            {% for item in empleados %}
+                                                {% if editar %}
+                                                    {% if item == dato.aprobado %}
+                                                    <option value="{{item.pk}}" selected>{{item.firstName}} {% if item.middleName %}{{item.middleName}}{% endif %} {{item.lastName}}</option>
+                                                    {% else %}
+                                                    <option value="{{item.pk}}">{{item.firstName}} {% if item.middleName %}{{item.middleName}}{% endif %} {{item.lastName}}</option>
+                                                    {% endif %}
+                                                {% else %}
+                                                <option value="{{item.pk}}">{{item.firstName}} {% if item.middleName %}{{item.middleName}}{% endif %} {{item.lastName}}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5"></div>
+                                    <div class="col-md-7">
+                                        <div class="checkbox checkbox-success">
+                                            {% if dato.active %}
+                                            <input id="chkActivo" name="au_activo" type="checkbox" checked class="input">
+                                            {% else %}
+                                            <input id="chkActivo" name="au_activo" type="checkbox" class="input">
+                                            {% endif %}
+                                            <label for="chkActivo" class="control-label"> Activo </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="form-action col-md-12 text-right">
+                            {% if editar %}
+                            <button id="btnAuActualizar" class="btn btn-success">Actualizar</button>
+                            {% else %}
+                            <button id="btnAuGuardar" class="btn btn-success">Guardar</button>
+                            {% endif %}
+                            <button id="btnAuCancelar" class="btn btn-default">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contenido %}
+{% block scripts %}
+<script>
+    $(".select2").select2();
+    $('#side-menu a').removeClass('active');
+    $('#aAccionesPer').addClass('active');
+    $('#aAu').addClass('active');
+
+    jQuery('.mydatepicker, #datepicker').datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose:true,
+        todayHighlight: true,
+    });
+</script>
+{% endblock scripts %}

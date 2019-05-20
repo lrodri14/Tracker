@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+{% block titulo %}
+Datos de Aumento de Salario
+{% endblock titulo %}
+{% load static %}
+{% block contenido %}
+<div id="aumento-salario-listado" class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="text-bold"><i class="fa fa-list"></i>
+                    Datos de Aumento de Salario</h2>
+            </div>
+            <div class="panel-wrapper">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <form action="{% url 'aumento_salario_listado' %}" method="GET">
+                                    <div class="col-md-3">
+                                        <label for="cboAuEmp" class="control-label">Empleado :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <select class="form-control select2 input-sm" name="empleado" id="cboAuEmp">
+                                            <option value="0">Seleccionar...</option>
+                                            {% for item in empleados %}
+                                                {% if busqueda %}
+                                                
+                                                    {% if item.pk == busqueda %}
+                                                    <option value="{{item.pk}}" selected>{{item.firstName}}{% if item.middleName %} {{item.middleName}} {% endif %} {{item.lastName}}</option>
+                                                    {% else %}
+                                                    <option value="{{item.pk}}">{{item.firstName}} {% if item.middleName %}{{item.middleName}}{% endif %} {{item.lastName}}</option>
+                                                    {% endif %}
+                                                {% else %}
+                                                <option value="{{item.pk}}">{{item.firstName}} {% if item.middleName %}{{item.middleName}}{% endif %} {{item.lastName}}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input type="submit" class="btn btn-default" value="Buscar">
+                                        <!--button type="submit" class="btn btn-default">Buscar</button-->
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        {% if perms.worksheet.add_incrementossalariales %}
+                        <div class="col-md-6 text-right">
+                            {% if perms.worksheet.see_motivoausencia %}
+                            <a href="{% url 'aumento_salario_form' %}" class="btn btn-primary">Agregar</a>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <br>
+                    <div class="table-responsive">
+                        <table id="myTable" class="table table-striped">
+                            {% csrf_token %}
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre completo</th>
+                                    <th>Fecha</th>
+                                    <th>Salario</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in datos %}
+                                <tr>
+                                    <td>{{item.empleado.govID}}</td>
+                                    <td>{{item.empleado.firstName}} {% if item.empleado.middleName %}{{item.empleado.middleName}}{% endif %} {{item.empleado.lastName}}</td>
+                                    <td>
+                                        {{item.fecha_incremento}}
+                                    </td>
+                                    <td>
+                                        {% if item.salario_actual %}SI{% else %}NO{% endif %}
+                                    </td>
+                                    <td class="text-nowrap acciones text-center">
+                                        {% if perms.worksheet.delete_incrementossalariales %}
+                                        <a href="#" class="btnEliminar" data="{{item.pk}}" data-tooltip="Eliminar el registro" data-toggle="tooltip" data-original-title="Eliminar">
+                                            <i class="fa fa-close text-danger"></i>
+                                        </a>
+                                        {% endif %}
+                                        {% if perms.worksheet.see_reg_incrementossalariales %}
+                                        <a id="btnVerRegistroAuSal" data-tooltip="Ver registro" data-toggle="tooltip" data-original-title="Ver registro" class="btnVerRegistroAumentoSalario" data="{{item.pk}}">
+                                            <i class="fa fa-search text-success"></i>
+                                        </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="col-md-4">
+    <div id="responsive-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+    <div id="aumento-salario-modal" class="modal-dialog"></div>
+</div>
+{% endblock contenido %}
+{% block scripts %}
+<script>
+    $('.select2').select2();
+    var token = $('input[name="csrfmiddlewaretoken"]');
+    //#region Efectos en SideBar
+    $('#side-menu a').removeClass('active');
+    $('#aAccionesPer').addClass('active');
+    $('#aAumSal').addClass('active');
+    //#endregion
+
+    //#region Eventos Controles
+    $('.acciones .btnEliminar').on('click', function(e) {
+        e.preventDefault();
+        var id = $(this).attr('data');
+        Eliminar(id);
+    });
+    //#endregion
+
+    //#region Funciones
+    function Eliminar(id) {
+        var Encabezado = 'Aumento de sueldo';
+        var url = "/eliminar/aumento-salario/"; // the script where you handle the form input.
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {
+                'id': id,
+                'csrfmiddlewaretoken': token.val(),
+            }, // serializes the form's elements.
+            success: function(data)
+            {
+                if(data.error == false){
+                    $.toast({
+                        heading: Encabezado,
+                        text: data.mensaje,
+                        position: 'top-right',
+                        loaderBg: '#ff6849',
+                        icon: 'success',
+                        hideAfter: 2000,
+                        stack: 6
+                    });
+                    setTimeout(function () {
+                        location.reload();
+                    }, 2000);
+                }else{
+                    $.toast({
+                        heading: Encabezado,
+                        text: data.mensaje,
+                        position: 'top-right',
+                        loaderBg: '#ff6849',
+                        icon: 'error',
+                        hideAfter: 5000,
+                        stack: 6
+                    });
+                }
+            },
+            error: function(data) {
+                console.log(data);
+                $.toast({
+                    heading: Encabezado,
+                    text: data.status + ' - ' + data.statusText,
+                    position: 'top-right',
+                    loaderBg: '#ff6849',
+                    icon: 'error',
+                    hideAfter: 5000,
+                    stack: 6
+                });
+            }
+        });
+    }
+    //#endregion
+</script>
+{% endblock scripts %}

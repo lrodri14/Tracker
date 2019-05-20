@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% block titulo %}
+Educación
+{% endblock titulo %}
+{% load static %}
+{% block contenido %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="text-bold"><i class="ti-pencil-alt"></i>
+                    Educación</h2>
+            </div>
+            <div class="panel-wrapper">
+                <div class="panel-body">
+                    {% csrf_token %}
+                    {% if editar %}
+                    <input type="hidden" value="{{dato.pk}}" name="id">
+                    {% endif %}
+                    <div class="col-md-12">
+                        <div class="col-md-12 margin-bottom-5px">    
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label for="cboAuEmp" class="control-label">Empleado :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <select class="form-control select2" name="ed_emp" id="cboAuEmp">
+                                            <option value="0">Seleccionar...</option>
+                                            {% for item in empleados %}
+                                                {% if editar %}
+                                                    {% if item == dato.empleado %}
+                                                    <option value="{{item.pk}}" selected>{{item.firstName}} {% if item.middleName %}{{item.middleName}}{% endif %} {{item.lastName}}</option>
+                                                    {% else %}
+                                                    <option value="{{item.pk}}">{{item.firstName}} {% if item.middleName %}{{item.middleName}}{% endif %} {{item.lastName}}</option>
+                                                    {% endif %}
+                                                {% else %}
+                                                <option value="{{item.pk}}">{{item.firstName}} {% if item.middleName %}{{item.middleName}}{% endif %} {{item.lastName}}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label for="cboEdEmp" class="control-label">Clase de Formación :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <select class="form-control select2" name="ed_clsEd" id="cboEdCls">
+                                            <option value="0">Seleccionar...</option>
+                                            {% for item in clasesEducacion %}
+                                                {% if editar %}
+                                                    {% if item == dato.clase_edu %}
+                                                    <option value="{{item.pk}}" selected>{{item.descripcion}}</option>
+                                                    {% else %}
+                                                    <option value="{{item.pk}}">{{item.descripcion}}</option>
+                                                    {% endif %}
+                                                {% else %}
+                                                <option value="{{item.pk}}">{{item.descripcion}}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 margin-bottom-5px">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label for="txtEdDesde" class="control-label">Desde :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <div class="input-group">
+                                            <input id="txtEdDesde" value='{{dato.desde|date:"Y-m-d"}}' name="ed_desde" type="text" class="form-control mydatepicker" placeholder="yyyy-mm-dd"> <span class="input-group-addon"><i class="icon-calender"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label for="txtEdHasta" class="control-label">Hasta :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <div class="input-group">
+                                            <input id="txtEdHasta" value='{{dato.hasta|date:"Y-m-d"}}' name="ed_hasta" type="text" class="form-control mydatepicker" placeholder="yyyy-mm-dd"> <span class="input-group-addon"><i class="icon-calender"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 margin-bottom-5px">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label for="txtEdEnt" class="control-label">Institución :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <input type="text" name="ed_ent" value="{{dato.entidad}}" id="txtEdEnt" class="form-control" maxlength="100">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label for="txtEdAsig" class="control-label">Asignatura principal :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <input type="text" name="ed_asig" value="{{dato.asignatura_principal}}" id="txtEdAsig" class="form-control" maxlength="100">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label for="txtEdTitulo" class="control-label">Título :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <input id="txtEdTitulo" value='{{dato.titulo}}' name="ed_titulo" type="text" class="form-control" maxlength="100">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6"></div>
+                        </div>
+                        <hr>
+                        <div class="form-action col-md-12 text-right">
+                            {% if editar %}
+                            <button id="btnEdActualizar" class="btn btn-success">Actualizar</button>
+                            {% else %}
+                            <button id="btnEdGuardar" class="btn btn-success">Guardar</button>
+                            {% endif %}
+                            <button id="btnEdCancelar" class="btn btn-default">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contenido %}
+{% block scripts %}
+<script>
+    $(".select2").select2();
+    $('#side-menu a').removeClass('active');
+    $('#aAccionesPer').addClass('active');
+    $('#aEdu').addClass('active');
+
+    jQuery('.mydatepicker, #datepicker').datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose:true,
+        todayHighlight: true,
+    });
+</script>
+{% endblock scripts %}

@@ -1,0 +1,42 @@
+<div class="modal-content">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h4 class="modal-title">{{titulo}}</h4> </div>
+    <div class="modal-body">
+        {% if error %}
+        <p>{{ mensaje }}</p>
+        {% else %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <tbody>
+                    <tr>
+                        <td><label>Correlativo: </label> {{dato.correlativo}}</td>
+                        <td><label>Tipo planilla: </label> {{dato.tipo_planilla.tipo_planilla}}</td>
+                    </tr>
+                    <tr>
+                        <td><label>Frecuencia de Pago: </label> {{dato.frecuencia_pago.description}}</td>
+                        <td><label>Fecha de Pago: </label> {{dato.fecha_pago|date:"d/m/Y"}}</td>
+                    </tr>
+                    <tr>
+                        <td><label>Fecha Inicio: </label> {{dato.fecha_inicio|date:"d/m/Y"}}</td>
+                        <td><label>Fecha Fin: </label> {{dato.fecha_fin|date:"d/m/Y"}}</td>
+                    </tr>
+                    <tr>
+                        <td><label>Estado: </label> {% if dato.cerrada %}<span class="label label-danger">CERRADA</span>{% else %}<span class="label label-success">ABIERTA</span>{% endif %}</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table class="table table-striped">
+                <tbody>
+                    <tr>
+                        <td><label>Descripcion: </label> {{dato.descripcion}}</td>
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
+    </div>
+</div>

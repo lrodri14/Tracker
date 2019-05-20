@@ -1,0 +1,43 @@
+.margin-bottom-5px{
+    margin-bottom: 5px;
+}
+
+.input-sm-1{
+    height: 24px;
+    padding: 2px 5px;
+    font-size: 16px;
+    font-weight: bolder;
+}
+
+.lista-empleados{
+    margin-top: 15px;
+}
+
+select.input-sm-1{
+    height: 24px;
+}
+
+.progreso-ejecucion{
+    margin-top: 5%
+}
+
+.toolTip{
+    background: rgba(20,20,20,0.9) url('img/info.gif') center left 5px no-repeat;
+    border: 2px solid #87cefa;
+    border-radius: 5px;
+    box-shadow: 5px 5px 5px #333;
+    color: #87cefa;
+    font-size: 0.8em;
+    padding: 10px 10px 10px 35px;
+    max-width: 600px;
+    position: absolute;
+    z-index: 100;   
+}
+
+
+@media (min-width: 768px){
+    .logo-izq{
+        padding-left: 70px;
+    }
+}
+

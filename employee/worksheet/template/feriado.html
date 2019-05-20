@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block titulo %}
+Feriado
+{% endblock titulo %}
+{% block estilo %}
+<style>
+    .checkbox{
+        font-weight: 500;
+    }
+    .checkbox label{
+        font-weight: 500;
+    }
+</style>
+{% endblock estilo %}
+{% load static %}
+{% block contenido %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="text-bold"><i class="ti-pencil-alt"></i>Feriado</h2>
+            </div>
+            <div class="panel-wrapper">
+                <div class="panel-body">
+                    {% csrf_token %}
+                    {% if editar %}
+                    <input type="hidden" value="{{dato.pk}}" name="fer_id">
+                    {% endif %}
+                    <div class="col-md-12">
+                        <div class="col-md-12 margin-bottom-5px">    
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label class="control-label">Fecha :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <div class="input-group">
+                                            <input value='{{dato.fecha|date:"Y-m-d"}}' {% if editar %}disabled{% endif %} name="fer_fecha" type="text" class="form-control mydatepicker"
+                                                placeholder="yyyy-mm-dd"> <span class="input-group-addon"><i class="icon-calender"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label class="control-label">Rate :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <input value='{{dato.rate}}' name="fer_rate" maxlength="10" type="text" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 margin-bottom-5px">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label class="control-label">Comentario :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <textarea name="fer_coment" rows="7" class="form-control">{{dato.descripcion}}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5"></div>
+                                    <div class="col-md-7">
+                                        <div class="checkbox checkbox-success">
+                                            {% if dato.active %}
+                                            <input id="chkActivo" name="fer_activo" type="checkbox" checked class="input-sm"> {% else %}
+                                            <input id="chkActivo" name="fer_activo" type="checkbox" class="input-sm"> {% endif %}
+                                            <label for="chkActivo" class="control-label"> Activo </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="form-action col-md-12 text-right">
+                            {% if editar %}
+                            <button id="btnFerActualizar" class="btn btn-success">Actualizar</button>
+                            {% else %}
+                            <button id="btnFerGuardar" class="btn btn-success">Guardar</button>
+                            {% endif %}
+                            <button id="btnFerCancelar" class="btn btn-default">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contenido %}
+{% block scripts %}
+<script>
+    //$('.select2').select2();
+    $('#side-menu a').removeClass('active');
+    $('#aPersonal').addClass('active');
+    $('#Vend').addClass('active');
+
+    jQuery('.mydatepicker, #datepicker').datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose: true,
+        todayHighlight: true,
+    });
+</script>
+{% endblock scripts %}

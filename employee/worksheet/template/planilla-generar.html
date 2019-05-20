@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block titulo %}
+Generar Planilla
+{% endblock titulo %}
+{% block estilo %}
+<style>
+    .progress-bar{
+        color:#000000;
+    }
+</style>
+{% endblock estilo %}
+{% block contenido %}
+<div class="row planilla-generar">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="text-bold"><i class="ti-pencil-alt"></i>
+                    Generar planilla</h2>
+            </div>
+            <div class="panel-wrapper">
+                <div class="panel-body">
+                {% csrf_token %}
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <div class="col-md-1 col-md-offset-2 text-right">
+                                <label for="cboAuEmp" class="control-label">Planilla :</label>
+                            </div>
+                            <div class="col-md-6">
+                                <select class="form-control select2" name="empleado" id="cboPlanillas">
+                                    <option value="0">Seleccionar...</option>
+                                    {% for item in planillas %}
+                                        <option value="{{item.pk}}">{{item.descripcion}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-1">
+                                <button id="btnGenerar" class="btn btn-primary">Generar</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="progreso-ejecucion scol-md-offset-3 col-lg-offset-3 col-sm-offset-3 col-lg-6 col-md-6 col-sm-6 p-r-40">
+                            <h3 class="box-title">Progreso de ejecución</h3>
+                            <div class="progress progress-lg">
+                                <div id="loader-bar" class="progress-bar progress-bar-success" style="width: 0%;" role="progressbar"><span class="text-center">0%</span></div>
+                            </div>
+                            <span>Registros procesados: <label id="registros_procesados_planilla"></label></span> / <span>Registros con errores: <label id="registros_planilla_error"></label></span>
+                        </div>
+                    </div>
+                    <div class="lista-empleados"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contenido %}
