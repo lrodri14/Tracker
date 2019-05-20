@@ -5,3 +5,4 @@ employee/worksheet/migrations/*.pyc
 employee/*.sqlite3
 __pycache__/
 .vscode
+employee/worksheet/fcgi.py

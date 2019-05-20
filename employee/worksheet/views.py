@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
 from django.contrib.auth import authenticate, login, logout
@@ -3048,14 +3048,14 @@ def actualizar_puesto(request):
                 desc = request.POST['desc']
                 activo = int(request.POST['activo'])
 
-                if len(descripcion) == 0:
+                if len(desc) == 0:
                     data = {
                         'error': True,
                         'mensaje': 'El campo "Descripción" es obligatorio.',
                     }
                     return JsonResponse(data)
 
-                if len(descripcion) > 150:
+                if len(desc) > 150:
                     data = {
                         'error': True,
                         'mensaje': 'El campo "Descripción" debe tener un máximo de 150 caracteres.',
@@ -3067,7 +3067,7 @@ def actualizar_puesto(request):
                 else:
                     activo = False
                 
-                    oPos = Position.objects.get(pk=id)
+                oPos = Position.objects.get(pk=id)
 
                 if oPos:
                     oPos.description = desc
@@ -8433,7 +8433,6 @@ def guardar_banco(request):
             if request.method == 'POST':
                 nombre = request.POST['nombre']
                 desc = request.POST['desc']
-                code = request.POST['code']
                 activo = int(request.POST['activo'])
 
                 if len(nombre) == 0:
