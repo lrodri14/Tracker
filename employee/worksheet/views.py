@@ -12981,6 +12981,97 @@ def planilla_guardar(request):
         }
         return JsonResponse(data)
 
+def planilla_generar_calculos(request):
+    data = {}
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                planilla_id = request.POST["id"]
+                if len(planilla_id) == 0:
+                    data = {
+                        'error': True,
+                        'mensaje': 'No se pasó ningún parámetro de planilla.'
+                    }
+                    return JsonResponse(data)
+                else:
+                    if validarEntero(planilla_id):
+                        tot_reg = Planilla.objects.filter(pk=planilla_id).count()
+                        if tot_reg > 0:
+                            suc = Branch.objects.get(pk=request.session["sucursal"])
+                            o_planilla = Planilla.objects.get(pk=planilla_id)
+                            empleados = Employee.objects.filter(tipo_nomina=o_planilla.tipo_planilla, active=True)
+                            for item in empleados:
+                                total_dias_trabajados = 0
+                                salario_diario = 0
+                                total_ingreso = 0
+                                total_egreso = 0
+                                total_dias_trabajados = item.salaryUnits.dias_salario
+                                salario_diario = item.salario_diario
+                                total_ingreso = total_dias_trabajados * salario_diario
+
+                                o_planilla_detalle = PlanillaDetalle(
+                                    planilla = o_planilla,
+                                    empleado = item,
+                                    salario_diario = salario_diario,
+                                    dias_salario = item.salaryUnits.dias_salario,
+                                    dias_ausentes_sin_pago = 0,
+                                    dias_ausentes_con_pago = 0,
+                                    total_ingreso = total_ingreso,
+                                    total_egreso = total_egreso,
+                                    empresa_reg = suc.empresa,
+                                    sucursal_reg = suc,
+                                    user_reg = request.user,
+                                    active=True
+                                )
+                                o_planilla_detalle.save()
+
+                                o_planilla_detalle_ingreso = PlanillaDetalleIngresos(
+                                    empleado = item,
+                                    planilla = o_planilla,
+                                    ingreso = "Sueldo empleado ",
+                                    valor = total_dias_trabajados * salario_diario,
+                                    empresa_reg = suc.empresa,
+                                    sucursal_reg = suc,
+                                    user_reg = request.user
+                                )
+                                o_planilla_detalle_ingreso.save()
+                            data = {
+                                'error': False,
+                                'mensaje': 'Exito!.'
+                            }
+                            return JsonResponse(data)
+                        else:
+                            data = {
+                                'error': False,
+                                'mensaje': 'Exito!.'
+                            }
+                            return JsonResponse(data)
+                    else:
+                        data = {
+                            'error': True,
+                            'mensaje': 'Tipo de Dato como parámetro no es válido.'
+                        }
+                        return JsonResponse(data)
+            else:
+                data = {
+                    'error': True,
+                    'mensaje': 'El método no es válido.'
+                }
+                return JsonResponse(data)
+        else:
+            data = {
+                'error':True,
+                'mensaje': 'No es una petición asíncrona.'
+            }
+            return JsonResponse(data)
+    except ValueError as mensaje:
+        print(mensaje)
+        data = {
+            'error': True,
+            'mensaje': mensaje
+        }
+        return JsonResponse(data)
+
 import time
 def planilla_calculos_empleado(request):
     data = {}

@@ -3165,6 +3165,7 @@ $('#ingreso_individual_planilla #btnCancelar').on('click', function(e) {
     var txtPlDescripcion = $('#frmPlanilla textarea[name="descripcion"]');
 
     var btnGenerar = $('.planilla-generar #btnGenerar');
+    var btnGenerar2 = $('.planilla-generar #btnGenerar2');
 
     btnPlGuardar.on('click', function(e) {
         e.preventDefault();
@@ -3327,6 +3328,27 @@ $('#ingreso_individual_planilla #btnCancelar').on('click', function(e) {
                 
             });
         }
+    });
+
+    btnGenerar2.on('click', function(e) {
+
+        e.preventDefault();
+        url = '/generar/planilla2/';
+        metodo = 'POST';
+        data = {'id':cboPlanillas.val(), 'csrfmiddlewaretoken': token.val()};
+
+        $.ajax({
+            type: metodo,
+            url: url,
+            data: data,
+            success: function (data) {
+                console.log(data);
+            },
+            error: function (data) {
+                console.log(data);
+            },
+            dataType: 'json'
+        });
     });
 //#endregion
 

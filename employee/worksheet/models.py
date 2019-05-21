@@ -999,7 +999,7 @@ class PlanillaDetalleDeducciones(models.Model):
 class PlanillaDetalleIngresos(models.Model):
     empleado = models.ForeignKey("worksheet.Employee", verbose_name=("Empleado"), on_delete=models.PROTECT)
     planilla = models.ForeignKey("worksheet.Planilla", verbose_name=("Planilla"), on_delete=models.PROTECT)
-    ingreso = models.CharField(("Deduccion"), max_length=250)
+    ingreso = models.CharField(("Ingreso"), max_length=250)
     valor = models.DecimalField(("Valor"), max_digits=18, decimal_places=2)
     empresa_reg = models.ForeignKey(Empresa, on_delete=models.PROTECT)
     sucursal_reg = models.ForeignKey(Branch, on_delete=models.PROTECT)

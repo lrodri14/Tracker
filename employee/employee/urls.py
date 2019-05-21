@@ -237,10 +237,13 @@ urlpatterns = [
     url(r'^guardar/tipo-contrato/$', views.tipo_contrato_guardar, name='tipo_contrato_guardar'),
     url(r'^guardar/tipo-deduccion/$', views.tipo_deduccion_guardar, name='tipo_deduccion_guardar'),
     url(r'^guardar/tipo-ingreso/$', views.tipo_ingreso_guardar, name='tipo_ingreso_guardar'),
+    url(r'^guardar/tipo-nomina/$', views.tipo_nomina_guardar, name='tipo_nomina_guardar'),
     url(r'^guardar/tipo-salario/$', views.guardar_tipo_salario, name='guardar_tipo_salario'),
     url(r'^guardar/vendedor/$', views.guardar_vendedor, name='guardar_vendedor'),
 
     url(r'^generar/planilla/$', views.planilla_generar, name='planilla_generar'),
+    url(r'^generar/planilla2/$', views.planilla_generar_calculos, name='planilla_generar_calculos'),
+
 
     url(r'^actualizar/activo-asignado/$', views.actualizar_activo_asignado, name='actualizar_activo_asignado'),
     url(r'^actualizar/aumento-salario/$', views.aumento_salario_actualizar, name='aumento_salario_actualizar'),

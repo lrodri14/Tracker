@@ -332,11 +332,11 @@
                             {% if perms.worksheet.see_incrementossalariales %}
                             <li><a href="{% url 'aumento_salario_listado' %}" id="aAumSal" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Aumento de Salario</span></a></li>
                             {% endif %}
-			    {% comment '' %}
+			    
                             {% if perms.worksheet.see_planilla %}
                             <li><a href="{% url 'planilla_listado' %}" id="aPlanilla" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Planilla</span></a></li>
                             {% endif %}
-			    {% endcomment %}
+	
                         </ul>
                     </li>
                     
