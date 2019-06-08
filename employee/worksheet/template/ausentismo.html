@@ -90,7 +90,7 @@ Ausentismo
                                     <div class="col-md-7">
                                         <select class="form-control select2 input" name="au_motivos" id="cboAuEmp">
                                             <option value="0">Seleccionar...</option>
-                                            {% for item in motivos %} {% if editar %} {% if item == dato.empleado %}
+                                            {% for item in motivos %} {% if editar %} {% if item == dato.motivo %}
                                             <option value="{{item.pk}}" selected>{{item.descripcion}}</option>
                                             {% else %}
                                             <option value="{{item.pk}}">{{item.descripcion}}</option>

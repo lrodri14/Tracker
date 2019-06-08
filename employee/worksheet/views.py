@@ -17,6 +17,7 @@ import datetime
 from datetime import date
 import json
 import locale
+from django.db.models import Q
 locale.setlocale(locale.LC_ALL, '')
 
 # Create your views here.
@@ -547,8 +548,9 @@ def ausentismo(request):
 def ausentismo_editar(request, id):
     suc = Branch.objects.get(pk=request.session["sucursal"])
     dato = Ausentismo.objects.get(pk=id)
+    motivos = MotivosAusencia.objects.filter(active=True, empresa_reg=suc.empresa)
     empleados = Employee.objects.filter(active=True, empresa_reg=suc.empresa)
-    return render(request, 'ausentismo.html', {'editar':True, 'dato':dato, 'empleados':empleados})
+    return render(request, 'ausentismo.html', {'editar':True, 'dato':dato, 'empleados':empleados, 'motivos':motivos})
 
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.see_ausentismo', raise_exception=True)
@@ -5357,7 +5359,7 @@ def actualizar_ausentismo(request):
                         'empleado':oMd.empleado.pk,
                         'desde': oMd.desde,
                         'hasta': oMd.hasta,
-                        'motivo': oMd.motivo,
+                        'motivo': oMd.motivo.pk,
                         'activo': oMd.active,
                     }
                     mensaje = 'Se ha actualizado el registro.'
@@ -10057,7 +10059,6 @@ def deduccion_individual_planilla_actualizar(request):
         }
     return JsonResponse(data)
 
-
 def deduccion_individual_planilla_eliminar(request):
     try:
         if request.is_ajax():
@@ -13000,24 +13001,246 @@ def planilla_generar_calculos(request):
                             suc = Branch.objects.get(pk=request.session["sucursal"])
                             o_planilla = Planilla.objects.get(pk=planilla_id)
                             empleados = Employee.objects.filter(tipo_nomina=o_planilla.tipo_planilla, active=True)
+
+                            detalles_planillas_deducciones = PlanillaDetalleDeducciones.objects.filter(planilla=o_planilla)
+                            if detalles_planillas_deducciones.count() > 0:
+                                detalles_planillas_deducciones.delete()
+
+                            detalles_planillas = PlanillaDetalle.objects.filter(planilla=o_planilla)
+                            if detalles_planillas.count() > 0:
+                                detalles_planillas.delete()
+
+                            regs_planilla_ingresos = PlanillaDetalleIngresos.objects.filter(planilla=o_planilla)
+                            if regs_planilla_ingresos.count() > 0:
+                                regs_planilla_ingresos.delete()
+
                             for item in empleados:
+                                tipos_deducciones = []
+                                comentario = ""
+                                tigi = 0
+                                tigg = 0
+                                tigp = 0
+                                tii = 0
+                                tig = 0
+                                tip = 0
+                                tihss = 0
+                                sbb = 0
+
+                                tot_ded_ind = 0
+
+                                tot_ind_ded = 0
+                                tot_ind_ing = 0
+                                tot_gen_ing = 0
+                                tot_gen_ded = 0
+                                tot_pla_ing = 0
+                                tot_pla_ded = 0
                                 total_dias_trabajados = 0
                                 salario_diario = 0
                                 total_ingreso = 0
                                 total_egreso = 0
-                                total_dias_trabajados = item.salaryUnits.dias_salario
-                                salario_diario = item.salario_diario
+                                dias_ausencia_con_pago = 0
+                                dias_ausencia_sin_pago = 0
+                                deduccion_ihss = 0
+                                deduccion_rap = 0
+                                deduccion_isr = 0
+                                deduccion_vec = 0
+                                total_rap = 0
+                                total_dias_trabajados = int(item.salaryUnits.dias_salario)
+                                salario_diario = float(item.salario_diario)
+                                salario_mensual = salario_diario * 30
                                 total_ingreso = total_dias_trabajados * salario_diario
 
+                                #Ingreso Individual Detalle
+                                ingresos_individuales = IngresoIndividualDetalle.objects.filter(empleado=item, fecha_valida__gte=o_planilla.fecha_inicio, fecha_valida__lte=o_planilla.fecha_fin, active=True)
+                                for item1 in ingresos_individuales:
+                                    if item1.ingreso.gravable:
+                                        tigi += item1.valor
+                                    else:
+                                        tii += item1.valor
+                                    GuardarDetalleDeduccionIngreso(1, item1.ingreso.ingreso_i, item1.value, item, o_planilla, suc.empresa, suc, request.user)
+
+                                #Ingreso general
+                                ingresos_generales = IngresoGeneralDetalle.objects.filter(nomina=o_planilla, tipo_pago=o_planilla.frecuencia_pago, tipo_contrato=item.tipo_contrato, fecha_valida__gte=o_planilla.fecha_inicio, fecha_valida__lte=o_planilla.fecha_fin, active=True)
+                                for item2 in ingresos_generales:
+                                    if item2.ingreso.gravable:
+                                        tigg += item2.valor
+                                    else:
+                                        tig += item2.valor
+                                    GuardarDetalleDeduccionIngreso(1, item2.ingreso.ingreso_g, item2.value, item, o_planilla, suc.empresa, suc, request.user)
+
+                                #Ingreso Individual Planilla
+                                ingresos_planilla = IngresoIndividualPlanilla.objects.filter(empleado=item, planilla=o_planilla, active=True)
+                                for item3 in ingresos_planilla:
+                                    if item3.ingreso.gravable:
+                                        tigp += item3.valor
+                                    else:
+                                        tip = tot_pla_ing + item3.valor
+                                    GuardarDetalleDeduccionIngreso(1, item3.ingreso.ingreso_i, item3.value, item, o_planilla, suc.empresa, suc, request.user)
+
+                                ausencias_con_pago = Ausentismo.objects.filter(Q(desde__range=(o_planilla.fecha_inicio, o_planilla.fecha_fin)) | Q(hasta__range=(o_planilla.fecha_inicio, o_planilla.fecha_fin)) | Q(desde__lt=o_planilla.fecha_inicio, hasta__gt=o_planilla.fecha_fin), empleado=item, sucursal_reg=suc, motivo__pagado=True, active=True)
+                                if ausencias_con_pago.count() > 0:
+                                    dias_ausencia_con_pago = 1
+                                    tot_ajuste_lempiras = 0
+                                    for item1 in ausencias_con_pago:
+                                        dias_ausencia = 1
+                                        dias_ausencia = dias_ausencia + (item1.hasta - item1.desde).days
+                                        dias_ausencia_con_pago = dias_ausencia_con_pago + (item1.hasta - item1.desde).days
+                                        dias_normales = 0
+                                        dias_ajustes = 0
+                                        tot_dias_ajuste = 0
+                                        ajustes = SeguroSocialAjuste.objects.filter(empresa_reg=suc.empresa, active=True)
+                                        if ajustes.count() > 0:
+                                            o_ajustes = ajustes[0]
+                                            if dias_ausencia > int(o_ajustes.maximo_dias):
+                                                if item1.desde >= o_planilla.fecha_inicio and item1.hasta <= o_planilla.fecha_fin:
+                                                    dias_ausencia = 1
+                                                    tot_dias_ajuste = (dias_ausencia + (item1.hasta - item1.desde).days) - int(o_ajustes.maximo_dias)
+
+                                                if item1.desde < o_planilla.fecha_inicio and item1.hasta <= o_planilla.fecha_fin:
+                                                    tot_dias_planilla = 1
+                                                    tot_dias_planilla = tot_dias_planilla + (item1.hasta - o_planilla.fecha_inicio).days
+                                                    tot_dias = dias_ausencia_con_pago - tot_dias_planilla
+                                                    tot_dias = int(o_ajustes.maximo_dias) - tot_dias
+                                                    tot_dias_planilla = tot_dias_planilla - tot_dias
+                                                    if tot_dias_planilla > int(item.salaryUnits.dias_salario):
+                                                        tot_dias_planilla = int(item.salaryUnits.dias_salario)
+                                                        tot_dias_ajuste = tot_dias_planilla
+
+                                                if item1.desde < o_planilla.fecha_inicio and item1.hasta > o_planilla.fecha_fin:
+                                                    tot_dias_planilla = 1
+                                                    tot_dias_planilla = tot_dias_planilla + (o_planilla.fecha_fin - o_planilla.fecha_inicio).days
+                                                    tot_dias_resta = 1 + (o_planilla.fecha_fin - item1.desde).days
+                                                    tot_dias_resta = tot_dias_resta - tot_dias_planilla
+                                                    if tot_dias_resta < int(o_ajustes.maximo_dias):
+                                                        tot_dias_resta = int(o_ajustes.maximo_dias) - tot_dias_resta
+                                                        tot_dias_planilla = tot_dias_planilla - tot_dias_resta
+                                                        tot_dias_ajuste = tot_dias_planilla
+
+                                                if item1.desde >= o_planilla.fecha_inicio and item1.hasta > o_planilla.fecha_fin:
+                                                    tot_dias_planilla = 1
+                                                    tot_dias_planilla = tot_dias_planilla + (o_planilla.fecha_fin - item1.desde).days
+                                                    if tot_dias_planilla > int(o_ajustes.maximo_dias):
+                                                        tot_dias_planilla = tot_dias_planilla - int(o_ajustes.maximo_dias)
+                                                        tot_dias_ajuste = tot_dias_planilla
+                                                
+                                                tot_ajuste = tot_dias_ajuste * (salario_diario * ((100 - float(o_ajustes.porcentaje)) / 100))
+                                                tot_ajuste_lempiras += tot_ajuste
+                                                total_ingreso = total_ingreso - tot_ajuste
+                                                total_egreso = total_egreso + tot_ajuste_lempiras
+                                                comentario = "Su salario ha disminuido por concepto de ausencia médica que cubre el IHSS"
+                                                GuardarDetalleDeduccionIngreso(2, "Deducción de salario por incapacidad cubierta por IHSS", tot_ajuste, item, o_planilla, suc.empresa, suc, request.user)
+
+
+                                dedaplicada = EmpleadoDeducciones.objects.filter(empleado=item, empresa_reg=suc.empresa, deduccion='IHSS', active=True)
+                                if dedaplicada.count() > 0:
+                                    tipos_ihss = SeguroSocial.objects.filter(empresa_reg=suc.empresa, active=True)
+                                    sbb = salario_mensual + tigi + tigg + tigp
+                                    
+                                    for item4 in tipos_ihss:
+                                        if sbb > float(item4.techo):
+                                            sbb = float(item4.techo)
+                                        deduccion_ihss = deduccion_ihss + (sbb * (float(item4.porcentaje_e) / 100))
+
+                                    deduccion_tipo = TipoDeduccion.objects.filter(tipo_deduccion='IHSS', empresa_reg=suc.empresa, active=True)
+                                    if deduccion_tipo.count() > 0:
+                                        orden = int(deduccion_tipo[0].orden)
+                                    else:
+                                        orden = 0
+                                    if deduccion_ihss > 0:
+                                        tipo_deduccion = {'nombre': 'IHSS', 'valor': deduccion_ihss, 'orden': orden}
+                                        tipos_deducciones.append(tipo_deduccion)
+
+                                dedaplicada = EmpleadoDeducciones.objects.filter(empleado=item, empresa_reg=suc.empresa, deduccion='RAP', active=True)
+                                if dedaplicada.count() > 0:
+                                    
+                                    tipos_rap = RapDeduccion.objects.filter(empresa_reg=suc.empresa, active=True)
+                                    for item5 in tipos_rap:
+                                        if sbb > float(item5.techo):
+                                            sbb = float(item5.techo)
+                                        deduccion_rap = deduccion_rap + (sbb * (float(item5.porcentaje)/100))
+                                    deduccion_tipo = TipoDeduccion.objects.filter(tipo_deduccion='RAP', empresa_reg=suc.empresa, active=True)
+                                    if deduccion_tipo.count() > 0:
+                                        orden = int(deduccion_tipo[0].orden)
+                                    else:
+                                        orden = 0
+
+                                    if deduccion_rap > 0:
+                                        tipo_deduccion = {'nombre': 'RAP', 'valor': deduccion_rap, 'orden': orden}
+                                        tipos_deducciones.append(tipo_deduccion)
+
+                                dedaplicada = EmpleadoDeducciones.objects.filter(empleado=item, empresa_reg=suc.empresa, deduccion='ISR', active=True)
+                                if dedaplicada.count() > 0:
+                                    tipos_isr = ImpuestoSobreRenta.objects.filter(empresa_reg=suc.empresa, desde__lte=sbb, hasta__gte=sbb, active=True).order_by('-id')
+                                    if tipos_isr.count() > 0:
+                                        o_tipoisr = tipos_isr[0]
+                                        deduccion_tipo = TipoDeduccion.objects.filter(tipo_deduccion='ISR', empresa_reg=suc.empresa, active=True)
+                                        if deduccion_tipo.count() > 0:
+                                            orden = int(deduccion_tipo[0].orden)
+                                        else:
+                                            orden = 0
+                                        deduccion_isr = sbb * (float(o_tipoisr.porcentaje) / 100)
+                                        if deduccion_isr > 0:
+                                            tipo_deduccion = {'nombre': 'ISR', 'valor': deduccion_isr, 'orden': orden}
+                                            tipos_deducciones.append(tipo_deduccion)
+
+                                dedaplicada = EmpleadoDeducciones.objects.filter(empleado=item, empresa_reg=suc.empresa, deduccion='IMV', active=True)
+                                if dedaplicada.count() > 0:
+                                    tipos_vec = ImpuestoVecinal.objects.filter(empresa_reg=suc.empresa, desde__lte=sbb, hasta__gte=sbb, active=True).order_by('-id')
+                                    if tipos_vec.count() > 0:
+                                        o_tipovec = tipos_vec[0]
+                                        deduccion_tipo = TipoDeduccion.objects.filter(tipo_deduccion='IMV', empresa_reg=suc.empresa, active=True)
+                                        if deduccion_tipo.count() > 0:
+                                            orden = int(deduccion_tipo[0].orden)
+                                        else:
+                                            orden = 0
+                                        deduccion_vec = sbb * (float(o_tipovec.porcentaje) / 100)
+                                        if deduccion_vec > 0:
+                                            tipo_deduccion = {'nombre': 'IMV', 'valor': deduccion_vec, 'orden': orden}
+                                            tipos_deducciones.append(tipo_deduccion)
+
+                                #Deduccion Individual Detalle
+                                deducciones_individuales = DeduccionIndividualDetalle.objects.filter(empleado=item, fecha_valida__gte=o_planilla.fecha_inicio, fecha_valida__lte=o_planilla.fecha_fin, active=True)
+                                for item6 in deducciones_individuales:
+                                    tipo_deduccion = {'nombre': item6.deduccion.deduccion_i, 'valor': item6.valor, 'orden': item6.deduccion.tipo_deduccion.orden}
+                                    tipos_deducciones.append(tipo_deduccion)
+                                    tot_ind_ded = tot_ind_ded + item6.valor
+
+                                #Deduccion general
+                                deducciones_generales = DeduccionGeneralDetalle.objects.filter(nomina=o_planilla, tipo_pago=o_planilla.frecuencia_pago, tipo_contrato=item.tipo_contrato, fecha_valido__gte=o_planilla.fecha_inicio, fecha_valido__lte=o_planilla.fecha_fin, active=True)
+                                for item7 in deducciones_generales:
+                                    tipo_deduccion = {'nombre': item7.deduccion.deduccion_g, 'valor': item7.valor, 'orden': item7.deduccion.tipo_deduccion.orden}
+                                    tipos_deducciones.append(tipo_deduccion)
+                                    tot_gen_ded = tot_gen_ded + item7.valor
+
+                                #Deducción Individual Planilla
+                                deducciones_planilla = DeduccionIndividualPlanilla.objects.filter(empleado=item, planilla=o_planilla, active=True)
+                                for item8 in deducciones_planilla:
+                                    tipo_deduccion = {'nombre': item8.deduccion.deduccion_i, 'valor': item8.valor, 'orden': item8.deduccion.tipo_deduccion.orden}
+                                    tipos_deducciones.append(tipo_deduccion)
+                                    tot_pla_ded = tot_pla_ded + item8.valor
+
+                                lista_deducciones_tipos = TipoDeduccion.objects.filter(empresa_reg=suc.empresa, active=True).order_by('orden')
+                                for item9 in lista_deducciones_tipos:
+                                    for item9_1 in tipos_deducciones:
+                                        if float(item9_1["orden"]) == float(item9.orden):
+                                            total_ingreso = total_ingreso - float(item9_1["valor"])
+                                            total_egreso = total_egreso + float(item9_1["valor"])
+                                            GuardarDetalleDeduccionIngreso(2, item9_1["nombre"], item9_1["valor"], item, o_planilla, suc.empresa, suc, request.user)
+                                
+                                # total_egreso = float(total_egreso) + float(tot_ind_ded)
+                                # total_ingreso = float(total_ingreso) - float(tot_ind_ded)
+                                
+                                total_ingreso = total_ingreso - (dias_ausencia_sin_pago * salario_diario)
                                 o_planilla_detalle = PlanillaDetalle(
                                     planilla = o_planilla,
                                     empleado = item,
                                     salario_diario = salario_diario,
                                     dias_salario = item.salaryUnits.dias_salario,
-                                    dias_ausentes_sin_pago = 0,
-                                    dias_ausentes_con_pago = 0,
-                                    total_ingreso = total_ingreso,
-                                    total_egreso = total_egreso,
+                                    dias_ausentes_sin_pago = dias_ausencia_sin_pago,
+                                    dias_ausentes_con_pago = dias_ausencia_con_pago,
+                                    total_ingresos = total_ingreso,
+                                    total_deducciones = total_egreso,
+                                    comentario = comentario,
                                     empresa_reg = suc.empresa,
                                     sucursal_reg = suc,
                                     user_reg = request.user,
@@ -13029,12 +13252,13 @@ def planilla_generar_calculos(request):
                                     empleado = item,
                                     planilla = o_planilla,
                                     ingreso = "Sueldo empleado ",
-                                    valor = total_dias_trabajados * salario_diario,
+                                    valor = total_ingreso,
                                     empresa_reg = suc.empresa,
                                     sucursal_reg = suc,
                                     user_reg = request.user
                                 )
                                 o_planilla_detalle_ingreso.save()
+
                             data = {
                                 'error': False,
                                 'mensaje': 'Exito!.'
@@ -13043,7 +13267,7 @@ def planilla_generar_calculos(request):
                         else:
                             data = {
                                 'error': False,
-                                'mensaje': 'Exito!.'
+                                'mensaje': 'No existe registro de planilla!.'
                             }
                             return JsonResponse(data)
                     else:
@@ -13071,6 +13295,30 @@ def planilla_generar_calculos(request):
             'mensaje': mensaje
         }
         return JsonResponse(data)
+
+def GuardarDetalleDeduccionIngreso(tipo, mensaje, valor, empleado, planilla, empresa, sucursal, usuario):
+    if tipo == 1:
+        o_ingreso = PlanillaDetalleIngresos(
+            empleado = empleado,
+            planilla = planilla,
+            ingreso = mensaje,
+            valor = valor,
+            empresa_reg = empresa,
+            sucursal_reg = sucursal,
+            user_reg = usuario,
+        )
+        o_ingreso.save()
+    elif tipo == 2:
+        o_deduccion = PlanillaDetalleDeducciones(
+            empleado = empleado,
+            planilla = planilla,
+            deduccion = mensaje,
+            valor = valor,
+            empresa_reg = empresa,
+            sucursal_reg = sucursal,
+            user_reg = usuario,
+        )
+        o_deduccion.save()
 
 import time
 def planilla_calculos_empleado(request):
@@ -13330,6 +13578,8 @@ def planilla_ver_registro(request):
 def planilla_generada(request):
     datos = []
     detalle_planilla = None
+    ingresos = 0
+    deducciones = 0
     if request.is_ajax():
         planilla_id = int(request.GET.get("Id"))
         if planilla_id == 0:
@@ -13342,23 +13592,27 @@ def planilla_generada(request):
                 dias_trabajo = float(item.dias_salario) - float(item.dias_ausentes_sin_pago)
                 total_salario = float(dias_trabajo) * float(item.salario_diario)
                 objeto = {
+                    'id':item.pk,
                     'empleado': item.empleado,
                     'planilla': item.planilla,
                     'salario_diario': item.salario_diario,
                     'dias_ausentes_sin_pago': item.dias_ausentes_sin_pago,
                     'dias_ausentes_con_pago': item.dias_ausentes_con_pago,
-                    'total_ingresos': locale.format("%.2f", float(item.total_ingresos) + float(total_salario), grouping=True),
+                    'total_ingresos': locale.format("%.2f", float(item.total_ingresos), grouping=True),
                     'total_deducciones': locale.format("%.2f", item.total_deducciones, grouping=True),
                     'total_salario': locale.format("%.2f", total_salario, grouping=True),
                 }
                 datos.append(objeto)
+            ingresos = PlanillaDetalleIngresos.objects.filter(planilla__pk=planilla_id)
+            deducciones = PlanillaDetalleDeducciones.objects.filter(planilla__pk=planilla_id)
+            
             error = False
             mensaje = "Datos encontrados"
     else:
         error = True
         mensaje = "Método no permitido"
 
-    return render(request, 'ajax/planilla_empleados_lista.html', {'detalle_planilla': datos})
+    return render(request, 'ajax/planilla_empleados_lista.html', {'detalle_planilla': datos, 'ingresos': ingresos, 'deducciones': deducciones})
 #------------------------------END AJAX---------------------------------
 
 #endregion

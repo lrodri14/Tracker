@@ -3227,10 +3227,6 @@ $('#ingreso_individual_planilla #btnCancelar').on('click', function(e) {
 
     valor = 0;
     var cboPlanillas = $('.planilla-generar #cboPlanillas');
-
-    function sleep(time) {
-        return new Promise((resolve) => setTimeout(resolve, time));
-    }
     
     var prog = 0;
     var prog2 = 0;
@@ -3256,8 +3252,6 @@ $('#ingreso_individual_planilla #btnCancelar').on('click', function(e) {
                     }else{
                         ldatos = data.empleados;
                         totalID = ldatos.length;
-                        ldatos.forEach(item => {
-                        });
                     }
                 }
             },
@@ -3306,32 +3300,15 @@ $('#ingreso_individual_planilla #btnCancelar').on('click', function(e) {
                 obtener_planilla_generada(cboPlanillas.val());
             }
         }
-
-        function obtener_planilla_generada(Id_Planilla) {
-            $.ajax({
-                type: "GET",
-                url: "/obtener/planilla-generada/",
-                data: {'Id': Id_Planilla},
-                success: function (data) {
-                    if (data.error) {
-                        console.log(data.mensaje);
-                    }else{
-                        $('.lista-empleados').html(data);
-                    };
-                },
-                error: function (data) {
-                    errores = errores + 1;
-                    console.log("Error: " + data);
-                },
-                dataType: 'html'
-            }).done(function () {
-                
-            });
-        }
     });
 
     btnGenerar2.on('click', function(e) {
-
+        $('div.block5').block({
+            message: '<h4><img src="../../static/plugins/images/busy.gif" /> Espere un momento...</h4>',
+            css: {
+                border: '1px solid #fff',
+            }
+        });
         e.preventDefault();
         url = '/generar/planilla2/';
         metodo = 'POST';
@@ -3342,14 +3319,40 @@ $('#ingreso_individual_planilla #btnCancelar').on('click', function(e) {
             url: url,
             data: data,
             success: function (data) {
-                console.log(data);
+                if (data.error != true) {
+                    obtener_planilla_generada(cboPlanillas.val());
+                };
             },
             error: function (data) {
                 console.log(data);
             },
             dataType: 'json'
+        }).done(function() {
+            $('div.block5').unblock();
         });
     });
+
+    function obtener_planilla_generada(Id_Planilla) {
+        $.ajax({
+            type: "GET",
+            url: "/obtener/planilla-generada/",
+            data: {'Id': Id_Planilla},
+            success: function (data) {
+                if (data.error) {
+                    console.log(data.mensaje);
+                }else{
+                    $('.lista-empleados').html(data);
+                };
+            },
+            error: function (data) {
+                errores = errores + 1;
+                console.log("Error: " + data);
+            },
+            dataType: 'html'
+        }).done(function () {
+            
+        });
+    }
 //#endregion
 
 //#region Código para Salario Minimo

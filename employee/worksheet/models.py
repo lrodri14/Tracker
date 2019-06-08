@@ -671,6 +671,7 @@ class ImagenEmpleado(models.Model):
 class TipoDeduccion(models.Model):
     tipo_deduccion = models.CharField(max_length=50)
     descripcion = models.TextField()
+    orden = models.CharField(("Orden"), max_length=50, blank=True, null=True)
     empresa_reg = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING)
     user_reg = models.ForeignKey(User, on_delete=models.PROTECT)
     date_reg = models.DateTimeField(auto_now_add=True)
@@ -683,7 +684,7 @@ class TipoDeduccion(models.Model):
         verbose_name_plural = "Tipo Deducciones"
 
     def __str__(self):
-        return self.tipo_deduccion
+        return self.tipo_deduccion + " - " + str(self.orden)
 
 class TipoIngreso(models.Model):
     tipo_ingreso = models.CharField(max_length=50)
@@ -870,7 +871,7 @@ class ImpuestoVecinal(models.Model):
         verbose_name_plural = ("Impuestos Vecinales")
 
     def __str__(self):
-        return self.name
+        return "%s | %s"%(self.date_reg, self.porcentaje_label)
 
 class HoraExtra(models.Model):
     jornada = models.CharField(("Jornada"), max_length=50)
@@ -960,6 +961,7 @@ class PlanillaDetalle(models.Model):
     dias_ausentes_con_pago = models.CharField(max_length=50)
     total_ingresos = models.DecimalField(("Total Ingresos"), max_digits=18, decimal_places=2, blank=True, null=True)
     total_deducciones = models.DecimalField(("Total Deducciones"), max_digits=18, decimal_places=2, blank=True, null=True)
+    comentario = models.TextField(("Comentario"))
 
     empresa_reg = models.ForeignKey(Empresa, on_delete=models.PROTECT)
     sucursal_reg = models.ForeignKey(Branch, on_delete=models.PROTECT)
@@ -1147,10 +1149,74 @@ class UsuarioCorporacion(models.Model):
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.NullBooleanField(blank=True, null=True)
     
-
     class Meta:
         verbose_name = ("Usuario Corporacion")
         verbose_name_plural = ("Usuarios Corporaciones")
 
     def __str__(self):
         return self.usuario.username + " - " + self.corporacion.nombreComercial
+
+class SeguroSocialAjuste(models.Model):
+    porcentaje = models.DecimalField(("Porcentaje"), max_digits=9, decimal_places=4)
+    maximo_dias = models.CharField(("Maximo Dias"), max_length=50)
+    
+    empresa_reg = models.ForeignKey(Empresa, on_delete=models.PROTECT)
+    user_reg = models.ForeignKey(User, verbose_name=("Usuario registro"), on_delete=models.PROTECT)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='segsocajus_usermod', related_query_name='segsocajus_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.BooleanField(("Activo"))
+
+    class Meta:
+        verbose_name = ("segurosocialajuste")
+        verbose_name_plural = ("segurosocialajustes")
+
+    def __str__(self):
+        return str(self.porcentaje)
+
+class RapDeduccion(models.Model):
+    techo = models.CharField(max_length=70)
+    porcentaje = models.CharField(max_length=50)
+
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.PROTECT)
+    user_reg = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='rapded_usermod', related_query_name='rapded_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.NullBooleanField(blank=True, null=True)
+
+    class Meta:
+        verbose_name = ("Rap Deduccion")
+        verbose_name_plural = ("Rap Deducciones")
+
+    def __str__(self):
+        return str(self.porcentaje)
+
+class EmpleadoDeducciones(models.Model):
+    IHSS = 'IHSS'
+    RAP = 'RAP'
+    ISR = 'ISR'
+    IMV = 'IMV'
+    DEDUCCIONES = [
+        (IHSS, 'IHSS'),
+        (RAP, 'RAP'),
+        (ISR, 'Impuesto Sobre Renta'),
+        (IMV, 'Impuesto Vecinal'),
+    ]
+    empleado = models.ForeignKey("worksheet.employee", verbose_name=("Empleado"), on_delete=models.PROTECT)
+    deduccion = models.CharField(("Deduccion"), max_length=50, choices=DEDUCCIONES)
+
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.PROTECT)
+    user_reg = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='empded_usermod', related_query_name='empded_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.NullBooleanField(blank=True, null=True)
+
+    class Meta:
+        verbose_name = ("Asignar Deduccion Legal Empleado")
+        verbose_name_plural = ("Asignar Deducciones Legales a Empleado")
+
+    def __str__(self):
+        return str(self.empleado.firstName + " " + self.empleado.lastName) + " | " + self.deduccion
+
