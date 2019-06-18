@@ -1,0 +1,38 @@
+<div class="row">
+    <div class="col-sm-12">
+        <div class="white-box">
+            <h3 class="box-title m-b-0">Datos de Deducciones</h3>
+            <div class="table-responsive">
+                <button id="btnAgregarEmpleadoDeduccion" alt="default" data-toggle="modal" data-target="#form-empleado-deduccion" class="pull-right btn btn-primary">Agregar</button>
+                <table id="myTable" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Deduccion</th>
+                            <th>Descripción</th>
+                            <th>Tipo de Periodo de Pago</th>
+                            <th>Periodo de Pago</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in deducciones %}
+                        <tr>
+                            <td>{{item.deduccion}}</td>
+                            <td>
+                            {% for item2 in tipos_deducciones %}
+                                {% if item.deduccion == item2.tipo_deduccion %}
+                                {{item2.descripcion}}
+                                {% endif %}
+                            {% endfor %}
+                            </td>
+                            <td>{% if item.deduccion_parcial %}<span class="text-success">Parcial</span>{% else %}<span class="text-primary">Completa</span>{% endif %}</td>
+                            <td>{{item.periodo}}</td>
+                            <td> <a href="#" data="{{item.pk}}" data-toggle="modal" data-target="#form-empleado-deduccion" class="btnEditarDeduccionEmp btn btn-warning">Editar</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

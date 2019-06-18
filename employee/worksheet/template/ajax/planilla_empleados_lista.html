@@ -1,35 +1,35 @@
-{% comment %} <div class="row">
+<div class="row">
     <div class="col-md-12">
         <div class="table-responsive">
-            <table class="table">
+            <table id="detalle_planilla" class="table">
                 <htead>
                     <th>Empleado</th>
-                    <th>Ingresos</th>
-                    <th>Deducciones</th>
+                    <th><span class="pull-right">Ingresos</span></th>
+                    <th><span class="pull-right">Deducciones</span></th>
                 </htead>
                 <tbody>
                     {% for detalle in detalle_planilla %}
-                    <tr data-toggle="collapse" data-target="#vdet{{detalle.id}}" class="accordion-toggle">
+                    <tr data-toggle="collapse" data-target="#vdet{{detalle.id}}" class="detalle_item accordion-toggle">
                         <td>{{detalle.empleado.firstName}} {% if detalle.empleado.middleName %}{{detalle.empleado.middleName}}{% endif %} {{detalle.empleado.lastName}}</td>
-                        <td>{{detalle.total_ingresos}}</td>
-                        <td>{{detalle.total_deducciones}}</td>
+                        <td><span class="pull-right"><strong>{{detalle.total_ingresos}}</strong></span></td>
+                        <td><span class="pull-right"><strong>{{detalle.total_deducciones}}</strong></span></td>
                     </tr>
                     <tr class="detalle_emp">    
                         <td colspan="6" class="hiddenRow">
                             <div class="accordian-body collapse" id="vdet{{detalle.id}}">
-                                <div class="table-responsive col-md-12">
+                                <div class="table-responsive col-md-6">
                                     <table class="table">
                                         <thead>
                                             <th>Descripción</th>
                                             <th><span class="pull-right">Ingreso</span></th>
                                             <th><span class="pull-right">Deducción</span></th>
                                         </thead>
-                                        <tbody>
+                                        <tbody class="body-item-detalle">
                                             {% for item1 in ingresos %}
                                                 {% if detalle.empleado == item1.empleado %}
                                                 <tr>
                                                     <td>{{item1.ingreso}}</td>
-                                                    <td><span class="pull-right">{{item1.valor}}</span></td>
+                                                    <td><span class="text-success pull-right"><strong>{{item1.valor}}</strong></span></td>
                                                     <td></td>
                                                 </tr>
                                                 {% endif %}
@@ -37,9 +37,9 @@
                                             {% for item2 in deducciones %}
                                                 {% if detalle.empleado == item2.empleado %}
                                                 <tr>
-                                                    <td>{{item1.deduccion}}</td>
+                                                    <td>{{item2.deduccion}}</td>
                                                     <td></td>
-                                                    <td><span class="pull-right">{{item2.valor}}</span></td>
+                                                    <td><span class="text-danger pull-right"><strong>{{item2.valor}}</strong></span></td>
                                                 </tr>
                                                 {% endif %}
                                             {% endfor %}
@@ -50,78 +50,13 @@
                         </td>
                     </tr>
                     {% endfor %}
+                    <tr>
+                    <td>TOTAL PLANILLA</td>
+                    <td><span class="pull-right"><strong>{{total_ingresos}}</strong></span></td>
+                    <td><span class="pull-right"><strong>{{total_deducciones}}</strong></span></td>
+                    </tr>
                 </tbody>
             </table>
         </div>
-    </div>
-</div> {% endcomment %}
-{% comment %} <div class="col-md-12"> {% endcomment %}
-{% comment %} {% for item in detalle_planilla %}
-<div class="col-md-12">
-    <div>
-        <div class="col-md-6">{{item.empleado.firstName}} {% if item.empleado.middleName %}{{item.empleado.middleName}}{% endif %} {{item.empleado.lastName}}</div>
-        <div class="col-md-3 text-right">{{item.total_ingresos}}</div>
-        <div class="col-md-3 text-right">{{item.total_deducciones}}</div>
-        <div class="panel-action"><a href="#" data-perform="panel-collapse"><i class="ti-menu-alt"></i></a></div>
-    </div>
-    <div id="detalle{{item.empleado.pk}}" class="panel-wrapper collapse">
-        <div class="col-md-12"><label>Descripción</label></div>
-        {% for item1 in ingresos %}
-            {% if item.empleado == item1.empleado %}
-            <div class="col-md-6">{{item1.ingreso}}</div>
-            <div class="col-md-3 text-right">{{item1.valor}}</div>
-            <div class="col-md-3 text-right"></div>
-            {% endif %}
-        {% endfor %}
-        {% for item2 in deducciones %}
-            {% if item.empleado == item2.empleado %}
-            <div class="col-md-6">{{item2.deduccion}}</div>
-            <div class="col-md-3 text-right"></div>
-            <div class="col-md-3 text-right">{{item2.valor}}</div>
-            {% endif %}
-        {% endfor %}
-    </div>
-</div>
-{% endfor %} {% endcomment %}
-    {% comment %} <table class="table table-condensed" style="border-collapse:collapse;">
-    <thead>
-        <tr>
-            <th>Empleado</th>
-            <th>Ingresos</th>
-            <th>Deducciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for detalle in detalle_planilla %}
-        <tr data-toggle="collapse" data-target="#vdet{{detalle.id}}" class="accordion-toggle">
-            <td>{{detalle.empleado.firstName}} {% if detalle.empleado.middleName %}{{detalle.empleado.middleName}}{% endif %} {{detalle.empleado.lastName}}</td>
-            <td>{{detalle.total_ingresos}}</td>
-            <td>{{detalle.total_deducciones}}</td>
-        </tr>
-        <tr>
-            <td colspan="6" class="hiddenRow"><div class="accordian-body collapse" id="vdet{{detalle.id}}">Detalle planilla {{detalle.id}}</div></td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-</div> {% endcomment %}
-<div class="row">
-    <div class="col-md-12">
-        {% for item in detalle_planilla %}
-        <div data-toggle="collapse" data-target="#vdet{{item.id}}" class="tabla-detalle accordion-toggle">
-            <div class="col-md-6">{{item.empleado.firstName}} {% if item.empleado.middleName %}{{item.empleado.middleName}}{% endif %} {{item.empleado.lastName}}</div>
-            <div class="col-md-3 text-right">{{item.total_ingresos}}</div>
-            <div class="col-md-3 text-right">{{item.total_deducciones}}</div>
-        </div>
-        <div>
-            <div class="hiddenRow">
-                <div class="accordian-body collapse" id="vdet{{item.id}}">
-                    <div class="col-md-6">{{item.empleado.firstName}} {% if item.empleado.middleName %}{{item.empleado.middleName}}{% endif %} {{item.empleado.lastName}}</div>
-                    <div class="col-md-3 text-right">{{item.total_ingresos}}</div>
-                    <div class="col-md-3 text-right">{{item.total_deducciones}}</div>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
     </div>
 </div>

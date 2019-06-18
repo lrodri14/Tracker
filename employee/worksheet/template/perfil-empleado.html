@@ -47,63 +47,25 @@
                             </div>
                         </div>
                     </div>
-                    
                     <!--ENCABEZADO DE -->
                     <div class="col-md-8 col-xs-12">
                             <div class="white-box">
+                            {% csrf_token %}
                                 <ul class="nav nav-tabs tabs customtab">
                                     <li class="active tab">
                                         <a href="#profile" data-toggle="tab"> <span class="visible-xs"><i class="fa fa-home"></i></span> <span class="hidden-xs">Perfil</span> </a>
                                     </li>
                                     <li class="tab">
+                                        <a href="#deducciones" data-toggle="tab" aria-expanded="false"> <span class="visible-xs"><i class="fa fa-cog"></i></span> <span class="hidden-xs">Deducciones</span> </a>
+                                    </li>
+                                    <li class="tab">
                                         <a href="#settings" data-toggle="tab" aria-expanded="false"> <span class="visible-xs"><i class="fa fa-cog"></i></span> <span class="hidden-xs">Editar</span> </a>
                                     </li>
                                     <li class="tab">
-                                            <a href="#graph" data-toggle="tab" aria-expanded="false"> <span class="visible-xs"><i class="icon-graph"></i></span> <span class="hidden-xs">Analisís de datos</span> </a>
-                                        </li>
+                                        <a href="#graph" data-toggle="tab" aria-expanded="false"> <span class="visible-xs"><i class="icon-graph"></i></span> <span class="hidden-xs">Analisís de datos</span> </a>
+                                    </li>
                                 </ul>
                                 <div class="tab-content">
-                                    <div class="tab-pane " id="home">
-                                        <div class="steamline">
-                                            <div class="sl-item">
-                                                <div class="sl-left"> <img src="{% static 'plugins/images/users/genu.jpg' %}" alt="user" class="img-circle" /> </div>
-                                                <div class="sl-right">
-                                                    <div class="m-l-40"><a href="#" class="text-info">John Doe</a> <span class="sl-date">5 minutes ago</span>
-                                                        <p>assign a new task <a href="#"> Design weblayout</a></p>
-                                                        <div class="m-t-20 row"><img src="{% static 'plugins/images/img1.jpg' %}" alt="user" class="col-md-3 col-xs-12" /> <img src="../plugins/images/img2.jpg" alt="user" class="col-md-3 col-xs-12" /> <img src="../plugins/images/img3.jpg" alt="user" class="col-md-3 col-xs-12" /></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="sl-item">
-                                                <div class="sl-left"> <img src="../plugins/images/users/sonu.jpg" alt="user" class="img-circle" /> </div>
-                                                <div class="sl-right">
-                                                    <div class="m-l-40"> <a href="#" class="text-info">John Doe</a> <span class="sl-date">5 minutes ago</span>
-                                                        <div class="m-t-20 row">
-                                                            <div class="col-md-2 col-xs-12"><img src="../plugins/images/img1.jpg" alt="user" class="img-responsive" /></div>
-                                                            <div class="col-md-9 col-xs-12">
-                                                                <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa</p> <a href="#" class="btn btn-success"> Design weblayout</a></div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="sl-item">
-                                                <div class="sl-left"> <img src="../plugins/images/users/ritesh.jpg" alt="user" class="img-circle" /> </div>
-                                                <div class="sl-right">
-                                                    <div class="m-l-40"><a href="#" class="text-info">John Doe</a> <span class="sl-date">5 minutes ago</span>
-                                                        <p class="m-t-10"> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="sl-item">
-                                                <div class="sl-left"> <img src="../plugins/images/users/govinda.jpg" alt="user" class="img-circle" /> </div>
-                                                <div class="sl-right">
-                                                    <div class="m-l-40"><a href="#" class="text-info">John Doe</a> <span class="sl-date">5 minutes ago</span>
-                                                        <p>assign a new task <a href="#"> Design weblayout</a></p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                     <div class="tab-pane active" id="profile">
                                         <div class="row">
                                             <div class="col-md-4 col-xs-6 b-r"> <strong>Primer nombre</strong>
@@ -474,6 +436,10 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="tab-pane" id="deducciones">
+                                        <input type="hidden" name="empleado_id" text="{{dato.pk}}" />
+                                        <div id="detalle-deducciones"></div>
+                                    </div>
                                     <div class="tab-pane" id="settings">
                                         <form name="frmImagen" id="frmImagenEmp" class="form-horizontal form-material">
                                             {% csrf_token %}
@@ -534,6 +500,64 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row">
+                    <div class="col-md-4">
+                        <!-- sample modal content -->
+                        <!-- /.modal -->
+                        <div id="form-empleado-deduccion" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                        <h4 class="modal-title">Deducción por Empleado</h4> </div>
+                                    <div class="modal-body">
+                                        <form>
+                                            <div class="form-group">
+                                                <label class="control-label">Deducción:</label>
+                                                <select name="cbodeduccion" class="form-control">
+                                                    <option value="0">Seleccione un periodo...</option>
+                                                    {% for deduccion_legal in deducciones_legales %}
+                                                    <option value="{{deduccion_legal.deduccion}}">{{deduccion_legal.descripcion}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label">Tipos de Periodo:</label>
+                                                <div class="radio radio-success">
+                                                    <input type="radio" name="radio" id="rcompleto" value="0">
+                                                    <label for="rcompleto"> Completo </label>
+                                                </div>
+                                                <div class="radio radio-info">
+                                                    <input type="radio" name="radio" id="rparcial" value="1">
+                                                    <label for="rparcial"> Parcial </label>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="control-label">Periodo de Pago:</label>
+                                                <select name="cboperiodopago" class="form-control">
+                                                <option value="0">Seleccione un periodo...</option>
+                                                {% for periodo in periodos %}
+                                                <option value="{{periodo}}">{{periodo}}</option>
+                                                {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <div id="ctrl-chkActivo" class="checkbox checkbox-success">
+                                                    <input id="chkActivoDedEmp" type="checkbox" />
+                                                    <label for="chkActivoDedEmp"> Activo </label>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-cerrar waves-effect" data-dismiss="modal">Cerrar</button>
+                                        <button type="button" id="btnGuardarEmplDed" class="btn btn-guardar waves-effect waves-light">Guardar</button>
+                                        <button type="button" id="btnActualizarEmplDed" class="btn btn-guardar waves-effect waves-light">Actualizar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        <!-- Button trigger modal -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -541,8 +565,6 @@
 </div>
 {% endblock contenido %}
 {% block scripts %}
-<script src="{% static 'plugins/bower_components/dropify/dist/js/dropify.min.js' %}"></script>
-<script src="{% static 'js/app/scriptApp.js' %}"></script>
 <script>
         var ctx = document.getElementById("myChart");
         var myChart = new Chart(ctx, {
@@ -581,11 +603,26 @@
                 }
             }
         });
+        $(function() {
+            $.ajax({
+                type: "GET",
+                url: "/obtener/deducciones-empleado/",
+                data: {'empleado_id': {{dato.pk}}},
+                success: function (data) {
+                    $('#detalle-deducciones').html(data);
+                },
+                error: function (data) {
+                    console.log("Error: " + data);
+                },
+                dataType: 'html'
+            }).done(function () {
+                
+            });
+        });
 </script>
 <script>
     $('#side-menu a').removeClass('active');
     $('#aPersonal').addClass('active');
     $('#Emp').addClass('active');
-    
 </script>
 {% endblock scripts %}

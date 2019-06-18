@@ -1205,18 +1205,19 @@ class EmpleadoDeducciones(models.Model):
     ]
     empleado = models.ForeignKey("worksheet.employee", verbose_name=("Empleado"), on_delete=models.PROTECT)
     deduccion = models.CharField(("Deduccion"), max_length=50, choices=DEDUCCIONES)
+    periodo = models.CharField(("Periodo"), max_length=50)
+    deduccion_parcial = models.BooleanField(("Deduccion Parcial"), blank=False, null=False)
 
     empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.PROTECT)
     user_reg = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT)
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='empded_usermod', related_query_name='empded_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.NullBooleanField(blank=True, null=True)
+    active = models.NullBooleanField()
 
     class Meta:
         verbose_name = ("Asignar Deduccion Legal Empleado")
         verbose_name_plural = ("Asignar Deducciones Legales a Empleado")
 
     def __str__(self):
-        return str(self.empleado.firstName + " " + self.empleado.lastName) + " | " + self.deduccion
-
+        return str(self.empleado.firstName + " " + self.empleado.lastName) + " | " + self.deduccion  

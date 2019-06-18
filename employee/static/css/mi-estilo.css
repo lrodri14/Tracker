@@ -25,6 +25,10 @@ table>tbody>.detalle_emp>td{
     border-top:none;
 }
 
+#detalle_planilla .body-item-detalle>tr>td{
+    padding: 3px 8px;
+}
+
 .toolTip{
     background: rgba(20,20,20,0.9) url('img/info.gif') center left 5px no-repeat;
     border: 2px solid #87cefa;
@@ -36,6 +40,52 @@ table>tbody>.detalle_emp>td{
     max-width: 600px;
     position: absolute;
     z-index: 100;   
+}
+
+/*BOTONES*/
+.btn-guardar{
+    background: #046D8B;
+    border: 1px solid #046D8B;
+    color: #FBF8F5;
+}
+
+.btn-guardar:hover{
+    background: #025b74;
+    border: 1px solid #025b74;
+    color: #FBF8F5;
+}
+
+.btn-guardar:focus{
+    color: #FBF8F5;
+}
+
+.btn-eliminar{
+    background: #C04848;
+    border: 1px solid #C04848;
+    color: #FBF8F5;
+}
+.btn-eliminar:hover{
+    background: #C03030;
+    color: #FBF8F5;
+}
+
+.btn-eliminar:focus{
+    color: #FBF8F5;
+}
+
+.btn-cerrar{
+    background: #A5521F;
+    border: 1px solid #A5521F;
+    color: #FBF8F5;
+}
+
+.btn-cerrar:hover{
+    background: #884318;
+    color: #FBF8F5;
+}
+
+.btn-cerrar:focus{
+    color: #FBF8F5;
 }
 
 

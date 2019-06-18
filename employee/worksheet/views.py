@@ -156,13 +156,21 @@ def empleado_listado(request):
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.see_reg_employee', raise_exception=True)
 def empleado_perfil(request, id):
+    periodos_pago = 0
+    periodos = []
+    deducciones_legales = [{'deduccion':'IHSS', 'descripcion':'I.H.S.S'}, {'deduccion':'RAP', 'descripcion':'R.A.P.'}, {'deduccion':'ISR', 'descripcion': 'Impuesto sobre renta'}, {'deduccion':'IMV', 'descripcion': 'Impuesto Vecinal'}]
     dato = Employee.objects.get(pk=id)
+    if dato:
+        periodos_pago = 30 / dato.salaryUnits.dias_salario
+        for i in range(0, int(periodos_pago)):
+            i += 1
+            periodos.append(i)
     tot_reg = ImagenEmpleado.objects.filter(empleado__id=id).count()
     if tot_reg > 0:
         imagen = ImagenEmpleado.objects.get(empleado__id=id)
     else:
         imagen = None
-    return render(request, 'perfil-empleado.html', {'dato':dato, 'imagen': imagen})
+    return render(request, 'perfil-empleado.html', {'dato':dato, 'imagen': imagen, 'periodos':periodos, 'deducciones_legales': deducciones_legales})
 
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.add_grupocorporativo', raise_exception=True)
@@ -10729,7 +10737,97 @@ def obtener_dias_salario(request):
         }
         return JsonResponse(data) 
 
+def obtener_deducciones(request):
+    deducciones = []
+    data = {'data':None}
+    if request.is_ajax():
+        suc = Branch.objects.get(pk=request.session["sucursal"])
+        empleado_id = request.GET.get("empleado_id")
+        deducciones = EmpleadoDeducciones.objects.filter(empleado__id=empleado_id, active=True)
+        tipos_deducciones = TipoDeduccion.objects.filter(empresa_reg=suc.empresa, active=True)
+        
+    return render(request, 'ajax/deducciones_empleado.html', {'deducciones':deducciones, 'tipos_deducciones':tipos_deducciones})
+
+def obtener_deduccion_empleado(request):
+    data = {}
+    if request.is_ajax():
+        suc = Branch.objects.get(pk=request.session["sucursal"])
+        registro_id = request.GET.get("id")
+        deduccion = EmpleadoDeducciones.objects.get(pk=registro_id)
+        data = {'pk':deduccion.pk, 'deduccion': deduccion.deduccion, 'periodo': deduccion.periodo, 'deduccion_parcial':deduccion.deduccion_parcial, 'activo':deduccion.active, 'error': False}
+    return JsonResponse(data)
+
+def eliminar_empleado_deduccion(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                reg_id = request.POST['id']
+                if int(reg_id) > 0:
+                    oMd = EmpleadoDeducciones.objects.get(pk=reg_id)
+                    if oMd:
+                        oMd.delete()
+                        mensaje = 'Se ha eliminado el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': False
+                        }
+                    else:
+                        mensaje = 'No existe el registro.'
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                else:
+                    mensaje = "No se pasó ningún parámetro."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+            else:
+                mensaje = "Método no permitido."
+                data = {
+                    'mensaje': mensaje, 'error': True
+                }
+        else:
+            mensaje = "Tipo de petición no permitido."
+            data = {
+                'mensaje': mensaje, 'error': True
+            }
+    except Exception as ex:
+        data = {
+            'error': True,
+            'mensaje': 'error',
+        }
+    return JsonResponse(data)
+
 #--------------------------END AJAX -------------------------
+
+#endregion
+
+#region Código para Deduccion Empleado
+
+#------------------------->>> AJAX <<<--------------------------
+
+def guardar_deduccion_empleado(request):
+    data = {}
+    if request.is_ajax():
+        if request.method == 'POST':
+            
+            pdeduccion = request.POST['deduccion']
+            ptipoperiodo = request.POST['tipo_periodo']
+            pperiodo = request.POST['periodo']
+            pactivo = request.POST['activo']
+            print(pperiodo)  
+            if pdeduccion == "0":
+                data = {'error':True, 'mensaje': 'El campo "Deduccion" es obligatorio'}
+                return JsonResponse(data)
+            if int(pperiodo) == 0:
+                data = {'error':True, 'mensaje':'El campo "Periodo" es obligatorio'}
+                return JsonResponse
+        else:
+            data = {'error': True, 'mensaje': 'El método no es permitido'}
+    else:
+        data = {'error': True, 'mensaje': 'La petición no es asíncrona'}
+    return JsonResponse(data)
+
+#------------------------->>> AJAX <<<--------------------------
 
 #endregion
 
@@ -13577,9 +13675,13 @@ def planilla_ver_registro(request):
 
 def planilla_generada(request):
     datos = []
+    datos2 = []
+    datos3 = []
     detalle_planilla = None
     ingresos = 0
     deducciones = 0
+    suma_total_ingresos = 0
+    suma_total_deducciones = 0
     if request.is_ajax():
         planilla_id = int(request.GET.get("Id"))
         if planilla_id == 0:
@@ -13603,8 +13705,33 @@ def planilla_generada(request):
                     'total_salario': locale.format("%.2f", total_salario, grouping=True),
                 }
                 datos.append(objeto)
+                suma_total_ingresos += float(item.total_ingresos)
+                suma_total_deducciones += float(item.total_deducciones)
             ingresos = PlanillaDetalleIngresos.objects.filter(planilla__pk=planilla_id)
+
+            for item1 in ingresos:
+                objeto1 = {
+                    'id':item1.pk,
+                    'empleado': item1.empleado,
+                    'planilla': item1.planilla,
+                    'ingreso': item1.ingreso,
+                    'valor': locale.format("%.2f", item1.valor, grouping=True),
+                }
+                datos2.append(objeto1)
+
             deducciones = PlanillaDetalleDeducciones.objects.filter(planilla__pk=planilla_id)
+            for item2 in deducciones:
+                objeto2 = {
+                    'id': item2.pk,
+                    'empleado': item2.empleado,
+                    'planilla': item2.planilla,
+                    'deduccion': item2.deduccion,
+                    'valor': locale.format("%.2f", item2.valor, grouping=True),
+                }
+                datos3.append(objeto2)
+
+            suma_total_ingresos = locale.format("%.2f", suma_total_ingresos, grouping=True)
+            suma_total_deducciones = locale.format("%.2f", suma_total_deducciones, grouping=True)
             
             error = False
             mensaje = "Datos encontrados"
@@ -13612,7 +13739,7 @@ def planilla_generada(request):
         error = True
         mensaje = "Método no permitido"
 
-    return render(request, 'ajax/planilla_empleados_lista.html', {'detalle_planilla': datos, 'ingresos': ingresos, 'deducciones': deducciones})
+    return render(request, 'ajax/planilla_empleados_lista.html', {'detalle_planilla': datos, 'ingresos': datos2, 'deducciones': datos3, 'total_deducciones': suma_total_deducciones, 'total_ingresos':suma_total_ingresos})
 #------------------------------END AJAX---------------------------------
 
 #endregion

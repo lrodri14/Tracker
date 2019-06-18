@@ -7,10 +7,6 @@ $(document).on('ready', () => {
     var token = $('input[name="csrfmiddlewaretoken"]');
     var dns = window.location.protocol+"//"+window.location.host;
     var id = $('input[name="id"]');
-
-    $(".btn").on('click', function() {
-        $(this).addClass('disabled');
-    });
     //#endregion
 
     //#region Código para Puestos de Trabajo
@@ -3353,6 +3349,123 @@ $('#ingreso_individual_planilla #btnCancelar').on('click', function(e) {
             
         });
     }
+//#endregion
+
+//#region Código para Perfil Empleado
+    $('#detalle-deducciones').on('click', '#btnAgregarEmpleadoDeduccion', function(){
+        var $radios = $('input:radio[name=radio]');
+        $('select[name="cbodeduccion"]').val("0");
+        $radios.filter('[value=0]').prop('checked', true);
+        $radios.filter('[value=1]').prop('checked', false);
+        $('select[name="cboperiodopago"]').val("0");
+        $('#chkActivoDedEmp').prop('checked', false);
+        $('#btnActualizarEmplDed').addClass('hide');
+        $('#btnGuardarEmplDed').removeClass('hide');
+        $('#ctrl-chkActivo').addClass('hide');
+    });
+
+    $('#btnGuardarEmplDed').on('click', function(e) {
+        $('select[name="cbodeduccion"]')
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: "/guardar/deduccion-empleado/",
+            data: {
+                'deduccion': $('select[name="cbodeduccion"]').val(),
+                'tipo_periodo': $("input[name='radio']:checked").val(),
+                'periodo': $('select[name="cboperiodopago"]').val(),
+                'activo': $('#chkActivoDedEmp').prop('checked'),
+                'csrfmiddlewaretoken': token.val(),
+            },
+            success: function (data) {
+                console.log(data)
+                if (data.error === false) {
+                    
+                } else {
+                    swal("¡Cancelado!", data.mensaje, "error");
+                }
+            },
+            error: function (data) {
+                swal("¡Cancelado!", data.mensaje, "error");
+                console.log(data)
+            },
+            dataType: "json",
+        });
+    });
+
+    $('#detalle-deducciones').on('click', '.btnEditarDeduccionEmp', function(e) {
+        e.preventDefault();
+        var registro_id = $(this).attr('data');
+        var $radios = $('input:radio[name=radio]');
+        $('#btnActualizarEmplDed').removeClass('hide');
+        $('#btnGuardarEmplDed').addClass('hide');
+        $('#ctrl-chkActivo').removeClass('hide');
+
+        $.ajax({
+            type: "GET",
+            url: "/obtener/deduccion-empleado/",
+            data: {'id':registro_id},
+            success: function (data) {
+                if (data.error == false) {
+                    $('select[name="cbodeduccion"]').val(""+data.deduccion+"");
+                    if (data.deduccion_parcial === false) {
+                        $radios.filter('[value=0]').prop('checked', true);
+                    }else{
+                        $radios.filter('[value=1]').prop('checked', true);
+                    }
+                    if (data.activo === true) {
+                        $('#chkActivoDedEmp').prop('checked', true);
+                    }else{
+                        $('#chkActivoDedEmp').prop('checked', false);
+                    }
+                    $('select[name="cboperiodopago"]').val(""+data.periodo+"");
+                } else {
+                    console.log(data.mensaje);
+                }
+            },
+            error: function (data) {
+                swal("¡Cancelado!", "El proceso no se ha realizado.", "error");
+                console.log(data.mensaje);
+            }
+        });
+
+        // swal({   
+        //     title: "¿Está seguro?",   
+        //     text: "",   
+        //     type: "warning",   
+        //     showCancelButton: true,   
+        //     confirmButtonColor: "#DD6B55",   
+        //     confirmButtonText: "Si, eliminarlo!",   
+        //     cancelButtonText: "No, cancelar por favor!",   
+        //     closeOnConfirm: false,   
+        //     closeOnCancel: false 
+        // }, function(isConfirm){   
+        //     if (isConfirm) {
+        //         console.log("Se ha eliminado el registro.");
+        //         console.log(registro_id);
+        //         $.ajax({
+        //             type: "POST",
+        //             url: "/eliminar/deduccion-empleado/",
+        //             data: {'id':registro_id, 'csrfmiddlewaretoken': token.val()},
+        //             success: function (data) {
+        //                 if (data.error == false) {
+        //                     swal("¡Eliminado!", "Su registro ha sido eliminado.", "success");   
+        //                 } else {
+        //                     swal("¡Cancelado!", "El proceso no se ha realizado.", "error");
+        //                     console.log(data.mensaje);
+        //                 }
+        //             },
+        //             error: function (data) {
+        //                 swal("¡Cancelado!", "El proceso no se ha realizado.", "error");
+        //                 console.log(data.mensaje);
+        //             }
+        //         });
+        //     } else {
+        //         console.log("Se ha cancelado la operación");
+        //         swal("Cancelado", "Su registro no se ha eliminado :)", "error");   
+        //     } 
+        // });
+    });
 //#endregion
 
 //#region Código para Salario Minimo
