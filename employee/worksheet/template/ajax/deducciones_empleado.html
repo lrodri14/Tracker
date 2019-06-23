@@ -29,6 +29,10 @@
                             <td>{{item.periodo}}</td>
                             <td> <a href="#" data="{{item.pk}}" data-toggle="modal" data-target="#form-empleado-deduccion" class="btnEditarDeduccionEmp btn btn-warning">Editar</a></td>
                         </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center">No hay datos</td>
+                            </tr>
                         {% endfor %}
                     </tbody>
                 </table>

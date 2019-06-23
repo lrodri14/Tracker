@@ -161,10 +161,12 @@ def empleado_perfil(request, id):
     deducciones_legales = [{'deduccion':'IHSS', 'descripcion':'I.H.S.S'}, {'deduccion':'RAP', 'descripcion':'R.A.P.'}, {'deduccion':'ISR', 'descripcion': 'Impuesto sobre renta'}, {'deduccion':'IMV', 'descripcion': 'Impuesto Vecinal'}]
     dato = Employee.objects.get(pk=id)
     if dato:
-        periodos_pago = 30 / dato.salaryUnits.dias_salario
-        for i in range(0, int(periodos_pago)):
-            i += 1
-            periodos.append(i)
+        if dato.salaryUnits:
+            if dato.salaryUnits.dias_salario:
+                periodos_pago = 30 / dato.salaryUnits.dias_salario
+                for i in range(0, int(periodos_pago)):
+                    i += 1
+                    periodos.append(i)
     tot_reg = ImagenEmpleado.objects.filter(empleado__id=id).count()
     if tot_reg > 0:
         imagen = ImagenEmpleado.objects.get(empleado__id=id)
@@ -674,10 +676,10 @@ def clase_educacion_listado(request):
     listado = None
     suc = Branch.objects.get(pk=request.session["sucursal"])
     if request.user.has_perm("worksheet.see_all_claseeducacion"):
-        listado = Ciudad.objects.filter(empresa_reg=suc.empresa)
+        listado = ClaseEducacion.objects.filter(empresa_reg=suc.empresa)
     else:
         if request.user.has_perm("worksheet.see_claseeducacion"):
-            listado = Ciudad.objects.filter(active=True, empresa_reg=suc.empresa)
+            listado = ClaseEducacion.objects.filter(active=True, empresa_reg=suc.empresa)
     return render(request, 'clase-educacion-listado.html',{'lista':listado})
 
 @login_required(login_url='/form/iniciar-sesion/')
@@ -10806,26 +10808,138 @@ def eliminar_empleado_deduccion(request):
 #------------------------->>> AJAX <<<--------------------------
 
 def guardar_deduccion_empleado(request):
-    data = {}
-    if request.is_ajax():
-        if request.method == 'POST':
-            
-            pdeduccion = request.POST['deduccion']
-            ptipoperiodo = request.POST['tipo_periodo']
-            pperiodo = request.POST['periodo']
-            pactivo = request.POST['activo']
-            print(pperiodo)  
-            if pdeduccion == "0":
-                data = {'error':True, 'mensaje': 'El campo "Deduccion" es obligatorio'}
+    try:
+        data = {}
+        if request.is_ajax():
+            if request.method == 'POST':
+                
+                pdeduccion = request.POST['deduccion']
+                ptipoperiodo = request.POST['tipo_periodo']
+                pperiodo = request.POST['periodo']
+                pactivo = request.POST['activo']
+                pempleado = request.POST['empleado']
+
+                if pdeduccion == "0":
+                    data = {'error':True, 'mensaje': 'El campo "Deduccion" es obligatorio'}
+                    return JsonResponse(data)
+
+                if int(ptipoperiodo) == 0:
+                    print(int(ptipoperiodo))
+                    pperiodo = 1
+
+                if int(pperiodo) == 0:
+                    data = {'error':True, 'mensaje':'El campo "Periodo" es obligatorio'}
+                    return JsonResponse(data)
+                if len(pempleado) == 0:
+                    data = {'error':True, 'mensaje':'El campo empleado es obligatorio'}
+                    return JsonResponse(data)
+                elif pempleado == 0:
+                    data = {'error':True, 'mensaje':'No se pasó un valor válido para empleado'}
+                    return JsonResponse(data)
+                o_empleado = Employee.objects.get(pk=pempleado)
+                tot_reg = EmpleadoDeducciones.objects.filter(empleado=o_empleado, deduccion=pdeduccion).count()
+                if tot_reg > 0:
+                    tot_reg = EmpleadoDeducciones.objects.filter(empleado=o_empleado, deduccion=pdeduccion, active=False).count()
+                    if tot_reg > 0:
+                        data = {'error':True, 'mensaje':'La deducción seleccionada ya está asignada al empleado, el registro puede estar inactivo'}
+                    else:
+                        data = {'error':True, 'mensaje':'La deducción seleccionada ya está asignada al empleado'}
+                    return JsonResponse(data)
+
+                suc = Branch.objects.get(pk=request.session["sucursal"])
+                o_empDed = EmpleadoDeducciones(
+                    empleado = o_empleado,
+                    deduccion = pdeduccion,
+                    periodo = pperiodo,
+                    deduccion_parcial = ptipoperiodo,
+                    empresa_reg = suc.empresa,
+                    user_reg = request.user,
+                    active = True
+                )
+                o_empDed.save()
+                data = {'error':False, 'mensaje':'El registro se ha creado'}
                 return JsonResponse(data)
-            if int(pperiodo) == 0:
-                data = {'error':True, 'mensaje':'El campo "Periodo" es obligatorio'}
-                return JsonResponse
+            else:
+                data = {'error': True, 'mensaje': 'El método no es permitido'}
         else:
-            data = {'error': True, 'mensaje': 'El método no es permitido'}
-    else:
-        data = {'error': True, 'mensaje': 'La petición no es asíncrona'}
-    return JsonResponse(data)
+            data = {'error': True, 'mensaje': 'La petición no es asíncrona'}
+        return JsonResponse(data)
+    except Exception as ex:
+        print(ex)
+        data = {
+            'error': True,
+            'mensaje': ex.message,
+        }
+        return JsonResponse(data)
+
+def actualizar_deduccion_empleado(request):
+    try:
+        data = {}
+        if request.is_ajax():
+            if request.method == 'POST':
+                pdeduccion = request.POST['deduccion']
+                ptipoperiodo = request.POST['tipo_periodo']
+                pperiodo = request.POST['periodo']
+                pactivo = request.POST['activo']
+                pempleado = request.POST['empleado']
+                id = request.POST['id']
+
+                if pdeduccion == "0":
+                    data = {'error':True, 'mensaje': 'El campo "Deduccion" es obligatorio'}
+                    return JsonResponse(data)
+
+                if int(ptipoperiodo) == 0:
+                    print(int(ptipoperiodo))
+                    pperiodo = 1
+
+                if int(pperiodo) == 0:
+                    data = {'error':True, 'mensaje':'El campo "Periodo" es obligatorio'}
+                    return JsonResponse(data)
+                if len(pempleado) == 0:
+                    data = {'error':True, 'mensaje':'El campo empleado es obligatorio'}
+                    return JsonResponse(data)
+                elif pempleado == 0:
+                    data = {'error':True, 'mensaje':'No se pasó un valor válido para empleado'}
+                    return JsonResponse(data)
+
+                tot_reg = Employee.objects.filter(pk=pempleado).count()
+                if tot_reg > 0:
+                    o_empleado = Employee.objects.get(pk=pempleado)
+                    tot_reg = EmpleadoDeducciones.objects.filter(pk=id).count()
+                    if tot_reg > 0:
+
+                        o_empDed = EmpleadoDeducciones.objects.get(pk=id)
+                        tot_reg = EmpleadoDeducciones.objects.filter(empleado=o_empleado, deduccion=pdeduccion).exclude(pk=id).count()
+                        if tot_reg > 0:
+                            data = {'error':True, 'mensaje':'No se puede actualizar, la deducción tiene otro registro de asignación para el empleado'}
+                            return JsonResponse(data)
+                        else:
+                            o_empDed.deduccion = pdeduccion
+                            o_empDed.periodo = pperiodo
+                            o_empDed.deduccion_parcial = ptipoperiodo
+                            if pactivo == "true":
+                                o_empDed.active = True
+                            else:
+                                o_empDed.active = False
+                            o_empDed.save()
+                            data = {'error':False, 'mensaje':'Se ha actualizado el registro'}
+                            return JsonResponse(data)
+                    else:
+                        data = {'error':True, 'mensaje':'El registro de deducción a empleado no existe'}
+                        return JsonResponse(data)
+                else:
+                    data = {'error':True, 'mensaje':'El empleado no existe'}
+                    return JsonResponse(data)
+            else:
+                data = {'error':True, 'mensaje':'El método no está permitido'}
+                return JsonResponse(data)
+        else:
+            data = {'error':True, 'mensaje':'La petición no es asíncrona'}
+            return JsonResponse(data)
+    except Exception as ex:
+        print(ex)
+        data = {'error':True, 'mensaje':'error'}
+        return JsonResponse(data)
 
 #------------------------->>> AJAX <<<--------------------------
 
@@ -12179,7 +12293,7 @@ def ingreso_individual_eliminar(request):
 def ingreso_individual_detalle_listado(request):
     suc = Branch.objects.get(pk=request.session["sucursal"])
     if request.user.has_perm("worksheet.see_all_ingresoindividualdetalle"):
-        lista = IngresoIndividual.objects.filter(empresa_reg=suc.empresa)
+        lista = IngresoIndividualDetalle.objects.filter(empresa_reg=suc.empresa)
     else:
         lista = IngresoIndividualDetalle.objects.filter(empresa_reg=suc.empresa, active=True)
     return render(request, 'ingreso-individual-detalle-listado.html', {'lista':lista})
@@ -14801,12 +14915,24 @@ def tipo_ingreso_eliminar(request):
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.see_impuestosobrerenta', raise_exception=True)
 def impuestovecinal_listado(request):
+    listado = []
+    dato = {}
     suc = Branch.objects.get(pk=request.session["sucursal"])
     if request.user.has_perm("worksheet.see_all_impuestovecinal"):
         lista = ImpuestoVecinal.objects.filter(empresa_reg=suc.empresa)
+
     else:
         lista = ImpuestoVecinal.objects.filter(empresa_reg=suc.empresa, active=True)
-    return render(request, 'impuestovecinal-listado.html', {'lista': lista})
+    for item in lista:
+        dato = {
+            'pk': item.pk,
+            'desde': formato_millar(item.desde),
+            'hasta': formato_millar(item.hasta),
+            'porcentaje_label': formato_millar(item.porcentaje)+"%",
+            'active': item.active
+        }
+        listado.append(dato)
+    return render(request, 'impuestovecinal-listado.html', {'lista': listado})
 
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.add_impuestovecinal', raise_exception=True)
@@ -14831,6 +14957,10 @@ def impuestovecinal_guardar(request):
                 porcentaje = request.POST['porcentaje']                
                 activo = int(request.POST['activo'])
 
+                desde = desde.replace(",", "")
+                hasta = hasta.replace(",", "")
+                porcentaje = porcentaje.replace("%", "")
+
                 if len(desde) == 0:
                     mensaje = "El campo 'Desde' es obligatorio."
                     data = {'error': True, 'mensaje': mensaje}
@@ -14842,17 +14972,17 @@ def impuestovecinal_guardar(request):
                     return JsonResponse(data)
 
                 if not validarDecimal(desde):
-                    mensaje = "El campo 'Techo' es de tipo decimal."
+                    mensaje = "El campo 'Desde' es de tipo decimal."
                     data = {'error': True, 'mensaje': mensaje}
                     return JsonResponse(data)
                 
                 if not validarDecimal(hasta):
-                    mensaje = "El campo 'Porcentaje Empleado' es de tipo decimal."
+                    mensaje = "El campo 'Hasta' es de tipo decimal."
                     data = {'error': True, 'mensaje': mensaje}
                     return JsonResponse(data)
 
                 if not validarDecimal(porcentaje):
-                    mensaje = "El campo 'Valor Empleado' es de tipo decimal."
+                    mensaje = "El campo 'Porcentaje' es de tipo decimal."
                     data = {'error': True, 'mensaje': mensaje}
                     return JsonResponse(data)
 
@@ -14888,6 +15018,7 @@ def impuestovecinal_guardar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
+        print(ex)
         data = {
             'error': True,
             'mensaje': 'error',
@@ -14920,17 +15051,17 @@ def impuestovecinal_actualizar(request):
                 porcentaje = porcentaje.replace("%", "")
 
                 if not validarDecimal(desde):
-                    mensaje = "El campo 'Techo' es de tipo decimal."
+                    mensaje = "El campo 'Desde' es de tipo decimal."
                     data = {'error': True, 'mensaje': mensaje}
                     return JsonResponse(data)
                 
                 if not validarDecimal(hasta):
-                    mensaje = "El campo 'Porcentaje Empleado' es de tipo decimal."
+                    mensaje = "El campo 'Hasta' es de tipo decimal."
                     data = {'error': True, 'mensaje': mensaje}
                     return JsonResponse(data)
 
                 if not validarDecimal(porcentaje):
-                    mensaje = "El campo 'Valor Empleado' es de tipo decimal."
+                    mensaje = "El campo 'Porcentaje' es de tipo decimal."
                     data = {'error': True, 'mensaje': mensaje}
                     return JsonResponse(data)
 
@@ -15226,3 +15357,6 @@ def validarDecimal(dato):
         return True
     except TypeError:
         return False
+
+def formato_millar(valor):
+    return locale.format("%.2f", valor, grouping=True)

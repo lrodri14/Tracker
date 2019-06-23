@@ -256,6 +256,7 @@ urlpatterns = [
     url(r'^actualizar/corporativo/$', views.actualizar_corporativo, name='actualizar_corporativo'),
     url(r'^actualizar/costo-empleado-unidades/$', views.actualizar_costo_empleado, name='actualizar_costo_empleado'),
     url(r'^actualizar/departamento/$', views.actualizar_departamento, name='actualizar_departamento'),
+    url(r'^actualizar/deduccion-empleado/$', views.actualizar_deduccion_empleado, name='actualizar_deduccion_empleado'),
     url(r'^actualizar/deduccion-general/$', views.deduccion_general_actualizar, name='deduccion_general_actualizar'),
     url(r'^actualizar/deduccion-general-detalle/$', views.deduccion_general_detalle_actualizar, name='deduccion_general_detalle_actualizar'),
     url(r'^actualizar/deduccion-individual/$', views.deduccion_individual_actualizar, name='deduccion_individual_actualizar'),

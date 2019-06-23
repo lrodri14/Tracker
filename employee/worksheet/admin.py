@@ -4,6 +4,14 @@ from django.contrib.auth.models import Permission
 from django.contrib import admin
 from worksheet.models import *
 
+admin.site.site_header = "Tracker"
+admin.site.title = "Tracker"
+
+@admin.register(EmpleadoDeducciones)
+class EmpleadoDeduccionesAdmin(admin.ModelAdmin):
+    list_display = ['empleado', 'deduccion', 'active']
+
+
 # Register your models here.
 admin.site.register(ActivoAsignado)
 admin.site.register(Ausentismo)
@@ -12,6 +20,7 @@ admin.site.register(Branch)
 admin.site.register(CentrosCostos)
 admin.site.register(Ciudad)
 admin.site.register(CivilStatus)
+admin.site.register(ClaseEducacion)
 admin.site.register(CostUnit)
 admin.site.register(Country)
 admin.site.register(Department)
@@ -21,7 +30,7 @@ admin.site.register(DeduccionIndividual)
 admin.site.register(DeduccionIndividualDetalle)
 admin.site.register(DeduccionIndividualPlanilla)
 admin.site.register(Employee)
-admin.site.register(EmpleadoDeducciones)
+admin.site.register(LimiteSalarioDeduccion)
 admin.site.register(Empresa)
 admin.site.register(Evaluacion)
 admin.site.register(Group)

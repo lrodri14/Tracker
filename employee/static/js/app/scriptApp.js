@@ -3355,13 +3355,14 @@ $('#ingreso_individual_planilla #btnCancelar').on('click', function(e) {
     $('#detalle-deducciones').on('click', '#btnAgregarEmpleadoDeduccion', function(){
         var $radios = $('input:radio[name=radio]');
         $('select[name="cbodeduccion"]').val("0");
-        $radios.filter('[value=0]').prop('checked', true);
-        $radios.filter('[value=1]').prop('checked', false);
+        $radios.filter('[value=0]').prop('checked', false);
+        $radios.filter('[value=1]').prop('checked', true);
         $('select[name="cboperiodopago"]').val("0");
         $('#chkActivoDedEmp').prop('checked', false);
         $('#btnActualizarEmplDed').addClass('hide');
         $('#btnGuardarEmplDed').removeClass('hide');
         $('#ctrl-chkActivo').addClass('hide');
+        $('.cbo-periodo').removeClass('hide');
     });
 
     $('#btnGuardarEmplDed').on('click', function(e) {
@@ -3375,12 +3376,14 @@ $('#ingreso_individual_planilla #btnCancelar').on('click', function(e) {
                 'tipo_periodo': $("input[name='radio']:checked").val(),
                 'periodo': $('select[name="cboperiodopago"]').val(),
                 'activo': $('#chkActivoDedEmp').prop('checked'),
+                'empleado': $('input[name="empleado"]').val(),
                 'csrfmiddlewaretoken': token.val(),
             },
             success: function (data) {
-                console.log(data)
                 if (data.error === false) {
-                    
+                    swal("Registrado!", data.mensaje, "success");
+                    $('#form-empleado-deduccion').modal('hide');
+                    obtenerDeduccionesEmpleado();
                 } else {
                     swal("¡Cancelado!", data.mensaje, "error");
                 }
@@ -3392,10 +3395,63 @@ $('#ingreso_individual_planilla #btnCancelar').on('click', function(e) {
             dataType: "json",
         });
     });
+    var registro_id;
+    $('#btnActualizarEmplDed').on('click', function(e) {
+        e.preventDefault();
+        var pActivo;
+        if ($('#chkActivoDedEmp').is(':checked')) {
+            pActivo = true;
+        }else{
+            pActivo = false;
+        }
+        $.ajax({
+            type: "POST",
+            url: "/actualizar/deduccion-empleado/",
+            data: {
+                'id': registro_id,
+                'deduccion': $('select[name="cbodeduccion"]').val(),
+                'tipo_periodo': $("input[name='radio']:checked").val(),
+                'periodo': $('select[name="cboperiodopago"]').val(),
+                'activo': pActivo,
+                'empleado': $('input[name="empleado"]').val(),
+                'csrfmiddlewaretoken': token.val(),
+            },
+            success: function (data) {
+                if (data.error === false) {
+                    swal("Actualizado!", data.mensaje, "success");
+                    $('#form-empleado-deduccion').modal('hide');
+                    obtenerDeduccionesEmpleado();
+                } else {
+                    swal("¡Cancelado!", data.mensaje, "error");
+                }
+            },
+            error: function (data) {
+                swal("¡Cancelado!", data.mensaje, "error");
+            },
+            dataType: "json",
+        });
+    });
+
+    function obtenerDeduccionesEmpleado() {
+        $.ajax({
+            type: "GET",
+            url: "/obtener/deducciones-empleado/",
+            data: {'empleado_id': $('input[name="empleado"]').val()},
+            success: function (data) {
+                $('#detalle-deducciones').html(data);
+            },
+            error: function (data) {
+                console.log("Error: " + data);
+            },
+            dataType: 'html'
+        }).done(function () {
+            
+        });
+    }
 
     $('#detalle-deducciones').on('click', '.btnEditarDeduccionEmp', function(e) {
         e.preventDefault();
-        var registro_id = $(this).attr('data');
+        registro_id = $(this).attr('data');
         var $radios = $('input:radio[name=radio]');
         $('#btnActualizarEmplDed').removeClass('hide');
         $('#btnGuardarEmplDed').addClass('hide');
@@ -3410,8 +3466,10 @@ $('#ingreso_individual_planilla #btnCancelar').on('click', function(e) {
                     $('select[name="cbodeduccion"]').val(""+data.deduccion+"");
                     if (data.deduccion_parcial === false) {
                         $radios.filter('[value=0]').prop('checked', true);
+                        $('.cbo-periodo').addClass('hide');
                     }else{
                         $radios.filter('[value=1]').prop('checked', true);
+                        $('.cbo-periodo').removeClass('hide');
                     }
                     if (data.activo === true) {
                         $('#chkActivoDedEmp').prop('checked', true);
@@ -3428,44 +3486,19 @@ $('#ingreso_individual_planilla #btnCancelar').on('click', function(e) {
                 console.log(data.mensaje);
             }
         });
-
-        // swal({   
-        //     title: "¿Está seguro?",   
-        //     text: "",   
-        //     type: "warning",   
-        //     showCancelButton: true,   
-        //     confirmButtonColor: "#DD6B55",   
-        //     confirmButtonText: "Si, eliminarlo!",   
-        //     cancelButtonText: "No, cancelar por favor!",   
-        //     closeOnConfirm: false,   
-        //     closeOnCancel: false 
-        // }, function(isConfirm){   
-        //     if (isConfirm) {
-        //         console.log("Se ha eliminado el registro.");
-        //         console.log(registro_id);
-        //         $.ajax({
-        //             type: "POST",
-        //             url: "/eliminar/deduccion-empleado/",
-        //             data: {'id':registro_id, 'csrfmiddlewaretoken': token.val()},
-        //             success: function (data) {
-        //                 if (data.error == false) {
-        //                     swal("¡Eliminado!", "Su registro ha sido eliminado.", "success");   
-        //                 } else {
-        //                     swal("¡Cancelado!", "El proceso no se ha realizado.", "error");
-        //                     console.log(data.mensaje);
-        //                 }
-        //             },
-        //             error: function (data) {
-        //                 swal("¡Cancelado!", "El proceso no se ha realizado.", "error");
-        //                 console.log(data.mensaje);
-        //             }
-        //         });
-        //     } else {
-        //         console.log("Se ha cancelado la operación");
-        //         swal("Cancelado", "Su registro no se ha eliminado :)", "error");   
-        //     } 
-        // });
     });
+
+
+    $('input[type=radio][name=radio]').change(function() {
+        if ($(this).val() === "0") {
+            $('.cbo-periodo').addClass('hide');
+        }
+        else{
+            console.log("Entro aqui");
+            $('.cbo-periodo').removeClass('hide');
+        }
+    })
+
 //#endregion
 
 //#region Código para Salario Minimo

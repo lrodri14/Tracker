@@ -1213,11 +1213,28 @@ class EmpleadoDeducciones(models.Model):
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='empded_usermod', related_query_name='empded_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.NullBooleanField()
+    active = models.BooleanField()
 
     class Meta:
         verbose_name = ("Asignar Deduccion Legal Empleado")
         verbose_name_plural = ("Asignar Deducciones Legales a Empleado")
 
     def __str__(self):
-        return str(self.empleado.firstName + " " + self.empleado.lastName) + " | " + self.deduccion  
+        return str(self.empleado.firstName + " " + self.empleado.lastName) + " | " + self.deduccion
+
+class LimiteSalarioDeduccion(models.Model):
+    salario = models.DecimalField(("Salario"), max_digits=18, decimal_places=4)
+    activo = models.BooleanField(("Activo"))
+    fecha = models.DateField(("Fecha"), auto_now_add=True)
+    empresa_reg = models.ForeignKey(Empresa, blank=False, null=False, on_delete=models.PROTECT)
+    user_reg = models.ForeignKey(User, blank=False, null=False, on_delete=models.PROTECT)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='limded_usermod', related_query_name='limded_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        verbose_name = ("Limite Salario Deduccion")
+        verbose_name_plural = ("Limite Salario Deduccions")
+
+    def __str__(self):
+        return self.empleado.firstName + " " +self.empleado.lastName +" | "+ str(self.fecha)

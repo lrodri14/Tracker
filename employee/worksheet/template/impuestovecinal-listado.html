@@ -26,27 +26,27 @@ Listado de porcentajes Impuesto Vecinal
                             {% csrf_token %}
                             <thead>
                                 <tr>
-                                    <th>Desde</th>
-                                    <th>Hasta</th>
-                                    <th>Porcentaje(%)</th>
-                                    <th>Estado registro</th>
-                                    <th>Acciones</th>
+                                    <th class="text-right">Desde</th>
+                                    <th class="text-right">Hasta</th>
+                                    <th class="text-right">Porcentaje(%)</th>
+                                    <th class="text-center">Estado registro</th>
+                                    <th class="text-center">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for item in lista %}
                                 <tr>
-                                    <td>{{item.desde}}</td>
-                                    <td>{{item.hasta}}</td>
-                                    <td>{{item.porcentaje_label}}</td>
-                                    <td>
+                                    <td class="text-right">{{item.desde}}</td>
+                                    <td class="text-right">{{item.hasta}}</td>
+                                    <td class="text-right">{{item.porcentaje_label}}</td>
+                                    <td class="text-center">
                                         {% if item.active %}
                                         <span class="label label-success">Habilitado</span>
                                         {% else %}
                                         <span class="label label-danger">Inactivo</span>
                                         {% endif %}
                                     </td>                         
-                                    <td class="text-nowrap acciones">
+                                    <td class="text-center text-nowrap acciones">
                                         {% if perms.worksheet.change_impuestovecinal %}
                                         <a href="{% url 'impuestovecinal_editar' item.pk %}" data-toggle="tooltip" data-original-title="Editar">
                                             <i class="fa fa-pencil text-inverse m-r-10"></i>

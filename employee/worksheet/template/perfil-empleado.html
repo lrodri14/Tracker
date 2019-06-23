@@ -35,6 +35,7 @@
             </div>
             <div class="panel-wrapper">
                 <div class="panel-body">
+                    <input type="hidden" name="empleado" value="{{dato.pk}}">
                     <hr>
                     <div class="col-md-4 col-xs-12">
                         <div class="user-bg"> <!--img width="100%" alt="user" src="{% static 'plugins/images/large/img1.jpg' %}"-->
@@ -57,6 +58,9 @@
                                     </li>
                                     <li class="tab">
                                         <a href="#deducciones" data-toggle="tab" aria-expanded="false"> <span class="visible-xs"><i class="fa fa-cog"></i></span> <span class="hidden-xs">Deducciones</span> </a>
+                                    </li>
+                                    <li class="tab">
+                                        <a href="#ajustes" data-toggle="tab" aria-expanded="false"> <span class="visible-xs"><i class="fa fa-cog"></i></span> <span class="hidden-xs">Ajustes</span></a>
                                     </li>
                                     <li class="tab">
                                         <a href="#settings" data-toggle="tab" aria-expanded="false"> <span class="visible-xs"><i class="fa fa-cog"></i></span> <span class="hidden-xs">Editar</span> </a>
@@ -440,13 +444,16 @@
                                         <input type="hidden" name="empleado_id" text="{{dato.pk}}" />
                                         <div id="detalle-deducciones"></div>
                                     </div>
+                                    <div class="tab-pane" id="ajustes">
+                                    <h1>Ajustes del empleado</h1>
+                                    </div>
                                     <div class="tab-pane" id="settings">
                                         <form name="frmImagen" id="frmImagenEmp" class="form-horizontal form-material">
                                             {% csrf_token %}
                                             <input type="hidden" name="empleado" value="{{dato.pk}}" />
                                             <div id="grpImagenEmp" class="form-group">
                                                 <div class="white-box">
-                                                    <h3 class="box-title">Cargar archivo</h3>
+                                                    <h3 class="box-title">Editar Imagen del Empleado</h3>
                                                     <label for="input-file-now">Cargar archivo de fotografía.</label>
                                                     <input type="file" name="imagen" id="input-file-now" class="dropify" />
                                                     <button id="btnCargarFoto">Cargar</button>
@@ -455,7 +462,7 @@
                                             <div class="form-group">
                                             </div>
                                         </form>
-                                        <form class="form-horizontal form-material">
+                                        {% comment %} <form class="form-horizontal form-material">
                                             <div class="form-group">
                                                 <label class="col-md-12">Nombre</label>
                                                 <div class="col-md-12">
@@ -488,7 +495,7 @@
                                                     <button class="btn btn-success">Actualizar</button>
                                                 </div>
                                             </div>
-                                        </form>
+                                        </form> {% endcomment %}
                                     </div>
                                     <div class="tab-pane" id="graph">
                                         <h3 class="box-title">Bar Chart</h3>
@@ -532,7 +539,7 @@
                                                     <label for="rparcial"> Parcial </label>
                                                 </div>
                                             </div>
-                                            <div class="form-group">
+                                            <div class="form-group cbo-periodo">
                                                 <label class="control-label">Periodo de Pago:</label>
                                                 <select name="cboperiodopago" class="form-control">
                                                 <option value="0">Seleccione un periodo...</option>

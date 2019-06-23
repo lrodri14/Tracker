@@ -37,7 +37,7 @@ Listado de Detalle en Ingresos Individuales
                             <tbody>
                                 {% for item in lista %}
                                 <tr>
-                                    <td>{{item.empleado.firstName}}{% if item.empleado.middleName %}{{item.empleado.middleName}}{% endif %}</td>
+                                    <td>{{item.empleado.firstName}} {% if item.empleado.middleName %}{{item.empleado.middleName}}{% endif %} {{item.empleado.lastName}}</td>
                                     <td>{{item.ingreso.ingreso_i}}</td>
                                     <td>{{item.valor}}</td>                         
                                     <td>{{item.fecha_valida}}</td>   
