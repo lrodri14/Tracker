@@ -66,7 +66,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <div class="col-md-5 text-right">
-                                                <label for="" class="control-label">Apellido :</label>
+                                                <label for="" class="control-label">Apellidos :</label>
                                             </div>
                                             <div class="col-md-7">
                                                 <input type="text" value="{% if dato.lastName %}{{dato.lastName}}{% endif %}" name="apellido" id="txtApellido" class="form-control input-sm input-sm-1">
@@ -203,7 +203,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <div class="col-md-5 text-right">
-                                                <label for="" class="control-label">Gerente :</label>
+                                                <label for="" class="control-label">Jefe Inmediato :</label>
                                             </div>
                                             <div class="col-md-7">
                                                 <select class="form-control input-sm input-sm-1" name="jefe" id="cboSlsPerson">
@@ -226,10 +226,10 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <div class="col-md-5 text-right">
-                                                <label for="txtPager" class="control-label"> Pager :</label>
+                                                <label for="txtTelCasa" class="control-label"> Teléfono de casa :</label>
                                             </div>
                                             <div class="col-md-7">
-                                                <input id="txtPager" value="{% if dato.pager %}{{dato.pager}}{% endif %}" name="pager" type="text" class="form-control input-sm input-sm-1">
+                                                <input id="txtTelCasa" value="{% if dato.homeTel %}{{dato.homeTel}}{% endif %}" type="text" class="form-control input-sm input-sm-1" name="telCasa">
                                             </div>
                                         </div>
                                     </div>
@@ -238,7 +238,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <div class="col-md-5 text-right">
-                                                <label for="" class="control-label">Empleado del departamento :</label>
+                                                <label for="" class="control-label">Código de Vendedor :</label>
                                             </div>
                                             <div class="col-md-7">
                                                 <select class="form-control input-sm input-sm-1" name="slsPer" id="cboSlsPerson">
@@ -261,10 +261,10 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <div class="col-md-5 text-right">
-                                                <label for="txtFax" class="control-label"> Fax :</label>
+                                                <label for="txtPager" class="control-label"> Red Social 1 :</label>
                                             </div>
                                             <div class="col-md-7">
-                                                <input id="txtFax" name="fax" value="{% if dato.fax %}{{dato.fax}}{% endif %}" type="text" class="form-control input-sm input-sm-1">
+                                                <input id="txtPager" value="{% if dato.pager %}{{dato.pager}}{% endif %}" name="pager" type="text" class="form-control input-sm input-sm-1">
                                             </div>
                                         </div>
                                     </div>
@@ -283,10 +283,10 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <div class="col-md-5 text-right">
-                                                <label for="txtTelCasa" class="control-label"> Teléfono de casa :</label>
+                                                <label for="txtFax" class="control-label"> Red Social 2 :</label>
                                             </div>
                                             <div class="col-md-7">
-                                                <input id="txtTelCasa" value="{% if dato.homeTel %}{{dato.homeTel}}{% endif %}" type="text" class="form-control input-sm input-sm-1" name="telCasa">
+                                                <input id="txtFax" name="fax" value="{% if dato.fax %}{{dato.fax}}{% endif %}" type="text" class="form-control input-sm input-sm-1">
                                             </div>
                                         </div>
                                     </div>
@@ -342,7 +342,7 @@
                                         <!-- Dirección -->
                                         <div role="tabpanel" class="tab-pane active" id="home">
                                             <div class="col-md-6">
-                                                <h3>Dirección de la casa</h3>
+                                                <h3>Dirección de residencia</h3>
                                                 <div class="row margin-bottom-5px">
                                                     <div class="col-md-12">
                                                         <div class="form-group">
@@ -469,7 +469,7 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
-                                                <h3>Dirección del trabajo</h3>
+                                                <h3>Dirección de oficina</h3>
                                                 <div class="row margin-bottom-5px">
                                                     <div class="col-md-12">
                                                         <div class="form-group">

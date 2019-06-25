@@ -134,8 +134,9 @@ Ingreso Individual - Detalle
 <script src="{% static 'js/lib/jquery.mask.js' %}"></script>
 <script>
     $('#side-menu a').removeClass('active');
-    $('#aAccionesPer').addClass('active');
-    $('#aIGD').addClass('active');
+    $('#aAcciones').addClass('active');
+    $('#accionesNomina').addClass('active');
+    $('#aIID').addClass('active');
     $('input[name="valor"]').mask('0,000,000,000,000.00', {reverse:true});
 
     $('.mydatepicker, #datepicker').datepicker({
