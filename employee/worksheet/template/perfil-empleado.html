@@ -41,7 +41,14 @@
                         <div class="user-bg"> <!--img width="100%" alt="user" src="{% static 'plugins/images/large/img1.jpg' %}"-->
                             <div class="overlay-box">
                                 <div id="imgPerfilUsuario" class="user-content">
+                                    {% if imagen.imagen %}
+                                    <img src="{{ MEDIA_URL }}{{ imagen.imagen }}" alt="Foto de perfil" class="thumb-lg img-circle">
+                                    {% else %}
+                                    <img src="{% static 'images/usuarios.png' %}" alt="" class="thumb-lg img-circle">
+                                    {% endif %}
+                                    {% comment '' %}
                                     <a href="javascript:void(0)"><img src="{{ MEDIA_URL }}{{ imagen.imagen }}" class="thumb-lg img-circle" alt="img"></a>
+                                    {% endcomment %}
                                     <h4 class="text-white">{{dato.firstName}} {{dato.lastName}}</h4>
                                     <h5 class="text-white">{% if dato.email %}{{dato.email}}{% endif %}</h5>
                                 </div>
@@ -322,7 +329,10 @@
                                                                     <br>
                                                                     <p class="text-muted">{% if dato.termReason %}{{dato.termReason.name}}{% endif %}</p>
                                                                 </div>
-                                                                
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-6 col-xs-6 b-r"><strong>Antiguedad</strong><br><p class="text-muted">{{antiguedad}}</p></div>
+                                                                <div class="col-md-6 col-xs-6 b-r"></div>
                                                             </div>
                                                         </div>
                                                     </div>

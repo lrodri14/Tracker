@@ -1,0 +1,4 @@
+<option value="0">Seleccionar</option>
+{% for position in positions %}
+<option value="{{position.pk}}">{{position.description}}</option>
+{% endfor %}

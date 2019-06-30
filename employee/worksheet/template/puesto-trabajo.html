@@ -24,47 +24,76 @@ Puesto de Trabajo
             </div>
             <div class="panel-wrapper">
                 <div class="panel-body">
-                    {% csrf_token %}
-                    {% if editar %}
-                    <input type="hidden" value="{{dato.pk}}" name="id">
-                    {% endif %}
-                    <div class="col-md-6">
-                        <div class="col-md-12 margin-bottom-5px">
-                            <div class="form-group">
-                                <div class="col-md-5 text-right">
-                                <label for="txtptNombre" class="control-label">Código :</label>
-                                </div>
-                                <div class="col-md-7">
-                                    <input type="text" {% if editar %}disabled{% endif %} name="pt_nombre" value="{{dato.code}}" id="txtptNombre" class="form-control" maxlength="5">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-12 margin-bottom-5px">
-                            <div class="form-group">
-                                <div class="col-md-5 text-right">
-                                <label for="txtptDescripcion" class="control-label">Descripción :</label>
-                                </div>
-                                <div class="col-md-7">
-                                    <input type="text" name="pt_descripcion" value="{{dato.description}}" id="txtptDescripcion" class="form-control">
+                    <div class="row">
+                        {% csrf_token %}
+                        {% if editar %}
+                        <input type="hidden" value="{{dato.pk}}" name="id">
+                        {% endif %}
+                        <div class="col-md-6">
+                            <div class="col-md-12 margin-bottom-5px">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                    <label for="txtptNombre" class="control-label">Código :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <input type="text" {% if editar %}disabled{% endif %} name="pt_nombre" value="{{dato.code}}" id="txtptNombre" class="form-control" maxlength="5">
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <div class="col-md-5"></div>
-                                <div class="col-md-7">
-                                    <div class="checkbox checkbox-success">
-                                        {% if dato.active %}
-                                        <input id="chkptActivo" name="pt_activo" type="checkbox" class="input-sm" checked>
-                                        {% else %}
-                                        <input id="chkptActivo" name="pt_activo" type="checkbox" class="input-sm">
-                                        {% endif %}
-                                        <label for="chkptActivo" class="control-label"> Activo </label>
+                            <div class="col-md-12 margin-bottom-5px">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                    <label for="txtptDescripcion" class="control-label">Descripción :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <textarea name="pt_descripcion" id="txtptDescripcion" class="form-control" cols="30" rows="7" maxlength="250">{{dato.description}}</textarea>
+                                        {% comment '' %}
+                                        <input type="text" name="pt_descripcion" value="{{dato.description}}" id="txtptDescripcion" class="form-control">
+                                        {% endcomment %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <div class="col-md-5"></div>
+                                    <div class="col-md-7">
+                                        <div class="checkbox checkbox-success">
+                                            {% if dato.active %}
+                                            <input id="chkptActivo" name="pt_activo" type="checkbox" class="input-sm" checked>
+                                            {% else %}
+                                            <input id="chkptActivo" name="pt_activo" type="checkbox" class="input-sm">
+                                            {% endif %}
+                                            <label for="chkptActivo" class="control-label"> Activo </label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <hr>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="col-md-5 text-right">
+                                <label for="txtpt" class="control-label">Función Operativa :</label>
+                                </div>
+                                <div class="col-md-7">
+                                    <select class="form-control select2" name="pt_funcion_operativa">
+                                        <option value="0">Seleccionar...</option>
+                                        {% for funcion in funciones_operativas %}
+                                            {% if editar %}
+                                                {% if funcion == dato.funcion_operativa %}
+                                                <option value="{{funcion.pk}}" selected>{{funcion.descripcion}}</option>
+                                                {% else %}
+                                                <option value="{{funcion.pk}}">{{funcion.descripcion}}</option>
+                                                {% endif %}
+                                            {% else %}
+                                            <option value="{{funcion.pk}}">{{funcion.descripcion}}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
                         <div class="form-action col-md-12 text-right">
                             {% if editar %}
                             <button id="btnptActualizar" class="btn btn-success">Actualizar</button>

@@ -86,10 +86,26 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <div class="col-md-5 text-right">
-                                                <label for="" class="control-label">Denominación de función :</label>
+                                                <label for="" class="control-label">Función Operativa :</label>
                                             </div>
                                             <div class="col-md-7">
+                                                <select class="form-control input-sm input-sm-1" name="funcionOperativa" id="cboFuncionOperativa">
+                                                    <option value="0">Seleccionar</option>
+                                                    {% for funcion_operativa in funciones_operativas %}
+                                                    {% if editar %}
+                                                        {% if dato.position.funcion_operativa == funcion_operativa %}
+                                                            <option value="{{funcion_operativa.pk}}" selected>{{funcion_operativa.descripcion}}</option>
+                                                        {% else %}
+                                                            <option value="{{funcion_operativa.pk}}">{{funcion_operativa.descripcion}}</option>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        <option value="{{funcion_operativa.pk}}">{{funcion_operativa.descripcion}}</option>
+                                                    {% endif %}
+                                                    {% endfor %}
+                                                </select>
+                                                {% comment '' %}
                                                 <input type="text" value="{% if dato.jobTitle %}{{dato.jobTitle}}{% endif %}" name="jobTitle" id="txtJobTitle" class="form-control input-sm input-sm-1">
+                                                {% endcomment %}
                                             </div>
                                         </div>
                                     </div>
@@ -108,7 +124,9 @@
                                                         {% if dato.position == position %}
                                                             <option value="{{position.pk}}" selected>{{position.description}}</option>
                                                         {% else %}
+                                                            {% if dato.position.funcion_operativa == position.funcion_operativa %}
                                                             <option value="{{position.pk}}">{{position.description}}</option>
+                                                            {% endif %}
                                                         {% endif %}
                                                     {% else %}
                                                         <option value="{{position.pk}}">{{position.description}}</option>
@@ -261,10 +279,10 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <div class="col-md-5 text-right">
-                                                <label for="txtPager" class="control-label"> Red Social 1 :</label>
+                                                <label for="txtRedSocial1" class="control-label"> Red Social 1 :</label>
                                             </div>
                                             <div class="col-md-7">
-                                                <input id="txtPager" value="{% if dato.pager %}{{dato.pager}}{% endif %}" name="pager" type="text" class="form-control input-sm input-sm-1">
+                                                <input id="txtRedSocial1" value="{% if dato.socialNetwork1 %}{{dato.socialNetwork1}}{% endif %}" name="redsocial1" type="text" class="form-control input-sm input-sm-1">
                                             </div>
                                         </div>
                                     </div>
@@ -283,10 +301,10 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <div class="col-md-5 text-right">
-                                                <label for="txtFax" class="control-label"> Red Social 2 :</label>
+                                                <label for="txtRedSocial2" class="control-label"> Red Social 2 :</label>
                                             </div>
                                             <div class="col-md-7">
-                                                <input id="txtFax" name="fax" value="{% if dato.fax %}{{dato.fax}}{% endif %}" type="text" class="form-control input-sm input-sm-1">
+                                                <input id="txtRedSocial2" name="redsocial2" value="{% if dato.socialNetwork2 %}{{dato.socialNetwork2}}{% endif %}" type="text" class="form-control input-sm input-sm-1">
                                             </div>
                                         </div>
                                     </div>
@@ -347,10 +365,24 @@
                                                     <div class="col-md-12">
                                                         <div class="form-group">
                                                             <div class="col-md-5 text-right">
-                                                                <label for="txtCalle" class="control-label">Calle :</label>
+                                                                <label for="" class="control-label">País :</label>
                                                             </div>
                                                             <div class="col-md-7">
-                                                                <input id="txtCalle" value="{% if dato.homeStreet %}{{dato.homeStreet}}{% endif %}"  type="text" name="calle" class="form-control input-sm input-sm-1">
+                                                                <select class="form-control input-sm input-sm-1" name="hpais" id="cboHPais">
+                                                                    <option value="0">Seleccionar...</option>
+                                                                    {% for country in countries %}
+                                                                        {% if editar %} 
+                                                                            {% if dato.homeCountry == country %}
+                                                                                <option selected value="{{country.pk}}">{{country.name}}</option>
+                                                                            {% else %}
+                                                                                <option value="{{country.pk}}">{{country.name}}</option>
+                                                                            {% endif %} 
+                                                                        {% else %}
+                                                                            <option value="{{country.pk}}">{{country.name}}</option>
+                                                                        {% endif %}
+                                                                    <!--option value="{{country.pk}}">{{country.name}}</option-->
+                                                                    {% endfor %}
+                                                                </select>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -359,10 +391,60 @@
                                                     <div class="col-md-12">
                                                         <div class="form-group">
                                                             <div class="col-md-5 text-right">
-                                                                <label for="txtNoCalle" class="control-label">No. de calle :</label>
+                                                                <label for="" class="control-label">Estado/Departamento :</label>
+                                                            </div>
+                                                            <div class="col-md-7">
+                                                                <select class="form-control input-sm input-sm-1" name="hdept" id="cboDeptoH">
+                                                                    <option value="0">Seleccionar...</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row margin-bottom-5px">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <div class="col-md-5 text-right">
+                                                                <label for="txtCondado" class="control-label">Condado/Municipio :</label>
+                                                            </div>
+                                                            <div class="col-md-7">
+                                                                <input id="txtCondado" type="text" value="{% if dato.homeCounty %}{{dato.homeCounty}}{% endif %}" name="condado" class="form-control input-sm input-sm-1  ">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row margin-bottom-5px">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <div class="col-md-5 text-right">
+                                                                <label for="txtCiudad" class="control-label">Ciudad :</label>
+                                                            </div>
+                                                            <div class="col-md-7">
+                                                                <input id="txtCiudad" value="{% if dato.homeCity %}{{dato.homeCity}}{% endif %}" type="text" name="ciudad" class="form-control input-sm input-sm-1">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row margin-bottom-5px">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <div class="col-md-5 text-right">
+                                                                <label for="txtNoCalle" class="control-label">Barrio :</label>
                                                             </div>
                                                             <div class="col-md-7">
                                                                 <input id="txtNoCalle" value="{% if dato.streetNoH %}{{dato.streetNoH}}{% endif %}" type="text" name="nCalle" class="form-control input-sm input-sm-1">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row margin-bottom-5px">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <div class="col-md-5 text-right">
+                                                                <label for="txtCalle" class="control-label">Calle :</label>
+                                                            </div>
+                                                            <div class="col-md-7">
+                                                                <input id="txtCalle" value="{% if dato.homeStreet %}{{dato.homeStreet}}{% endif %}"  type="text" name="calle" class="form-control input-sm input-sm-1">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -407,10 +489,10 @@
                                                     <div class="col-md-12">
                                                         <div class="form-group">
                                                             <div class="col-md-5 text-right">
-                                                                <label for="txtCiudad" class="control-label">Ciudad :</label>
+                                                                <label for="txtLatitud" class="control-label">Latitud Geolocalización :</label>
                                                             </div>
                                                             <div class="col-md-7">
-                                                                <input id="txtCiudad" value="{% if dato.homeCity %}{{dato.homeCity}}{% endif %}" type="text" name="ciudad" class="form-control input-sm input-sm-1">
+                                                                <input id="txtLatitud" value="{% if dato.lat %}{{dato.lat}}{% endif %}" type="text" name="latitud" class="form-control input-sm input-sm-1">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -419,50 +501,10 @@
                                                     <div class="col-md-12">
                                                         <div class="form-group">
                                                             <div class="col-md-5 text-right">
-                                                                <label for="txtCondado" class="control-label">Condado/Municipio :</label>
+                                                                <label for="txtLongitud" class="control-label">Longitud Geolocalización :</label>
                                                             </div>
                                                             <div class="col-md-7">
-                                                                <input id="txtCondado" type="text" value="{% if dato.homeCounty %}{{dato.homeCounty}}{% endif %}" name="condado" class="form-control input-sm input-sm-1  ">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="row margin-bottom-5px">
-                                                    <div class="col-md-12">
-                                                        <div class="form-group">
-                                                            <div class="col-md-5 text-right">
-                                                                <label for="" class="control-label">Estado/Departamento :</label>
-                                                            </div>
-                                                            <div class="col-md-7">
-                                                                <select class="form-control input-sm input-sm-1" name="hdept" id="cboDeptoH">
-                                                                    <option value="0">Seleccionar...</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="row margin-bottom-5px">
-                                                    <div class="col-md-12">
-                                                        <div class="form-group">
-                                                            <div class="col-md-5 text-right">
-                                                                <label for="" class="control-label">País :</label>
-                                                            </div>
-                                                            <div class="col-md-7">
-                                                                <select class="form-control input-sm input-sm-1" name="hpais" id="cboHPais">
-                                                                    <option value="0">Seleccionar...</option>
-                                                                    {% for country in countries %}
-                                                                        {% if editar %} 
-                                                                            {% if dato.homeCountry == country %}
-                                                                                <option selected value="{{country.pk}}">{{country.name}}</option>
-                                                                            {% else %}
-                                                                                <option value="{{country.pk}}">{{country.name}}</option>
-                                                                            {% endif %} 
-                                                                        {% else %}
-                                                                            <option value="{{country.pk}}">{{country.name}}</option>
-                                                                        {% endif %}
-                                                                    <!--option value="{{country.pk}}">{{country.name}}</option-->
-                                                                    {% endfor %}
-                                                                </select>
+                                                                <input id="txtLongitud" value="{% if dato.lng %}{{dato.lng}}{% endif %}" type="text" name="longitud" class="form-control input-sm input-sm-1">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -474,10 +516,21 @@
                                                     <div class="col-md-12">
                                                         <div class="form-group">
                                                             <div class="col-md-5 text-right">
-                                                                <label for="txtWCalle" class="control-label">Calle :</label>
+                                                                <label for="cboWPais" class="control-label">País :</label>
                                                             </div>
                                                             <div class="col-md-7">
-                                                                <input id="txtWCalle" value="{% if dato.workStreet %}{{dato.workStreet}}{% endif %}" type="text" name="wcalle" class="form-control input-sm input-sm-1">
+                                                                <select class="form-control input-sm input-sm-1" name="wpais" id="cboWPais">
+                                                                    <option value="0">Seleccionar...</option>
+                                                                    {% for country in countries %}
+                                                                        {% if editar %} {% if dato.workCountry == country %}
+                                                                        <option selected value="{{country.pk}}">{{country.name}}</option>
+                                                                        {% else %}
+                                                                        <option value="{{country.pk}}">{{country.name}}</option>
+                                                                        {% endif %} {% else %}
+                                                                        <option value="{{country.pk}}">{{country.name}}</option>
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                </select>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -486,10 +539,60 @@
                                                     <div class="col-md-12">
                                                         <div class="form-group">
                                                             <div class="col-md-5 text-right">
-                                                                <label for="txtWNoCalle" class="control-label">No. de calle :</label>
+                                                                <label for="cboWEstado" class="control-label">Estado/Departamento :</label>
+                                                            </div>
+                                                            <div class="col-md-7">
+                                                                <select class="form-control input-sm input-sm-1" name="wdept" id="cboWEstado">
+                                                                        <option value="0">Seleccionar...</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row margin-bottom-5px">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <div class="col-md-5 text-right">
+                                                                <label for="txtWCondado" class="control-label">Condado/Municipio :</label>
+                                                            </div>
+                                                            <div class="col-md-7">
+                                                                <input id="txtWCondado" value="{% if dato.workCounty %}{{dato.workCounty}}{% endif %}" type="text" name="wcondado" class="form-control input-sm input-sm-1">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row margin-bottom-5px">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <div class="col-md-5 text-right">
+                                                                <label for="txtWCiudad" class="control-label">Ciudad :</label>
+                                                            </div>
+                                                            <div class="col-md-7">
+                                                                <input id="txtWCiudad" value="{% if dato.workCity %}{{dato.workCity}}{% endif %}" type="text" name="wciudad" class="form-control input-sm input-sm-1  ">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row margin-bottom-5px">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <div class="col-md-5 text-right">
+                                                                <label for="txtWNoCalle" class="control-label">Barrio :</label>
                                                             </div>
                                                             <div class="col-md-7">
                                                                 <input id="txtWNoCalle" type="text" value="{% if dato.streetNoW %}{{dato.streetNoW}}{% endif %}" name="wncalle" class="form-control input-sm input-sm-1  ">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row margin-bottom-5px">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <div class="col-md-5 text-right">
+                                                                <label for="txtWCalle" class="control-label">Calle :</label>
+                                                            </div>
+                                                            <div class="col-md-7">
+                                                                <input id="txtWCalle" value="{% if dato.workStreet %}{{dato.workStreet}}{% endif %}" type="text" name="wcalle" class="form-control input-sm input-sm-1">
                                                             </div>
                                                         </div>
                                                     </div>
@@ -530,67 +633,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="row margin-bottom-5px">
-                                                    <div class="col-md-12">
-                                                        <div class="form-group">
-                                                            <div class="col-md-5 text-right">
-                                                                <label for="txtWCiudad" class="control-label">Ciudad :</label>
-                                                            </div>
-                                                            <div class="col-md-7">
-                                                                <input id="txtWCiudad" value="{% if dato.workCity %}{{dato.workCity}}{% endif %}" type="text" name="wciudad" class="form-control input-sm input-sm-1  ">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="row margin-bottom-5px">
-                                                    <div class="col-md-12">
-                                                        <div class="form-group">
-                                                            <div class="col-md-5 text-right">
-                                                                <label for="txtWCondado" class="control-label">Condado/Municipio :</label>
-                                                            </div>
-                                                            <div class="col-md-7">
-                                                                <input id="txtWCondado" value="{% if dato.workCounty %}{{dato.workCounty}}{% endif %}" type="text" name="wcondado" class="form-control input-sm input-sm-1">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="row margin-bottom-5px">
-                                                    <div class="col-md-12">
-                                                        <div class="form-group">
-                                                            <div class="col-md-5 text-right">
-                                                                <label for="cboWEstado" class="control-label">Estado/Departamento :</label>
-                                                            </div>
-                                                            <div class="col-md-7">
-                                                                <select class="form-control input-sm input-sm-1" name="wdept" id="cboWEstado">
-                                                                        <option value="0">Seleccionar...</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="row margin-bottom-5px">
-                                                    <div class="col-md-12">
-                                                        <div class="form-group">
-                                                            <div class="col-md-5 text-right">
-                                                                <label for="cboWPais" class="control-label">País :</label>
-                                                            </div>
-                                                            <div class="col-md-7">
-                                                                <select class="form-control input-sm input-sm-1" name="wpais" id="cboWPais">
-                                                                    <option value="0">Seleccionar...</option>
-                                                                    {% for country in countries %}
-                                                                        {% if editar %} {% if dato.workCountry == country %}
-                                                                        <option selected value="{{country.pk}}">{{country.name}}</option>
-                                                                        {% else %}
-                                                                        <option value="{{country.pk}}">{{country.name}}</option>
-                                                                        {% endif %} {% else %}
-                                                                        <option value="{{country.pk}}">{{country.name}}</option>
-                                                                        {% endif %}
-                                                                    {% endfor %}
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                
                                             </div>
                                         </div>
                                         <div role="tabpanel" class="tab-pane" id="gestion">
@@ -673,6 +716,20 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                {% if antiguedad %}
+                                                <div class="row margin-bottom-5px">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <div class="col-md-5 text-right">
+                                                                <label class="control-label">Antigüedad :</label>
+                                                            </div>
+                                                            <div class="col-md-7">
+                                                                <label id="antiguedad">{{antiguedad}}</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {% endif %}
                                             </div>
                                         </div>
                                         <!-- TAB INFORMACIÓN PERSONAL -->
@@ -860,6 +917,20 @@
                                                             </div>
                                                             <div class="col-md-7">
                                                                 <input id="txtEmisor" value="{% if dato.passIssuer %}{{dato.passIssuer}}{% endif %}" type="text" name="emisor" class="form-control input-sm input-sm-1">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row margin-bottom-5px">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group">
+                                                            <div class="col-md-5 text-right">
+                                                                <label for="txtEmpleadoRTN" class="control-label">R.T.N. :</label>
+                                                            </div>
+                                                            <div class="col-md-7">
+                                                                <div class="input-group">
+                                                                    <input id="txtEmpleadoRTN" value="{% if dato.rtn %}{{dato.rtn}}{% endif %}" name="empleado_rtn" type="text" class="form-control input-sm-1">
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>

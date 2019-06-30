@@ -71,9 +71,23 @@ class Branch(models.Model):
     def __str__(self):
         return self.description
 
+class FuncionesTrabajo(models.Model):
+    code = models.CharField(max_length=5, blank=True, null=True)
+    descripcion = models.CharField(max_length=150, blank=True, null=True)
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="fun_empreg", related_query_name="fun_empreg")
+    user_reg = models.ForeignKey(User, on_delete=models.PROTECT)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='fnT_usermod', related_query_name='fnT_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.BooleanField()
+
+    def __str__(self):
+        return self.descripcion
+
 class Position(models.Model):
     code = models.CharField(max_length=100, blank=True, null=True)
     description = models.CharField(max_length=250)
+    funcion_operativa = models.ForeignKey("worksheet.FuncionesTrabajo", verbose_name=("Funcion Operativa"), on_delete=models.PROTECT, blank=True, null=True)
     empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="pos_empreg", related_query_name="pos_empreg")
     active = models.BooleanField(default=True)
     user_reg = models.ForeignKey(User, on_delete=models.PROTECT)
@@ -308,10 +322,10 @@ class Employee(models.Model):
     officeTel = models.CharField(max_length=50, blank=True, null=True)
     officeExt = models.CharField(max_length=50, blank=True, null=True)
     mobile = models.CharField(max_length=50, blank=True, null=True)
-    pager = models.CharField(max_length=50, blank=True, null=True)
     homeTel = models.CharField(max_length=50, blank=True, null=True)
-    fax = models.CharField(max_length=50, blank=True, null=True)
     email = models.CharField(max_length=150, blank=True, null=True)
+    socialNetwork1 = models.CharField(("Red Social 1"), max_length=250, blank=True, null=True)
+    socialNetwork2 = models.CharField(("Red Social 2"), max_length=250, blank=True, null=True)
     #picture = models.ImageField(upload_to='images/emp_photos')
     homeStreet = models.CharField(max_length=250, blank=True, null=True)
     streetNoH = models.CharField(max_length=50, blank=True, null=True)
@@ -322,6 +336,8 @@ class Employee(models.Model):
     homeCounty = models.CharField(max_length=100, blank=True, null=True)
     homeState = models.ForeignKey(State, blank=True, null=True, on_delete=models.SET_NULL, related_name='home_state', related_query_name='home_state')
     homeCountry = models.ForeignKey(Country, blank=True, null=True, on_delete=models.SET_NULL, related_name='home_country', related_query_name='home_country')
+    lat = models.CharField(("Latitud"), max_length=350, blank=True, null=True)
+    lng = models.CharField(("Longitud"), max_length=350, blank=True, null=True)
     workStreet = models.CharField(max_length=250, blank=True, null=True)
     streetNoW = models.CharField(max_length=50, blank=True, null=True)
     workBlock = models.CharField(max_length=50, blank=True, null=True)
@@ -348,6 +364,7 @@ class Employee(models.Model):
     passportExt = models.DateField(blank=True, null=True)
     passIssue = models.DateField(blank=True, null=True)
     passIssuer = models.CharField(max_length=150, blank=True, null=True)
+    rtn = models.CharField(("R.T.N."), max_length=100, blank=True, null=True)
 
     salary = models.CharField(max_length=20, blank=True, null=True)
     salario_diario = models.CharField(max_length=20, blank=True, null=True)
@@ -422,19 +439,6 @@ class Parentesco(models.Model):
     user_reg = models.ForeignKey(User, on_delete=models.PROTECT)
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='parnt_usermod', related_query_name='parnt_usermod')
-    date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.BooleanField()
-
-    def __str__(self):
-        return self.descripcion
-
-class FuncionesTrabajo(models.Model):
-    code = models.CharField(max_length=5, blank=True, null=True)
-    descripcion = models.CharField(max_length=150, blank=True, null=True)
-    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="fun_empreg", related_query_name="fun_empreg")
-    user_reg = models.ForeignKey(User, on_delete=models.PROTECT)
-    date_reg = models.DateTimeField(auto_now_add=True)
-    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='fnT_usermod', related_query_name='fnT_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField()
 
@@ -1226,6 +1230,7 @@ class LimiteSalarioDeduccion(models.Model):
     salario = models.DecimalField(("Salario"), max_digits=18, decimal_places=4)
     activo = models.BooleanField(("Activo"))
     fecha = models.DateField(("Fecha"), auto_now_add=True)
+    empleado = models.ForeignKey("worksheet.Employee", verbose_name=("Empleado"), on_delete=models.PROTECT)
     empresa_reg = models.ForeignKey(Empresa, blank=False, null=False, on_delete=models.PROTECT)
     user_reg = models.ForeignKey(User, blank=False, null=False, on_delete=models.PROTECT)
     date_reg = models.DateTimeField(auto_now_add=True)

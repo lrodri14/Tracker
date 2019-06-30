@@ -12,17 +12,17 @@ $(document).on('ready', function() {
     var sNombre = $('input[name="segundoNombre"]');
     var numExt = $('#txtNoEmpExt');
     var apellido = $('input[name="apellido"]');
-    var puesto = $('input[name="jobTitle"]');
     var pos = $('select[name="position"]');
+    var cboFuncion = $('select[name="funcionOperativa"]');
     var telOfi = $('input[name="tel_ofi"]');
     var dept = $('select[name="dept"]');
     var ext = $('input[name="ext"]');
     var suc = $('select[name="sucursal"]');
     var jefe = $('select[name="jefe"]');
     var telMov = $('input[name="telMov"]');
-    var pag = $('input[name="pager"]');
+    var red1 = $('input[name="redsocial1"]');
+    var red2 = $('input[name="redsocial2"]');
     var slsP = $('select[name="slsPer"]');
-    var fax = $('input[name="fax"]');
     var email = $('input[name="email"]');
     var telCasa = $('input[name="telCasa"]');
 
@@ -35,6 +35,8 @@ $(document).on('ready', function() {
     var condado = $('input[name="condado"]');
     var hdept = $('select[name="hdept"]');
     var hpais = $('select[name="hpais"]');
+    var latitud = $('input[name="latitud"]');
+    var longitud = $('input[name="longitud"]');
 
     var wcalle = $('input[name="wcalle"]');
     var wncalle = $('input[name="wncalle"]');
@@ -62,6 +64,7 @@ $(document).on('ready', function() {
     var fecPassExt = $('input[name="fecPassExt"]');
     var fecEmis = $('input[name="fecEmis"]');
     var emisor = $('input[name="emisor"]');
+    var rtn = $('input[name="empleado_rtn"]');
     var salario = $('input[name="salario"]');
     var salario_diario = $('#frmEmpleado input[name="txtSalarioDiario"]');
     var salarioUnd = $('select[name="salaryUnits"]');
@@ -101,14 +104,57 @@ $(document).on('ready', function() {
         window.location.replace(dns + "/listar/empleados/");
     });
 
-    pos.on('change', function() {
-        var valor = $(this).val();
-        if (valor != 0) {
-            puesto.val($("#cboPosicion option:selected").text());
-        }else{
-            puesto.val(null);
-        }
+    fechaCont.change(function() {
+        var url = "/obtener/antiguedad/"; // the script where you handle the form input.
+        $.ajax({
+            type: "GET",
+            url: url,
+            data: {
+                'fecha':$(this).val(),
+            }, // serializes the form's elements.
+            success: function(data)
+            {
+                $('#antiguedad').text(data.antiguedad);
+            },
+            dataType: 'json',
+        });
     });
+
+    var valorPosicion = 0;
+
+    pos.on('change', function() {
+        valorPosicion = $(this).val();
+    });
+
+    var valorFuncion = 0;
+    cboFuncion.on('change', function() {
+        valorFuncion = $(this).val();
+        var url = "/obtener/puestos/"; // the script where you handle the form input.
+            $.ajax({
+                type: "GET",
+                url: url,
+                data: {
+                    'funcion_id':valorFuncion,
+                }, // serializes the form's elements.
+                success: function(data)
+                {
+                    $('#cboPosicion').html(data);
+                },
+                error: function(data) {
+                    console.log(data);
+                    $.toast({
+                        heading: 'Empleado',
+                        text: data.status + ' - ' + data.statusText,
+                        position: 'top-right',
+                        loaderBg: '#ff6849',
+                        icon: 'error',
+                        hideAfter: 5000,
+                        stack: 6
+                    });
+                },
+                dataType: 'html',
+            });
+    })
     //#endregion
 
     //#region Funciones
@@ -131,18 +177,17 @@ $(document).on('ready', function() {
                     'sNom':sNombre.val(),
                     'apellido':apellido.val(),
                     'numExt':numExt.val(),
-                    'puesto':puesto.val(),
                     'activo':activo,
-                    'pos':pos.val(),
+                    'pos':valorPosicion,
                     'telOf':telOfi.val(),
                     'dept':dept.val(),
                     'telExt':ext.val(),
                     'suc':suc.val(),
                     'jefe':jefe.val(),
                     'telMov':telMov.val(),
-                    'pag':pag.val(),
+                    'redsocial1':red1.val(),
+                    'redsocial2':red2.val(),
                     'slsP':slsP.val(),
-                    'fax':fax.val(),
                     'email':email.val(),
                     'telCasa':telCasa.val(),
                     'calle':calle.val(),
@@ -154,6 +199,8 @@ $(document).on('ready', function() {
                     'condado': condado.val(),
                     'hdept':hdept.val(),
                     'hpais':hpais.val(),
+                    'latitud': latitud.val(),
+                    'longitud': longitud.val(),
                     'wcalle':wcalle.val(),
                     'wncalle':wncalle.val(),
                     'wbloque':wbloque.val(),
@@ -178,6 +225,7 @@ $(document).on('ready', function() {
                     'fecPassExt':fecPassExt.val(),
                     'fecEmis':fecEmis.val(),
                     'emisor':emisor.val(),
+                    'rtn': rtn.val(),
                     'salario':salario.val(),
                     'salario_diario': salario_diario.val(),
                     'salarioUnd':salarioUnd.val(),
@@ -235,6 +283,7 @@ $(document).on('ready', function() {
     }
 
     function Actualizar() {
+        console.log($('#cboPosicion').val());
         if (chkActivo.is(":checked")) {
             activo = 1;
         } else {
@@ -250,18 +299,18 @@ $(document).on('ready', function() {
                 'sNom': sNombre.val(),
                 'apellido': apellido.val(),
                 'numExt': numExt.val(),
-                'puesto': puesto.val(),
+                //'puesto': puesto.val(),
                 'activo': activo,
-                'pos': pos.val(),
+                'pos': $('#cboPosicion').val(),
                 'telOf': telOfi.val(),
                 'dept': dept.val(),
                 'telExt': ext.val(),
                 'suc': suc.val(),
                 'jefe': jefe.val(),
                 'telMov': telMov.val(),
-                'pag': pag.val(),
+                'redsocial1':red1.val(),
+                'redsocial2':red2.val(),
                 'slsP': slsP.val(),
-                'fax': fax.val(),
                 'email': email.val(),
                 'telCasa': telCasa.val(),
                 'calle': calle.val(),
@@ -273,6 +322,8 @@ $(document).on('ready', function() {
                 'condado': condado.val(),
                 'hdept': hdept.val(),
                 'hpais': hpais.val(),
+                'latitud': latitud.val(),
+                'longitud': longitud.val(),
                 'wcalle': wcalle.val(),
                 'wncalle': wncalle.val(),
                 'wbloque': wbloque.val(),
@@ -297,6 +348,7 @@ $(document).on('ready', function() {
                 'fecPassExt': fecPassExt.val(),
                 'fecEmis': fecEmis.val(),
                 'emisor': emisor.val(),
+                'rtn': rtn.val(),
                 'salario': salario.val(),
                 'salario_diario': salario_diario.val(),
                 'salarioUnd': salarioUnd.val(),

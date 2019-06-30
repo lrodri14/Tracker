@@ -9,11 +9,13 @@ $(document).on('ready', () => {
     var id = $('input[name="id"]');
     //#endregion
 
-    //#region Código para Puestos de Trabajo
+//#region Código para Puestos de Trabajo
     //#region Variables
     var pt_nombre = $('input[name="pt_nombre"]');
-    var pt_desc = $('input[name="pt_descripcion"]');
+    var pt_desc = $('textarea[name="pt_descripcion"]');
+    var pt_fun = $('select[name="pt_funcion_operativa"]');
     var pt_activo = $('input[name="pt_activo"]');
+
     //var token = $('input[name="csrfmiddlewaretoken"]');
     //#endregion
     //#region Eventos Controles
@@ -21,43 +23,41 @@ $(document).on('ready', () => {
         e.preventDefault();
         url = '/guardar/puesto/';
         metodo = 'POST';
-        if (validarptDatos() != false) {
-            if (pt_activo.is(":checked")) {
-                vActivo = 1;
-            } else {
-                vActivo = 0;
-            }
-            data = {
-                'nombre':pt_nombre.val(),
-                'descripcion': pt_desc.val(),
-                'activo': vActivo,
-                'csrfmiddlewaretoken': token.val(),
-            };
-            GuardarRegistro(url, metodo, data, "Puesto de Trabajo", false, '');
+        if (pt_activo.is(":checked")) {
+            vActivo = 1;
+        } else {
+            vActivo = 0;
         }
+        data = {
+            'nombre':pt_nombre.val(),
+            'descripcion': pt_desc.val(),
+            'funcion_operativa': pt_fun.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Puesto de Trabajo", false, '');
     });
 
     $('#btnptActualizar').on('click', function(e) {
         e.preventDefault();
         url = '/actualizar/puesto/';
         metodo = 'POST';
-        if (validarptDatos() != false) {
-            if (pt_activo.is(":checked")) {
-                console.log("Verdadero");
-                vActivo = 1;
-            } else {
-                console.log("Falso");
-                vActivo = 0;
-            }
-            data = {
-                'id': id.val(),
-                'nombre':pt_nombre.val(),
-                'desc': pt_desc.val(),
-                'activo': vActivo,
-                'csrfmiddlewaretoken': token.val(),
-            };
-            GuardarRegistro(url, metodo, data, "Puesto de Trabajo", true, "/listar/puestos-trabajo/");
+        if (pt_activo.is(":checked")) {
+            console.log("Verdadero");
+            vActivo = 1;
+        } else {
+            console.log("Falso");
+            vActivo = 0;
         }
+        data = {
+            'id': id.val(),
+            'nombre':pt_nombre.val(),
+            'desc': pt_desc.val(),
+            'funcion_operativa': pt_fun.val(),
+            'activo': vActivo,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Puesto de Trabajo", true, "/listar/puestos-trabajo/");
     });
     $('#btnptCancelar').on('click', function(e) {
         e.preventDefault();
@@ -65,21 +65,17 @@ $(document).on('ready', () => {
     });
     //#endregion
     //#region Validación
-    function validarptDatos() {
-        $('div').removeClass('has-warning');
+    // function validarptDatos() {
+    //     $('div').removeClass('has-warning');
 
-        if (pt_nombre.val().length == 0) {
-            mensaje("Registro de Puesto de trabajo", "El campo 'Nombre' es obligatorio.", "warning");
-            return false;
-        }
-        if (pt_desc.val().length == 0) {
-            mensaje("Registro de Puesto de trabajo", "El campo 'Descripción' es obligatorio.", "warning");
-            return false;
-        }
-        return true;
-    }
+    //     if (pt_nombre.val().length == 0) {
+    //         mensaje("Registro de Puesto de trabajo", "El campo 'Nombre' es obligatorio.", "warning");
+    //         return false;
+    //     }
+    //     return true;
+    // }
     //#endregion
-    //#endregion Fin código de Puestos de Trabajo
+//#endregion Fin código de Puestos de Trabajo
     
 //#region Código para Centros de Costos
 

@@ -28,6 +28,7 @@ Listado de Puestos
                                 <tr>
                                     <th>Código</th>
                                     <th>Descripción</th>
+                                    <th>Función Operativa</th>
                                     <th>Estado del registro</th>
                                     <th>Acciones</th>
                                 </tr>
@@ -37,6 +38,7 @@ Listado de Puestos
                                 <tr>
                                     <td>{{item.code}}</td>
                                     <td>{{item.description}}</td>
+                                    <td>{{item.funcion_operativa.descripcion}}</td>
                                     <td>
                                     {% if item.active %}
                                     <span class="label label-success">Habilitado</span>

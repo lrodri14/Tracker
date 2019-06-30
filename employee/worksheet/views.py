@@ -6,15 +6,16 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.core import serializers
 from django.core.serializers import serialize
+from dateutil import relativedelta as rdelta
 from django.db.models import Count, Min, Sum, Avg
 from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from django.utils import timezone
 from django.utils.decorators import method_decorator
+
 from worksheet.forms import *
 from worksheet.models import *
-import datetime
-from datetime import date
+from datetime import date, datetime
 import json
 import locale
 from django.db.models import Q
@@ -102,7 +103,7 @@ def recibir_sucursal(request):
 def empleado_form(request):
     suc = Branch.objects.get(pk=request.session["sucursal"])
     verificaSucursal(request)
-    positions = Position.objects.filter(active=True, empresa_reg=suc.empresa)
+    positions = []#Position.objects.filter(active=True, empresa_reg=suc.empresa)
     departments = Department.objects.filter(active=True, empresa_reg=suc.empresa)
     branches = Branch.objects.filter(active=True)
     salesPersons = Vendedor.objects.filter(active=True, empresa_reg=suc.empresa)
@@ -119,11 +120,13 @@ def empleado_form(request):
     banks = Bank.objects.filter(active=True)
     tipos_contratos = TipoContrato.objects.filter(active=True, empresa_reg=suc.empresa)
     tipos_nominas = TipoNomina.objects.filter(active=True, empresa_reg=suc.empresa)
-    return render(request, 'empleado-form.html', {'banks':banks, 'costs_units': costs_units, 'salary_units': salary_units, 'civil_status':civil_status, 'citizenships':citizenships, 'positions':positions, 'departments':departments, 'branches':branches, 'salesPersons':salesPersons, 'states':states, 'countries':countries, 'stats':estados_emp, 'terms':terms, 'sexs':sexos, 'empleados':empleados, 'tipos_contratos':tipos_contratos, 'tipos_nominas':tipos_nominas})
+    funciones_operativas = FuncionesTrabajo.objects.filter(active=True, empresa_reg=suc.empresa)
+    return render(request, 'empleado-form.html', {'banks':banks, 'costs_units': costs_units, 'salary_units': salary_units, 'civil_status':civil_status, 'citizenships':citizenships, 'positions':positions, 'departments':departments, 'branches':branches, 'salesPersons':salesPersons, 'states':states, 'countries':countries, 'stats':estados_emp, 'terms':terms, 'sexs':sexos, 'empleados':empleados, 'tipos_contratos':tipos_contratos, 'tipos_nominas':tipos_nominas, 'funciones_operativas':funciones_operativas})
 
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.change_employee', raise_exception=True)
 def empleado_editar(request, id):
+    antiguedad = None
     suc = Branch.objects.get(pk=request.session["sucursal"])
     dato = Employee.objects.get(pk=id)
     positions = Position.objects.filter(active=True, empresa_reg=suc.empresa)
@@ -143,7 +146,13 @@ def empleado_editar(request, id):
     banks = Bank.objects.filter(active=True, empresa_reg=suc.empresa)
     tipos_contratos = TipoContrato.objects.filter(active=True, empresa_reg=suc.empresa)
     tipos_nominas = TipoNomina.objects.filter(active=True, empresa_reg=suc.empresa)
-    return render(request, 'empleado-form.html', {'editar':True, 'dato':dato, 'banks':banks, 'costs_units': costs_units, 'salary_units': salary_units, 'civil_status':civil_status, 'citizenships':citizenships, 'positions':positions, 'departments':departments, 'branches':branches, 'salesPersons':salesPersons, 'states':states, 'countries':countries, 'stats':estados_emp, 'terms':terms, 'sexs':sexos, 'empleados':empleados, 'tipos_contratos':tipos_contratos, 'tipos_nominas':tipos_nominas})
+    if dato.active:
+        rd = rdelta.relativedelta(date.today(), dato.startDate)
+    else:
+        rd = rdelta.relativedelta(dato.termDate, dato.startDate)
+    antiguedad = "{0.years} años, {0.months} meses y {0.days} días".format(rd)
+    funciones_operativas = FuncionesTrabajo.objects.filter(active=True, empresa_reg=suc.empresa)
+    return render(request, 'empleado-form.html', {'editar':True, 'dato':dato, 'banks':banks, 'costs_units': costs_units, 'salary_units': salary_units, 'civil_status':civil_status, 'citizenships':citizenships, 'positions':positions, 'departments':departments, 'branches':branches, 'salesPersons':salesPersons, 'states':states, 'countries':countries, 'stats':estados_emp, 'terms':terms, 'sexs':sexos, 'empleados':empleados, 'tipos_contratos':tipos_contratos, 'tipos_nominas':tipos_nominas, 'funciones_operativas':funciones_operativas, 'antiguedad':antiguedad})
     #return render(request, 'empleado-form.html', {'editar':True, 'dato':dato, 'positions':positions, 'departments':departments, 'branches':branches, 'salesPersons':salesPersons})
 
 @login_required(login_url='/form/iniciar-sesion/')
@@ -172,7 +181,12 @@ def empleado_perfil(request, id):
         imagen = ImagenEmpleado.objects.get(empleado__id=id)
     else:
         imagen = None
-    return render(request, 'perfil-empleado.html', {'dato':dato, 'imagen': imagen, 'periodos':periodos, 'deducciones_legales': deducciones_legales})
+    if dato.active:
+        rd = rdelta.relativedelta(date.today(), dato.startDate)
+    else:
+        rd = rdelta.relativedelta(dato.termDate, dato.startDate)
+    antiguedad = "{0.years} años, {0.months} meses y {0.days} días".format(rd)
+    return render(request, 'perfil-empleado.html', {'dato':dato, 'imagen': imagen, 'periodos':periodos, 'deducciones_legales': deducciones_legales, 'antiguedad':antiguedad})
 
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.add_grupocorporativo', raise_exception=True)
@@ -293,14 +307,18 @@ def listadoDepartamentos(request):
 @permission_required('worksheet.add_position', raise_exception=True)
 def puestoTrabajo(request):
     verificaSucursal(request)
-    return render(request, 'puesto-trabajo.html')
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    funciones_operativas = FuncionesTrabajo.objects.filter(empresa_reg=suc.empresa, active=True)
+    return render(request, 'puesto-trabajo.html', {'funciones_operativas':funciones_operativas})
 
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.change_position', raise_exception=True)
 def puesto_editar(request, id):
     verificaSucursal(request)
     dato = Position.objects.get(pk=id)
-    return render(request, 'puesto-trabajo.html', {'editar':True, 'dato':dato})
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    funciones_operativas = FuncionesTrabajo.objects.filter(empresa_reg=suc.empresa, active=True)
+    return render(request, 'puesto-trabajo.html', {'editar':True, 'dato':dato, 'funciones_operativas': funciones_operativas})
 
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.see_position', raise_exception=True)
@@ -1057,7 +1075,7 @@ def guardar_empleado(request):
                 pNom = request.POST['pNom']
                 sNom = request.POST['sNom']
                 apellido = request.POST['apellido']
-                puesto = request.POST['puesto']
+                puesto = ""
                 no_ext = request.POST['numExt']
                 activo = request.POST['activo']
                 pos = request.POST['pos']
@@ -1067,9 +1085,9 @@ def guardar_empleado(request):
                 suc = request.POST['suc']
                 jefe = request.POST['jefe']
                 telMov = request.POST['telMov']
-                pag = request.POST['pag']
+                redsocial1 = request.POST['redsocial1']
                 slsP = request.POST['slsP']
-                fax = request.POST['fax']
+                redsocial2 = request.POST['redsocial2']
                 email = request.POST['email']
                 telCasa = request.POST['telCasa']
                 calle = request.POST['calle']
@@ -1081,6 +1099,8 @@ def guardar_empleado(request):
                 condado = request.POST['condado']
                 hdept = request.POST['hdept']
                 hpais = request.POST['hpais']
+                latitud = request.POST['latitud']
+                longitud = request.POST['longitud']
                 wcalle = request.POST['wcalle']
                 wncalle = request.POST['wncalle']
                 wbloque = request.POST['wbloque']
@@ -1105,6 +1125,7 @@ def guardar_empleado(request):
                 fecPassExt = request.POST['fecPassExt']
                 fecEmis = request.POST['fecEmis']
                 emisor = request.POST['emisor']
+                rnt = request.POST['rtn']
                 salary = request.POST['salario']
                 salario_diario = request.POST['salario_diario']
                 salaryUnits = request.POST['salarioUnd']
@@ -1132,12 +1153,12 @@ def guardar_empleado(request):
                     }
                     return JsonResponse(data)
 
-                if len(puesto) == 0:
-                    mensaje = "El campo 'Denominación de Función' es obligatorio."
-                    data = {
-                        'mensaje': mensaje, 'error': True
-                    }
-                    return JsonResponse(data)
+                # if len(puesto) == 0:
+                #     mensaje = "El campo 'Denominación de Función' es obligatorio."
+                #     data = {
+                #         'mensaje': mensaje, 'error': True
+                #     }
+                #     return JsonResponse(data)
 
                 if len(no_ext) == 0:
                     no_ext = None
@@ -1203,14 +1224,8 @@ def guardar_empleado(request):
                 if len(telMov) == 0:
                     telMov = None
 
-                if len(pag) == 0:
-                    pag = None
-
                 if len(telCasa) == 0:
                     telCasa == None
-
-                if len(fax) == 0:
-                    fax = None
 
                 if len(email) == 0:
                     email = None
@@ -1236,6 +1251,11 @@ def guardar_empleado(request):
                 if len(condado) == 0:
                     condado = None
                 
+                if len(latitud) == 0:
+                    latitud = None
+
+                if len(longitud) == 0:
+                    longitud = None
                 
 
                 if len(hdept) > 0:
@@ -1279,6 +1299,12 @@ def guardar_empleado(request):
 
                 if len(wcondado) == 0:
                     wcondado = None
+
+                if len(redsocial1) == 0:
+                    redsocial1 = None
+
+                if len(redsocial2) == 0:
+                    redsocial2 = None
 
                 if len(wdept) > 0:
                     if int(wdept) > 0:
@@ -1380,6 +1406,9 @@ def guardar_empleado(request):
                 if len(fecEmis) == 0:
                     fecEmis = None
 
+                if len(rtn) == 0:
+                    rtn = None
+
                 if len(salaryUnits) > 0:
                     if int(salaryUnits) > 0:
                         oSalaryUnits = SalaryUnit.objects.get(pk=salaryUnits)
@@ -1437,9 +1466,9 @@ def guardar_empleado(request):
                     branch = oSucursal,
                     jefe = oJefe,
                     mobile=telMov,
-                    pager = pag,
+                    socialNetwork1 = redsocial1,
+                    socialNetwork2 = redsocial2,
                     slsPerson = oEmpVentas,
-                    fax = fax,
                     email = email,
                     homeTel = telCasa,
                     homeStreet = calle,
@@ -1451,6 +1480,8 @@ def guardar_empleado(request):
                     homeCounty = condado,
                     homeState = oEstado,
                     homeCountry = oPais,
+                    lat = latitud,
+                    lng = longitud,
                     workStreet = wcalle,
                     streetNoW = wncalle,
                     workBlock = wbloque,
@@ -1475,6 +1506,7 @@ def guardar_empleado(request):
                     passportExt = fecPassExt,
                     passIssue = fecEmis,
                     passIssuer = emisor,
+                    rtn = rtn,
                     salary = salary,
                     salario_diario = salario_diario,
                     salaryUnits = oSalaryUnits,
@@ -1494,6 +1526,7 @@ def guardar_empleado(request):
                 }
                 return JsonResponse(data)
     except Exception as ex:
+        print(ex)
         data = {
             'error':True,
             'mensaje': 'Error: ' + ex.message,
@@ -1529,7 +1562,7 @@ def actualizar_empleado(request):
                 pNom = request.POST['pNom']
                 sNom = request.POST['sNom']
                 apellido = request.POST['apellido']
-                puesto = request.POST['puesto']
+                #puesto = request.POST['puesto']
                 no_ext = request.POST['numExt']
                 activo = request.POST['activo']
                 pos = request.POST['pos']
@@ -1539,9 +1572,9 @@ def actualizar_empleado(request):
                 suc = request.POST['suc']
                 jefe = request.POST['jefe']
                 telMov = request.POST['telMov']
-                pag = request.POST['pag']
+                redsocial1 = request.POST['redsocial1']
                 slsP = request.POST['slsP']
-                fax = request.POST['fax']
+                redsocial2 = request.POST['redsocial2']
                 email = request.POST['email']
                 telCasa = request.POST['telCasa']
                 calle = request.POST['calle']
@@ -1553,6 +1586,8 @@ def actualizar_empleado(request):
                 condado = request.POST['condado']
                 hdept = request.POST['hdept']
                 hpais = request.POST['hpais']
+                latitud = request.POST['latitud']
+                longitud = request.POST['longitud']
                 wcalle = request.POST['wcalle']
                 wncalle = request.POST['wncalle']
                 wbloque = request.POST['wbloque']
@@ -1577,6 +1612,7 @@ def actualizar_empleado(request):
                 fecPassExt = request.POST['fecPassExt']
                 fecEmis = request.POST['fecEmis']
                 emisor = request.POST['emisor']
+                rtn = request.POST['rtn']
                 salary = request.POST['salario']
                 salario_diario = request.POST['salario_diario']
                 salaryUnits = request.POST['salarioUnd']
@@ -1588,6 +1624,9 @@ def actualizar_empleado(request):
                 remark = request.POST['comentarios']
                 tipo_nomina = request.POST['tipo_nomina']
                 tipo_contrato = request.POST['tipo_contrato']
+
+                print(latitud)
+                print(longitud)
 
                 if len(pNom) == 0:
                     mensaje = "El campo 'Primer Nombre' es obligatorio."
@@ -1606,15 +1645,17 @@ def actualizar_empleado(request):
                     }
                     return JsonResponse(data)
 
-                if len(puesto) == 0:
-                    mensaje = "El campo 'Puesto de trabajo' es obligatorio."
-                    data = {
-                        'mensaje': mensaje, 'error': True
-                    }
-                    return JsonResponse(data)
+                # if len(puesto) == 0:
+                #     mensaje = "El campo 'Puesto de trabajo' es obligatorio."
+                #     data = {
+                #         'mensaje': mensaje, 'error': True
+                #     }
+                #     return JsonResponse(data)
 
                 if len(no_ext) == 0:
                     no_ext = None
+
+                print("Posicion: " + pos)
 
                 if len(pos) > 0:
                     if int(pos) > 0:
@@ -1675,14 +1716,8 @@ def actualizar_empleado(request):
                 if len(telMov) == 0:
                     telMov = None
 
-                if len(pag) == 0:
-                    pag = None
-
                 if len(telCasa) == 0:
                     telCasa = None
-
-                if len(fax) == 0:
-                    fax = None
 
                 if len(email) == 0:
                     email = None
@@ -1707,6 +1742,18 @@ def actualizar_empleado(request):
 
                 if len(condado) == 0:
                     condado = None
+
+                if len(redsocial1) == 0:
+                    redsocial = None
+
+                if len(redsocial2) == 0:
+                    redsocial2 = None
+
+                if len(latitud) == 0:
+                    latitud = None
+
+                if len(longitud) == 0:
+                    longitud = None
 
                 if len(hdept) > 0:
                     if int(hdept) > 0:
@@ -1914,7 +1961,7 @@ def actualizar_empleado(request):
                 oEmp.middleName = sNom
                 oEmp.lastName = apellido
                 oEmp.extEmpNo = no_ext
-                oEmp.jobTitle = puesto
+                oEmp.jobTitle = ""
                 oEmp.position = oPosicion
                 oEmp.dept = oDepartamento
                 oEmp.branch = oSucursal
@@ -1923,9 +1970,9 @@ def actualizar_empleado(request):
                 oEmp.officeTel = telOf
                 oEmp.officeExt = telExt
                 oEmp.mobile = telMov
-                oEmp.pager = pag
+                oEmp.socialNetwork1 = redsocial1
                 oEmp.homeTel = telCasa
-                oEmp.fax = fax
+                oEmp.socialNetwork2 = redsocial2
                 oEmp.email = email
                 oEmp.homeStreet = calle
                 oEmp.streetNoH = ncalle
@@ -1936,6 +1983,8 @@ def actualizar_empleado(request):
                 oEmp.homeCounty = condado
                 oEmp.homeState = oEstado
                 oEmp.homeCountry = oPais
+                oEmp.lat = latitud
+                oEmp.lng = longitud
                 oEmp.workStreet = wcalle
                 oEmp.streetNoW = wncalle
                 oEmp.workBlock = wbloque
@@ -1992,6 +2041,7 @@ def actualizar_empleado(request):
                 'mensaje':mensaje, 'error': True
             }
     except Exception as ex:
+        print(ex)
         data = {
             'error':True,
             'mensaje': 'error',
@@ -2031,6 +2081,18 @@ def eliminar_empleado(request):
             'mensaje': 'error',
         }
     #return HttpResponseRedirect('/listar/corporativos/')
+    return JsonResponse(data)
+
+def obtener_antiguedad(request):
+    data = {}
+    if request.is_ajax():
+        fecha = request.GET.get('fecha')
+        fecha = datetime.strptime(fecha, "%Y-%m-%d")
+        print(fecha.day)
+        rd = rdelta.relativedelta(datetime.today(), date(fecha.year, fecha.month, fecha.day))
+        antiguedad = "{0.years} años, {0.months} meses y {0.days} días".format(rd)
+        print(antiguedad)
+        data = {'antiguedad': antiguedad}
     return JsonResponse(data)
 
 def guardar_corporativo(request):
@@ -2968,6 +3030,7 @@ def guardar_puesto(request):
             if request.method == 'POST':
                 nombre = request.POST['nombre']
                 descripcion = request.POST['descripcion']
+                funcion_operativa = request.POST['funcion_operativa']
                 activo = int(request.POST['activo'])
 
                 if len(nombre) == 0:
@@ -2998,12 +3061,27 @@ def guardar_puesto(request):
                     }
                     return JsonResponse(data)
 
+                if len(funcion_operativa) == 0:
+                    data = {
+                        'error': True,
+                        'mensaje': 'Ingrese un valor válido para el campo "Función Operativa".',
+                    }
+                    return JsonResponse(data)
+
+                if int(funcion_operativa) == 0:
+                    data = {
+                        'error': True,
+                        'mensaje': 'Seleccione un valor para el campo "Función Operativa".',
+                    }
+                    return JsonResponse(data)
+
                 if activo == 1:
                     activo = True
                 else:
                     activo = False
 
                 suc = Branch.objects.get(pk=request.session["sucursal"])
+                oFun = FuncionesTrabajo.objects.get(pk=funcion_operativa)
                 tot_reg = Position.objects.filter(code=nombre, empresa_reg=suc.empresa).count()
                 if tot_reg > 0:
                     data = {
@@ -3017,6 +3095,7 @@ def guardar_puesto(request):
                         code=nombre,
                         description=descripcion,
                         empresa_reg=suc.empresa,
+                        funcion_operativa=oFun,
                         active=activo,
                         user_reg=request.user,
                     )
@@ -3058,6 +3137,7 @@ def actualizar_puesto(request):
             if request.method == 'POST':
                 id = int(request.POST['id'])
                 desc = request.POST['desc']
+                funcion_operativa = request.POST['funcion_operativa']
                 activo = int(request.POST['activo'])
 
                 if len(desc) == 0:
@@ -3074,18 +3154,34 @@ def actualizar_puesto(request):
                     }
                     return JsonResponse(data)
 
+                if int(funcion_operativa) == 0:
+                    data = {
+                        'error': True,
+                        'mensaje': 'Ingrese un valor válido para el campo "Función Operativa".',
+                    }
+                    return JsonResponse(data)
+
+                if funcion_operativa == 0:
+                    data = {
+                        'error': True,
+                        'mensaje': 'Seleccione un valor para el campo "Función Operativa".',
+                    }
+                    return JsonResponse(data)
+
                 if activo == 1:
                     activo = True
                 else:
                     activo = False
                 
                 oPos = Position.objects.get(pk=id)
+                oFun = FuncionesTrabajo.objects.get(pk=funcion_operativa)
 
                 if oPos:
                     oPos.description = desc
                     oPos.active = activo
                     oPos.user_mod = request.user
                     oPos.date_mod = datetime.datetime.now()
+                    oPos.funcion_operativa = oFun
                     oPos.save()
                     pos = {
                         'pk': oPos.pk,
@@ -3113,6 +3209,7 @@ def actualizar_puesto(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
+        print(ex)
         data = {
             'error': True,
             'mensaje': 'error',
@@ -3165,6 +3262,17 @@ def eliminar_puesto(request):
             'mensaje': 'error',
         }
     return JsonResponse(data)
+
+def obtenerPuestos(request):
+    data = {}
+    puestos = []
+    if request.is_ajax():
+        funcion_id = request.GET.get('funcion_id')
+        tot_reg = FuncionesTrabajo.objects.filter(id=funcion_id).count()
+        if tot_reg > 0:
+            o_func = FuncionesTrabajo.objects.get(id=funcion_id)
+            puestos = Position.objects.filter(funcion_operativa=o_func)
+    return render(request, 'ajax/puestos.html', {'positions':puestos})
 
 def guardar_ccosto(request):
     try:

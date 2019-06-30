@@ -38,7 +38,7 @@ Listado de Empleados
                                     <td>{{item.firstName}} {% if item.middleName %}
                                     {{item.middleName}}
                                     {% endif %} {{item.lastName}}</td>
-                                    <td>{{item.jobTitle}}</td>
+                                    <td>{{item.position.description}}</td>
                                     <td>
                                     {% if item.active %}
                                     <span class="label label-success">Habilitado</span>

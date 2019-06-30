@@ -384,6 +384,7 @@ urlpatterns = [
     url(r'^eliminar/tipo-salario/$', views.eliminar_tipo_salario, name='eliminar_tipo_salario'),
     url(r'^eliminar/vendedor/$', views.eliminar_vendedor, name='eliminar_vendedor'),
 
+    url(r'^obtener/antiguedad/$', views.obtener_antiguedad, name="obtener_antiguedad"),
     url(r'^obtener/estados/$', views.lista_estados, name="lista_estados"),
     url(r'^obtener/deduccion-empleado/$', views.obtener_deduccion_empleado, name="obtener_deduccion_empleado"),
     url(r'^obtener/deducciones-empleado/$', views.obtener_deducciones, name="obtener_deducciones"),
@@ -391,6 +392,7 @@ urlpatterns = [
     url(r'^obtener/empleados-planilla/$', views.obtener_empleados_planilla, name="obtener_empleados_planilla"),
     url(r'^obtener/grafico1/$', views.grafico1, name="grafico1"),
     url(r'^obtener/planilla-generada/$', views.planilla_generada, name="planilla_generada"),
+    url(r'^obtener/puestos/$', views.obtenerPuestos, name="obtenerPuestos"),
     url(r'^obtener/salario-ultimo/$', views.obtener_ultimo_salario, name="obtener_ultimo_salario"),
     url(r'^obtener/sucursales/$', views.lista_sucursal, name="lista_sucursal"),
 
