@@ -374,6 +374,7 @@ class Employee(models.Model):
     bankCode = models.ForeignKey(Bank, blank=True, null=True, on_delete=models.PROTECT)
     bankAccount = models.CharField(max_length=50, blank=True, null=True)
     branchBank = models.CharField(max_length=150, blank=True, null=True)
+    metodo_pago = models.IntegerField(("Metodo de Pago"), blank=True, null=True)
     tipo_nomina = models.ForeignKey("worksheet.TipoNomina", verbose_name="tipo nomina", on_delete=models.PROTECT, blank=True, null=True)
     tipo_contrato = models.ForeignKey("worksheet.TipoContrato", verbose_name="tipo contrato", on_delete=models.PROTECT, blank=True, null=True)
 

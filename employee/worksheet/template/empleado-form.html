@@ -953,8 +953,7 @@
                                                 <div class="row margin-bottom-5px">
                                                     <div class="form-group">
                                                         <div class="col-md-5 text-right">
-                                                                <label for="txtSalario" class="control-label">Frecuencia de Pago :</label>
-                                                            </div>
+                                                            <label for="txtSalario" class="control-label">Frecuencia de Pago :</label>
                                                         </div>
                                                         <div class="col-md-7">
                                                             <select class="form-control input-sm input-sm-1" name="salaryUnits" id="cboUnidadesSalario">
@@ -985,21 +984,18 @@
                                                 <div class="row margin-bottom-5px">
                                                     <div class="form-group">
                                                         <div class="col-md-5 text-right">
-                                                            <label for="txtCostosEmpleado" class="control-label">Costos del empleado :</label>
+                                                            <label class="control-label">Tipo de Nómina :</label>
                                                         </div>
-                                                        <div class="col-md-3">
-                                                            <input id="txtCostosEmpleado" value="{% if dato.empCost %}{{dato.empCost}}{% endif %}" type="text" name="costEmp" class="form-control input-sm input-sm-1">
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <select class="form-control input-sm input-sm-1" name="costEmpUni" id="cboUnidadesCosto">
+                                                        <div class="col-md-7">
+                                                            <select class="form-control input-sm input-sm-1" name="cboTipoNomina" id="cboTipoNomina">
                                                                 <option value="0">Seleccionar...</option>
-                                                                {% for item in costs_units %}
-                                                                {% if editar %} {% if dato.empCostUnit == item %}
-                                                                <option value="{{item.pk}}" selected>{{item.description}}</option>
+                                                                {% for item in tipos_nominas %}
+                                                                {% if editar %} {% if dato.tipo_nomina == item %}
+                                                                <option value="{{item.pk}}" selected>{{item.tipo_planilla}}</option>
                                                                 {% else %}
-                                                                <option value="{{item.pk}}">{{item.description}}</option>
+                                                                <option value="{{item.pk}}">{{item.tipo_planilla}}</option>
                                                                 {% endif %} {% else %}
-                                                                <option value="{{item.pk}}">{{item.description}}</option>
+                                                                <option value="{{item.pk}}">{{item.tipo_planilla}}</option>
                                                                 {% endif %}
                                                                 {% endfor %}
                                                             </select>
@@ -1028,21 +1024,24 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="row margin-bottom-5px">
+                                                <div class="hide row margin-bottom-5px">
                                                     <div class="form-group">
                                                         <div class="col-md-5 text-right">
-                                                            <label class="control-label">Tipo de Nómina :</label>
+                                                            <label for="txtCostosEmpleado" class="control-label">Costos del empleado :</label>
                                                         </div>
-                                                        <div class="col-md-7">
-                                                            <select class="form-control input-sm input-sm-1" name="cboTipoNomina" id="cboTipoNomina">
+                                                        <div class="col-md-3">
+                                                            <input id="txtCostosEmpleado" value="{% if dato.empCost %}{{dato.empCost}}{% endif %}" type="text" name="costEmp" class="form-control input-sm input-sm-1">
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <select class="form-control input-sm input-sm-1" name="costEmpUni" id="cboUnidadesCosto">
                                                                 <option value="0">Seleccionar...</option>
-                                                                {% for item in tipos_nominas %}
-                                                                {% if editar %} {% if dato.tipo_nomina == item %}
-                                                                <option value="{{item.pk}}" selected>{{item.tipo_planilla}}</option>
+                                                                {% for item in costs_units %}
+                                                                {% if editar %} {% if dato.empCostUnit == item %}
+                                                                <option value="{{item.pk}}" selected>{{item.description}}</option>
                                                                 {% else %}
-                                                                <option value="{{item.pk}}">{{item.tipo_planilla}}</option>
+                                                                <option value="{{item.pk}}">{{item.description}}</option>
                                                                 {% endif %} {% else %}
-                                                                <option value="{{item.pk}}">{{item.tipo_planilla}}</option>
+                                                                <option value="{{item.pk}}">{{item.description}}</option>
                                                                 {% endif %}
                                                                 {% endfor %}
                                                             </select>
@@ -1055,41 +1054,64 @@
                                                 <div class="row margin-bottom-5px">
                                                     <div class="form-group">
                                                         <div class="col-md-5 text-right">
-                                                            <label for="cboBanco" class="control-label">Banco :</label>
+                                                            <label for="cboBanco" class="control-label">Métodos de Pago :</label>
                                                         </div>
                                                         <div class="col-md-7">
-                                                            <select class="form-control input-sm input-sm-1" name="banco" id="cboBanco">
-                                                                <option value="0">Seleccionar...</option>
-                                                                {% for item in banks %}
-                                                                {% if editar %} {% if dato.bankCode == item %}
-                                                                <option value="{{item.pk}}" selected>{{item.description}}</option>
-                                                                {% else %}
-                                                                <option value="{{item.pk}}">{{item.description}}</option>
-                                                                {% endif %} {% else %}
-                                                                <option value="{{item.pk}}">{{item.description}}</option>
-                                                                {% endif %}
-                                                                {% endfor %}
-                                                            </select>
+                                                            <div class="radio radio-info">
+                                                                <input type="radio" name="metodo_pago" id="m_efectivo" value="0" {% if editar %}{% if dato.metodo_pago == 0 %}checked{% endif %}{% endif %}>
+                                                                <label for="m_efectivo"> Efectivo </label>
+                                                            </div>
+                                                            <div class="radio radio-info">
+                                                                <input type="radio" name="metodo_pago" id="m_cheque" value="1" {% if editar %}{% if dato.metodo_pago == 1 %}checked{% endif %}{% endif %}>
+                                                                <label for="m_cheque"> Cheque </label>
+                                                            </div>
+                                                            <div class="radio radio-info">
+                                                                <input type="radio" name="metodo_pago" id="m_deposito" value="2" {% if editar %}{% if dato.metodo_pago == 2 %}checked{% endif %}{% else %}checked{% endif %}>
+                                                                <label for="m_deposito"> Depósito </label>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="row margin-bottom-5px">
-                                                    <div class="form-group">
-                                                        <div class="col-md-5 text-right">
-                                                            <label for="txtNoCuenta" class="control-label">No. de cuenta :</label>
-                                                        </div>
-                                                        <div class="col-md-7">
-                                                            <input id="txtNoCuenta" value="{% if dato.bankAccount %}{{dato.bankAccount}}{% endif %}" type="text" name="num_cuenta" class="form-control input-sm input-sm-1">
+                                                <div id="datosbancos" class="{% if editar %}{% if dato.metodo_pago != 2 %}hide{% endif %}{% endif %}">
+                                                    <div class="row margin-bottom-5px">
+                                                        <div class="form-group">
+                                                            <div class="col-md-5 text-right">
+                                                                <label for="cboBanco" class="control-label">Banco :</label>
+                                                            </div>
+                                                            <div class="col-md-7">
+                                                                <select class="form-control input-sm input-sm-1" name="banco" id="cboBanco">
+                                                                    <option value="0">Seleccionar...</option>
+                                                                    {% for item in banks %}
+                                                                    {% if editar %} {% if dato.bankCode == item %}
+                                                                    <option value="{{item.pk}}" selected>{{item.description}}</option>
+                                                                    {% else %}
+                                                                    <option value="{{item.pk}}">{{item.description}}</option>
+                                                                    {% endif %} {% else %}
+                                                                    <option value="{{item.pk}}">{{item.description}}</option>
+                                                                    {% endif %}
+                                                                    {% endfor %}
+                                                                </select>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="row margin-bottom-5px">
-                                                    <div class="form-group">
-                                                        <div class="col-md-5 text-right">
-                                                            <label for="txtSucursal" class="control-label">Sucursal :</label>
+                                                    <div class="row margin-bottom-5px">
+                                                        <div class="form-group">
+                                                            <div class="col-md-5 text-right">
+                                                                <label for="txtNoCuenta" class="control-label">No. de cuenta :</label>
+                                                            </div>
+                                                            <div class="col-md-7">
+                                                                <input id="txtNoCuenta" value="{% if dato.bankAccount %}{{dato.bankAccount}}{% endif %}" type="text" name="num_cuenta" class="form-control input-sm input-sm-1">
+                                                            </div>
                                                         </div>
-                                                        <div class="col-md-7">
-                                                            <input id="txtSucursal" type="text" value="{% if dato.branchBank %}{{dato.branchBank}}{% endif %}" name="bankSucursal" class="form-control input-sm input-sm-1">
+                                                    </div>
+                                                    <div class="row margin-bottom-5px">
+                                                        <div class="form-group">
+                                                            <div class="col-md-5 text-right">
+                                                                <label for="txtSucursal" class="control-label">Sucursal :</label>
+                                                            </div>
+                                                            <div class="col-md-7">
+                                                                <input id="txtSucursal" type="text" value="{% if dato.branchBank %}{{dato.branchBank}}{% endif %}" name="bankSucursal" class="form-control input-sm input-sm-1">
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>

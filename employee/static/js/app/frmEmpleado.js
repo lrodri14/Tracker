@@ -237,6 +237,7 @@ $(document).on('ready', function() {
                     'comentarios':comentarios.val(),
                     'tipo_nomina': cboTipoNomina.val(),
                     'tipo_contrato': cboTipoContrato.val(),
+                    'metodo_pago': $("input[name='metodo_pago']:checked").val(),
                     'csrfmiddlewaretoken': token.val(),
                 }, // serializes the form's elements.
                 success: function(data)
@@ -283,7 +284,6 @@ $(document).on('ready', function() {
     }
 
     function Actualizar() {
-        console.log($('#cboPosicion').val());
         if (chkActivo.is(":checked")) {
             activo = 1;
         } else {
@@ -360,6 +360,7 @@ $(document).on('ready', function() {
                 'comentarios': comentarios.val(),
                 'tipo_nomina': cboTipoNomina.val(),
                 'tipo_contrato': cboTipoContrato.val(),
+                'metodo_pago': $("input[name='metodo_pago']:checked").val(),
                 'csrfmiddlewaretoken': token.val(),
             }, // serializes the form's elements.
             success: function (data) {
@@ -441,6 +442,16 @@ $(document).on('ready', function() {
             stack: 6
         });
     }
+
+    $('input[type=radio][name=metodo_pago]').change(function() {
+        if ($(this).val() != "2") {
+            $('#datosbancos').addClass('hide');
+        }
+        else{
+            console.log("Entro aqui");
+            $('#datosbancos').removeClass('hide');
+        }
+    })
     //#endregion
 
     //#region Validaciones

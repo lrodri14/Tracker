@@ -1135,6 +1135,7 @@ def guardar_empleado(request):
                 numCuenta = request.POST['numCuenta']
                 branchBank = request.POST['bankSucursal']
                 remark = request.POST['comentarios']
+                metodo_pago = request.POST['metodo_pago']
 
                 if len(pNom) == 0:
                     mensaje = "El campo 'Primer Nombre' es obligatorio."
@@ -1516,6 +1517,7 @@ def guardar_empleado(request):
                     bankAccount = numCuenta,
                     branchBank = branchBank,
                     remark = remark,
+                    metodo_pago = metodo_pago,
                     empresa_reg = suc.empresa
                 )
                 oEmpleado.save()
@@ -1622,6 +1624,7 @@ def actualizar_empleado(request):
                 numCuenta = request.POST['numCuenta']
                 branchBank = request.POST['bankSucursal']
                 remark = request.POST['comentarios']
+                metodo_pago = request.POST['metodo_pago']
                 tipo_nomina = request.POST['tipo_nomina']
                 tipo_contrato = request.POST['tipo_contrato']
 
@@ -1853,6 +1856,7 @@ def actualizar_empleado(request):
                 if len(fecNac) == 0:
                     fecNac = None
 
+
                 if len(lugNac) > 0:
                     if int(lugNac) > 0:
                         oBirthCountry = Country.objects.get(pk=lugNac)
@@ -1934,16 +1938,6 @@ def actualizar_empleado(request):
                             }
                             return JsonResponse(data)
 
-                if len(banco) > 0:
-                    if int(banco) > 0:
-                        oBankCode = Bank.objects.get(pk=banco)
-
-                        if not oBankCode:
-                            mensaje = "El banco no existe en la base de datos."
-                            data = {
-                                'mensaje': mensaje, 'error': True
-                            }
-                            return JsonResponse(data)
 
                 if len(empCost) == 0:
                     empCost = None
@@ -1953,6 +1947,25 @@ def actualizar_empleado(request):
 
                 if len(salario_diario) == 0:
                     salario_diario = None
+
+                if metodo_pago == "2":
+                    if len(banco) > 0:
+                        if int(banco) > 0:
+                            oBankCode = Bank.objects.get(pk=banco)
+
+                            if not oBankCode:
+                                mensaje = "El banco no existe en la base de datos."
+                                data = {
+                                    'mensaje': mensaje, 'error': True
+                                }
+                                return JsonResponse(data)
+
+                    if len(numCuenta) == 0:
+                        mensaje = "El campo 'Numero de Cuenta' es obligatorio."
+                        data = {
+                            'mensaje': mensaje, 'error': True
+                        }
+                        return JsonResponse(data)
 
                 oEmp = Employee.objects.get(pk=id)
                 oEmp.firstName = pNom
@@ -2017,6 +2030,7 @@ def actualizar_empleado(request):
                 oEmp.bankAccount = numCuenta
                 oEmp.branchBank = branchBank
                 oEmp.remark = remark
+                oEmp.metodo_pago = metodo_pago
                 oEmp.tipo_contrato = oTipoContrato
                 oEmp.tipo_nomina = oTipoNomina
 
