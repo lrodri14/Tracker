@@ -1125,7 +1125,7 @@ def guardar_empleado(request):
                 fecPassExt = request.POST['fecPassExt']
                 fecEmis = request.POST['fecEmis']
                 emisor = request.POST['emisor']
-                rnt = request.POST['rtn']
+                rtn = request.POST['rtn']
                 salary = request.POST['salario']
                 salario_diario = request.POST['salario_diario']
                 salaryUnits = request.POST['salarioUnd']
@@ -1529,7 +1529,7 @@ def guardar_empleado(request):
         print(ex)
         data = {
             'error':True,
-            'mensaje': 'Error: ' + ex.message,
+            'mensaje': 'Error: ',
         }
         return JsonResponse(data)
 
@@ -1625,9 +1625,6 @@ def actualizar_empleado(request):
                 tipo_nomina = request.POST['tipo_nomina']
                 tipo_contrato = request.POST['tipo_contrato']
 
-                print(latitud)
-                print(longitud)
-
                 if len(pNom) == 0:
                     mensaje = "El campo 'Primer Nombre' es obligatorio."
                     data = {
@@ -1654,8 +1651,6 @@ def actualizar_empleado(request):
 
                 if len(no_ext) == 0:
                     no_ext = None
-
-                print("Posicion: " + pos)
 
                 if len(pos) > 0:
                     if int(pos) > 0:
@@ -1795,6 +1790,9 @@ def actualizar_empleado(request):
 
                 if len(wcondado) == 0:
                     wcondado = None
+
+                if len(rtn) == 0:
+                    rtn = None
 
                 if len(wdept) > 0:
                     if int(wdept) > 0:
@@ -2009,6 +2007,7 @@ def actualizar_empleado(request):
                 oEmp.passportExt = fecPassExt
                 oEmp.passIssue = fecEmis
                 oEmp.passIssuer = emisor
+                oEmp.rtn = rtn
                 oEmp.salary = salary
                 oEmp.salario_diario = salario_diario
                 oEmp.salaryUnits = oSalaryUnits
@@ -2023,7 +2022,7 @@ def actualizar_empleado(request):
 
                 oEmp.active = activo
                 oEmp.user_mod = request.user
-                oEmp.date_mod = datetime.datetime.now()
+                oEmp.date_mod = datetime.now()
                 oEmp.save()
                 
                 mensaje = 'Se ha actualizado el registro del Empleado'
@@ -2088,10 +2087,8 @@ def obtener_antiguedad(request):
     if request.is_ajax():
         fecha = request.GET.get('fecha')
         fecha = datetime.strptime(fecha, "%Y-%m-%d")
-        print(fecha.day)
         rd = rdelta.relativedelta(datetime.today(), date(fecha.year, fecha.month, fecha.day))
         antiguedad = "{0.years} años, {0.months} meses y {0.days} días".format(rd)
-        print(antiguedad)
         data = {'antiguedad': antiguedad}
     return JsonResponse(data)
 

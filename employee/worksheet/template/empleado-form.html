@@ -945,10 +945,18 @@
                                                         <div class="col-md-5 text-right">
                                                             <label for="txtSalario" class="control-label">Salario :</label>
                                                         </div>
-                                                        <div class="col-md-3">
+                                                        <div class="col-md-7">
                                                             <input id="txtSalario" type="text" value="{% if dato.salary %}{{dato.salary}}{% endif %}" name="salario" class="form-control input-sm input-sm-1">
                                                         </div>
-                                                        <div class="col-md-4">
+                                                    </div>
+                                                </div>
+                                                <div class="row margin-bottom-5px">
+                                                    <div class="form-group">
+                                                        <div class="col-md-5 text-right">
+                                                                <label for="txtSalario" class="control-label">Frecuencia de Pago :</label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-7">
                                                             <select class="form-control input-sm input-sm-1" name="salaryUnits" id="cboUnidadesSalario">
                                                                 <option value="0">Seleccionar...</option>
                                                                 {% for item in salary_units %}
@@ -961,6 +969,16 @@
                                                                 {% endif %}
                                                                 {% endfor %}
                                                             </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row margin-bottom-5px">
+                                                    <div class="form-group">
+                                                        <div class="col-md-5 text-right">
+                                                            <label class="control-label">Salario Diario :</label>
+                                                        </div>
+                                                        <div class="col-md-7">
+                                                            <input value="{% if dato.salario_diario %}{{dato.salario_diario}}{% endif %}" readonly type="text" name="txtSalarioDiario" class="form-control input-sm input-sm-1">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1028,16 +1046,6 @@
                                                                 {% endif %}
                                                                 {% endfor %}
                                                             </select>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="row margin-bottom-5px">
-                                                    <div class="form-group">
-                                                        <div class="col-md-5 text-right">
-                                                            <label class="control-label">Salario Diario :</label>
-                                                        </div>
-                                                        <div class="col-md-7">
-                                                            <input value="{% if dato.salario_diario %}{{dato.salario_diario}}{% endif %}" readonly type="text" name="txtSalarioDiario" class="form-control input-sm input-sm-1">
                                                         </div>
                                                     </div>
                                                 </div>
