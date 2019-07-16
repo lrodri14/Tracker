@@ -22,10 +22,23 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <div class="col-md-5 text-right">
-                                            <label for="cboAuEmp" class="control-label">Correlativo :</label>
+                                            <label class="control-label">Tipo de Contrato :</label>
                                         </div>
                                         <div class="col-md-7">
-                                            <input id="txtCorrelativo" value='{{dato.correlativo}}' readonly name="correlativo" type="text" class="form-control">
+                                            <select class="form-control select2" name="tipo_contrato">
+                                                <option value="0">Seleccionar...</option>
+                                                {% for item in tipos_contrato %}
+                                                    {% if editar %}
+                                                        {% if item == dato.tipo_contrato %}
+                                                        <option value="{{item.pk}}" selected>{{item.tipo_contrato}}</option>
+                                                        {% else %}
+                                                        <option value="{{item.pk}}">{{item.tipo_contrato}}</option>
+                                                        {% endif %}
+                                                    {% else %}
+                                                    <option value="{{item.pk}}">{{item.tipo_contrato}}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
                                         </div>
                                     </div>
                                 </div>

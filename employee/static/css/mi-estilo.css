@@ -88,6 +88,23 @@ table>tbody>.detalle_emp>td{
     color: #FBF8F5;
 }
 
+.mi-form label{
+    /*padding-right: 7px;
+    padding-left: 7px;*/
+}
+.mi-form .form-group{
+    margin-bottom: 7px;
+}
+
+.mi-form input[type=text]{
+    height: 30px;
+}
+
+.mi-form .mi-col{
+    padding-right: 7px;
+    padding-left: 7px;
+}
+
 
 @media (min-width: 768px){
     .logo-izq{

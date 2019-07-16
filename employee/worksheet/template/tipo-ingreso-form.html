@@ -39,7 +39,16 @@ Tipo de Ingreso
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6"></div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label class="control-label">Orden :</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <input name="txtIngresoOrden" value="{{dato.orden}}" type="number" class="form-control input" maxlength="50" />
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-md-12 margin-bottom-5px">    
                             <div class="col-md-6">
@@ -65,15 +74,18 @@ Tipo de Ingreso
                                         </div>
                                     </div>
                                 </div>
-                                <div class="form-action text-right">
-                                    {% if editar %}
-                                    <button id="btnActualizar" class="btn btn-success">Actualizar</button>
-                                    {% else %}
-                                    <button id="btnGuardar" class="btn btn-success">Guardar</button>
-                                    {% endif %}
-                                    <button id="btnCancelar" class="btn btn-default">Cancelar</button>
-                                </div>
+                                
                             </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-action text-right">
+                            {% if editar %}
+                            <button id="btnActualizar" class="btn btn-success">Actualizar</button>
+                            {% else %}
+                            <button id="btnGuardar" class="btn btn-success">Guardar</button>
+                            {% endif %}
+                            <button id="btnCancelar" class="btn btn-default">Cancelar</button>
                         </div>
                     </div>
                 </div>

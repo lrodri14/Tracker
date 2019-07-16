@@ -11323,6 +11323,30 @@ def horaextra_eliminar(request):
 #region Código para Impuesto sobre Renta
 
 @login_required(login_url='/form/iniciar-sesion/')
+def isr_encabezado(request):
+    datos = []
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    lista_isr = EncabezadoImpuestoSobreRenta.objects.filter(empresa_reg=suc.empresa)
+    print(lista_isr)
+    for item in lista_isr:
+        data = {
+            'pk': item.pk,
+            'codigo': item.codigo,
+            'fecha_vigencia': item.fecha_vigencia,
+            'descripcion': item.descripcion,
+            'valor': formato_millar(item.valor),
+            'descripcion1': item.descripcion1,
+            'valor1': formato_millar(item.valor1),
+            'descripcion2':item.descripcion2,
+            'valor2': formato_millar(item.valor2),
+        }
+        datos.append(data)
+    return render(request, 'isr-encabezado-listado.html', {'lista':datos})
+
+def isr_encabezado_form(request):
+    return render(request, 'isr-encabezado-form.html')
+
+@login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.see_impuestosobrerenta', raise_exception=True)
 def impuestosobrerenta_listado(request):
     suc = Branch.objects.get(pk=request.session["sucursal"])
@@ -11345,6 +11369,118 @@ def impuestosobrerenta_editar(request, id):
     return render(request, 'isr-form.html', {'dato':dato, 'editar':True})
 
 #---------------------AJAX-------------------------------
+def isr_encabezado_guardar(request):
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                codigo = request.POST['codigo']
+                fecha = request.POST['fecha']
+                deducible = request.POST['deducible']
+                valor = request.POST['valor']
+                deducible1 = request.POST['deducible1']
+                valor1 = request.POST['valor1']
+                deducible2 = request.POST['deducible2']
+                valor2 = request.POST['valor2']
+
+                if codigo:
+                    if len(codigo) == 0:
+                        data = {'error':True, 'mensaje': 'El campo "Código" es obligatorio'}
+                        return JsonResponse(data)
+                else:
+                    data = {'error':True, 'mensaje': 'El campo "Código" es obligatorio'}
+                    return JsonResponse(data)
+
+                if fecha:
+                    if len(fecha) == 0:
+                        data = {'error':True, 'mensaje': 'El campo "Fecha" es obligatorio'}
+                        return JsonResponse(data)
+                else:
+                    data = {'error':True, 'mensaje':'El campo "Fecha" es obligatorio'}
+                    return JsonResponse(data)
+
+                if valor:
+                    valor  = valor.replace(",", "")
+                else:
+                    valor = None
+                    # mensaje = "El campo 'Valor' es de tipo decimal."
+                    # data = {'error': True, 'mensaje': mensaje}
+                    # return JsonResponse(data)
+
+                if valor1:
+                    valor1 = valor1.replace(",", "")
+                else:
+                    valor1 = None
+                    # mensaje = "El campo 'Valor' es de tipo decimal."
+                    # data = {'error': True, 'mensaje': mensaje}
+                    # return JsonResponse(data)
+
+                if valor2:
+                    valor2 = valor2.replace(",", "")
+                else:
+                    valor2 = None
+                    # mensaje = "El campo 'Porcentaje' es de tipo decimal."
+                    # data = {'error': True, 'mensaje': mensaje}
+                    # return JsonResponse(data)
+
+                o_encabezado_isr = EncabezadoImpuestoSobreRenta(
+                    codigo = codigo,
+                    fecha_vigencia = fecha,
+                    descripcion = deducible,
+                    valor = valor,
+                    descripcion1 = deducible1,
+                    valor1 = valor1,
+                    descripcion2 = deducible2,
+                    valor2 = valor2,
+                )
+                o_encabezado_isr.save()
+                data = {'error': False, 'mensaje': 'Se ha creado el registro'}
+                return JsonResponse(data)
+            else:
+                data = {'error':True, 'mensaje': 'El método no es permitido.'}
+                return JsonResponse(data)
+        else:
+            data = {'error':True, 'mensaje': 'La petición no es asíncrona'}
+            return JsonResponse(data)
+    except Exception as ex:
+        print(ex)
+        data = {'error':True, 'mensaje': 'Error'}
+        return JsonResponse(data)
+
+def impuestosobrerenta_obtener(request):
+    dato = None
+    dato2 = None
+    dato3 = None
+    datos = []
+    detalles = []
+    #print(request)
+    if request.is_ajax():
+        registro_id = request.GET.get("Id")
+        # datos = []
+        # suc = Branch.objects.get(pk=request.session["sucursal"])
+        # lista_isr = EncabezadoImpuestoSobreRenta.objects.filter(empresa_reg=suc.empresa)
+        lista_isr = EncabezadoImpuestoSobreRenta.objects.filter(pk=registro_id)
+        if lista_isr.count() > 0:
+            dato = EncabezadoImpuestoSobreRenta.objects.get(pk=registro_id)
+            dato2 = {
+                'fecha_vigencia': dato.fecha_vigencia,
+                'codigo': dato.codigo,
+                'descripcion': dato.descripcion,
+                'valor': formato_millar(dato.valor),
+                'descripcion1': dato.descripcion1,
+                'valor1': formato_millar(dato.valor1),
+                'descripcion2': dato.descripcion2,
+                'valor2': formato_millar(dato.valor2),
+            }
+            detalles = ImpuestoSobreRenta.objects.filter(encabezado=dato)
+
+            for item in detalles:
+                dato3 = {
+                    'desde': formato_millar(item.desde),
+                    'hasta': formato_millar(item.hasta),
+                    'porcentaje': formato_millar(item.porcentaje),
+                }
+                datos.append(dato3)
+    return render(request, 'ajax/isr_encabezado.html', {'dato': dato2, 'detalles':datos})
 
 def impuestosobrerenta_guardar(request):
     try:
@@ -13099,7 +13235,8 @@ def planilla_form(request):
     suc = Branch.objects.get(pk=request.session["sucursal"])
     tipo_pago = SalaryUnit.objects.filter(empresa_reg=suc.empresa, active=True)
     tipo_planilla = TipoNomina.objects.filter(empresa_reg=suc.empresa, active=True)
-    return render(request, 'planilla-form.html',{'tipo_planilla':tipo_planilla, 'tipos_pago':tipo_pago})
+    tipo_contrato = TipoContrato.objects.filter(empresa_reg=suc.empresa, active=True)
+    return render(request, 'planilla-form.html',{'tipo_planilla':tipo_planilla, 'tipos_pago':tipo_pago, 'tipos_contrato':tipo_contrato})
 
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.change_planilla', raise_exception=True)
@@ -13107,8 +13244,9 @@ def planilla_editar(request, id):
     suc = Branch.objects.get(pk=request.session["sucursal"])
     tipo_pago = SalaryUnit.objects.filter(empresa_reg=suc.empresa, active=True)
     tipo_planilla = TipoNomina.objects.filter(empresa_reg=suc.empresa, active=True)
+    tipo_contrato = TipoContrato.objects.filter(empresa_reg=suc.empresa, active=True)
     o_planilla = Planilla.objects.get(pk=id)
-    return render(request, 'planilla-form.html',{'editar':True,'tipo_planilla':tipo_planilla, 'tipos_pago':tipo_pago, 'dato':o_planilla})
+    return render(request, 'planilla-form.html',{'editar':True,'tipo_planilla':tipo_planilla, 'tipos_pago':tipo_pago, 'dato':o_planilla, 'tipos_contrato':tipo_contrato})
 
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.play_planilla', raise_exception=True)
@@ -13162,9 +13300,10 @@ def obtener_empleados_planilla(request):
         data = {'error': error, 'mensaje':mensaje}
         return JsonResponse(data)
     except Exception as ex:
+        print(ex)
         data = {
             'error': True,
-            'mensaje': ex.message,
+            'mensaje': 'Error',
         }
         return JsonResponse(data)
 
@@ -13175,6 +13314,7 @@ def planilla_actualizar(request):
                 id = request.POST["id"]
                 tipo_planilla_id = request.POST['tipo_planilla']
                 tipo_pago_id = request.POST['tipo_pago']
+                tipo_contrato_id = request.POST['tipo_contrato']
                 fecha_pago = request.POST['fecha_pago']
                 fecha_inicio = request.POST['fecha_inicio']
                 fecha_fin = request.POST['fecha_fin']
@@ -13200,6 +13340,15 @@ def planilla_actualizar(request):
                     else:
                         return JsonResponse({'error': True, 'mensaje': 'El Tipo de Pago no existe.'})
 
+                if int(tipo_contrato_id) == 0:
+                    return JsonResponse({'error': True, 'mensaje': 'El campo "Tipo de Contrato" es obligatorio.'})
+                else:
+                    tipos_contrato = TipoContrato.objects.filter(pk=tipo_contrato_id)
+                    if tipos_contrato.count() > 0:
+                        o_tipo_contrato = TipoContrato.objects.get(pk=tipo_contrato_id)
+                    else:
+                        return JsonResponse({'error': True, 'mensaje': 'El Tipo de Contrato no existe.'})
+
                 if len(fecha_pago) == 0:
                     return JsonResponse({'error': True, 'mensaje': 'El campo "Fecha de Pago" es obligatorio.'})
 
@@ -13219,6 +13368,7 @@ def planilla_actualizar(request):
                         return JsonResponse({'error': True, 'mensaje': 'La planilla ya está cerrada.'})
                     o_Mdl.tipo_planilla = o_tipo_planilla
                     o_Mdl.frecuencia_pago = o_tipo_pago
+                    o_Mdl.tipo_contrato = o_tipo_contrato
                     o_Mdl.fecha_pago = fecha_pago
                     o_Mdl.fecha_inicio = fecha_inicio
                     o_Mdl.fecha_fin = fecha_fin
@@ -13236,9 +13386,10 @@ def planilla_actualizar(request):
             }
             return JsonResponse(data)
     except Exception as ex:
+        print(ex)
         data = {
             'error': True,
-            'mensaje': ex.message,
+            'mensaje': 'Error',
         }
         return JsonResponse(data)
 
@@ -13248,6 +13399,7 @@ def planilla_guardar(request):
             if request.method == 'POST':
                 tipo_planilla_id = request.POST['tipo_planilla']
                 tipo_pago_id = request.POST['tipo_pago']
+                tipo_contrato_id = request.POST['tipo_contrato']
                 fecha_pago = request.POST['fecha_pago']
                 fecha_inicio = request.POST['fecha_inicio']
                 fecha_fin = request.POST['fecha_fin']
@@ -13271,6 +13423,15 @@ def planilla_guardar(request):
                     else:
                         return JsonResponse({'error': True, 'mensaje': 'El Tipo de Pago no existe.'})
 
+                if int(tipo_contrato_id) == 0:
+                    return JsonResponse({'error': True, 'mensaje': 'El campo "Tipo de Contrato" es obligatorio.'})
+                else:
+                    tipos_contrato = TipoContrato.objects.filter(pk=tipo_contrato_id)
+                    if tipos_contrato.count() > 0:
+                        o_tipo_contrato = TipoContrato.objects.get(pk=tipo_contrato_id)
+                    else:
+                        return JsonResponse({'error': True, 'mensaje': 'El Tipo de Contrato no existe.'})
+
                 if len(fecha_pago) == 0:
                     return JsonResponse({'error': True, 'mensaje': 'El campo "Fecha de Pago" es obligatorio.'})
                 
@@ -13287,6 +13448,7 @@ def planilla_guardar(request):
                 oPlanilla = Planilla(
                     correlativo = 1,
                     tipo_planilla = o_tipo_planilla,
+                    tipo_contrato = o_tipo_contrato,
                     descripcion = descripcion,
                     frecuencia_pago = o_tipo_pago,
                     fecha_inicio = fecha_inicio,
@@ -13307,9 +13469,10 @@ def planilla_guardar(request):
             pass
         return JsonResponse({'error': False, 'mensaje': 'Respuesta exitosa'})
     except Exception as ex:
+        print(ex)
         data = {
             'error': True,
-            'mensaje': ex.message,
+            'mensaje': 'Error',
         }
         return JsonResponse(data)
 
@@ -13331,7 +13494,7 @@ def planilla_generar_calculos(request):
                         if tot_reg > 0:
                             suc = Branch.objects.get(pk=request.session["sucursal"])
                             o_planilla = Planilla.objects.get(pk=planilla_id)
-                            empleados = Employee.objects.filter(tipo_nomina=o_planilla.tipo_planilla, active=True)
+                            empleados = Employee.objects.filter(tipo_nomina=o_planilla.tipo_planilla, tipo_contrato=o_planilla.tipo_contrato, salaryUnits=o_planilla.frecuencia_pago, active=True)
 
                             detalles_planillas_deducciones = PlanillaDetalleDeducciones.objects.filter(planilla=o_planilla)
                             if detalles_planillas_deducciones.count() > 0:
@@ -14330,12 +14493,24 @@ def segurosocial_eliminar(request):
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.see_segurosocial', raise_exception=True)
 def salariominimo_listado(request):
+    salarios = []
     suc = Branch.objects.get(pk=request.session["sucursal"])
     if request.user.has_perm("worksheet.see_all_ingresogeneral"):
         lista = SalarioMinimo.objects.filter(empresa_reg=suc.empresa)
     else:
         lista = SalarioMinimo.objects.filter(empresa_reg=suc.empresa, active=True)
-    return render(request, 'salariominimo-listado.html', {'lista': lista})
+
+    for item in lista:
+        dato = {
+            'pk': item.pk,
+            'fecha': item.fecha,
+            'salario_minimo': formato_millar(item.salario_minimo),
+            'forzar_salario': item.forzar_salario,
+            'vigente': item.vigente,
+            'active': item.active,
+        }
+        salarios.append(dato)
+    return render(request, 'salariominimo-listado.html', {'lista': salarios})
 
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.add_ingresogeneral', raise_exception=True)
@@ -14351,8 +14526,9 @@ def salariominimo_guardar(request):
         if request.is_ajax():
             if request.method == 'POST':
                 salario_minimo = request.POST['salario_minimo']
+                forzar_salario = request.POST['forzar_salario']
                 activo = int(request.POST['activo'])
-
+                
                 if len(salario_minimo) == 0:
                     mensaje = "El campo 'Salario Minimo' es obligatorio."
                     data = {'error': True, 'mensaje': mensaje}
@@ -14381,6 +14557,7 @@ def salariominimo_guardar(request):
                 oMd = SalarioMinimo(
                     salario_minimo=salario_minimo,
                     vigente=True,
+                    forzar_salario=forzar_salario,
                     active=activo,
                     empresa_reg=suc.empresa,
                     sucursal_reg=suc,
@@ -14402,6 +14579,7 @@ def salariominimo_guardar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
+        print(ex)
         data = {
             'error': True,
             'mensaje': 'error',
@@ -14869,6 +15047,7 @@ def tipo_ingreso_guardar(request):
             if request.method == 'POST':
                 tipo_ingreso = request.POST['tipo_ingreso']
                 desc = request.POST['descripcion']
+                orden = request.POST['orden']
                 activo = int(request.POST['activo'])
 
                 if len(tipo_ingreso) == 0:
@@ -14886,6 +15065,11 @@ def tipo_ingreso_guardar(request):
                     data = {'error': True, 'mensaje': mensaje}
                     return JsonResponse(data)
 
+                if orden == 0:
+                    mensaje = "El valor del campo 'Orden' tiene que ser mayor a cero(0)"
+                    data = {'error': True, 'mensaje':mensaje}
+                    return JsonResponse(data)
+
                 if activo == 1:
                     activo = True
                 else:
@@ -14897,6 +15081,7 @@ def tipo_ingreso_guardar(request):
                     tipo_ingreso=tipo_ingreso,
                     descripcion=desc,
                     empresa_reg=suc.empresa,
+                    orden=orden,
                     active=activo,
                     user_reg=request.user,
                 )
@@ -14916,6 +15101,7 @@ def tipo_ingreso_guardar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
+        print(ex)
         data = {
             'error': True,
             'mensaje': 'error',
@@ -14929,6 +15115,7 @@ def tipo_ingreso_actualizar(request):
                 id = int(request.POST['id'])
                 tipo_ingreso = request.POST['tipo_ingreso']
                 desc = request.POST['descripcion']
+                orden = request.POST['orden']
                 activo = int(request.POST['activo'])
 
                 if len(tipo_ingreso) == 0:
@@ -14946,6 +15133,11 @@ def tipo_ingreso_actualizar(request):
                     data = {'error': True, 'mensaje': mensaje}
                     return JsonResponse(data)
 
+                if orden == 0:
+                    mensaje = "El campo 'Orden' tiene que ser mayor a cero(0)."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
                 if activo == 1:
                     activo = True
                 else:
@@ -14955,9 +15147,10 @@ def tipo_ingreso_actualizar(request):
                 if oMd:
                     oMd.tipo_ingreso = tipo_ingreso
                     oMd.descripcion = desc
+                    oMd.orden = orden
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.datetime.now()
+                    oMd.date_mod = datetime.now()
                     oMd.save()
                     mensaje = 'Se ha actualizado el registro.'
                     data = {
@@ -14979,6 +15172,7 @@ def tipo_ingreso_actualizar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
+        print(ex)
         data = {
             'error': True,
             'mensaje': 'error',
@@ -15478,4 +15672,9 @@ def validarDecimal(dato):
         return False
 
 def formato_millar(valor):
-    return locale.format("%.2f", valor, grouping=True)
+    if valor:
+        return locale.format("%.2f", valor, grouping=True)
+    else:
+        if valor == 0:
+            return locale.format("%.2f", valor, grouping=True)
+        return None

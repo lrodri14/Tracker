@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% block titulo %}
+Datos de Impuesto Sobre Renta
+{% endblock titulo %}
+{% load static %}
+{% block contenido %}
+<div id="formEncabezadoISR" class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="text-bold"><i class="ti-pencil-alt"></i> Datos de Impuesto Sobre Renta</h2>
+            </div>
+            <div class="panel-wrapper">
+                <div class="panel-body">
+                    {% csrf_token %}
+                    <div class="col-lg-10 col-sm-10 col-xs-12 col-md-offset-1">
+                        <div class="white-box">
+                            <input type="hidden" value="{{dato.pk}}" name="id">
+                            <ul class="nav customtab nav-tabs" role="tablist">
+                                <li role="presentation" class="active"><a href="#general" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true"><span class="visible-xs"><i class="ti-home"></i></span><span class="hidden-xs"> Datos Generales</span></a></li>
+                                <li role="presentation" class=""><a href="#detalles" aria-controls="profile" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-user"></i></span> <span class="hidden-xs">Detalle</span></a></li>
+                            </ul>
+                            <!-- Tab panes -->
+                            <div class="tab-content">
+                                <div role="tabpanel" class="tab-pane fade active in" id="general">
+                                    <form class="form-horizontal mi-form">
+                                        <div class="row">
+                                            <div class="col-sm-5">
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label">Código :</label>
+                                                    <div class="col-sm-7 ">
+                                                        <input name="txtCodigo" value="{{dato.codigo}}" type="text" class="form-control input" maxlength="50" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    <label class="col-sm-5 control-label">Fecha de Vigencia :</label>
+                                                    <div class="col-md-7">
+                                                        <div class="input-group">
+                                                            <input id="txtFecha" value='{{dato.fecha_incremento|date:"Y-m-d"}}' name="fecha_vigencia" type="text" class="form-control mydatepicker" placeholder="yyyy-mm-dd"> <span class="input-group-addon"><i class="icon-calender"></i></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-5 ">
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label">Deducible :</label>
+                                                    <div class="col-sm-7 ">
+                                                        <input name="txtDeducible" value="{{dato.codigo}}" type="text" class="form-control input" maxlength="50" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    <label class="col-sm-5 control-label">Valor Deducible :</label>
+                                                    <div class="col-sm-7">
+                                                        <input name="txtValor" value="{{dato.fecha_vigencia}}" type="text" class="form-control input moneda" maxlength="18" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-5">
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label">Deducible :</label>
+                                                    <div class="col-sm-7">
+                                                        <input name="txtDeducible1" value="{{dato.codigo}}" type="text" class="form-control input" maxlength="50" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    <label class="col-sm-5 control-label">Valor Deducible :</label>
+                                                    <div class="col-sm-7">
+                                                        <input name="txtValor1" value="{{dato.fecha_vigencia}}" type="text" class="form-control input moneda" maxlength="18" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-5 ">
+                                                <div class="form-group">
+                                                    <label class="col-sm-4 control-label">Deducible :</label>
+                                                    <div class="col-sm-7 ">
+                                                        <input name="txtDeducible2" value="{{dato.codigo}}" type="text" class="form-control input" maxlength="50" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <div class="form-group">
+                                                    <label class="col-sm-5 control-label">Valor Deducible :</label>
+                                                    <div class="col-sm-7">
+                                                        <input name="txtValor2" value="{{dato.fecha_vigencia}}" type="text" class="form-control input moneda" maxlength="18" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row text-right">
+                                            <div class="col-sm-12">
+                                                <div class="form-group">
+                                                    <div class="col-sm-11">
+                                                        <a href="{% url 'impuestosobrerenta_listado' %}" class="btn btn-default">CANCELAR</a>
+                                                        <button id="btnGuardar" class="btn btn-info">GUARDAR</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div role="tabpanel" class="tab-pane fade" id="detalles">
+                                    <div class="col-md-6">
+                                        <h3>Lets check profile</h3>
+                                        <h4>you can use it with the small code</h4> </div>
+                                    <div class="col-md-5 pull-right">
+                                        <p>Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% if editar %}
+                    
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contenido %}
+{% block scripts %}
+<script src="{% static 'js/lib/jquery.mask.js' %}"></script>
+<script>
+$('.moneda').mask('0,000,000,000,000.00', {reverse:true});
+jQuery('.mydatepicker, #datepicker').datepicker({
+    format: 'yyyy-mm-dd',
+    autoclose:true,
+    todayHighlight: true,
+});
+</script>
+{% endblock scripts %}

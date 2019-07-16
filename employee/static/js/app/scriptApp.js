@@ -9,6 +9,11 @@ $(document).on('ready', () => {
     var id = $('input[name="id"]');
     //#endregion
 
+    //#region Botones
+    var botonVerRegistro;
+    var botonGuardar;
+    //#endregion
+
 //#region Código para Puestos de Trabajo
     //#region Variables
     var pt_nombre = $('input[name="pt_nombre"]');
@@ -2773,6 +2778,64 @@ $('#isr #btnCancelar').on('click', function(e) {
 
 //#endregion
 
+//#region Código para ISR Encabezado
+    botonGuardar = $('#formEncabezadoISR #btnGuardar');
+
+    textCodigo = $('#formEncabezadoISR input[name="txtCodigo"]');
+    textFecha = $('#formEncabezadoISR input[name="fecha_vigencia"]');
+    textDeducible = $('#formEncabezadoISR input[name="txtDeducible"]');
+    textValor = $('#formEncabezadoISR input[name="txtValor"]');
+    textDeducible1 = $('#formEncabezadoISR input[name="txtDeducible1"]');
+    textValor1 = $('#formEncabezadoISR input[name="txtValor1"]');
+    textDeducible2 = $('#formEncabezadoISR input[name="txtDeducible2"]');
+    textValor2 = $('#formEncabezadoISR input[name="txtValor2"]');
+
+    botonVerRegistro = $('#frmEncabezadoISR #btnVerRegistro');
+    botonRefrescar = $('#frmEncabezadoISR #btnRefrescar');
+
+    botonGuardar.on('click', function(e) {
+        e.preventDefault();
+        url = '/guardar/isr-encabezado/';
+        metodo = 'POST';
+        data = {
+            'codigo': textCodigo.val(),
+            'fecha': textFecha.val(),
+            'deducible': textDeducible.val(),
+            'valor': textValor.val(),
+            'deducible1': textDeducible1.val(),
+            'valor1': textValor1.val(),
+            'deducible2': textDeducible2.val(),
+            'valor2': textValor2.val(),
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Impuesto Sobre Renta");
+    });
+
+    botonVerRegistro.on('click', function(e) {
+        e.preventDefault();
+        BloquearPantalla();
+        $.ajax({
+            type: "GET",
+            url: "/obtener/isr-encabezado/",
+            data: {'Id': $(this).attr('data')},
+            success: function (data) {
+                console.log(data);
+                $('#contenido-modal').html(data);
+            },
+            error: function (data) {
+                errores = errores + 1;
+                console.log("Error: " + data);
+            },
+            dataType: 'html'
+        }).done(function () {
+            DesbloquearPantalla();
+            $('#formularioModalVerRegistro').modal({
+                show: 'true',
+            });
+        });
+    });
+//#endregion
+
 //#region Código para Impuesto Vecinal
 
 var iv_id = $('#impuestovecinal input[name="id"]');
@@ -3149,6 +3212,7 @@ $('#ingreso_individual_planilla #btnCancelar').on('click', function(e) {
     var btnPlCancelar = $('#frmPlanilla #btnCancelar');
     var btnPlVerRegistro = $('#planilla-listado #btnVerRegistro');
     var cboPlTipoPlanilla = $('#frmPlanilla select[name="tipo_planilla"]');
+    var cboPlTipoContrato = $('#frmPlanilla select[name="tipo_contrato"]');
     var cboPlTipoPago = $('#frmPlanilla select[name="tipo_pago"]');
     var txtPlFechaPago = $('#frmPlanilla input[name="fecha_pago"]');
     var txtPlFechaInicio = $('#frmPlanilla input[name="fecha_inicio"]');
@@ -3166,6 +3230,7 @@ $('#ingreso_individual_planilla #btnCancelar').on('click', function(e) {
         data = {
             'tipo_planilla': cboPlTipoPlanilla.val(),
             'tipo_pago': cboPlTipoPago.val(),
+            'tipo_contrato': cboPlTipoContrato.val(),
             'fecha_pago': txtPlFechaPago.val(),
             'fecha_inicio': txtPlFechaInicio.val(),
             'fecha_fin': txtPlFechaFin.val(),
@@ -3183,6 +3248,7 @@ $('#ingreso_individual_planilla #btnCancelar').on('click', function(e) {
             'id': id.val(),
             'tipo_planilla': cboPlTipoPlanilla.val(),
             'tipo_pago': cboPlTipoPago.val(),
+            'tipo_contrato': cboPlTipoContrato.val(),
             'fecha_pago': txtPlFechaPago.val(),
             'fecha_inicio': txtPlFechaInicio.val(),
             'fecha_fin': txtPlFechaFin.val(),
@@ -3501,6 +3567,7 @@ $('#ingreso_individual_planilla #btnCancelar').on('click', function(e) {
 
     var sm_id = $('#salariominimo input[name="id"]');
     var sm_salariominimo = $('#salariominimo input[name="salariominimo"]');
+    var sm_forzar = $('#salariominimo input[name="forzar_salario"]');
     var sm_activo = $('#salariominimo input[name="activo"]');
 
     $('#salariominimo #btnGuardar').on('click', function (e) {
@@ -3510,10 +3577,16 @@ $('#ingreso_individual_planilla #btnCancelar').on('click', function(e) {
         } else {
             vActivo = 0;
         }
+        if (sm_forzar.is(":checked")) {
+            vForzar = 1;
+        } else {
+            vForzar = 0;
+        }
         url = '/guardar/salario-minimo/';
         metodo = 'POST';
         data = {
             'salario_minimo': sm_salariominimo.val(),
+            'forzar_salario': vForzar,
             'activo': vActivo,
             'csrfmiddlewaretoken': token.val(),
         };
@@ -3699,6 +3772,7 @@ $('#tipo_deduccion #btnCancelar').on('click', function (e) {
 var ti_id = $('#tipo_ingreso input[name="id"]');
 var ti_txtTipoIngreso = $('#tipo_ingreso input[name="txtTipoIngreso"]');
 var ti_txtDescripcion = $('#tipo_ingreso textarea[name="txtDescripcion"]');
+var ti_txtOrden = $('#tipo_ingreso input[name="txtIngresoOrden"]');
 var ti_chkActivo = $('#tipo_ingreso input[name="tipoIngreso_activo"]');
 var ti_btnGuardar = $('#tipo_ingreso #btnGuardar');
 var ti_btnCancelar = $('#tipo_ingreso #btnCancelar');
@@ -3716,6 +3790,7 @@ ti_btnGuardar.on('click', function(e) {
     data = {
         'tipo_ingreso': ti_txtTipoIngreso.val(),
         'descripcion': ti_txtDescripcion.val(),
+        'orden': ti_txtOrden.val(),
         'activo': vActivo,
         'csrfmiddlewaretoken': token.val(),
     };
@@ -3735,6 +3810,7 @@ ti_btnActualizar.on('click', function(e) {
         'id': ti_id.val(),
         'tipo_ingreso': ti_txtTipoIngreso.val(),
         'descripcion': ti_txtDescripcion.val(),
+        'orden': ti_txtOrden.val(),
         'activo': vActivo,
         'csrfmiddlewaretoken': token.val(),
     };
@@ -3884,6 +3960,19 @@ $('#tipo_nomina #btnTipoNominaCancelar').on('click', function(e) {
             this.simbol = simbol || '';
             return this.formatear(num);
         }
+    }
+
+    function BloquearPantalla() {
+        $('.pagina-contenido').block({
+            message: '<h4><img src="../../static/plugins/images/busy.gif" /> Espere un momento...</h4>',
+            css: {
+                border: '1px solid #fff',
+            }
+        });
+    }
+
+    function DesbloquearPantalla() {
+        $('.pagina-contenido').unblock();
     }
 //#endregion
 });

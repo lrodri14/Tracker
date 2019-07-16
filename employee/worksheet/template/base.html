@@ -252,6 +252,9 @@
                                     {% if perms.worksheet.see_impuestosobrerenta %}
                                     <li><a href="{% url 'impuestosobrerenta_listado' %}" id="aISR" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">ISR</span></a></li>
                                     {% endif %}
+                                    {% if perms.worksheet.see_isrencabezado %}
+                                    <li><a href="{% url 'isr_encabezado' %}" id="aISREncabezado" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Impuesto Sobre Renta</span></a></li>
+                                    {% endif %}
                                     {% if perms.worksheet.see_impuestovecinal %}
                                     <li><a href="{% url 'impuestovecinal_listado' %}" id="aIV" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Impuesto Vecinal</span></a></li>
                                     {% endif %}
@@ -409,7 +412,7 @@
         </div>
         <!-- Left navbar-header end -->
         <!-- Page Content -->
-        <div id="page-wrapper">
+        <div id="page-wrapper" class="pagina-contenido">
 
             <div class="container-fluid">
                 {% block contenido %}{% endblock contenido %}
@@ -486,7 +489,6 @@
         });
     </script>
     <script src="{% static 'js/app/scriptApp.js' %}"></script>
-    <script src="{% static 'js/app/datos.js' %}"></script>t></script>t></script>
+    <script src="{% static 'js/app/datos.js' %}"></script>
 </body>
-
 </html>

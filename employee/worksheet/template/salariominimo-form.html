@@ -29,7 +29,7 @@ Datos de Salario Mínimo
                     {% endif %}
                     <div class="col-md-12">
                         <div class="col-md-12 margin-bottom-5px">
-                            <div class="col-md-6">
+                            <div class="col-md-6" col-span="">
                                 <div class="form-group">
                                     <div class="col-md-5 text-right">
                                         <label class="control-label">Salario Mínimo :</label>
@@ -47,19 +47,34 @@ Datos de Salario Mínimo
                                     <div class="col-md-5"></div>
                                     <div class="col-md-7">
                                         <div class="checkbox checkbox-success">
+                                            <input id="chkForzar" name="forzar_salario" type="checkbox" {% if dato.active %}checked{% endif %} class="input">
+                                            <label for="chkForzar" class="control-label"> Forzar salario </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5"></div>
+                                    <div class="col-md-7">
+                                        <div class="checkbox checkbox-success">
                                             <input id="chkActivo" name="activo" type="checkbox" {% if dato.active %}checked{% endif %} class="input">
                                             <label for="chkActivo" class="control-label"> Activo </label>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="form-action text-right">
-                                    {% if editar %}
-                                    <button id="btnActualizar" class="btn btn-success">Actualizar</button>
-                                    {% else %}
-                                    <button id="btnGuardar" class="btn btn-success">Guardar</button>
-                                    {% endif %}
-                                    <button id="btnCancelar" class="btn btn-default">Cancelar</button>
-                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-action text-right">
+                                {% if editar %}
+                                <button id="btnActualizar" class="btn btn-success">Actualizar</button>
+                                {% else %}
+                                <button id="btnGuardar" class="btn btn-success">Guardar</button>
+                                {% endif %}
+                                <button id="btnCancelar" class="btn btn-default">Cancelar</button>
                             </div>
                         </div>
                     </div>

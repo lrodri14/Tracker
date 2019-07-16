@@ -28,6 +28,7 @@ Listado de Tipos de Ingreso
                                 <tr>
                                     <th>Nombre</th>
                                     <th>Descripción</th>
+                                    <th>Orden</th>
                                     <th>Estado registro</th>
                                     <th>Acciones</th>
                                 </tr>
@@ -37,6 +38,7 @@ Listado de Tipos de Ingreso
                                 <tr>
                                     <td>{{item.tipo_ingreso}}</td>
                                     <td>{{item.descripcion}}</td>
+                                    <td>{% if item.orden %}{{item.orden}}{% endif %}</td>
                                     <td>
                                         {% if item.active %}
                                         <span class="label label-success">Habilitado</span>
