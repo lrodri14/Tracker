@@ -11373,6 +11373,7 @@ def isr_encabezado_guardar(request):
     try:
         if request.is_ajax():
             if request.method == 'POST':
+                suc = Branch.objects.get(pk=request.session["sucursal"])
                 codigo = request.POST['codigo']
                 fecha = request.POST['fecha']
                 deducible = request.POST['deducible']
@@ -11431,9 +11432,12 @@ def isr_encabezado_guardar(request):
                     valor1 = valor1,
                     descripcion2 = deducible2,
                     valor2 = valor2,
+                    empresa_reg = suc.empresa,
+                    user_reg = request.user,
+                    active = True,
                 )
                 o_encabezado_isr.save()
-                data = {'error': False, 'mensaje': 'Se ha creado el registro'}
+                data = {'error': False, 'mensaje': 'Se ha creado el registro', 'pk':o_encabezado_isr.pk}
                 return JsonResponse(data)
             else:
                 data = {'error':True, 'mensaje': 'El método no es permitido.'}
@@ -11445,6 +11449,9 @@ def isr_encabezado_guardar(request):
         print(ex)
         data = {'error':True, 'mensaje': 'Error'}
         return JsonResponse(data)
+
+def isr_detalle_guardar(request):
+    pass
 
 def impuestosobrerenta_obtener(request):
     dato = None
@@ -11470,6 +11477,7 @@ def impuestosobrerenta_obtener(request):
                 'valor1': formato_millar(dato.valor1),
                 'descripcion2': dato.descripcion2,
                 'valor2': formato_millar(dato.valor2),
+                'active': dato.active,
             }
             detalles = ImpuestoSobreRenta.objects.filter(encabezado=dato)
 
@@ -11483,13 +11491,16 @@ def impuestosobrerenta_obtener(request):
     return render(request, 'ajax/isr_encabezado.html', {'dato': dato2, 'detalles':datos})
 
 def impuestosobrerenta_guardar(request):
+    tot_reg = 0
+    registro = {}
     try:
         if request.is_ajax():
             if request.method == 'POST':
+                
                 desde = request.POST['desde']
                 hasta = request.POST['hasta']
+                encabezado = request.POST['isr_enc']
                 porcentaje = request.POST['porcentaje']
-                activo = int(request.POST['activo'])
 
                 if len(desde) == 0:
                     mensaje = "El campo 'Desde' es obligatorio."
@@ -11503,6 +11514,11 @@ def impuestosobrerenta_guardar(request):
 
                 if len(porcentaje) == 0:
                     mensaje = "El campo 'Porcentaje' es obligatorio."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
+
+                if len(encabezado) == 0:
+                    mensaje = "Se requiere seleccionar un valor para de registro 'Impuesto Sobre Venta'."
                     data = {'error': True, 'mensaje': mensaje}
                     return JsonResponse(data)
 
@@ -11523,11 +11539,17 @@ def impuestosobrerenta_guardar(request):
 
 
 
-                if activo == 1:
-                    activo = True
-                else:
-                    activo = False
+                # if activo == 1:
+                #     activo = True
+                # else:
+                #     activo = False
+                tot_reg = EncabezadoImpuestoSobreRenta.objects.filter().count()
+                if tot_reg == 0:
+                    mensaje = "El campo 'Porcentaje' es de tipo decimal."
+                    data = {'error': True, 'mensaje': mensaje}
+                    return JsonResponse(data)
 
+                enc = EncabezadoImpuestoSobreRenta.objects.get(pk=encabezado)
                 suc = Branch.objects.get(pk=request.session["sucursal"])
 
                 oMd = ImpuestoSobreRenta(
@@ -11535,14 +11557,16 @@ def impuestosobrerenta_guardar(request):
                     hasta=hasta,
                     porcentaje=porcentaje,
                     porcentaje_label=str(porcentaje) + "%",
+                    encabezado = enc,
                     empresa_reg=suc.empresa,
-                    active=activo,
+                    active=True,
                     user_reg=request.user,
                 )
                 oMd.save()
+                registro = {'pk':oMd.pk, 'desde': oMd.desde, 'hasta': oMd.hasta, 'porcentaje_label':oMd.porcentaje_label}
                 mensaje = 'Se ha guardado el registro'
                 data = {
-                    'mensaje': mensaje, 'error': False
+                    'mensaje': mensaje, 'error': False, 'dato': registro
                 }
             else:
                 mensaje = "Método no permitido."
@@ -11555,6 +11579,7 @@ def impuestosobrerenta_guardar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
+        print(ex)
         data = {
             'error': True,
             'mensaje': 'error',

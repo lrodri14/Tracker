@@ -105,6 +105,11 @@ table>tbody>.detalle_emp>td{
     padding-left: 7px;
 }
 
+#formularioModalVerRegistro #btnAgregarDetalle{
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
 
 @media (min-width: 768px){
     .logo-izq{

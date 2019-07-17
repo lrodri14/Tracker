@@ -22,11 +22,11 @@
                     <div class="row"> 
                         <div class="col-md-6 col-xs-6 b-r"> <strong>Deducible: </strong>
                             <br>
-                            <p class="text-muted">{% if dato.descripcion %}{{dato.descripcion}}{% endif %}</p>
+                            <p class="text-muted">{% if dato.descripcion %}{{dato.descripcion}}{% else %}No datos{% endif %}</p>
                         </div>
                         <div class="col-md-6 col-xs-6 b-r"> <strong>Valor</strong>
                             <br>
-                            <p class="text-muted">{% if dato.valor %}{{dato.valor}}{% endif %}</p>
+                            <p class="text-muted">{% if dato.valor1 %}{{dato.valor1}}{% else %}No datos{% endif %}</p>
                         </div>
                     </div>
                     <div class="row"> 
@@ -64,6 +64,11 @@
             </div>
             <div role="tabpanel" class="tab-pane fade" id="detalles">
                 <div class="col-md-12">
+                    <div class="row pull-right">
+                        <button id="btnAgregarDetalle" class="btn btn-success">Agregar</button>
+                    </div>
+                    <br>
+                    <br>
                     <div class="table-responsive">
                         <table class="table color-table info-table">
                             <thead>

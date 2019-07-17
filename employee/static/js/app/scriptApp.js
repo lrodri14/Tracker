@@ -2780,6 +2780,10 @@ $('#isr #btnCancelar').on('click', function(e) {
 
 //#region Código para ISR Encabezado
     botonGuardar = $('#formEncabezadoISR #btnGuardar');
+    botonGuardarDetalleISR = $('#formAgregarDetalle #btnGuardarDetalleISR');
+    var isr_desde = $('#formAgregarDetalle input[name="desde"]');
+    var isr_hasta = $('#formAgregarDetalle input[name="hasta"]');
+    var isr_prcnt = $('#formAgregarDetalle input[name="porcentaje"]');
 
     textCodigo = $('#formEncabezadoISR input[name="txtCodigo"]');
     textFecha = $('#formEncabezadoISR input[name="fecha_vigencia"]');
@@ -2811,16 +2815,73 @@ $('#isr #btnCancelar').on('click', function(e) {
         GuardarRegistro(url, metodo, data, "Impuesto Sobre Renta");
     });
 
+    botonGuardarDetalleISR.on('click', function(e) {
+        e.preventDefault();
+        url = '/guardar/isr-detalle/';
+        metodo = 'POST';
+        data = {
+            'desde': isr_desde.val(),
+            'hasta': isr_hasta.val(),
+            'porcentaje': isr_prcnt.val(),
+            'isr_enc': $('input[name="isr_enc_pk"]').val(),
+            'csrfmiddlewaretoken': token.val(),
+        };
+        $.ajax({
+            type: metodo,
+            url: "/guardar/isr/",
+            data: data,
+            success: function (data) {
+                if (data.error === false) {
+                    isr_desde.val('');
+                    isr_hasta.val('');
+                    isr_prcnt.val('');
+                    mensaje("Impuesto Sobre Renta - Detalle", "Se ha creado el registro", "ok", 3500);
+                    $('#formAgregarDetalle').modal({
+                        show: 'false',
+                    });
+                    var html = '<tr>';
+                    html += '<td class="text-right">'+data.desde+'</td>';
+                    html += '<td class="text-right">'+data.hasta+'</td>';
+                    html += '<td class="text-right">'+data.porcentaje_label+'</td>';
+                    html += '</tr>';
+                    $('#formularioModalVerRegistro #contenido-modal').prepend(html);
+                } else {
+                    mensaje("Impuesto Sobre Renta - Detalle", data.mensaje, "error", 3500);
+                }
+                console.log(data);
+            },
+            error: function (data) {
+                console.log(data);
+            },
+            dataType: 'json'
+        }).done(function () {
+            
+        });
+    });
+
+    $('#formularioModalVerRegistro').on('click', "#btnAgregarDetalle", function(e){
+        // $('#formAgregarDetalle').modal({
+        //     show: 'true',
+        // });
+        var html = '<tr>'
+        html += '<td>1,000.00</td>';
+        html += '<td>2,000.00</td>'
+        html += '<td>3.21%</td>'
+        html += '</tr>'
+        $('#formularioModalVerRegistro #contenido-modal tbody').prepend(html);
+    });
+
     botonVerRegistro.on('click', function(e) {
         e.preventDefault();
         BloquearPantalla();
+        var idregistro = $(this).attr('data');
         $.ajax({
             type: "GET",
             url: "/obtener/isr-encabezado/",
-            data: {'Id': $(this).attr('data')},
+            data: {'Id': idregistro},
             success: function (data) {
-                console.log(data);
                 $('#contenido-modal').html(data);
+                $('input[name="isr_enc_pk"]').val(idregistro);
             },
             error: function (data) {
                 errores = errores + 1;

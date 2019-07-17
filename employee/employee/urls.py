@@ -224,6 +224,7 @@ urlpatterns = [
     url(r'^guardar/ingreso-general/$', views.ingreso_general_guardar, name='ingreso_general_guardar'),
     url(r'^guardar/ingreso-general-detalle/$', views.ingreso_general_detalle_guardar, name='ingreso_general_detalle_guardar'),
     url(r'^guardar/isr-encabezado/$', views.isr_encabezado_guardar, name='isr_encabezado_guardar'),
+    url(r'^guardar/isr-detalle/$', views.impuestosobrerenta_guardar, name='impuestosobrerenta_guardar'),
     url(r'^guardar/isr/$', views.impuestosobrerenta_guardar, name='impuestosobrerenta_guardar'),
     url(r'^guardar/impuesto-vecinal/$', views.impuestovecinal_guardar, name='impuestovecinal_guardar'),
     url(r'^guardar/motivo-ausencia/$', views.guardar_motivo_ausencia, name='guardar_motivo_ausencia'),
