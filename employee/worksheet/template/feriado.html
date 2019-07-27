@@ -100,6 +100,8 @@ Feriado
     $('#aPersonal').addClass('active');
     $('#aGenerales').addClass('active');
     $('#Fer').addClass('active');
+    $('#aPersonal').parents('li').addClass('active');
+    $('#aGenerales').parents('li').addClass('active');
 
     jQuery('.mydatepicker, #datepicker').datepicker({
         format: 'yyyy-mm-dd',

@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% block titulo %}
+Ver registros de Planilla
+{% endblock titulo %}
+{% block contenido %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2><i class="ti-pencil-alt"></i> Registros de planilla </h2>
+            </div>
+            <div class="panel-wrapper">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-3 col-xs-6 b-r"> <strong>Descripción</strong>
+                                <br>
+                                <p class="text-muted">{{planilla.descripcion}}</p>
+                            </div>
+                            <div class="col-md-3 col-xs-6 b-r"> <strong>Tipo de planilla</strong>
+                                <br>
+                                <p class="text-muted">{{planilla.tipo_planilla.descripcion}}</p>
+                            </div>
+                            <div class="col-md-3 col-xs-6 b-r"> <strong>Frecuencia de Pago</strong>
+                                <br>
+                                <p class="text-muted">{{planilla.frecuencia_pago.description|upper}}</p>
+                            </div>
+                            <div class="col-md-3 col-xs-6"> <strong>Tipo de Contrato</strong>
+                                <br>
+                                <p class="text-muted">{{planilla.tipo_contrato.descripcion}}</p>
+                            </div>
+                            <div class="col-md-3 col-xs-6"> <strong>Fecha de Pago</strong>
+                                <br>
+                                <p class="text-muted">{{planilla.fecha_pago}}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 text-right">
+                            <button class="btn btn-warning">Cerrar Planila</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="table-responsive">
+                                <table id="detalle_planilla" class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Empleado</th>
+                                            <th class="text-right">Ingresos</th>
+                                            <th class="text-right">Deducción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in detalle %}
+                                        <tr data-toggle="collapse" data-target="#vdet{{item.id}}" class="detalle_item accordion-toggle">
+                                            <td>{{item.empleado.firstName}} {% if item.empleado.middleName %}{{item.empleado.middleName}}{% endif %} {{item.empleado.lastName}}</td>
+                                            <td class="text-right">{{item.total_ingresos}}</td>
+                                            <td class="text-right">{{item.total_deducciones}}</td>
+                                        </tr>
+                                        <tr class="detalle_emp">    
+                                            <td colspan="6" class="hiddenRow">
+                                                <div class="accordian-body collapse" id="vdet{{item.id}}">
+                                                    <div class="table-responsive col-md-6">
+                                                        <table class="table">
+                                                            <thead>
+                                                                <th>Descripción</th>
+                                                                <th><span class="text-right">Ingreso</span></th>
+                                                                <th><span class="text-right">Deducción</span></th>
+                                                            </thead>
+                                                            <tbody class="body-item-detalle">
+                                                                {% for item1 in ingresos %}
+                                                                    {% if item.empleado == item1.empleado %}
+                                                                    <tr>
+                                                                        <td>{{item1.ingreso}}</td>
+                                                                        <td><span class="text-success text-right"><strong>{{item1.valor}}</strong></span></td>
+                                                                        <td></td>
+                                                                    </tr>
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                                {% for item2 in deducciones %}
+                                                                    {% if item.empleado == item2.empleado %}
+                                                                    <tr>
+                                                                        <td>{{item2.deduccion}}</td>
+                                                                        <td></td>
+                                                                        <td><span class="text-danger text-right"><strong>{{item2.valor}}</strong></span></td>
+                                                                    </tr>
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contenido %}
+{% block scripts %}
+    <script>
+        $('#side-menu a').removeClass('active');
+        $('#aAcciones').addClass('active');
+        $('#accionesNomina').addClass('active');
+        $('#aPlanilla').addClass('active');
+        $('#aAcciones').parents('li').addClass('active');
+        $('#accionesNomina').parents('li').addClass('active');
+    </script>
+{% endblock scripts %}

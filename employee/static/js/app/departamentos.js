@@ -5,6 +5,7 @@ $(document).on('ready', () => {
     $('#aCorporativo').addClass('active');
     $('#aDepartamentos').addClass('active');
     $('#sDepartamentos1').addClass('active');
+    
     //#endregion
     //#region Variables
     var vActivo = 0;

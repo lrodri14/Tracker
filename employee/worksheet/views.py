@@ -12,7 +12,7 @@ from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from django.utils import timezone
 from django.utils.decorators import method_decorator
-
+from decimal import *
 from worksheet.forms import *
 from worksheet.models import *
 from datetime import date, datetime
@@ -20,6 +20,7 @@ import json
 import locale
 from django.db.models import Q
 locale.setlocale(locale.LC_ALL, '')
+TWOPLACES = Decimal(10) ** -2
 
 # Create your views here.
 def verificaSucursal(request):
@@ -32,7 +33,8 @@ def verificaSucursal(request):
 @login_required(login_url='/form/iniciar-sesion/')
 def home(request):
     verificaSucursal(request)
-    empleados = Employee.objects.all()
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    empleados = Employee.objects.filter(branch=suc)
     return render(request, 'index.html', {'empleados':empleados})
 
 def inicia_sesion(request):
@@ -159,7 +161,7 @@ def empleado_editar(request, id):
 @permission_required('worksheet.see_employee', raise_exception=True)
 def empleado_listado(request):
     suc = Branch.objects.get(pk=request.session["sucursal"])
-    empleados = Employee.objects.filter(empresa_reg=suc.empresa)
+    empleados = Employee.objects.filter(branch=suc)
     return render(request, 'empleado-listado.html', {'empleados':empleados})
 
 @login_required(login_url='/form/iniciar-sesion/')
@@ -9045,7 +9047,7 @@ def grafico1(request):
             deptos = Department.objects.filter(empresa_reg=suc.empresa)
             for item in deptos:
                 tot_emp = 0
-                tot_emp = Employee.objects.filter(dept=item).count()
+                tot_emp = Employee.objects.filter(dept=item, branch=suc).count()
                 ldeptos.append(item.description)
                 ltotalemp.append(tot_emp)
 
@@ -9053,6 +9055,7 @@ def grafico1(request):
         else:
             return JsonResponse({'error': True, 'mensaje': 'El método no es asíncrono'})
     except Exception as ex:
+        print(ex)
         data = {
             'error': True,
             'mensaje': 'ex',
@@ -11343,6 +11346,7 @@ def isr_encabezado(request):
         datos.append(data)
     return render(request, 'isr-encabezado-listado.html', {'lista':datos})
 
+@login_required(login_url='/form/iniciar-sesion/')
 def isr_encabezado_form(request):
     return render(request, 'isr-encabezado-form.html')
 
@@ -11450,9 +11454,6 @@ def isr_encabezado_guardar(request):
         data = {'error':True, 'mensaje': 'Error'}
         return JsonResponse(data)
 
-def isr_detalle_guardar(request):
-    pass
-
 def impuestosobrerenta_obtener(request):
     dato = None
     dato2 = None
@@ -11469,6 +11470,7 @@ def impuestosobrerenta_obtener(request):
         if lista_isr.count() > 0:
             dato = EncabezadoImpuestoSobreRenta.objects.get(pk=registro_id)
             dato2 = {
+                'pk': dato.pk,
                 'fecha_vigencia': dato.fecha_vigencia,
                 'codigo': dato.codigo,
                 'descripcion': dato.descripcion,
@@ -11483,6 +11485,7 @@ def impuestosobrerenta_obtener(request):
 
             for item in detalles:
                 dato3 = {
+                    'pk': item.pk,
                     'desde': formato_millar(item.desde),
                     'hasta': formato_millar(item.hasta),
                     'porcentaje': formato_millar(item.porcentaje),
@@ -11522,6 +11525,10 @@ def impuestosobrerenta_guardar(request):
                     data = {'error': True, 'mensaje': mensaje}
                     return JsonResponse(data)
 
+                desde = desde.replace(",", "")
+                hasta = hasta.replace(",", "")
+                porcentaje = porcentaje.replace(",", "")
+
                 if not validarDecimal(desde):
                     mensaje = "El campo 'Desde' es de tipo decimal."
                     data = {'error': True, 'mensaje': mensaje}
@@ -11536,7 +11543,6 @@ def impuestosobrerenta_guardar(request):
                     mensaje = "El campo 'Porcentaje' es de tipo decimal."
                     data = {'error': True, 'mensaje': mensaje}
                     return JsonResponse(data)
-
 
 
                 # if activo == 1:
@@ -11563,7 +11569,7 @@ def impuestosobrerenta_guardar(request):
                     user_reg=request.user,
                 )
                 oMd.save()
-                registro = {'pk':oMd.pk, 'desde': oMd.desde, 'hasta': oMd.hasta, 'porcentaje_label':oMd.porcentaje_label}
+                registro = {'pk':oMd.pk, 'desde': oMd.desde, 'hasta': oMd.hasta, 'porcentaje':oMd.porcentaje}
                 mensaje = 'Se ha guardado el registro'
                 data = {
                     'mensaje': mensaje, 'error': False, 'dato': registro
@@ -11708,6 +11714,7 @@ def impuestosobrerenta_eliminar(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
+        print(ex)
         data = {
             'error': True,
             'mensaje': 'error',
@@ -13264,6 +13271,63 @@ def planilla_form(request):
     return render(request, 'planilla-form.html',{'tipo_planilla':tipo_planilla, 'tipos_pago':tipo_pago, 'tipos_contrato':tipo_contrato})
 
 @login_required(login_url='/form/iniciar-sesion/')
+def planilla_ver(request, id):
+    datos = []
+    datos2 = []
+    datos3 = []
+    ingresos = 0
+    deducciones = 0
+    suma_total_ingresos = 0
+    suma_total_deducciones = 0
+    suc = Branch.objects.filter(pk=request.session["sucursal"])
+    planilla = Planilla.objects.get(pk=id)
+    detalle_planilla = PlanillaDetalle.objects.filter(planilla__pk=planilla.id)
+    for item in detalle_planilla:
+        dias_trabajo = 0
+        dias_trabajo = float(item.dias_salario) - float(item.dias_ausentes_sin_pago)
+        total_salario = float(dias_trabajo) * float(item.salario_diario)
+        objeto = {
+            'id':item.pk,
+            'empleado': item.empleado,
+            'planilla': item.planilla,
+            'salario_diario': item.salario_diario,
+            'dias_ausentes_sin_pago': item.dias_ausentes_sin_pago,
+            'dias_ausentes_con_pago': item.dias_ausentes_con_pago,
+            'total_ingresos': locale.format("%.2f", float(item.total_ingresos), grouping=True),
+            'total_deducciones': locale.format("%.2f", item.total_deducciones, grouping=True),
+            'total_salario': locale.format("%.2f", total_salario, grouping=True),
+        }
+        datos.append(objeto)
+        suma_total_ingresos += float(item.total_ingresos)
+        suma_total_deducciones += float(item.total_deducciones)
+    ingresos = PlanillaDetalleIngresos.objects.filter(planilla__pk=planilla.id)
+
+    for item1 in ingresos:
+        objeto1 = {
+            'id':item1.pk,
+            'empleado': item1.empleado,
+            'planilla': item1.planilla,
+            'ingreso': item1.ingreso,
+            'valor': locale.format("%.2f", item1.valor, grouping=True),
+        }
+        datos2.append(objeto1)
+
+    deducciones = PlanillaDetalleDeducciones.objects.filter(planilla__pk=planilla.id)
+    for item2 in deducciones:
+        objeto2 = {
+            'id': item2.pk,
+            'empleado': item2.empleado,
+            'planilla': item2.planilla,
+            'deduccion': item2.deduccion,
+            'valor': locale.format("%.2f", item2.valor, grouping=True),
+        }
+        datos3.append(objeto2)
+
+    suma_total_ingresos = locale.format("%.2f", suma_total_ingresos, grouping=True)
+    suma_total_deducciones = locale.format("%.2f", suma_total_deducciones, grouping=True)
+    return render(request, 'planilla-ver.html', {'planilla':planilla, 'detalle':datos, 'ingresos':datos2, 'deducciones': datos3})
+
+@login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.change_planilla', raise_exception=True)
 def planilla_editar(request, id):
     suc = Branch.objects.get(pk=request.session["sucursal"])
@@ -13515,7 +13579,7 @@ def planilla_generar_calculos(request):
                     return JsonResponse(data)
                 else:
                     if validarEntero(planilla_id):
-                        tot_reg = Planilla.objects.filter(pk=planilla_id).count()
+                        tot_reg = Planilla.objects.filter(pk=planilla_id).count() 
                         if tot_reg > 0:
                             suc = Branch.objects.get(pk=request.session["sucursal"])
                             o_planilla = Planilla.objects.get(pk=planilla_id)
@@ -13564,6 +13628,7 @@ def planilla_generar_calculos(request):
                                 deduccion_isr = 0
                                 deduccion_vec = 0
                                 total_rap = 0
+                                tpagos = 0
                                 total_dias_trabajados = int(item.salaryUnits.dias_salario)
                                 salario_diario = float(item.salario_diario)
                                 salario_mensual = salario_diario * 30
@@ -13602,6 +13667,7 @@ def planilla_generar_calculos(request):
                                     tot_ajuste_lempiras = 0
                                     for item1 in ausencias_con_pago:
                                         dias_ausencia = 1
+                                        tpagos = 0
                                         dias_ausencia = dias_ausencia + (item1.hasta - item1.desde).days
                                         dias_ausencia_con_pago = dias_ausencia_con_pago + (item1.hasta - item1.desde).days
                                         dias_normales = 0
@@ -13671,7 +13737,7 @@ def planilla_generar_calculos(request):
 
                                 dedaplicada = EmpleadoDeducciones.objects.filter(empleado=item, empresa_reg=suc.empresa, deduccion='RAP', active=True)
                                 if dedaplicada.count() > 0:
-                                    
+                                    sbb = salario_mensual + tigi + tigg + tigp
                                     tipos_rap = RapDeduccion.objects.filter(empresa_reg=suc.empresa, active=True)
                                     for item5 in tipos_rap:
                                         if sbb > float(item5.techo):
@@ -13689,21 +13755,59 @@ def planilla_generar_calculos(request):
 
                                 dedaplicada = EmpleadoDeducciones.objects.filter(empleado=item, empresa_reg=suc.empresa, deduccion='ISR', active=True)
                                 if dedaplicada.count() > 0:
-                                    tipos_isr = ImpuestoSobreRenta.objects.filter(empresa_reg=suc.empresa, desde__lte=sbb, hasta__gte=sbb, active=True).order_by('-id')
-                                    if tipos_isr.count() > 0:
-                                        o_tipoisr = tipos_isr[0]
+                                    sbb = salario_mensual + tigi + tigg + tigp
+                                    isr_encabezados = EncabezadoImpuestoSobreRenta.objects.filter(empresa_reg=suc.empresa, active=True).order_by('-id')
+                                    if isr_encabezados.count() > 0:
+                                        o_encabezadoisr = isr_encabezados[0]
                                         deduccion_tipo = TipoDeduccion.objects.filter(tipo_deduccion='ISR', empresa_reg=suc.empresa, active=True)
                                         if deduccion_tipo.count() > 0:
                                             orden = int(deduccion_tipo[0].orden)
                                         else:
                                             orden = 0
-                                        deduccion_isr = sbb * (float(o_tipoisr.porcentaje) / 100)
+
+                                        isr_detalles = ImpuestoSobreRenta.objects.filter(encabezado__pk=o_encabezadoisr.pk, active=True).order_by('id')
+                                        sueldo_anual = (salario_diario * 30) * 14
+
+                                        registro_i = 1
+                                        for item_detalle in isr_detalles:
+                                            if registro_i == 1:
+                                                if o_encabezadoisr.valor:
+                                                    item_detalle.hasta = float(item_detalle.hasta) + float(o_encabezadoisr.valor)
+                                                if o_encabezadoisr.valor1:
+                                                    item_detalle.hasta = float(item_detalle.hasta) + float(o_encabezadoisr.valor1)
+                                                if o_encabezadoisr.valor2:
+                                                    item_detalle.hasta = float(item_detalle.hasta) + float(o_encabezadoisr.valor2)
+
+                                            if sueldo_anual > 0:
+                                                deduccion_isr += sueldo_anual * (float(item_detalle.porcentaje) / 100)
+                                                sueldo_anual = float(sueldo_anual) - float(item_detalle.hasta)
+                                            else:
+                                                deduccion_isr += 0
+                                            registro_i += 1
+                                        
+                                        if item.salaryUnits.dias_salario:
+                                            tpagos = int(30 / item.salaryUnits.dias_salario)
+                                            tpagos = tpagos * 12
+                                            
+                                            deduccion_isr = deduccion_isr / tpagos
+
+                                    # tipos_isr = ImpuestoSobreRenta.objects.filter(empresa_reg=suc.empresa, desde__lte=sbb, hasta__gte=sbb, active=True).order_by('-id')
+                                    # if tipos_isr.count() > 0:
+                                    #     o_tipoisr = tipos_isr[0]
+                                    #     deduccion_tipo = TipoDeduccion.objects.filter(tipo_deduccion='ISR', empresa_reg=suc.empresa, active=True)
+                                    #     if deduccion_tipo.count() > 0:
+                                    #         orden = int(deduccion_tipo[0].orden)
+                                    #     else:
+                                    #         orden = 0
+                                    #     deduccion_isr = sbb * (float(o_tipoisr.porcentaje) / 100)
                                         if deduccion_isr > 0:
                                             tipo_deduccion = {'nombre': 'ISR', 'valor': deduccion_isr, 'orden': orden}
                                             tipos_deducciones.append(tipo_deduccion)
 
                                 dedaplicada = EmpleadoDeducciones.objects.filter(empleado=item, empresa_reg=suc.empresa, deduccion='IMV', active=True)
                                 if dedaplicada.count() > 0:
+                                    sbb = salario_mensual + tigi + tigg + tigp
+                                    sbb = float(Decimal(sbb).quantize(TWOPLACES))
                                     tipos_vec = ImpuestoVecinal.objects.filter(empresa_reg=suc.empresa, desde__lte=sbb, hasta__gte=sbb, active=True).order_by('-id')
                                     if tipos_vec.count() > 0:
                                         o_tipovec = tipos_vec[0]
@@ -13712,10 +13816,17 @@ def planilla_generar_calculos(request):
                                             orden = int(deduccion_tipo[0].orden)
                                         else:
                                             orden = 0
+                                        
+                                        print(sbb)
                                         deduccion_vec = sbb * (float(o_tipovec.porcentaje) / 100)
+                                        tpagos = int(30 / item.salaryUnits.dias_salario)
+                                        tpagos = tpagos * 12
+                                            
+                                        deduccion_vec = deduccion_vec / tpagos
                                         if deduccion_vec > 0:
                                             tipo_deduccion = {'nombre': 'IMV', 'valor': deduccion_vec, 'orden': orden}
                                             tipos_deducciones.append(tipo_deduccion)
+                                        print("IMV: " + str(tipos_deducciones))
 
                                 #Deduccion Individual Detalle
                                 deducciones_individuales = DeduccionIndividualDetalle.objects.filter(empleado=item, fecha_valida__gte=o_planilla.fecha_inicio, fecha_valida__lte=o_planilla.fecha_fin, active=True)

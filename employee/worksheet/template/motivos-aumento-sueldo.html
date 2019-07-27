@@ -3,6 +3,16 @@
 Motivos de Aumento de Sueldo
 {% endblock titulo %}
 {% load static %}
+{% block estilo %}
+<style>
+    .checkbox{
+        font-weight: 500;
+    }
+    .checkbox label{
+        font-weight: 500;
+    }
+</style>
+{% endblock estilo %}
 {% block contenido %}
 <div class="row">
     <div class="col-md-12">
@@ -84,5 +94,7 @@ Motivos de Aumento de Sueldo
     $('#aPersonal').addClass('active');
     $('#Motivos').addClass('active');
     $('#aMas').addClass('active');
+    $('#aPersonal').parents('li').addClass('active');
+    $('#Motivos').parents('li').addClass('active');
 </script>
 {% endblock scripts %}

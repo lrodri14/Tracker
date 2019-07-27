@@ -76,6 +76,7 @@
                                     <th class="text-center">Desde</th>
                                     <th class="text-center">Hasta</th>
                                     <th class="text-right">Porcentaje(%)</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -84,6 +85,9 @@
                                         <td class="text-right">{{item.desde}}</td>
                                         <td class="text-right">{{item.hasta}}</td>
                                         <td class="text-right">{{item.porcentaje}}</td>
+                                        <td class="text-center">
+                                            <a href="#" class="btnEliminarDetalleISR" data="{{item.pk}}">Eliminar</a>
+                                        </td>
                                     </tr>
                                 {% empty %}
                                 <tr>

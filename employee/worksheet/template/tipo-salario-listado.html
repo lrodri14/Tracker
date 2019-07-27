@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block titulo %}
-Listado de Tipos de Salario
+Listado de Frecuencia de Pago
 {% endblock titulo %}
 {% load static %}
 {% block contenido %}
@@ -9,7 +9,7 @@ Listado de Tipos de Salario
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h2 class="text-bold"><i class="fa fa-list"></i>
-                    Listado de Tipos de Salario</h2>
+                    Listado de Frecuencia de Pago</h2>
             </div>
             <div class="panel-wrapper">
                 <div class="panel-body">
@@ -69,6 +69,8 @@ Listado de Tipos de Salario
     $('#aPersonal').addClass('active');
     $('#parametrosNomina').addClass('active');
     $('#aTiposSalarios').addClass('active');
+    $('#aPersonal').parents('li').addClass('active');
+    $('#parametrosNomina').parents('li').addClass('active');
     //#endregion
 
     //#region Eventos Controles

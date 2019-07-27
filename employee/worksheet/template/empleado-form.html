@@ -1153,6 +1153,7 @@ var cboPaisW = $('select[name="wpais"]');
 var cboEstadoW = $('select[name="wdept"]');
 var cboPaisH = $('select[name="hpais"]');
 var cboEstadoH = $('select[name="hdept"]');
+$('#aPersonal').parents('li').addClass('active');
 cboPaisH.on('change', function() {
     var pais_id = cboPaisH.val();
     $.ajax({

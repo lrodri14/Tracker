@@ -99,8 +99,11 @@ Empleos anteriores
     var token = $('input[name="csrfmiddlewaretoken"]');
     //#region Efectos en SideBar
     $('#side-menu a').removeClass('active');
-    $('#aAccionesPer').addClass('active');
+    $('#aAcciones').addClass('active');
+    $('#accionesPersonal').addClass('active');
     $('#empAnt').addClass('active');
+    $('#aAcciones').parents('li').addClass('active');
+    $('#accionesPersonal').parents('li').addClass('active');
     //#endregion
 
     //#region Eventos Controles

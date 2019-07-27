@@ -70,6 +70,8 @@ Listado de Empresas por Usuario
     $('#side-menu a').removeClass('active');
     $('#aCorporativo').addClass('active');
     $('#aUsuarioEmpresa').addClass('active');
+    $('#aCorporativo').parents('li').addClass('active');
+    $('#aUsuarioEmpresa').parents('li').addClass('active');
     //#endregion
 
     $('.acciones #btnEliminar').on('click', function(e) {

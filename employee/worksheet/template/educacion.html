@@ -147,8 +147,11 @@ Educación
 <script>
     $(".select2").select2();
     $('#side-menu a').removeClass('active');
-    $('#aAccionesPer').addClass('active');
+    $('#aAcciones').addClass('active');
+    $('#accionesPersonal').addClass('active');
     $('#aEdu').addClass('active');
+    $('#aAcciones').parents('li').addClass('active');
+    $('#accionesPersonal').parents('li').addClass('active');
 
     jQuery('.mydatepicker, #datepicker').datepicker({
         format: 'yyyy-mm-dd',

@@ -69,4 +69,8 @@ Listado de Empresas
 {% endblock contenido %}
 {% block scripts %}
 <script src="{% static 'js/app/listadoEmpresas.js' %}"></script>
+<script>
+    $('#aCorporativo').parents('li').addClass('active');
+    $('#aUsuarioEmpresa').parents('li').addClass('active');
+</script>
 {% endblock scripts %}

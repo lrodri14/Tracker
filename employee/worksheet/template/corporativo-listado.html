@@ -60,7 +60,7 @@ Listado de Grupos Corporativos
 {% block scripts %}
 <script src="{% static 'js/app/listadoCorporativos.js' %}"></script>
 <script>
-    //#region Librerías
-    //#endregion
+    $('#aCorporativo').parents('li').addClass('active');
+    $('#aUsuarioEmpresa').parents('li').addClass('active');
 </script>
 {% endblock scripts %}

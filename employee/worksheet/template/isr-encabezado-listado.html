@@ -111,6 +111,12 @@ Impuesto Sobre Renta
 {% endblock contenido %}
 {% block scripts %}
 <script>
+    $('#side-menu a').removeClass('active');
+    $('#aPersonal').addClass('active');
+    $('#aLegales').addClass('active');
+    $('#aISREncabezado').addClass('active');
+    $('#aPersonal').parents('li').addClass('active');
+    $('#aLegales').parents('li').addClass('active');
     var mitabla = $('#mi_table2').DataTable({
         //"ajax": "http://localhost:8000/obtener/isr-encabezado/",
         /*"columns": [

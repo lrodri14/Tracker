@@ -60,6 +60,8 @@ Generar Planilla
     $('#aAcciones').addClass('active');
     $('#accionesNomina').addClass('active');
     $('#aPlanilla').addClass('active');
+    $('#aAcciones').parents('li').addClass('active');
+    $('#accionesNomina').parents('li').addClass('active');
     $('#btnBloquear').click(function() {
         $('div.block5').block({
             message: '<h4><img src="../../static/plugins/images/busy.gif" /> Espere un momento...</h4>',

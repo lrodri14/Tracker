@@ -2836,39 +2836,63 @@ $('#isr #btnCancelar').on('click', function(e) {
                     isr_hasta.val('');
                     isr_prcnt.val('');
                     mensaje("Impuesto Sobre Renta - Detalle", "Se ha creado el registro", "ok", 3500);
-                    $('#formAgregarDetalle').modal({
-                        show: 'false',
-                    });
                     var html = '<tr>';
-                    html += '<td class="text-right">'+data.desde+'</td>';
-                    html += '<td class="text-right">'+data.hasta+'</td>';
-                    html += '<td class="text-right">'+data.porcentaje_label+'</td>';
+                    html += '<td class="text-right">'+data.dato.desde+'</td>';
+                    html += '<td class="text-right">'+data.dato.hasta+'</td>';
+                    html += '<td class="text-right">'+data.dato.porcentaje+'</td>';
+                    html += '<td class="text-center"><a href="#" class="btnEliminarDetalleISR" data="'+data.dato.pk+'">Eliminar</a></td>';
                     html += '</tr>';
-                    $('#formularioModalVerRegistro #contenido-modal').prepend(html);
+                    $('#formularioModalVerRegistro #contenido-modal tbody').prepend(html);
+                    $('#formAgregarDetalle').modal('hide');
                 } else {
                     mensaje("Impuesto Sobre Renta - Detalle", data.mensaje, "error", 3500);
                 }
-                console.log(data);
             },
             error: function (data) {
                 console.log(data);
             },
             dataType: 'json'
-        }).done(function () {
+        }).done(function (data) {
             
         });
     });
 
     $('#formularioModalVerRegistro').on('click', "#btnAgregarDetalle", function(e){
-        // $('#formAgregarDetalle').modal({
-        //     show: 'true',
-        // });
-        var html = '<tr>'
-        html += '<td>1,000.00</td>';
-        html += '<td>2,000.00</td>'
-        html += '<td>3.21%</td>'
-        html += '</tr>'
-        $('#formularioModalVerRegistro #contenido-modal tbody').prepend(html);
+        $('#formAgregarDetalle').modal({
+            show: 'true',
+        });
+    });
+
+    $('#formularioModalVerRegistro').on('click', '.btnEliminarDetalleISR', function(e) {
+        e.preventDefault();
+        url = '/eliminar/isr/';
+        metodo = 'POST';
+        var registro_id = $(this).attr('data');
+        var elemento = $(this).parents('tr');
+        data = {
+            'id': registro_id,
+            'csrfmiddlewaretoken': token.val(),
+        };
+        $.ajax({
+            type: metodo,
+            url: url,
+            data: data,
+            success: function (data) {
+                if (data.error === false) {
+                    mensaje("Impuesto Sobre Renta - Detalle", data.mensaje, "ok", 3500);
+                    elemento.hide();
+                    //$('#formAgregarDetalle').modal('hide');
+                } else {
+                    mensaje("Impuesto Sobre Renta - Detalle", data.mensaje, "error", 3500);
+                }
+            },
+            error: function (data) {
+                console.log(data);
+            },
+            dataType: 'json'
+        }).done(function (data) {
+            
+        });
     });
 
     botonVerRegistro.on('click', function(e) {
@@ -3325,23 +3349,23 @@ $('#ingreso_individual_planilla #btnCancelar').on('click', function(e) {
     });
 
     btnPlVerRegistro.on('click', function(e) {
-        e.preventDefault();
-        url = '/ver-registro/planilla/';
-        metodo = 'GET';
-        data = { 'id': $(this).attr('data') };
-        $.ajax({
-            type: metodo,
-            url: url,
-            data: data,
-            success: function (data) {
-                $('#planilla-modal').html(data);
-            },
-            error: function (data) {
-                console.log(data);
-            },
-            dataType: 'html'
-        });
-        $('#responsive-modal').modal('toggle');
+        // e.preventDefault();
+        // url = '/ver-registro/planilla/';
+        // metodo = 'GET';
+        // data = { 'id': $(this).attr('data') };
+        // $.ajax({
+        //     type: metodo,
+        //     url: url,
+        //     data: data,
+        //     success: function (data) {
+        //         $('#planilla-modal').html(data);
+        //     },
+        //     error: function (data) {
+        //         console.log(data);
+        //     },
+        //     dataType: 'html'
+        // });
+        // $('#responsive-modal').modal('toggle');
     });
 
     valor = 0;

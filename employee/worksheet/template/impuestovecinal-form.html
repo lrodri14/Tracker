@@ -98,6 +98,8 @@ Datos de Impuesto Vecinal
     $('#aPersonal').addClass('active');
     $('#aLegales').addClass('active');
     $('#aIV').addClass('active');
+    $('#aPersonal').parents('li').addClass('active');
+    $('#aLegales').parents('li').addClass('active');
     $('input[name="desde"]').mask('000,000,000,000,000.00', {reverse: true});
     $('input[name="hasta"]').mask('000,000,000,000,000.00', {reverse: true});
     $('input[name="porcentaje"]').mask('##0.00%', {reverse: true});

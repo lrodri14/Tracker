@@ -3,6 +3,16 @@
 Grupos de comisiones
 {% endblock titulo %}
 {% load static %}
+{% block estilo %}
+<style>
+    .checkbox{
+        font-weight: 500;
+    }
+    .checkbox label{
+        font-weight: 500;
+    }
+</style>
+{% endblock estilo %}
 {% block contenido %}
 <div class="row">
     <div class="col-md-12">
@@ -75,5 +85,7 @@ Grupos de comisiones
     $('#aPersonal').addClass('active');
     $('#aGenerales').addClass('active');
     $('#grpCom').addClass('active');
+    $('#aPersonal').parents('li').addClass('active');
+    $('#aGenerales').parents('li').addClass('active');
 </script>
 {% endblock scripts %}

@@ -116,6 +116,12 @@ Datos de Impuesto Sobre Renta
 {% block scripts %}
 <script src="{% static 'js/lib/jquery.mask.js' %}"></script>
 <script>
+    $('#side-menu a').removeClass('active');
+    $('#aPersonal').addClass('active');
+    $('#aLegales').addClass('active');
+    $('#aISREncabezado').addClass('active');
+    $('#aPersonal').parents('li').addClass('active');
+    $('#aLegales').parents('li').addClass('active');
 $('.moneda').mask('0,000,000,000,000.00', {reverse:true});
 jQuery('.mydatepicker, #datepicker').datepicker({
     format: 'yyyy-mm-dd',
