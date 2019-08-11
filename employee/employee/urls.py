@@ -20,6 +20,7 @@ from django.conf.urls.static import static
 #from django.contrib.auth.views import logout
 from django.contrib.auth import views as auth_views
 from worksheet import views
+import debug_toolbar
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -31,6 +32,7 @@ urlpatterns = [
     url(r'^salir/$', auth_views.LogoutView.as_view(), name='salir'),
     #url(r'^salir/$', logout, name="salir", kwargs={'next_page': '/'}),
     url(r'^login/$', views.login, name="login"),
+    url(r'^__debug__/', include(debug_toolbar.urls)),
 
     url(r'^forms/empleado/$', views.empleado_form, name="empleados-form"),
     url(r'^editar/empleado/(?P<id>\w+)/$', views.empleado_editar, name="empleado_editar"),
@@ -248,7 +250,7 @@ urlpatterns = [
 
     url(r'^generar/planilla/$', views.planilla_generar, name='planilla_generar'),
     url(r'^generar/planilla2/$', views.planilla_generar_calculos, name='planilla_generar_calculos'),
-
+    url(r'^generar/reporte-general/planilla/$', views.generar_reporte_general, name='generar_reporte_general'),
 
     url(r'^actualizar/activo-asignado/$', views.actualizar_activo_asignado, name='actualizar_activo_asignado'),
     url(r'^actualizar/aumento-salario/$', views.aumento_salario_actualizar, name='aumento_salario_actualizar'),
@@ -309,6 +311,7 @@ urlpatterns = [
     url(r'^actualizar/vendedor/$', views.actualizar_vendedor, name='actualizar_vendedor'),
 
     url(r'^calcular/planilla-empleado/$', views.planilla_calculos_empleado, name='planilla_calculos_empleado'),
+    url(r'^cerrar/planilla/$', views.planilla_cerrar, name='planilla_cerrar'),
 
     url(r'^editar/aumento-salario/(?P<id>\w+)/$', views.aumento_salario_editar, name="aumento_salario_editar"),
     url(r'^editar/deduccion-general/(?P<id>\w+)/$', views.deduccion_general_editar, name="deduccion_general_editar"),
@@ -404,10 +407,10 @@ urlpatterns = [
     url(r'^enviar/aumento-salario/$', views.aumento_salario_guardar, name="aumento_salario_guardar"),
     url(r'^enviar/sucursal/$', views.enviar_sucursal, name="enviar_sucursal"),
 
-
     url(r'^ver-registro/aumento-salario/$', views.aumento_salario_ver_registro, name="aumento_salario_ver_registro"),
     url(r'^ver-registro/planilla/$', views.planilla_ver_registro, name="planilla_ver_registro"),
     url(r'^ver/planilla/(?P<id>\w+)/$', views.planilla_ver, name="planilla_ver"),
+    url(r'^reporte/planilla/$', views.planilla_reporte_general, name="planilla_reporte_general"),
 
     #------------------>>>AJAX<<<-------------------
 

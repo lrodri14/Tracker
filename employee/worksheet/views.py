@@ -16,8 +16,10 @@ from decimal import *
 from worksheet.forms import *
 from worksheet.models import *
 from datetime import date, datetime
+import functools
 import json
 import locale
+import operator
 from django.db.models import Q
 locale.setlocale(locale.LC_ALL, '')
 TWOPLACES = Decimal(10) ** -2
@@ -34,7 +36,7 @@ def verificaSucursal(request):
 def home(request):
     verificaSucursal(request)
     suc = Branch.objects.get(pk=request.session["sucursal"])
-    empleados = Employee.objects.filter(branch=suc)
+    empleados = Employee.objects.filter(branch=suc).values('id','firstName', 'middleName', 'lastName')
     return render(request, 'index.html', {'empleados':empleados})
 
 def inicia_sesion(request):
@@ -78,6 +80,7 @@ def ingresar(request):
 
 @login_required(login_url='/form/iniciar-sesion/')
 def seleccionar_sucursal(request):
+    #print(request.GET.get('next'))
     empresas= []
     empresa = {}
     sucursales = UsuarioSucursal.objects.filter(usuario=request.user)
@@ -13641,7 +13644,7 @@ def planilla_generar_calculos(request):
                                         tigi += item1.valor
                                     else:
                                         tii += item1.valor
-                                    GuardarDetalleDeduccionIngreso(1, item1.ingreso.ingreso_i, item1.value, item, o_planilla, suc.empresa, suc, request.user)
+                                    GuardarDetalleDeduccionIngreso(1, item1.ingreso.ingreso_i, item1.value, item, o_planilla, suc.empresa, suc, request.user, item1.ingreso.tipo_ingreso)
 
                                 #Ingreso general
                                 ingresos_generales = IngresoGeneralDetalle.objects.filter(nomina=o_planilla, tipo_pago=o_planilla.frecuencia_pago, tipo_contrato=item.tipo_contrato, fecha_valida__gte=o_planilla.fecha_inicio, fecha_valida__lte=o_planilla.fecha_fin, active=True)
@@ -13650,7 +13653,7 @@ def planilla_generar_calculos(request):
                                         tigg += item2.valor
                                     else:
                                         tig += item2.valor
-                                    GuardarDetalleDeduccionIngreso(1, item2.ingreso.ingreso_g, item2.value, item, o_planilla, suc.empresa, suc, request.user)
+                                    GuardarDetalleDeduccionIngreso(1, item2.ingreso.ingreso_g, item2.value, item, o_planilla, suc.empresa, suc, request.user, item2.ingreso.tipo_ingreso)
 
                                 #Ingreso Individual Planilla
                                 ingresos_planilla = IngresoIndividualPlanilla.objects.filter(empleado=item, planilla=o_planilla, active=True)
@@ -13659,7 +13662,7 @@ def planilla_generar_calculos(request):
                                         tigp += item3.valor
                                     else:
                                         tip = tot_pla_ing + item3.valor
-                                    GuardarDetalleDeduccionIngreso(1, item3.ingreso.ingreso_i, item3.value, item, o_planilla, suc.empresa, suc, request.user)
+                                    GuardarDetalleDeduccionIngreso(1, item3.ingreso.ingreso_i, item3.value, item, o_planilla, suc.empresa, suc, request.user, item3.ingreso.tipo_ingreso)
 
                                 ausencias_con_pago = Ausentismo.objects.filter(Q(desde__range=(o_planilla.fecha_inicio, o_planilla.fecha_fin)) | Q(hasta__range=(o_planilla.fecha_inicio, o_planilla.fecha_fin)) | Q(desde__lt=o_planilla.fecha_inicio, hasta__gt=o_planilla.fecha_fin), empleado=item, sucursal_reg=suc, motivo__pagado=True, active=True)
                                 if ausencias_con_pago.count() > 0:
@@ -13855,7 +13858,7 @@ def planilla_generar_calculos(request):
                                         if float(item9_1["orden"]) == float(item9.orden):
                                             total_ingreso = total_ingreso - float(item9_1["valor"])
                                             total_egreso = total_egreso + float(item9_1["valor"])
-                                            GuardarDetalleDeduccionIngreso(2, item9_1["nombre"], item9_1["valor"], item, o_planilla, suc.empresa, suc, request.user)
+                                            GuardarDetalleDeduccionIngreso(2, item9_1["nombre"], item9_1["valor"], item, o_planilla, suc.empresa, suc, request.user, item9)
                                 
                                 # total_egreso = float(total_egreso) + float(tot_ind_ded)
                                 # total_ingreso = float(total_ingreso) - float(tot_ind_ded)
@@ -13926,12 +13929,17 @@ def planilla_generar_calculos(request):
         }
         return JsonResponse(data)
 
-def GuardarDetalleDeduccionIngreso(tipo, mensaje, valor, empleado, planilla, empresa, sucursal, usuario):
+def GuardarDetalleDeduccionIngreso(tipo, mensaje, valor, empleado, planilla, empresa, sucursal, usuario, tipo_registro):
+    tipo_reg = None
+    if tipo_registro:
+        tipo_reg = tipo_registro
+
     if tipo == 1:
         o_ingreso = PlanillaDetalleIngresos(
             empleado = empleado,
             planilla = planilla,
             ingreso = mensaje,
+            tipo_ingreso = tipo_reg,
             valor = valor,
             empresa_reg = empresa,
             sucursal_reg = sucursal,
@@ -13943,6 +13951,7 @@ def GuardarDetalleDeduccionIngreso(tipo, mensaje, valor, empleado, planilla, emp
             empleado = empleado,
             planilla = planilla,
             deduccion = mensaje,
+            tipo_deduccion = tipo_reg,
             valor = valor,
             empresa_reg = empresa,
             sucursal_reg = sucursal,
@@ -14172,6 +14181,250 @@ def planilla_calculos_empleado(request):
         data = {
             'error': True,
             'mensaje': str(ex),
+        }
+    return JsonResponse(data)
+
+def planilla_cerrar(request):
+    data = {}
+    try:
+        if request.is_ajax():
+            if request.method == 'POST':
+                registro_id = request.POST["id"]
+                if len(registro_id) > 0:
+                    registro_id = int(registro_id)
+                    if registro_id > 0:
+                        o_planilla = Planilla.objects.get(pk=registro_id)
+                        if o_planilla:
+                            Planilla.objects.filter(pk=registro_id).update(cerrada=True)
+                            data = {
+                                'error': False,
+                                'mensaje': 'Se ha cerrado la planilla',
+                            }
+                            return JsonResponse(data)
+                        else:
+                            data = {
+                                'error': True,
+                                'mensaje': 'No existe registro',
+                            }
+                            return JsonResponse(data)
+                    else:
+                        data = {
+                            'error': True,
+                            'mensaje': 'No se ha pasado un valor válido como parámetro',
+                        }
+                        return JsonResponse(data)
+                else:
+                    data = {
+                        'error': True,
+                        'mensaje': 'El método no está permitido',
+                    }
+                    return JsonResponse(data)
+            else:
+                data = {
+                    'error': True,
+                    'mensaje': 'El método no está permitido',
+                }
+                return JsonResponse(data)
+        else:
+            data = {
+                'error': True,
+                'mensaje': 'El tipo de petición http no es válida',
+            }
+            return JsonResponse(data)
+    except Exception as ex:
+        print(ex)
+        data = {
+            'error': True,
+            'mensaje': str(ex),
+        }
+        return JsonResponse(data)
+
+@login_required(login_url='/form/iniciar-sesion/')
+def planilla_reporte_general(request):
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    planillas = Planilla.objects.filter(sucursal_reg=suc, active=True, cerrada=True)
+    departamentos = Department.objects.filter(empresa_reg=suc.empresa, active=True)
+    tipos_contrato = TipoContrato.objects.filter(empresa_reg=suc.empresa, active=True)
+    tipos_nomina = TipoNomina.objects.filter(empresa_reg=suc.empresa, active=True)
+    frecuencia_pagos = SalaryUnit.objects.filter(empresa_reg=suc.empresa, active=True)
+    return render(request, 'planilla-reporte-general.html', {'planillas': planillas, 'departamentos':departamentos, 'tipos_contratos': tipos_contrato,'tipos_planillas': tipos_nomina, 'frecuencias_pagos': frecuencia_pagos})
+
+def generar_reporte_general(request):
+    registro_id = None
+    o_tipo_contrato = None
+    o_tipo_planilla = None
+    o_departamento = None
+    o_frecuencia_pago = None
+    desde = None
+    hasta = None
+    q_list = []
+    columnas = []
+    datos_planilla = []
+    mensaje = 'No hay datos'
+    data = {'error':False, 'mensaje':mensaje}
+    if request.is_ajax():
+        verificaSucursal(request)
+
+        departamento_id = request.GET.get('departamento_id')
+        tipo_contrato_id = request.GET.get('tipo_contrato_id')
+        tipo_planilla_id = request.GET.get('tipo_planilla_id')
+        frecuencia_pago_id = request.GET.get('frecuencia_pago_id')
+        desde = request.GET.get('desde')
+        hasta = request.GET.get('hasta')
+        suc = Branch.objects.get(pk=request.session["sucursal"])
+        
+        if len(desde) == 0:
+            data = {
+                'error': True,
+                'mensaje': 'Seleccione un rango de fecha válido'
+            }
+            return JsonResponse(data)
+
+        if len(hasta) == 0:
+            data = {
+                'error': True,
+                'mensaje': 'Seleccione un rango de fecha válido'
+            }
+            return JsonResponse(data)
+
+        
+        desde = datetime.strptime(desde, "%d/%m/%Y").date()
+        hasta = datetime.strptime(hasta, "%d/%m/%Y").date()
+        q_list.append(Q(planilla__fecha_inicio__gte=desde, planilla__fecha_fin__lte=hasta))
+        if int(departamento_id) > 0:
+            tot_reg = Department.objects.filter(pk=departamento_id).count()
+            if tot_reg > 0:
+                o_departamento = Department.objects.get(pk=departamento_id)
+                if o_departamento:
+                    q_list.append(Q(empleado__dept=o_departamento))
+
+        if int(tipo_contrato_id) > 0:
+            tot_reg = TipoContrato.objects.filter(pk=tipo_contrato_id).count()
+            if tot_reg > 0:
+                o_tipo_contrato = TipoContrato.objects.filter(pk=tipo_contrato_id)
+                if o_tipo_contrato:
+                    q_list.append(Q(empleado__tipo_contrato=o_tipo_contrato))
+
+        if int(tipo_planilla_id) > 0:
+            tot_reg = TipoNomina.objects.filter(pk=tipo_planilla_id).count()
+            if tot_reg > 0:
+                o_tipo_planilla = TipoNomina.objects.get(pk=tipo_planilla_id)
+                if o_tipo_planilla:
+                    q_list.append(Q(empleado__tipo_nomina=o_tipo_planilla))
+
+        if int(frecuencia_pago_id) > 0:
+            tot_reg = SalaryUnit.objects.filter(pk=frecuencia_pago_id).count()
+            if tot_reg > 0:
+                o_frecuencia_pago = SalaryUnit.objects.get(pk=frecuencia_pago_id)
+                if o_frecuencia_pago:
+                    q_list.append(Q(empleado__salaryUnits=o_frecuencia_pago))    
+        
+        if len(q_list) == 0:
+            data = {
+                'error': False,
+                'mensaje': 'No hay datos'
+            }
+            return JsonResponse(data)
+        else:
+            val_list_ing = PlanillaDetalleIngresos.objects.filter(functools.reduce(operator.and_, q_list)).values_list('empleado__id', flat=True).distinct()
+            val_list_ded = PlanillaDetalleDeducciones.objects.filter(functools.reduce(operator.and_, q_list)).values_list('empleado__id', flat=True).distinct()
+            empleados = Employee.objects.filter(pk__in=val_list_ing)
+            grupos_ing = ClasificaPercepcion.objects.filter(empresa_reg=suc.empresa, active=True)
+            grupos_ded = ClasificaDeduccion.objects.filter(empresa_reg=suc.empresa, active=True)
+
+            columnas = [{'title':'Codigo Empleado'}, {'title': 'Nombre'}, {'title':'Planilla'}, {'title': 'Salario'}]
+            for empleado in empleados:
+                total_ingreso = 0
+                total_deducciones = 0
+
+                o_pla_ing = PlanillaDetalleIngresos.objects.filter(functools.reduce(operator.and_, q_list))
+                o_pla_ded = PlanillaDetalleDeducciones.objects.filter(functools.reduce(operator.and_, q_list))
+                datos_empleado = {}
+                datos_empleado2 = []
+                Nombre = ""
+                Nombre = empleado.firstName
+                if empleado.middleName:
+                    Nombre = Nombre + " " + empleado.middleName
+                Nombre = Nombre + " " + empleado.lastName
+                datos_empleado["Empleado_Id"] = empleado.pk
+
+                datos_empleado["Nombre"] = Nombre
+                datos_empleado['Planilla'] = None
+                datos_empleado['Total Ingreso'] = 0
+
+                for detalle in o_pla_ing:
+                    bandera = False
+                    if empleado == detalle.empleado and detalle.ingreso.count("Sueldo empleado") > 0 and not detalle.tipo_ingreso:
+                        datos_empleado['Sueldo'] = detalle.valor
+                        total_ingreso = detalle.valor
+                        bandera = True
+                    else:
+                        datos_empleado['Sueldo'] = 0
+
+                    if not datos_empleado['Planilla']:
+                        datos_empleado['Planilla'] = {'id': detalle.planilla.pk, 'fecha': detalle.planilla.fecha_pago, 'descripcion': detalle.planilla.descripcion}
+                    if bandera:
+                        break
+                
+                for grupo in grupos_ing:
+                    if not grupo.grupo in columnas:
+                        columnas.append({'title': grupo.grupo})
+                    datos_empleado[grupo.grupo] = 0
+                    for detalle in o_pla_ing:
+                        # if empleado == detalle.empleado and detalle.ingreso.count("Sueldo empleado") > 0 and not detalle.tipo_ingreso:
+                        #     datos_empleado['Sueldo'] = detalle.valor
+                        #     total_ingreso = detalle.valor
+                        #     datos_empleado['Planilla'] = {'id': detalle.planilla.pk, 'fecha': detalle.planilla.fecha_pago, 'descripcion': detalle.planilla.descripcion}
+                        # else:
+                        #     datos_empleado['Sueldo'] = 0
+                        #     datos_empleado['Planilla'] = {'id': detalle.planilla.pk, 'fecha': detalle.planilla.fecha_pago, 'descripcion': detalle.planilla.descripcion}
+                            
+                        if empleado == detalle.empleado and grupo.tipo_ingreso == detalle.tipo_ingreso:
+                            total_ingreso += detalle.valor
+                            datos_empleado[grupo.grupo] = datos_empleado[grupo.grupo] + detalle.valor
+
+                    datos_empleado['Total Ingreso'] =  total_ingreso
+                columnas.append({'title': 'Total Ingreso'})
+
+                datos_empleado['Total Deducciones'] = 0
+                for grupo in grupos_ded:
+                    if not grupo.grupo in columnas:
+                        columnas.append({'title': grupo.grupo})
+                    datos_empleado[grupo.grupo] = 0
+                    for detalle in o_pla_ded:
+                        if empleado == detalle.empleado and grupo.tipo_deduccion == detalle.tipo_deduccion:
+                            total_deducciones += detalle.valor
+                            datos_empleado[grupo.grupo] = datos_empleado[grupo.grupo] + detalle.valor
+
+                    datos_empleado["Total Deducciones"] = total_deducciones
+            datos_planilla.append(datos_empleado)
+            columnas.append({'title': 'Total Deducciones'})
+            print(columnas)
+            print(datos_planilla)
+            data = {
+                'error':False,
+                'mensaje': 'Se han encontrado datos.',
+                'datos': datos_planilla,
+                'columnas': columnas
+            }
+            return JsonResponse(data)
+            
+
+        if len(departamento_id) > 0:
+            data = {
+                'error': False,
+                'mensaje': '¡Exito!'
+            }
+        else:
+            data = {
+                'error': True,
+                'mensaje': 'No se pasó un valor válido como parámetro.'
+            }
+        return JsonResponse(data)
+    else:
+        data = {
+            'error': True,
+            'mensaje': 'Tipo de petición no válida'
         }
     return JsonResponse(data)
 

@@ -3304,9 +3304,17 @@ $('#ingreso_individual_planilla #btnCancelar').on('click', function(e) {
     var txtPlFechaFin = $('#frmPlanilla input[name="fecha_fin"]');
     var txtPlFechaPago = $('#frmPlanilla input[name="fecha_pago"]');
     var txtPlDescripcion = $('#frmPlanilla textarea[name="descripcion"]');
+    var btnBuscarPlanilla = $('#planilla-reporte-general #btnBuscar');
+    var cboDepartamentoRep = $('#planilla-reporte-general #cboDepartamento');
+    var cboTipoContrato = $('#planilla-reporte-general #cboTipoContrato');
+    var cboTipoPlanilla = $('#planilla-reporte-general #cboTipoPlanilla');
+    var cboFrecuenciaPago = $('#planilla-reporte-general #cboFrecuenciaPago');
+    var cboDesde = $('#planilla-reporte-general #txtDesde');
+    var cboHasta = $('#planilla-reporte-general #txtHasta');
 
     var btnGenerar = $('.planilla-generar #btnGenerar');
     var btnGenerar2 = $('.planilla-generar #btnGenerar2');
+    var columnas = [];
 
     btnPlGuardar.on('click', function(e) {
         e.preventDefault();
@@ -3494,6 +3502,43 @@ $('#ingreso_individual_planilla #btnCancelar').on('click', function(e) {
             dataType: 'html'
         }).done(function () {
             
+        });
+    }
+
+    btnBuscarPlanilla.on('click', function(e) {
+        e.preventDefault();
+        url = '/generar/reporte-general/planilla/';
+        metodo = 'GET';
+        data = {'departamento_id':cboDepartamentoRep.val(), 
+                'tipo_contrato_id': cboTipoContrato.val(), 
+                'tipo_planilla_id': cboTipoPlanilla.val(), 
+                'frecuencia_pago_id': cboFrecuenciaPago.val(),
+                'desde': cboDesde.val(),
+                'hasta': cboHasta.val(), 
+            };
+
+        $.ajax({
+            type: metodo,
+            url: url,
+            data: data,
+            success: function (data) {
+                if (data.error != true) {
+                    mostrarReportePlanilla(data.columnas);
+                    console.log(data.columnas);
+                };
+            },
+            error: function (data) {
+                console.log(mensaje);
+            },
+            dataType: 'json'
+        }).done(function() {
+            $('div.block5').unblock();
+        });
+    });
+
+    function mostrarReportePlanilla(columns) {
+        $('#planilla-resultado').DataTable({
+            "columns": columns,
         });
     }
 //#endregion

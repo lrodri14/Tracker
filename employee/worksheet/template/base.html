@@ -376,11 +376,10 @@
                                     {% if perms.worksheet.see_deduccionindividualplanilla %}
                                     <li><a href="{% url 'deduccion_individual_planilla_listado' %}" id="aDIP" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Deducción única</span></a></li>
                                     {% endif %}
-                                </ul>
-                                <ul class="nav nav-third-level">
                                     {% if perms.worksheet.see_planilla %}
                                     <li><a href="{% url 'planilla_listado' %}" id="aPlanilla" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Planilla</span></a></li>
                                     {% endif %}
+                                    <li><a href="{% url 'planilla_reporte_general' %}" id="aReportes" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Reportes</span></a></li>
                                 </ul>
                             </li>
                         </ul>

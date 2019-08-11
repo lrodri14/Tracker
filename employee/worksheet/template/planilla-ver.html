@@ -3,7 +3,8 @@
 Ver registros de Planilla
 {% endblock titulo %}
 {% block contenido %}
-<div class="row">
+{% csrf_token %}
+<div id="frmVerPlanilla" class="row">
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -33,18 +34,24 @@ Ver registros de Planilla
                                 <br>
                                 <p class="text-muted">{{planilla.fecha_pago}}</p>
                             </div>
+                            <div class="col-md-3 col-xs-6"> <strong>Estado</strong>
+                                <br>
+                                <p class="text-muted"><span {% if planilla.cerrada %}class="label label-danger estado-planilla"{% else %}class="label label-success estado-planilla"{% endif %} >{% if planilla.cerrada %}CERRADA{% else %}ABIERTA{% endif %}</span></p>
+                            </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-12 text-right">
-                            <button class="btn btn-warning">Cerrar Planila</button>
+                            {% if planilla.cerrada == False %}
+                            <button id="btnCerrarPlanilla" class="btn btn-warning">Cerrar Planilla</button>
+                            {% endif %}
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-12">
                             <div class="table-responsive">
                                 <table id="detalle_planilla" class="table">
-                                    <thead>
+                                    <thead class="planilla-encabezado">
                                         <tr>
                                             <th>Empleado</th>
                                             <th class="text-right">Ingresos</th>
@@ -53,7 +60,7 @@ Ver registros de Planilla
                                     </thead>
                                     <tbody>
                                         {% for item in detalle %}
-                                        <tr data-toggle="collapse" data-target="#vdet{{item.id}}" class="detalle_item accordion-toggle">
+                                        <tr data-toggle="collapse" data-target="#vdet{{item.id}}" class="planilla-fila detalle_item accordion-toggle">
                                             <td>{{item.empleado.firstName}} {% if item.empleado.middleName %}{{item.empleado.middleName}}{% endif %} {{item.empleado.lastName}}</td>
                                             <td class="text-right">{{item.total_ingresos}}</td>
                                             <td class="text-right">{{item.total_deducciones}}</td>
@@ -63,27 +70,27 @@ Ver registros de Planilla
                                                 <div class="accordian-body collapse" id="vdet{{item.id}}">
                                                     <div class="table-responsive col-md-6">
                                                         <table class="table">
-                                                            <thead>
+                                                            <thead class="detalle-encabezado">
                                                                 <th>Descripción</th>
-                                                                <th><span class="text-right">Ingreso</span></th>
-                                                                <th><span class="text-right">Deducción</span></th>
+                                                                <th class="text-right"><span >Ingreso</span></th>
+                                                                <th class="text-right"><span >Deducción</span></th>
                                                             </thead>
                                                             <tbody class="body-item-detalle">
                                                                 {% for item1 in ingresos %}
                                                                     {% if item.empleado == item1.empleado %}
                                                                     <tr>
                                                                         <td>{{item1.ingreso}}</td>
-                                                                        <td><span class="text-success text-right"><strong>{{item1.valor}}</strong></span></td>
+                                                                        <td class="text-right"><span class="text-success text-right"><strong>{{item1.valor}}</strong></span></td>
                                                                         <td></td>
                                                                     </tr>
                                                                     {% endif %}
                                                                 {% endfor %}
                                                                 {% for item2 in deducciones %}
                                                                     {% if item.empleado == item2.empleado %}
-                                                                    <tr>
+                                                                    <tr class="planilla-segundafila">
                                                                         <td>{{item2.deduccion}}</td>
                                                                         <td></td>
-                                                                        <td><span class="text-danger text-right"><strong>{{item2.valor}}</strong></span></td>
+                                                                        <td class="text-right"><span class="text-danger text-right"><strong>{{item2.valor}}</strong></span></td>
                                                                     </tr>
                                                                     {% endif %}
                                                                 {% endfor %}
@@ -112,5 +119,44 @@ Ver registros de Planilla
         $('#aPlanilla').addClass('active');
         $('#aAcciones').parents('li').addClass('active');
         $('#accionesNomina').parents('li').addClass('active');
+
+        var token = $('input[name="csrfmiddlewaretoken"]');
+        var btnCerrarPlanilla = $('#btnCerrarPlanilla');
+
+        btnCerrarPlanilla.on('click', function(e) {
+            $('body').block({
+                message: '<h4><img src="/../../static/plugins/images/busy.gif" /> Espere un momento...</h4>',
+                css: {
+                    border: '1px solid #fff',
+                }
+            });
+            url = '/cerrar/planilla/';
+            metodo = 'POST';
+            data = {'id':{{planilla.pk}}, 'csrfmiddlewaretoken': token.val()};
+
+            $.ajax({
+                type: metodo,
+                url: url,
+                data: data,
+                success: function (data) {
+                    
+                },
+                error: function (data) {
+                    console.log(data);
+                },
+                dataType: 'json'
+            }).done(function(data) {
+                $('body').unblock();
+                if (data.error != true) {
+                    alert(data.mensaje);
+                    btnCerrarPlanilla.addClass('hidden');
+                    $('.estado-planilla').removeClass('label-success');
+                    $('.estado-planilla').addClass('label-danger');
+                    $('.estado-planilla').text('CERRADA');
+                }else{
+                    alert(data.mensaje);
+                };
+            });
+        });
     </script>
 {% endblock scripts %}
