@@ -412,6 +412,9 @@ urlpatterns = [
     url(r'^ver/planilla/(?P<id>\w+)/$', views.planilla_ver, name="planilla_ver"),
     url(r'^reporte/planilla/$', views.planilla_reporte_general, name="planilla_reporte_general"),
 
+    # ----------------->>>REPORTES<<<-------------------#
+    url(r'reporte_personas_pdf/$', views.ReportePersonaPDF.as_view(), name="reporte_personas_pdf"),
+
     #------------------>>>AJAX<<<-------------------
 
     #url(r'^seguridad/', include('django.contrib.auth.urls')),

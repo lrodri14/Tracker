@@ -67,7 +67,7 @@
                                         <a href="#deducciones" data-toggle="tab" aria-expanded="false"> <span class="visible-xs"><i class="fa fa-cog"></i></span> <span class="hidden-xs">Deducciones</span> </a>
                                     </li>
                                     <li class="tab">
-                                        <a href="#ajustes" data-toggle="tab" aria-expanded="false"> <span class="visible-xs"><i class="fa fa-cog"></i></span> <span class="hidden-xs">Ajustes</span></a>
+                                        <a href="#aimpresion" data-toggle="tab" aria-expanded="false"> <span class="visible-xs"><i class="fa fa-cog"></i></span> <span class="hidden-xs">Gestión</span></a>
                                     </li>
                                     <li class="tab">
                                         <a href="#settings" data-toggle="tab" aria-expanded="false"> <span class="visible-xs"><i class="fa fa-cog"></i></span> <span class="hidden-xs">Editar</span> </a>
@@ -454,8 +454,22 @@
                                         <input type="hidden" name="empleado_id" text="{{dato.pk}}" />
                                         <div id="detalle-deducciones"></div>
                                     </div>
-                                    <div class="tab-pane" id="ajustes">
-                                    <h1>Ajustes del empleado</h1>
+                                    <div class="tab-pane" id="aimpresion">
+                                        <h3>Voucher de Pago | Impresión / Envío</h3>
+                                        <div class="white-box">
+                                            <div class="form-group">
+                                                <label for="" class="label-control">Planilla:</label>
+                                                <select name="cboPlanillaBusqueda" id="cboPlanillaBusqueda" class="form-control">
+                                                <option value="0">Seleccionar...</option>
+                                                {% for planilla in planillas %}
+                                                    <option value="{{planilla.planilla__id}}">{{planilla.planilla__descripcion}}</option>
+                                                {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <a href="{% url 'reporte_personas_pdf' %}" class="btn btn-primary">Reporte</a>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="tab-pane" id="settings">
                                         <form name="frmImagen" id="frmImagenEmp" class="form-horizontal form-material">

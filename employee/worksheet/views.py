@@ -16,7 +16,11 @@ from decimal import *
 from worksheet.forms import *
 from worksheet.models import *
 from datetime import date, datetime
+from django.conf import settings
 import functools
+from io import BytesIO
+from reportlab.pdfgen import canvas
+from django.views.generic import View
 import json
 import locale
 import operator
@@ -191,7 +195,8 @@ def empleado_perfil(request, id):
     else:
         rd = rdelta.relativedelta(dato.termDate, dato.startDate)
     antiguedad = "{0.years} años, {0.months} meses y {0.days} días".format(rd)
-    return render(request, 'perfil-empleado.html', {'dato':dato, 'imagen': imagen, 'periodos':periodos, 'deducciones_legales': deducciones_legales, 'antiguedad':antiguedad})
+    planillas = PlanillaDetalle.objects.select_related('planilla').filter(empleado=dato, planilla__cerrada=True).values('planilla__id', 'planilla__descripcion')
+    return render(request, 'perfil-empleado.html', {'dato':dato, 'imagen': imagen, 'periodos':periodos, 'deducciones_legales': deducciones_legales, 'antiguedad':antiguedad, 'planillas': planillas})
 
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.add_grupocorporativo', raise_exception=True)
@@ -13301,8 +13306,8 @@ def planilla_ver(request, id):
             'total_salario': locale.format("%.2f", total_salario, grouping=True),
         }
         datos.append(objeto)
-        suma_total_ingresos += float(item.total_ingresos)
-        suma_total_deducciones += float(item.total_deducciones)
+        # suma_total_ingresos += float(item.total_ingresos)
+        # suma_total_deducciones += float(item.total_deducciones)
     ingresos = PlanillaDetalleIngresos.objects.filter(planilla__pk=planilla.id)
 
     for item1 in ingresos:
@@ -13314,6 +13319,7 @@ def planilla_ver(request, id):
             'valor': locale.format("%.2f", item1.valor, grouping=True),
         }
         datos2.append(objeto1)
+        suma_total_ingresos += float(item1.valor)
 
     deducciones = PlanillaDetalleDeducciones.objects.filter(planilla__pk=planilla.id)
     for item2 in deducciones:
@@ -13325,6 +13331,7 @@ def planilla_ver(request, id):
             'valor': locale.format("%.2f", item2.valor, grouping=True),
         }
         datos3.append(objeto2)
+        suma_total_deducciones += float(item2.valor)
 
     suma_total_ingresos = locale.format("%.2f", suma_total_ingresos, grouping=True)
     suma_total_deducciones = locale.format("%.2f", suma_total_deducciones, grouping=True)
@@ -13644,7 +13651,7 @@ def planilla_generar_calculos(request):
                                         tigi += item1.valor
                                     else:
                                         tii += item1.valor
-                                    GuardarDetalleDeduccionIngreso(1, item1.ingreso.ingreso_i, item1.value, item, o_planilla, suc.empresa, suc, request.user, item1.ingreso.tipo_ingreso)
+                                    GuardarDetalleDeduccionIngreso(1, item1.ingreso.ingreso_i, item1.valor, item, o_planilla, suc.empresa, suc, request.user, item1.ingreso.tipo_ingreso)
 
                                 #Ingreso general
                                 ingresos_generales = IngresoGeneralDetalle.objects.filter(nomina=o_planilla, tipo_pago=o_planilla.frecuencia_pago, tipo_contrato=item.tipo_contrato, fecha_valida__gte=o_planilla.fecha_inicio, fecha_valida__lte=o_planilla.fecha_fin, active=True)
@@ -13716,7 +13723,7 @@ def planilla_generar_calculos(request):
                                                 total_ingreso = total_ingreso - tot_ajuste
                                                 total_egreso = total_egreso + tot_ajuste_lempiras
                                                 comentario = "Su salario ha disminuido por concepto de ausencia médica que cubre el IHSS"
-                                                GuardarDetalleDeduccionIngreso(2, "Deducción de salario por incapacidad cubierta por IHSS", tot_ajuste, item, o_planilla, suc.empresa, suc, request.user)
+                                                GuardarDetalleDeduccionIngreso(2, "Deducción de salario por incapacidad cubierta por IHSS", tot_ajuste, item, o_planilla, suc.empresa, suc, request.user, None)
 
 
                                 dedaplicada = EmpleadoDeducciones.objects.filter(empleado=item, empresa_reg=suc.empresa, deduccion='IHSS', active=True)
@@ -13758,7 +13765,7 @@ def planilla_generar_calculos(request):
 
                                 dedaplicada = EmpleadoDeducciones.objects.filter(empleado=item, empresa_reg=suc.empresa, deduccion='ISR', active=True)
                                 if dedaplicada.count() > 0:
-                                    sbb = salario_mensual + tigi + tigg + tigp
+                                    sbb = float(salario_mensual) + float(tigi) + float(tigg) + float(tigp)
                                     isr_encabezados = EncabezadoImpuestoSobreRenta.objects.filter(empresa_reg=suc.empresa, active=True).order_by('-id')
                                     if isr_encabezados.count() > 0:
                                         o_encabezadoisr = isr_encabezados[0]
@@ -13809,7 +13816,7 @@ def planilla_generar_calculos(request):
 
                                 dedaplicada = EmpleadoDeducciones.objects.filter(empleado=item, empresa_reg=suc.empresa, deduccion='IMV', active=True)
                                 if dedaplicada.count() > 0:
-                                    sbb = salario_mensual + tigi + tigg + tigp
+                                    sbb = float(salario_mensual) + float(tigi) + float(tigg) + float(tigp)
                                     sbb = float(Decimal(sbb).quantize(TWOPLACES))
                                     tipos_vec = ImpuestoVecinal.objects.filter(empresa_reg=suc.empresa, desde__lte=sbb, hasta__gte=sbb, active=True).order_by('-id')
                                     if tipos_vec.count() > 0:
@@ -13856,6 +13863,7 @@ def planilla_generar_calculos(request):
                                 for item9 in lista_deducciones_tipos:
                                     for item9_1 in tipos_deducciones:
                                         if float(item9_1["orden"]) == float(item9.orden):
+                                            print(item9_1["valor"])
                                             total_ingreso = total_ingreso - float(item9_1["valor"])
                                             total_egreso = total_egreso + float(item9_1["valor"])
                                             GuardarDetalleDeduccionIngreso(2, item9_1["nombre"], item9_1["valor"], item, o_planilla, suc.empresa, suc, request.user, item9)
@@ -14250,6 +14258,7 @@ def planilla_reporte_general(request):
     return render(request, 'planilla-reporte-general.html', {'planillas': planillas, 'departamentos':departamentos, 'tipos_contratos': tipos_contrato,'tipos_planillas': tipos_nomina, 'frecuencias_pagos': frecuencia_pagos})
 
 def generar_reporte_general(request):
+    verificaSucursal(request)
     registro_id = None
     o_tipo_contrato = None
     o_tipo_planilla = None
@@ -14259,174 +14268,191 @@ def generar_reporte_general(request):
     hasta = None
     q_list = []
     columnas = []
+    detalle = []
+    detalles = []
     datos_planilla = []
     mensaje = 'No hay datos'
     data = {'error':False, 'mensaje':mensaje}
-    if request.is_ajax():
-        verificaSucursal(request)
+    verificaSucursal(request)
 
-        departamento_id = request.GET.get('departamento_id')
-        tipo_contrato_id = request.GET.get('tipo_contrato_id')
-        tipo_planilla_id = request.GET.get('tipo_planilla_id')
-        frecuencia_pago_id = request.GET.get('frecuencia_pago_id')
-        desde = request.GET.get('desde')
-        hasta = request.GET.get('hasta')
-        suc = Branch.objects.get(pk=request.session["sucursal"])
-        
-        if len(desde) == 0:
-            data = {
-                'error': True,
-                'mensaje': 'Seleccione un rango de fecha válido'
-            }
-            return JsonResponse(data)
+    departamento_id = request.GET.get('cboDepartamento')
+    tipo_contrato_id = request.GET.get('cboTipoContrato')
+    tipo_planilla_id = request.GET.get('cboTipoPlanilla')
+    frecuencia_pago_id = request.GET.get('cboFrecuenciaPago')
+    desde = request.GET.get('txtDesde')
+    hasta = request.GET.get('txtHasta')
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    
+    if len(desde) == 0:
+        data = {
+            'error': True,
+            'mensaje': 'Seleccione un rango de fecha válido'
+        }
+        return render(request, 'reportes/reporte-planilla-general.html', data)
 
-        if len(hasta) == 0:
-            data = {
-                'error': True,
-                'mensaje': 'Seleccione un rango de fecha válido'
-            }
-            return JsonResponse(data)
+    if len(hasta) == 0:
+        data = {
+            'error': True,
+            'mensaje': 'Seleccione un rango de fecha válido'
+        }
+        return render(request, 'reportes/reporte-planilla-general.html', data)
 
-        
-        desde = datetime.strptime(desde, "%d/%m/%Y").date()
-        hasta = datetime.strptime(hasta, "%d/%m/%Y").date()
-        q_list.append(Q(planilla__fecha_inicio__gte=desde, planilla__fecha_fin__lte=hasta))
-        if int(departamento_id) > 0:
-            tot_reg = Department.objects.filter(pk=departamento_id).count()
-            if tot_reg > 0:
-                o_departamento = Department.objects.get(pk=departamento_id)
-                if o_departamento:
-                    q_list.append(Q(empleado__dept=o_departamento))
+    
+    desde = datetime.strptime(desde, "%d/%m/%Y").date()
+    hasta = datetime.strptime(hasta, "%d/%m/%Y").date()
+    q_list.append(Q(planilla__cerrada=True))
+    q_list.append(Q(planilla__fecha_inicio__gte=desde, planilla__fecha_fin__lte=hasta))
+    if int(departamento_id) > 0:
+        tot_reg = Department.objects.filter(pk=departamento_id).count()
+        if tot_reg > 0:
+            o_departamento = Department.objects.get(pk=departamento_id)
+            if o_departamento:
+                q_list.append(Q(empleado__dept=o_departamento))
 
-        if int(tipo_contrato_id) > 0:
-            tot_reg = TipoContrato.objects.filter(pk=tipo_contrato_id).count()
-            if tot_reg > 0:
-                o_tipo_contrato = TipoContrato.objects.filter(pk=tipo_contrato_id)
-                if o_tipo_contrato:
-                    q_list.append(Q(empleado__tipo_contrato=o_tipo_contrato))
+    if int(tipo_contrato_id) > 0:
+        tot_reg = TipoContrato.objects.filter(pk=tipo_contrato_id).count()
+        if tot_reg > 0:
+            o_tipo_contrato = TipoContrato.objects.filter(pk=tipo_contrato_id)
+            if o_tipo_contrato:
+                q_list.append(Q(empleado__tipo_contrato=o_tipo_contrato))
 
-        if int(tipo_planilla_id) > 0:
-            tot_reg = TipoNomina.objects.filter(pk=tipo_planilla_id).count()
-            if tot_reg > 0:
-                o_tipo_planilla = TipoNomina.objects.get(pk=tipo_planilla_id)
-                if o_tipo_planilla:
-                    q_list.append(Q(empleado__tipo_nomina=o_tipo_planilla))
+    if int(tipo_planilla_id) > 0:
+        tot_reg = TipoNomina.objects.filter(pk=tipo_planilla_id).count()
+        if tot_reg > 0:
+            o_tipo_planilla = TipoNomina.objects.get(pk=tipo_planilla_id)
+            if o_tipo_planilla:
+                q_list.append(Q(empleado__tipo_nomina=o_tipo_planilla))
 
-        if int(frecuencia_pago_id) > 0:
-            tot_reg = SalaryUnit.objects.filter(pk=frecuencia_pago_id).count()
-            if tot_reg > 0:
-                o_frecuencia_pago = SalaryUnit.objects.get(pk=frecuencia_pago_id)
-                if o_frecuencia_pago:
-                    q_list.append(Q(empleado__salaryUnits=o_frecuencia_pago))    
-        
-        if len(q_list) == 0:
-            data = {
-                'error': False,
-                'mensaje': 'No hay datos'
-            }
-            return JsonResponse(data)
-        else:
-            val_list_ing = PlanillaDetalleIngresos.objects.filter(functools.reduce(operator.and_, q_list)).values_list('empleado__id', flat=True).distinct()
-            val_list_ded = PlanillaDetalleDeducciones.objects.filter(functools.reduce(operator.and_, q_list)).values_list('empleado__id', flat=True).distinct()
-            empleados = Employee.objects.filter(pk__in=val_list_ing)
-            grupos_ing = ClasificaPercepcion.objects.filter(empresa_reg=suc.empresa, active=True)
-            grupos_ded = ClasificaDeduccion.objects.filter(empresa_reg=suc.empresa, active=True)
+    if int(frecuencia_pago_id) > 0:
+        tot_reg = SalaryUnit.objects.filter(pk=frecuencia_pago_id).count()
+        if tot_reg > 0:
+            o_frecuencia_pago = SalaryUnit.objects.get(pk=frecuencia_pago_id)
+            if o_frecuencia_pago:
+                q_list.append(Q(empleado__salaryUnits=o_frecuencia_pago))    
+    
+    if len(q_list) == 0:
+        data = {
+            'error': True,
+            'mensaje': 'No hay datos'
+        }
+        return JsonResponse(data)
+    else:
+        print(q_list)
+        val_list_ing = PlanillaDetalleIngresos.objects.filter(functools.reduce(operator.and_, q_list)).values_list('empleado__id', flat=True).distinct()
+        val_list_ded = PlanillaDetalleDeducciones.objects.filter(functools.reduce(operator.and_, q_list)).values_list('empleado__id', flat=True).distinct()
+        empleados = Employee.objects.filter(pk__in=val_list_ing)
 
-            columnas = [{'title':'Codigo Empleado'}, {'title': 'Nombre'}, {'title':'Planilla'}, {'title': 'Salario'}]
-            for empleado in empleados:
-                total_ingreso = 0
-                total_deducciones = 0
+        columnas = [{'title':'Codigo'}, {'title': 'Nombre'}, {'title':'Fecha pago'}, {'title': 'Salario'}]
+        grupos_flat = PlanillaDetalleIngresos.objects.filter(Q(planilla__fecha_inicio__gte=desde, planilla__fecha_fin__lte=hasta)).exclude(tipo_ingreso=None).values_list('tipo_ingreso__grupo', flat=True).order_by('tipo_ingreso__orden', 'ingreso').distinct()
+        grupos_flat_ded = PlanillaDetalleDeducciones.objects.filter(Q(planilla__fecha_inicio__gte=desde, planilla__fecha_fin__lte=hasta)).exclude(tipo_deduccion=None).values_list('tipo_deduccion__grupo', flat=True).order_by('tipo_deduccion__orden', 'deduccion').distinct()
+        for empleado in empleados:
+            print("")
+            detallesfila = []
+            total_ingreso = 0
+            total_deducciones = 0
+            salario = 0
+            q_list2 = []
 
-                o_pla_ing = PlanillaDetalleIngresos.objects.filter(functools.reduce(operator.and_, q_list))
-                o_pla_ded = PlanillaDetalleDeducciones.objects.filter(functools.reduce(operator.and_, q_list))
-                datos_empleado = {}
-                datos_empleado2 = []
-                Nombre = ""
-                Nombre = empleado.firstName
-                if empleado.middleName:
-                    Nombre = Nombre + " " + empleado.middleName
-                Nombre = Nombre + " " + empleado.lastName
-                datos_empleado["Empleado_Id"] = empleado.pk
+            datos_empleado = {}
+            datos_empleado2 = []
+            Nombre = ""
+            Nombre = empleado.firstName
+            if empleado.middleName:
+                Nombre = Nombre + " " + empleado.middleName
+            Nombre = Nombre + " " + empleado.lastName
+            datos_empleado["Empleado_Id"] = empleado.pk
+            datos_empleado["Nombre"] = Nombre
+            datos_empleado['Fecha pago'] = None
+            datos_empleado['Sueldo'] = 0
 
-                datos_empleado["Nombre"] = Nombre
-                datos_empleado['Planilla'] = None
-                datos_empleado['Total Ingreso'] = 0
-
-                for detalle in o_pla_ing:
-                    bandera = False
-                    if empleado == detalle.empleado and detalle.ingreso.count("Sueldo empleado") > 0 and not detalle.tipo_ingreso:
-                        datos_empleado['Sueldo'] = detalle.valor
-                        total_ingreso = detalle.valor
-                        bandera = True
-                    else:
-                        datos_empleado['Sueldo'] = 0
-
-                    if not datos_empleado['Planilla']:
-                        datos_empleado['Planilla'] = {'id': detalle.planilla.pk, 'fecha': detalle.planilla.fecha_pago, 'descripcion': detalle.planilla.descripcion}
-                    if bandera:
-                        break
+            o_pla_ing = PlanillaDetalleIngresos.objects.filter(Q(planilla__fecha_inicio__gte=desde, planilla__fecha_fin__lte=hasta, empleado=empleado))
+            for detalle1 in o_pla_ing:
+                if not datos_empleado['Fecha pago']:
+                    datos_empleado['Fecha pago'] = detalle1.planilla.fecha_pago.strftime("%d/%m/%Y")
                 
-                for grupo in grupos_ing:
-                    if not grupo.grupo in columnas:
-                        columnas.append({'title': grupo.grupo})
-                    datos_empleado[grupo.grupo] = 0
-                    for detalle in o_pla_ing:
-                        # if empleado == detalle.empleado and detalle.ingreso.count("Sueldo empleado") > 0 and not detalle.tipo_ingreso:
-                        #     datos_empleado['Sueldo'] = detalle.valor
-                        #     total_ingreso = detalle.valor
-                        #     datos_empleado['Planilla'] = {'id': detalle.planilla.pk, 'fecha': detalle.planilla.fecha_pago, 'descripcion': detalle.planilla.descripcion}
-                        # else:
-                        #     datos_empleado['Sueldo'] = 0
-                        #     datos_empleado['Planilla'] = {'id': detalle.planilla.pk, 'fecha': detalle.planilla.fecha_pago, 'descripcion': detalle.planilla.descripcion}
-                            
-                        if empleado == detalle.empleado and grupo.tipo_ingreso == detalle.tipo_ingreso:
-                            total_ingreso += detalle.valor
-                            datos_empleado[grupo.grupo] = datos_empleado[grupo.grupo] + detalle.valor
+                if empleado == detalle1.empleado and detalle1.ingreso.count("Sueldo empleado") > 0 and not detalle1.tipo_ingreso:
+                    datos_empleado['Sueldo'] = formato_millar(detalle1.valor)
+                    total_ingreso = detalle1.valor
 
-                    datos_empleado['Total Ingreso'] =  total_ingreso
+            for grupo in grupos_flat:
+
+                tot_col = 0    
+                for columna in columnas:
+                    if columna["title"] == grupo:
+                        tot_col += 1
+                if tot_col == 0:
+                    columnas.append({'title': grupo})
+                    datos_empleado[grupo] = formato_millar(0)
+
+                if not grupo in datos_empleado:
+                    datos_empleado[grupo] = formato_millar(0)
+
+                o_pla_ing = PlanillaDetalleIngresos.objects.filter(Q(planilla__fecha_inicio__gte=desde, planilla__fecha_fin__lte=hasta, tipo_ingreso__grupo=grupo)).order_by('tipo_ingreso__orden', 'ingreso')
+                for detalle in o_pla_ing:
+                    if detalle.tipo_ingreso:
+                        if detalle.tipo_ingreso.grupo == grupo and detalle.empleado == empleado:
+                            datos_empleado[grupo] = formato_millar(float(datos_empleado[grupo]) + float(detalle.valor))
+                            total_ingreso += detalle.valor
+                        else:
+                            datos_empleado[grupo] = formato_millar(float(datos_empleado[grupo]) + 0)
+
+            datos_empleado['Total Ingresos'] = formato_millar(total_ingreso)
+            tot_col = 0
+            for columna in columnas:
+                if columna["title"] == "Total Ingreso":
+                    tot_col += 1
+            if tot_col == 0:
                 columnas.append({'title': 'Total Ingreso'})
 
-                datos_empleado['Total Deducciones'] = 0
-                for grupo in grupos_ded:
-                    if not grupo.grupo in columnas:
-                        columnas.append({'title': grupo.grupo})
-                    datos_empleado[grupo.grupo] = 0
-                    for detalle in o_pla_ded:
-                        if empleado == detalle.empleado and grupo.tipo_deduccion == detalle.tipo_deduccion:
+            print("")
+            for grupo in grupos_flat_ded:
+                tot_col = 0
+                for columna in columnas:
+                    if columna["title"] == grupo:
+                        tot_col += 1
+                if tot_col == 0:
+                    columnas.append({'title': grupo})
+                    datos_empleado[grupo] = formato_millar(0)
+
+                if not grupo in datos_empleado:
+                    datos_empleado[grupo] = formato_millar(0)
+                
+                o_pla_ded = PlanillaDetalleDeducciones.objects.filter(Q(planilla__fecha_inicio__gte=desde, planilla__fecha_fin__lte=hasta, tipo_deduccion__grupo=grupo)).order_by('tipo_deduccion__orden', 'deduccion')
+                print(o_pla_ded)
+                for detalle in o_pla_ded:
+                    if detalle.tipo_deduccion:
+                        if detalle.tipo_deduccion.grupo == grupo and detalle.empleado == empleado:
+                            print(detalle.valor)
+                            datos_empleado[grupo] = formato_millar(float(datos_empleado[grupo]) + float(detalle.valor))
                             total_deducciones += detalle.valor
-                            datos_empleado[grupo.grupo] = datos_empleado[grupo.grupo] + detalle.valor
+                        else:
+                            datos_empleado[grupo] = formato_millar(float(datos_empleado[grupo]) + 0)
 
-                    datos_empleado["Total Deducciones"] = total_deducciones
+            datos_empleado['Total Deducciones'] = formato_millar(total_deducciones)
             datos_planilla.append(datos_empleado)
-            columnas.append({'title': 'Total Deducciones'})
-            print(columnas)
-            print(datos_planilla)
-            data = {
-                'error':False,
-                'mensaje': 'Se han encontrado datos.',
-                'datos': datos_planilla,
-                'columnas': columnas
-            }
-            return JsonResponse(data)
-            
+        filas_detalles = []
 
-        if len(departamento_id) > 0:
-            data = {
-                'error': False,
-                'mensaje': '¡Exito!'
-            }
-        else:
-            data = {
-                'error': True,
-                'mensaje': 'No se pasó un valor válido como parámetro.'
-            }
-        return JsonResponse(data)
+        for elemento in datos_planilla:
+            filas_detalles.append(list(elemento.values()))
+
+        columnas.append({'title': 'Total Deducciones'})
+        data = {
+            'error':False,
+            'mensaje': 'Se han encontrado datos.',
+            'data': filas_detalles,
+            'columns': columnas,
+        }
+        #return JsonResponse(data)
+        
+
+    if len(departamento_id) > 0:
+        pass
     else:
         data = {
             'error': True,
-            'mensaje': 'Tipo de petición no válida'
+            'mensaje': 'No se pasó un valor válido como parámetro.'
         }
-    return JsonResponse(data)
+    return render(request, 'reportes/reporte-planilla-general.html', data)
 
 def planilla_ver_registro(request):
     error = False
@@ -14469,6 +14495,7 @@ def planilla_generada(request):
     suma_total_deducciones = 0
     if request.is_ajax():
         planilla_id = int(request.GET.get("Id"))
+        print("Entra aqui")
         if planilla_id == 0:
             error = True
             mensaje = "El registro no existe."
@@ -16067,3 +16094,22 @@ def formato_millar(valor):
         if valor == 0:
             return locale.format("%.2f", valor, grouping=True)
         return None
+
+class ReportePersonaPDF(View):
+
+    def cabecera(self, pdf):
+        archivo_imagen = settings.MEDIA_ROOT + '/imagenes/promaco-logo.png'
+        pdf.drawImage(archivo_imagen, 15, 300, 120, 90, preserveAspectRatio=True)
+
+    def get(self, request, *args, **kwargs):
+        response = HttpResponse(content_type='application/pdf')
+        buffer = BytesIO()
+        pdf = canvas.Canvas(buffer)
+        pdf.setPageSize((200,400))
+        self.cabecera(pdf)
+        pdf.showPage()
+        pdf.save()
+        pdf = buffer.getvalue()
+        buffer.close()
+        response.write(pdf)
+        return response

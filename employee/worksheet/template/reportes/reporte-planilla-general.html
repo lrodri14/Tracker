@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block titulo %}
+    Reporte de Planilla - General
+{% endblock titulo %}
+{% load static %}
+{% block contenido %}
+    <div class="col-sm-12">
+        <div class="white-box">
+            <h1>Reporte</h1>
+            <div class="table-responsive">
+                <table id="reporteTabla" class="display nowrap table table-hover table-striped table-bordered" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            {% for columna in columns %}
+                                <th>{{columna.title}}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for fila in data %}
+                            <tr>
+                                {% for dato in fila %}
+                                    <td>{{dato}}</td>
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            {% for columna in columns %}
+                                <th>{{columna.title}}</th>
+                            {% endfor %}
+                        </tr>
+                    </tfoot>
+                    
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock contenido %}
+{% block scripts %}
+<script type="text/javascript">
+    var valor = 0;
+    var objetivos = [];
+    var dns = window.location.protocol + "//" + window.location.host;
+    {% for columna in columns %}
+        valor = parseInt('{{forloop.counter}}') - 1;
+        if(valor > 2){
+            objetivos.push(valor);
+        }
+    {% endfor %}
+    $('#reporteTabla').DataTable({
+        columnDefs: [
+            { className: 'text-right', targets: objetivos },
+        ],
+        dom: 'Bfrtip',
+        buttons: [
+            'copy', 'csv', 'excel',
+            {
+                extend:'print',
+                text: 'Imprimir',
+                title: function() { return 'Reporte General Detalle Planilla'},
+                customize: function(win) {
+                    $(win.document.body)
+                        .css('font-size', '10pt')
+                        .prepend(
+                            '<img src="'+dns+'/static/images/promaco-logo-3.png" />'
+                        )
+                }
+            },
+            {
+                extend: 'pdfHtml5',
+                orientation: 'landscape',
+                pageSize: 'LEGAL',
+                title: function() { return 'Reporte General Detalle Planilla'},
+            }
+        ]
+    });
+    $('#side-menu a').removeClass('active');
+    $('#aAcciones').addClass('active');
+    $('#accionesNomina').addClass('active');
+    $('#aReportes').addClass('active');
+    $('#aAcciones').parents('li').addClass('active');
+    $('#accionesNomina').parents('li').addClass('active');
+</script>
+{% endblock scripts %}

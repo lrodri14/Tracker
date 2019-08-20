@@ -670,8 +670,21 @@ class ImagenEmpleado(models.Model):
         return self.empleado.firstName + " " + self.empleado.lastName
 
 class TipoDeduccion(models.Model):
+    IHSS = 'IHSS'
+    RAP = 'RAP'
+    ISR = 'ISR'
+    IMV = 'IMV'
+    OTROS = 'Otras Deducciones'
+    TIPOS = [
+        (IHSS, 'IHSS'),
+        (IMV, 'IMPUESTO VECINAL'),
+        (ISR, 'ISR'),
+        (RAP, 'RAP'),
+        (OTROS, 'OTRAS DEDUCCIONES')
+    ]
     tipo_deduccion = models.CharField(max_length=50)
     descripcion = models.TextField()
+    grupo = models.CharField(("Grupo"), max_length=20, choices=TIPOS, blank=True, null=True)
     orden = models.CharField(("Orden"), max_length=50, blank=True, null=True)
     empresa_reg = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING)
     user_reg = models.ForeignKey(User, on_delete=models.PROTECT)
@@ -688,6 +701,13 @@ class TipoDeduccion(models.Model):
         return self.tipo_deduccion + " - " + str(self.orden)
 
 class TipoIngreso(models.Model):
+    BONO = 'Bonos'
+    OTROS = 'Otros Ingresos'
+    TIPOS = [
+        (BONO, 'BONOS'),
+        (OTROS, 'OTROS INGRESOS'),
+    ]
+    grupo = models.CharField(("Grupo"), max_length=20, choices=TIPOS, blank=True, null=True)
     tipo_ingreso = models.CharField(max_length=50)
     descripcion = models.TextField()
     orden = models.CharField(("Orden"), max_length=50, blank=True, null=True)
@@ -1249,64 +1269,6 @@ class EmpleadoDeducciones(models.Model):
 
     def __str__(self):
         return str(self.empleado.firstName + " " + self.empleado.lastName) + " | " + self.deduccion
-
-class ClasificaPercepcion(models.Model):
-    BONO = 'BONO'
-    OTROS = 'OTROS'
-    TIPOS = [
-        (BONO, 'BONOS'),
-        (OTROS, 'OTROS INGRESOS'),
-    ]
-    tipo_ingreso = models.ForeignKey("worksheet.TipoIngreso", verbose_name=("Tipo Ingreso"), on_delete=models.PROTECT)
-    grupo = models.CharField(("Grupo"), max_length=20, choices=TIPOS)
-    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.PROTECT)
-    user_reg = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT)
-    date_reg = models.DateTimeField(auto_now_add=True)
-    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='claPer_usermod', related_query_name='claPer_usermod')
-    date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.BooleanField()
-
-    class Meta:
-        verbose_name = ("Clasifica Percepcion")
-        verbose_name_plural = ("Clasifica Percepciones")
-
-    def __str__(self):
-        return self.tipo_ingreso.descripcion + " | " + self.grupo
-    
-    #ESTE MODELO MANEJA LA AGRUPACIÓN DE TIPOS DE INGRESOS, ES DECIR AGRUPAR TODOS LOS TIPOS DE INGRESOS QUE PERTENECEN AL GRUPO BONOS,
-    #AGRUPAR TODOS LOS TIPOS DE INGRESOS QUE PERTENECEN A OTROS INGRESOS, PARA PODER DISTRIBUIRLOS EN EL REPORTE GENERAL
-
-class ClasificaDeduccion(models.Model):
-    IHSS = 'IHSS'
-    RAP = 'RAP'
-    ISR = 'ISR'
-    IMV = 'IMV'
-    OTROS = 'OTROS'
-    TIPOS = [
-        (IHSS, 'IHSS'),
-        (IMV, 'IMPUESTO VECINAL'),
-        (ISR, 'ISR'),
-        (RAP, 'RAP'),
-        (OTROS, 'OTRAS DEDUCCIONES')
-    ]
-    tipo_deduccion = models.ForeignKey("worksheet.TipoDeduccion", verbose_name=("Tipo Deduccion"), on_delete=models.PROTECT)
-    grupo = models.CharField(("Grupo"), max_length=20, choices=TIPOS)
-    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.PROTECT)
-    user_reg = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT)
-    date_reg = models.DateTimeField(auto_now_add=True)
-    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='claDed_usermod', related_query_name='claDed_usermod')
-    date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.BooleanField()
-
-    class Meta:
-        verbose_name = ("Clasifica Deduccion")
-        verbose_name_plural = ("Clasifica Deducciones")
-
-    def __str__(self):
-        return self.tipo_deduccion.descripcion + " | " + self.grupo
-
-    #ESTE MODELO MANEJA LA AGRUPACIÓN DE TIPOS DE DEDUCCIONES, ES DECIR AGRUPAR TODOS LOS TIPOS DE DEDUCCIONES QUE PERTENECEN AL GRUPO OTRAS DEDUCCIONES,
-    #AGRUPAR TODOS LOS TIPOS DE INGRESOS QUE PERTENECEN A IHSS Y ETC..., PARA PODER DISTRIBUIRLOS EN EL REPORTE GENERAL
 
 class LimiteSalarioDeduccion(models.Model):
     salario = models.DecimalField(("Salario"), max_digits=18, decimal_places=4)
