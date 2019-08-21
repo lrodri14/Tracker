@@ -20,6 +20,10 @@ from django.conf import settings
 import functools
 from io import BytesIO
 from reportlab.pdfgen import canvas
+from reportlab.platypus import Table, TableStyle, Paragraph
+from reportlab.lib.units import cm
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
 from django.views.generic import View
 import json
 import locale
@@ -16066,6 +16070,96 @@ def tipo_contrato_eliminar(request):
         }
     return JsonResponse(data)
 
+def boleta_pago_reporte(request):
+    empleado_id = request.GET.get('empleado_id')
+    planilla_id = request.GET.get('planilla_id')
+    o_empleado = Employee.objects.get(pk=empleado_id)
+    o_planilla = Planilla.objects.get(pk=planilla_id)
+    o_pla_de_ing = PlanillaDetalleIngresos.objects.filter(empleado=o_empleado, planilla=o_planilla)
+    o_pla_de_ded = PlanillaDetalleDeducciones.objects.filter(empleado=o_empleado, planilla=o_planilla)
+    response = HttpResponse(content_type='application/pdf')
+    buffer = BytesIO()
+    pdf = canvas.Canvas(buffer)
+    pdf.setTitle("Boleta de Pago - Promaco")
+    pdf.setPageSize((225, 400))
+    archivo_imagen = settings.MEDIA_ROOT + '/imagenes/promaco-logo.png'
+    pdf.drawImage(archivo_imagen, 65, 350, 100, 60, preserveAspectRatio=True)
+    pdf.setFont("Helvetica", 14)
+    pdf.drawString(65, 340, u"Boleta de Pago")
+    pdf.setFont("Helvetica", 7)
+    pdf.drawString(15, 320, u"Empleado: ")
+    Nombre = o_empleado.firstName
+    if o_empleado.middleName:
+        Nombre += " " + o_empleado.middleName
+    Nombre += " " + o_empleado.lastName
+    pdf.setFont("Helvetica", 7)
+    pdf.drawString(50, 320, Nombre)
+    pdf.setFont("Helvetica", 7)
+    pdf.drawString(15, 310, "Fecha de pago: ")
+    pdf.setFont("Helvetica", 7)
+    pdf.drawString(65, 310, datetime.strftime(o_planilla.fecha_pago, '%d/%m/%Y'))
+
+    punto_tabla = 240
+    styles = getSampleStyleSheet()
+    styleN = styles["BodyText"]
+    styleN.fontSize = 7
+    encabezados = ('Descripción', 'Ingreso', 'Deducc.')
+    detalles = [(Paragraph(fila.ingreso, styleN), formato_millar(fila.valor), 0.00) for fila in o_pla_de_ing]
+    detalles += [(Paragraph(fila.deduccion, styleN),0.00, formato_millar(fila.valor)) for fila in o_pla_de_ded]
+    detalle_pagos = Table([encabezados] + detalles, colWidths=[3.2 * cm, 1.8 * cm, 1.8 * cm])
+    detalle_pagos.setStyle(TableStyle(
+    [
+            ('ALIGN',(0,0),(2,0),'CENTER'),
+            ('ALIGN',(1,1),(2,-1),'RIGHT'),
+            ('FONTSIZE', (0, 1), (-1, -1), 7),
+            ('INNERGRID', (0,0), (-1,-1), 0.15, colors.black),
+            ('BOX', (0,0), (-1,-1), 0.10, colors.black),
+            ('VALIGN',(0,1),(-1,-1),'MIDDLE'),
+            ]
+    ))
+    detalle_pagos.wrapOn(pdf, 190, 10)
+    detalle_pagos.drawOn(pdf, 15, 170)
+    pdf.setFont("Helvetica", 8)
+    pdf.drawString(15, 155, "Sueldo Neto: ")
+
+    
+    pdf.showPage()
+    pdf.save()
+    pdf = buffer.getvalue()
+    buffer.close()
+    response.write(pdf)
+    return response
+
+def boleta_pago_email(request):
+    empleado_id = request.GET.get('empleado_id')
+    planilla_id = request.GET.get('planilla_id')
+    o_empleado = Employee.objects.get(pk=empleado_id)
+    o_planilla = Planilla.objects.get(pk=planilla_id)
+    o_pla_de_ing = PlanillaDetalleIngresos.objects.filter(empleado=o_empleado, planilla=o_planilla)
+    o_pla_de_ded = PlanillaDetalleDeducciones.objects.filter(empleado=o_empleado, planilla=o_planilla)
+    titulo_email = u"Boleta de Pago"
+    variables = Context({
+        'request': request,
+        'empleado': o_empleado,
+        'planilla': o_planilla,
+        'pla_de_ing': o_pla_de_ing,
+        'pla_de_ded': o_pla_de_ded,
+    })
+    html = get_template('correo/boleta_pago_html.html').render(variables)
+    text = get_template('correo/boleta_pago_text.html').render(variables)
+
+    msg = EmailMultiAlternatives(
+        titulo_email,
+        text,
+        settings.EMAIL_SENDER,
+        ["mjbc.dev@outlook.com"],
+    )
+    msg.attach_alternative(html, "text/html")
+    msg.send(fail_silently=False)
+    data = {'error': True, 'mensaje': 'El email se ha enviado'}
+    return JsonResponse(data)
+
+
 #---------------------END AJAX---------------------------
 
 #endregion
@@ -16099,7 +16193,10 @@ class ReportePersonaPDF(View):
 
     def cabecera(self, pdf):
         archivo_imagen = settings.MEDIA_ROOT + '/imagenes/promaco-logo.png'
-        pdf.drawImage(archivo_imagen, 15, 300, 120, 90, preserveAspectRatio=True)
+        pdf.drawImage(archivo_imagen, 50, 325, 100, 60, preserveAspectRatio=True)
+        pdf.setFont("Helvetica", 12)
+        pdf.drawString(60, 320, u"Boleta de Pago")
+
 
     def get(self, request, *args, **kwargs):
         response = HttpResponse(content_type='application/pdf')

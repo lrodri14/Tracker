@@ -414,6 +414,9 @@ urlpatterns = [
 
     # ----------------->>>REPORTES<<<-------------------#
     url(r'reporte_personas_pdf/$', views.ReportePersonaPDF.as_view(), name="reporte_personas_pdf"),
+    url(r'reporte/boleta-pago/$', views.boleta_pago_reporte, name='boleta_pago_reporte'),
+
+    url(r'email/boleta-pago/$', views.boleta_pago_email, name='boleta_pago_email'),
 
     #------------------>>>AJAX<<<-------------------
 
