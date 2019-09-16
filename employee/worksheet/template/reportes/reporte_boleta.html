@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Boleta</title>
+    <link href="{% static 'bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
+    <style type="text/css">
+        @page {
+            size: 80mm 150mm;
+            margin: 0.5cm;
+        }
+        #tabla_pagos th{
+            border: 1px solid black;
+            padding-top: 3pt;
+        }
+        figure{
+            text-align: center;
+        }
+        h1{
+            text-align: center;
+        }
+        #tabla_pagos td{
+            border: 1px solid black;
+            padding-top: 2pt;
+            padding-left: 2pt;
+        }
+        .valores-datos{
+            text-align: right;
+            padding-right: 2pt;
+        }
+        .tabla_salario{
+            margin-top: 7pt;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <figure>
+        <img src="{% static 'images/promaco-logo.png' %}" alt="Logo Promaco">
+    </figure>
+    <h1>Boleta de Pago de Salario</h1>
+    <div class="encabezado">
+        <label class="control-label">Codigo empleado: </label>
+        <label><strong>{{empleado.pk}}</strong></label>
+    </div>
+    <div>
+        <label class="label-control">Empleado: </label>
+        <label class="label-control">{{empleado.firstName}} {% if empleado.middleName %}{% endif %} {{empleado.lastName}}</label>
+    </div>
+    <div>
+        <label class="label-control">Fecha de pago: </label>
+        <label class="label-control">{{planilla.fecha_pago}}</label>
+    </div>
+    <table id="tabla_pagos">
+        <thead>
+            <th class="desc">Descripción</th>
+            <th>Ingresos</th>
+            <th>Deducc.</th>
+        </thead>
+        <tbody>
+            {% for item in ingresos %}
+                <tr>
+                    <td class="desc">{{item.ingreso}}</td>
+                    <td class="valores-datos">{{item.valor}}</td>
+                    <td class="valores-datos">0.00</td>
+                </tr>
+            {% endfor %}
+            {% for item in deducciones %}
+                <tr>
+                    <td class="desc">{{item.deduccion}}</td>
+                    <td class="valores-datos">0.00</td>
+                    <td class="valores-datos">{{item.valor}}</td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td class="desc"><strong>Subtotal</strong></td>
+                <td class="valores-datos"><strong>{{total_ingresos}}</strong></td>
+                <td class="valores-datos"><strong>{{total_deducciones}}</strong></td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="tabla_salario">
+        <tbody>
+            <tr>
+                <td>Salario Neto:</td>
+                <td></td>
+                <td class="valores-datos">{{salario_neto}}</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

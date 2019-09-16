@@ -123,6 +123,7 @@ table>tbody>.detalle_emp>td{
     border-top: 1px solid #73cfe9;
     padding: 3px 7px;
     cursor: pointer;
+    vertical-align: middle;
 }
 
 #frmVerPlanilla .detalle-encabezado th{

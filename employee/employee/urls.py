@@ -20,7 +20,6 @@ from django.conf.urls.static import static
 #from django.contrib.auth.views import logout
 from django.contrib.auth import views as auth_views
 from worksheet import views
-import debug_toolbar
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -32,7 +31,6 @@ urlpatterns = [
     url(r'^salir/$', auth_views.LogoutView.as_view(), name='salir'),
     #url(r'^salir/$', logout, name="salir", kwargs={'next_page': '/'}),
     url(r'^login/$', views.login, name="login"),
-    url(r'^__debug__/', include(debug_toolbar.urls)),
 
     url(r'^forms/empleado/$', views.empleado_form, name="empleados-form"),
     url(r'^editar/empleado/(?P<id>\w+)/$', views.empleado_editar, name="empleado_editar"),
@@ -415,8 +413,14 @@ urlpatterns = [
     # ----------------->>>REPORTES<<<-------------------#
     url(r'reporte_personas_pdf/$', views.ReportePersonaPDF.as_view(), name="reporte_personas_pdf"),
     url(r'reporte/boleta-pago/$', views.boleta_pago_reporte, name='boleta_pago_reporte'),
+    url(r'reporte/boleta-pago-prueba/$', views.reporte_probando, name='reporte_probando'),
+
+    url(r'reporte-pdf/$', views.Pdf.as_view(), name='reporte-pdf'),
+
 
     url(r'email/boleta-pago/$', views.boleta_pago_email, name='boleta_pago_email'),
+
+
 
     #------------------>>>AJAX<<<-------------------
 

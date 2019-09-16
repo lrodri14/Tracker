@@ -457,8 +457,8 @@
                                     <div class="tab-pane" id="aimpresion">
                                         <h3>Voucher de Pago | Impresión / Envío</h3>
                                         <div class="white-box">
-                                            <form action="{% url 'boleta_pago_reporte' %}" method="GET" target="_blank">
-                                                <input type="hidden" name="empleado_id" value="{{dato.pk}}">
+                                            <form action="{% url 'reporte-pdf' %}" method="GET" target="_blank">
+                                                <input type="hidden" id="txtEmpleado_Id" name="empleado_id" value="{{dato.pk}}">
                                                 <div class="form-group">
                                                     <label for="" class="label-control">Planilla:</label>
                                                     <select name="planilla_id" id="cboPlanillaBusqueda" class="form-control">
@@ -468,7 +468,9 @@
                                                     {% endfor %}
                                                     </select>
                                                 </div>
+                                                {% if dato.email %}
                                                 <button id="btnEnviarBoletaEmail" class="btn btn-default">E-mail</button>
+                                                {% endif %}
                                                 <button type="submit" class="btn btn-primary">Reporte</button>
                                             </form>
                                         </div>
@@ -655,6 +657,17 @@
 
         $('#btnEnviarBoletaEmail').on('click', function(e) {
             e.preventDefault();
+            $.ajax({
+                type: "GET",
+                url: "/email/boleta-pago/",
+                data: {"empleado_id": $('#txtEmpleado_Id').val(), "planilla_id": $('#cboPlanillaBusqueda').val() },
+                success: function (data) {
+                    alert("Se envió el correo.");
+                },
+                error: function (err) {
+                    alert(err);
+                }
+            });
         });
 </script>
 <script>

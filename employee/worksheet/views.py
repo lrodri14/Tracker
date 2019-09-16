@@ -5,18 +5,23 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.core import serializers
+from django.core.mail import EmailMultiAlternatives
 from django.core.serializers import serialize
 from dateutil import relativedelta as rdelta
 from django.db.models import Count, Min, Sum, Avg
 from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
+from django.template import Context
+from django.template.loader import get_template, render_to_string
 from django.utils import timezone
 from django.utils.decorators import method_decorator
+from django.utils.html import strip_tags
 from decimal import *
 from worksheet.forms import *
 from worksheet.models import *
 from datetime import date, datetime
 from django.conf import settings
+from .render import Render
 import functools
 from io import BytesIO
 from reportlab.pdfgen import canvas
@@ -25,6 +30,7 @@ from reportlab.lib.units import cm
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
 from django.views.generic import View
+from xhtml2pdf import pisa
 import json
 import locale
 import operator
@@ -16073,6 +16079,7 @@ def tipo_contrato_eliminar(request):
 def boleta_pago_reporte(request):
     empleado_id = request.GET.get('empleado_id')
     planilla_id = request.GET.get('planilla_id')
+    detalles = []
     o_empleado = Employee.objects.get(pk=empleado_id)
     o_planilla = Planilla.objects.get(pk=planilla_id)
     o_pla_de_ing = PlanillaDetalleIngresos.objects.filter(empleado=o_empleado, planilla=o_planilla)
@@ -16104,23 +16111,31 @@ def boleta_pago_reporte(request):
     styleN = styles["BodyText"]
     styleN.fontSize = 7
     encabezados = ('Descripción', 'Ingreso', 'Deducc.')
-    detalles = [(Paragraph(fila.ingreso, styleN), formato_millar(fila.valor), 0.00) for fila in o_pla_de_ing]
-    detalles += [(Paragraph(fila.deduccion, styleN),0.00, formato_millar(fila.valor)) for fila in o_pla_de_ded]
+    posicionTabla = 280
+    for fila in o_pla_de_ing:
+        detalles.append([Paragraph(fila.ingreso, styleN), formato_millar(fila.valor), 0.00])
+        posicionTabla -= 20
+
+    for fila in o_pla_de_ded:
+        detalles.append([Paragraph(fila.deduccion, styleN), 0.00, formato_millar(fila.valor)])
+        posicionTabla -= 10
+    #detalles = [(Paragraph(fila.ingreso, styleN), formato_millar(fila.valor), 0.00) for fila in o_pla_de_ing]
+    # detalles += [(Paragraph(fila.deduccion, styleN),0.00, formato_millar(fila.valor)) for fila in o_pla_de_ded]
     detalle_pagos = Table([encabezados] + detalles, colWidths=[3.2 * cm, 1.8 * cm, 1.8 * cm])
     detalle_pagos.setStyle(TableStyle(
     [
             ('ALIGN',(0,0),(2,0),'CENTER'),
             ('ALIGN',(1,1),(2,-1),'RIGHT'),
             ('FONTSIZE', (0, 1), (-1, -1), 7),
-            ('INNERGRID', (0,0), (-1,-1), 0.15, colors.black),
+            ('INNERGRID', (0,0), (-1,-1), 0.10, colors.black),
             ('BOX', (0,0), (-1,-1), 0.10, colors.black),
             ('VALIGN',(0,1),(-1,-1),'MIDDLE'),
             ]
     ))
     detalle_pagos.wrapOn(pdf, 190, 10)
-    detalle_pagos.drawOn(pdf, 15, 170)
+    detalle_pagos.drawOn(pdf, 15, posicionTabla)
     pdf.setFont("Helvetica", 8)
-    pdf.drawString(15, 155, "Sueldo Neto: ")
+    pdf.drawString(15, 250, "Sueldo Neto: ")
 
     
     pdf.showPage()
@@ -16133,31 +16148,48 @@ def boleta_pago_reporte(request):
 def boleta_pago_email(request):
     empleado_id = request.GET.get('empleado_id')
     planilla_id = request.GET.get('planilla_id')
+    detalles = []
     o_empleado = Employee.objects.get(pk=empleado_id)
     o_planilla = Planilla.objects.get(pk=planilla_id)
     o_pla_de_ing = PlanillaDetalleIngresos.objects.filter(empleado=o_empleado, planilla=o_planilla)
     o_pla_de_ded = PlanillaDetalleDeducciones.objects.filter(empleado=o_empleado, planilla=o_planilla)
-    titulo_email = u"Boleta de Pago"
-    variables = Context({
-        'request': request,
-        'empleado': o_empleado,
-        'planilla': o_planilla,
-        'pla_de_ing': o_pla_de_ing,
-        'pla_de_ded': o_pla_de_ded,
-    })
-    html = get_template('correo/boleta_pago_html.html').render(variables)
-    text = get_template('correo/boleta_pago_text.html').render(variables)
-
-    msg = EmailMultiAlternatives(
-        titulo_email,
-        text,
-        settings.EMAIL_SENDER,
-        ["mjbc.dev@outlook.com"],
-    )
-    msg.attach_alternative(html, "text/html")
-    msg.send(fail_silently=False)
+    empleado_id = request.GET.get('empleado_id')
+    planilla_id = request.GET.get('planilla_id')
+    detalle_ing = []
+    detalle_ded = []
+    o_empleado = Employee.objects.get(pk=empleado_id)
+    o_planilla = Planilla.objects.get(pk=planilla_id)
+    o_pla_de_ing = PlanillaDetalleIngresos.objects.filter(empleado=o_empleado, planilla=o_planilla)
+    o_pla_de_ded = PlanillaDetalleDeducciones.objects.filter(empleado=o_empleado, planilla=o_planilla)
+    o_pla_de = PlanillaDetalle.objects.get(empleado=o_empleado, planilla=o_planilla)
+    for item in o_pla_de_ing:
+        data = {
+            'ingreso': item.ingreso,
+            'valor': formato_millar(item.valor)
+        }
+        detalle_ing.append(data)
+    for item in o_pla_de_ded:
+        data = {
+            'deduccion': item.deduccion,
+            'valor': formato_millar(item.valor),
+        }
+        detalle_ded.append(data)
+    asunto, remite, destinatario = 'Boleta de Pago', 'no-replay@gmail.com', o_empleado.email
+    html_contenido = render_to_string('correo/boleta_pago_html.html', {'empleado': o_empleado, 'planilla': o_planilla, 'detalle_ingreso':detalle_ing, 'detalle_deduccion': detalle_ded, 'total_ingreso': formato_millar(o_pla_de.total_ingresos), 'total_deduccion': formato_millar(o_pla_de.total_deducciones),  'sueldo_neto': formato_millar(o_pla_de.total_ingresos - o_pla_de.total_deducciones)})
+    text_contenido = strip_tags(html_contenido)
+    msg = EmailMultiAlternatives(asunto, text_contenido, remite, [destinatario])
+    msg.attach_alternative(html_contenido, "text/html")
+    msg.send()
     data = {'error': True, 'mensaje': 'El email se ha enviado'}
     return JsonResponse(data)
+
+def reporte_probando(request):
+    template = get_template('correo/boleta_pago_html.html')
+    context = {
+        'nombre': 'Malco Baquedano',
+    }
+    html = template.render(context)
+    return HttpResponse(html)
 
 
 #---------------------END AJAX---------------------------
@@ -16188,6 +16220,42 @@ def formato_millar(valor):
         if valor == 0:
             return locale.format("%.2f", valor, grouping=True)
         return None
+
+class Pdf(View):
+
+    def get(self, request):
+        empleado_id = request.GET.get('empleado_id')
+        planilla_id = request.GET.get('planilla_id')
+        detalle_ing = []
+        detalle_ded = []
+        o_empleado = Employee.objects.get(pk=empleado_id)
+        o_planilla = Planilla.objects.get(pk=planilla_id)
+        o_pla_de_ing = PlanillaDetalleIngresos.objects.filter(empleado=o_empleado, planilla=o_planilla)
+        o_pla_de_ded = PlanillaDetalleDeducciones.objects.filter(empleado=o_empleado, planilla=o_planilla)
+        o_pla_de = PlanillaDetalle.objects.get(empleado=o_empleado, planilla=o_planilla)
+        for item in o_pla_de_ing:
+            data = {
+                'ingreso': item.ingreso,
+                'valor': formato_millar(item.valor)
+            }
+            detalle_ing.append(data)
+        for item in o_pla_de_ded:
+            data = {
+                'deduccion': item.deduccion,
+                'valor': formato_millar(item.valor),
+            }
+            detalle_ded.append(data)
+        params = {
+            'empleado': o_empleado,
+            'planilla': o_planilla,
+            'ingresos': detalle_ing,
+            'deducciones': detalle_ded,
+            'total_ingresos': formato_millar(o_pla_de.total_ingresos),
+            'total_deducciones': formato_millar(o_pla_de.total_deducciones),
+            'salario_neto': formato_millar(o_pla_de.total_ingresos - o_pla_de.total_deducciones),
+            'request': request,
+        }
+        return Render.render('reportes/reporte_boleta.html', params)
 
 class ReportePersonaPDF(View):
 

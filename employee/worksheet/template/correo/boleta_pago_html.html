@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="{% static 'plugins/bower_components/bootstrap-table/dist/bootstrap-table.min.css' %}" rel="stylesheet">
+    <style type="text/css">
+        *{
+            padding; 0;
+            margin; 0;
+        }
+        h1{
+            text-align:center;
+        }
+        .contenido{
+            display: block;
+            
+        }
+        .encabezado{
+            margin-bottom: 20px;
+        }
+        .descripcion{
+            width: 300px;
+        }
+        .tabla-pagos th{
+            cellspacing: 0;
+            border: 1px solid black;
+        }
+        .tabla-pagos td{
+            padding: 0 5px;
+        }
+        .valores-detalle{
+            width: 100px;
+        }
+        .detalle-valor{
+            text-align: right;
+        }
+        .sueldo_neto td{
+            border-top: 1px solid blue;
+        }
+    </style>
+    <title>Boleta de Pago</title>
+</head>
+<body>
+    <div class="contenido">
+        <img src="http://www.promacohn.com/wp-content/uploads/2019/03/promaco-con-lema-v1.png" alt="Logo de Promaco">
+        <h1>Boleta de Pago</h1>
+        <div class="encabezado">
+            <div>
+                <label>Código empleado: </label><label><strong>{{empleado.id}}</strong></label>
+            </div>
+            <div>
+                <label>Empleado: </label><label><strong>{{empleado.firstName}} {% if empleado.middleName %}{{empleado.middleName}}{% endif %} {{empleado.lastName}}</strong></label>
+            </div>
+            <div>
+                <label>Fecha de pago: </label><label><strong>{{planilla.fecha_pago}}</strong></label>
+            </div>
+        </div>
+        <table class="tabla-pagos">
+            <thead>
+                <tr>
+                    <th class="descripcion">Descripción</th>
+                    <th class="valores-detalle">Ingreso</th>
+                    <th class="valores-detalle">Deducción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in detalle_ingreso %}
+                    <tr>
+                        <td>{{item.ingreso}}</td>
+                        <td class="detalle-valor">{{item.valor}}</td>
+                        <td class="detalle-valor">0.00</td>
+                    </tr>
+                {% endfor %}
+                {% for item in detalle_deduccion %}
+                    <tr>
+                        <td>{{item.deduccion}}</td>
+                        <td class="detalle-valor">0.00</td>
+                        <td class="detalle-valor">{{item.valor}}</td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <td>Subtotal</td>
+                    <td class="detalle-valor">{{total_ingreso}}</td>
+                    <td class="detalle-valor">{{total_deduccion}}</td>
+                </tr>
+                <tr class="sueldo_neto">
+                    <td colspan="2"><strong>Sueldo Neto</strong></td>
+                    <td class="detalle-valor"><strong>{{sueldo_neto}}</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
