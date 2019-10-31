@@ -14414,7 +14414,6 @@ def generar_reporte_general(request):
             if tot_col == 0:
                 columnas.append({'title': 'Total Ingreso'})
 
-            print("")
             for grupo in grupos_flat_ded:
                 tot_col = 0
                 for columna in columnas:
