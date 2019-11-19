@@ -2204,7 +2204,7 @@ def actualizar_corporativo(request):
                     oGrupo.nombreComercial = nombre
                     oGrupo.active = activo
                     oGrupo.user_mod = request.user
-                    oGrupo.date_mod = datetime.datetime.now()
+                    oGrupo.date_mod = datetime.now()
                     # oGrupo = GrupoCorporativo(
                     #     razonSocial = razon,
                     #     nombreComercial = nombre,
@@ -2405,7 +2405,7 @@ def actualizar_empresa(request):
                     oEmp.nombreComercial = nombre
                     oEmp.active = activo
                     oEmp.user_mod = request.user
-                    oEmp.date_mod = datetime.datetime.now()
+                    oEmp.date_mod = datetime.now()
                     oEmp.save()
                     emp = {
                         'pk': oEmp.pk,
@@ -2598,7 +2598,7 @@ def actualizar_sucursal(request):
                     oSucursal.description = desc
                     oSucursal.active = activo
                     oSucursal.user_mod = request.user
-                    oSucursal.date_mod = datetime.datetime.now()
+                    oSucursal.date_mod = datetime.now()
                     oSucursal.save()
                     sucursal = {
                         'pk': oSucursal.pk,
@@ -2783,7 +2783,7 @@ def actualizar_division(request):
                     oDiv.descripcion = desc
                     oDiv.active = activo
                     oDiv.user_mod = request.user
-                    oDiv.date_mod = datetime.datetime.now()
+                    oDiv.date_mod = datetime.now()
                     oDiv.save()
                     division = {
                         'pk': oDiv.pk,
@@ -2974,7 +2974,7 @@ def actualizar_departamento(request):
                     oDep.description = desc
                     oDep.active = activo
                     oDep.user_mod = request.user
-                    oDep.date_mod = datetime.datetime.now()
+                    oDep.date_mod = datetime.now()
                     oDep.save()
                     dep = {
                         'pk': oDep.pk,
@@ -3211,7 +3211,7 @@ def actualizar_puesto(request):
                     oPos.description = desc
                     oPos.active = activo
                     oPos.user_mod = request.user
-                    oPos.date_mod = datetime.datetime.now()
+                    oPos.date_mod = datetime.now()
                     oPos.funcion_operativa = oFun
                     oPos.save()
                     pos = {
@@ -3422,7 +3422,7 @@ def actualizar_ccosto(request):
                     oCC.descripcion = desc
                     oCC.active = activo
                     oCC.user_mod = request.user
-                    oCC.date_mod = datetime.datetime.now()
+                    oCC.date_mod = datetime.now()
                     oCC.save()
                     CC = {
                         'pk': oCC.pk,
@@ -3619,7 +3619,7 @@ def actualizar_pais(request):
                     oCoun.name = nombre
                     oCoun.active = activo
                     oCoun.user_mod = request.user
-                    oCoun.date_mod = datetime.datetime.now()
+                    oCoun.date_mod = datetime.now()
                     oCoun.save()
                     country = {
                         'pk': oCoun.pk,
@@ -3870,7 +3870,7 @@ def actualizar_deptos(request):
                     oDept.pais = pais
                     oDept.active = activo
                     oDept.user_mod = request.user
-                    oDept.date_mod = datetime.datetime.now()
+                    oDept.date_mod = datetime.now()
                     oDept.save()
                     estado = {
                         'pk': oDept.pk,
@@ -4036,7 +4036,7 @@ def actualizar_ciudad(request):
                         oCdd.nombre = nombre
                         oCdd.active = activo
                         oCdd.user_mod = request.user
-                        oCdd.date_mod = datetime.datetime.now()
+                        oCdd.date_mod = datetime.now()
                         oCdd.save()
                         ciudad = {
                             'pk': oCdd.pk,
@@ -4219,7 +4219,7 @@ def actualizar_genero(request):
                         oGnr.description = desc
                         oGnr.active = activo
                         oGnr.user_mod = request.user
-                        oGnr.date_mod = datetime.datetime.now()
+                        oGnr.date_mod = datetime.now()
                         oGnr.save()
                         genero = {
                             'pk': oGnr.pk,
@@ -4427,7 +4427,7 @@ def actualizar_estado_civil(request):
                         oCV.description = desc
                         oCV.active = activo
                         oCV.user_mod = request.user
-                        oCV.date_mod = datetime.datetime.now()
+                        oCV.date_mod = datetime.now()
                         oCV.save()
                         estado = {
                             'pk': oCV.pk,
@@ -4636,7 +4636,7 @@ def actualizar_parentesco(request):
                         oPr.descripcion = desc
                         oPr.active = activo
                         oPr.user_mod = request.user
-                        oPr.date_mod = datetime.datetime.now()
+                        oPr.date_mod = datetime.now()
                         oPr.save()
                         parentesco = {
                             'pk': oPr.pk,
@@ -4833,7 +4833,7 @@ def actualizar_funcion(request):
                     oFn.descripcion = desc
                     oFn.active = activo
                     oFn.user_mod = request.user
-                    oFn.date_mod = datetime.datetime.now()
+                    oFn.date_mod = datetime.now()
                     oFn.save()
                     funcion = {
                         'pk': oFn.pk,
@@ -5025,7 +5025,7 @@ def actualizar_equipos(request):
                     oMd.descripcion = desc
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.datetime.now()
+                    oMd.date_mod = datetime.now()
                     oMd.save()
                     registro = {
                         'pk': oMd.pk,
@@ -5218,7 +5218,7 @@ def actualizar_estatus_empleado(request):
                         oMd.description = desc
                         oMd.active = activo
                         oMd.user_mod = request.user
-                        oMd.date_mod = datetime.datetime.now()
+                        oMd.date_mod = datetime.now()
                         oMd.save()
                         registro = {
                             'pk': oMd.pk,
@@ -5501,7 +5501,7 @@ def actualizar_ausentismo(request):
                     oMd.aprobado = oApro
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.datetime.now()
+                    oMd.date_mod = datetime.now()
                     oMd.save()
                     registro = {
                         'pk': oMd.pk,
@@ -5709,7 +5709,7 @@ def actualizar_motivo_ausencia(request):
                     oMd.pagado = pagado
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.datetime.now()
+                    oMd.date_mod = datetime.now()
                     oMd.save()
                     registro = {
                         'pk': oMd.pk,
@@ -5901,7 +5901,7 @@ def actualizar_motivo_despido(request):
                         oMd.descripcion = desc
                         oMd.active = activo
                         oMd.user_mod = request.user
-                        oMd.date_mod = datetime.datetime.now()
+                        oMd.date_mod = datetime.now()
                         oMd.save()
                         registro = {
                             'pk': oMd.pk,
@@ -6099,7 +6099,7 @@ def actualizar_motivo_renuncia(request):
                         oMd.descripcion = desc
                         oMd.active = activo
                         oMd.user_mod = request.user
-                        oMd.date_mod = datetime.datetime.now()
+                        oMd.date_mod = datetime.now()
                         oMd.save()
                         registro = {
                             'pk': oMd.pk,
@@ -6270,7 +6270,7 @@ def actualizar_clase_educacion(request):
                         oMd.descripcion = desc
                         oMd.active = activo
                         oMd.user_mod = request.user
-                        oMd.date_mod = datetime.datetime.now()
+                        oMd.date_mod = datetime.now()
                         oMd.save()
                         registro = {
                             'pk': oMd.pk,
@@ -6565,7 +6565,7 @@ def actualizar_educacion(request):
                     oMd.asignatura_principal = asignatura
                     oMd.titulo = titulo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.datetime.now()
+                    oMd.date_mod = datetime.now()
                     oMd.save()
                     registro = {
                         'pk': oMd.pk,
@@ -6838,7 +6838,7 @@ def actualizar_evaluacion(request):
                     oMd.comentario = coment
                     oMd.active = True
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.datetime.now()
+                    oMd.date_mod = datetime.now()
                     oMd.save()
                     mensaje = 'Se ha actualizado el registro.'
                     data = {
@@ -7018,7 +7018,7 @@ def actualizar_motivo_aumento_sueldo(request):
                     oMd.descripcion = desc
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.datetime.now()
+                    oMd.date_mod = datetime.now()
                     oMd.save()
                     mensaje = 'Se ha actualizado el registro.'
                     data = {
@@ -7198,7 +7198,7 @@ def actualizar_motivo_rescision_contrato(request):
                     oMd.description = desc
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.datetime.now()
+                    oMd.date_mod = datetime.now()
                     oMd.save()
                     mensaje = 'Se ha actualizado el registro.'
                     data = {
@@ -7444,7 +7444,7 @@ def actualizar_empleo_anterior(request):
                     oMd.comentario = comentario
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.datetime.now()
+                    oMd.date_mod = datetime.now()
                     oMd.save()
                     mensaje = 'Se ha actualizado el registro.'
                     data = {
@@ -7615,7 +7615,7 @@ def actualizar_grupo_comision(request):
                 if oMd:
                     oMd.descripcion = desc1
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.datetime.now()
+                    oMd.date_mod = datetime.now()
                     oMd.active = acti
                     oMd.save()
                     mensaje = 'Se ha actualizado el registro.'
@@ -7832,7 +7832,7 @@ def actualizar_vendedor(request):
                     oMd.comentario = coment
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.datetime.now()
+                    oMd.date_mod = datetime.now()
                     oMd.save()
                     mensaje = 'Se ha actualizado el registro.'
                     data = {
@@ -8016,7 +8016,7 @@ def actualizar_feriado(request):
                     oMd.comentario = comentario
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.datetime.now()
+                    oMd.date_mod = datetime.now()
                     oMd.save()
                     mensaje = 'Se ha actualizado el registro.'
                     data = {
@@ -8344,7 +8344,7 @@ def actualizar_tipo_salario(request):
                     oMd.dias_salario = dias
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.datetime.now()
+                    oMd.date_mod = datetime.now()
                     oMd.save()
                     mensaje = 'Se ha actualizado el registro.'
                     data = {
@@ -8510,7 +8510,7 @@ def actualizar_costo_empleado(request):
                     oMd.description = desc
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.datetime.now()
+                    oMd.date_mod = datetime.now()
                     oMd.save()
                     mensaje = 'Se ha actualizado el registro.'
                     data = {
@@ -8660,7 +8660,7 @@ def actualizar_banco(request):
                     oMd.description = desc
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.datetime.now()
+                    oMd.date_mod = datetime.now()
                     oMd.save()
                     mensaje = 'Se ha actualizado el registro.'
                     data = {
@@ -8896,7 +8896,7 @@ def actualizar_empresa_usuario(request):
                     oMd.usuario = oUsuario
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.datetime.now()
+                    oMd.date_mod = datetime.now()
                     oMd.save()
                     mensaje = 'Se ha actualizado el registro.'
                     data = {
@@ -9505,7 +9505,7 @@ def deduccion_individual_actualizar(request):
                     oMd.control_saldo = controla_saldo
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.datetime.now()
+                    oMd.date_mod = datetime.now()
                     oMd.save()
                     mensaje = 'Se ha actualizado el registro.'
                     data = {
@@ -9830,7 +9830,7 @@ def deduccion_individual_detalle_actualizar(request):
                     oMd.fecha_valida = fecha_valida
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.datetime.now()
+                    oMd.date_mod = datetime.now()
                     oMd.save()
                     mensaje = 'Se ha actualizado el registro.'
                     data = {
@@ -10181,7 +10181,7 @@ def deduccion_individual_planilla_actualizar(request):
                     oMd.planilla = vplanilla
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.datetime.now()
+                    oMd.date_mod = datetime.now()
                     oMd.save()
                     mensaje = 'Se ha actualizado el registro.'
                     data = {
@@ -10382,7 +10382,7 @@ def deduccion_general_actualizar(request):
                     oMd.tipo_deduccion = o_tipodeduccion
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.datetime.now()
+                    oMd.date_mod = datetime.now()
                     oMd.save()
                     mensaje = 'Se ha actualizado el registro.'
                     data = {
@@ -10784,7 +10784,7 @@ def deduccion_general_detalle_actualizar(request):
                     oMd.fecha_valido = fecha_valida
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.datetime.now()
+                    oMd.date_mod = datetime.now()
                     oMd.save()
                     mensaje = 'Se ha actualizado el registro.'
                     data = {
@@ -11270,7 +11270,7 @@ def horaextra_actualizar(request):
                     oMd.horaExtra = horaextra
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.datetime.now()
+                    oMd.date_mod = datetime.now()
                     oMd.save()
                     mensaje = 'Se ha actualizado el registro.'
                     data = {
@@ -11670,7 +11670,7 @@ def impuestosobrerenta_actualizar(request):
                     oMd.porcentaje_label = str(porcentaje) + "%"
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.datetime.now()
+                    oMd.date_mod = datetime.now()
                     oMd.save()
                     mensaje = 'Se ha actualizado el registro.'
                     data = {
@@ -11895,7 +11895,7 @@ def ingreso_general_actualizar(request):
                     oMd.gravable = gravable
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.datetime.now()
+                    oMd.date_mod = datetime.now()
                     oMd.save()
                     mensaje = 'Se ha actualizado el registro.'
                     data = {
@@ -12296,7 +12296,7 @@ def ingreso_general_detalle_actualizar(request):
                     oMd.fecha_valida = fecha_valida
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.datetime.now()
+                    oMd.date_mod = datetime.now()
                     oMd.save()
                     mensaje = 'Se ha actualizado el registro.'
                     data = {
@@ -12519,7 +12519,7 @@ def ingreso_individual_actualizar(request):
                     oMd.gravable = gravable
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.datetime.now()
+                    oMd.date_mod = datetime.now()
                     oMd.save()
                     mensaje = 'Se ha actualizado el registro.'
                     data = {
@@ -12844,7 +12844,7 @@ def ingreso_individual_detalle_actualizar(request):
                     oMd.fecha_valida = fecha_valida
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.datetime.now()
+                    oMd.date_mod = datetime.now()
                     oMd.save()
                     mensaje = 'Se ha actualizado el registro.'
                     data = {
@@ -13193,7 +13193,7 @@ def ingreso_individual_planilla_actualizar(request):
                     oMd.valor = valor
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.datetime.now()
+                    oMd.date_mod = datetime.now()
                     oMd.save()
                     mensaje = 'Se ha actualizado el registro.'
                     data = {
@@ -14842,7 +14842,7 @@ def segurosocial_actualizar(request):
                     oMd.valor_p = valor_p
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.datetime.now()
+                    oMd.date_mod = datetime.now()
                     oMd.save()
                     mensaje = 'Se ha actualizado el registro.'
                     data = {
@@ -15030,7 +15030,7 @@ def salariominimo_eliminar(request):
                             salario = salarios[0]
                             salario.vigente = True
                             salario.user_mod = request.user
-                            salario.date_mod = datetime.datetime.now()
+                            salario.date_mod = datetime.now()
                             salario.save()
                     else:
                         mensaje = 'No existe el registro.'
@@ -15183,7 +15183,7 @@ def tipo_deduccion_actualizar(request):
                     oMd.descripcion = desc
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.datetime.now()
+                    oMd.date_mod = datetime.now()
                     oMd.save()
                     mensaje = 'Se ha actualizado el registro.'
                     data = {
@@ -15370,7 +15370,7 @@ def tipo_nomina_actualizar(request):
                     oMd.descripcion = desc
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.datetime.now()
+                    oMd.date_mod = datetime.now()
                     oMd.save()
                     mensaje = 'Se ha actualizado el registro.'
                     data = {
@@ -15816,7 +15816,7 @@ def impuestovecinal_actualizar(request):
                     oMd.porcentaje_label = str(porcentaje) + "%"
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.datetime.now()
+                    oMd.date_mod = datetime.now()
                     oMd.save()
                     mensaje = 'Se ha actualizado el registro.'
                     data = {
@@ -16007,7 +16007,7 @@ def tipo_contrato_actualizar(request):
                     oMd.descripcion = desc
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.datetime.now()
+                    oMd.date_mod = datetime.now()
                     oMd.save()
                     mensaje = 'Se ha actualizado el registro.'
                     data = {

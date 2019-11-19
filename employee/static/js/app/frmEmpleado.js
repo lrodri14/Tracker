@@ -154,7 +154,7 @@ $(document).on('ready', function() {
                 },
                 dataType: 'html',
             });
-    })
+    });
     //#endregion
 
     //#region Funciones
