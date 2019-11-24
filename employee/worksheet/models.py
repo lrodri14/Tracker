@@ -826,12 +826,13 @@ def post_save_incrementossalariales(sender, instance, **kwargs):
                 
         d_empleado = Employee.objects.get(pk=instance.empleado.pk)
         d_empleado.salary = str(instance.nuevo_salario)
-        if d_empleado.salaryUnits:
-            tot_reg = SalaryUnit.objects.filter(pk=d_empleado.salaryUnits.pk).count()
-            if tot_reg > 0:
-                o_salary_units = SalaryUnit.objects.get(pk=d_empleado.salaryUnits.pk)
-                if o_salary_units.dias_salario > 0:
-                    d_empleado.salario_diario = float(instance.nuevo_salario) / float(o_salary_units.dias_salario)
+        d_empleado.salario_diario = float(instance.nuevo_salario) / float(30)
+        # if d_empleado.salaryUnits:
+        #     tot_reg = SalaryUnit.objects.filter(pk=d_empleado.salaryUnits.pk).count()
+        #     if tot_reg > 0:
+        #         o_salary_units = SalaryUnit.objects.get(pk=d_empleado.salaryUnits.pk)
+        #         if o_salary_units.dias_salario > 0:
+        #             d_empleado.salario_diario = float(instance.nuevo_salario) / float(o_salary_units.dias_salario)
         d_empleado.save()
 
 class EncabezadoImpuestoSobreRenta(models.Model):

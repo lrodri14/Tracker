@@ -9087,7 +9087,7 @@ def aumento_salario_listado(request):
     lista = []
     busqueda = None
     suc = Branch.objects.get(pk=request.session["sucursal"])
-    empleados = Employee.objects.filter(empresa_reg=suc.empresa)
+    empleados = Employee.objects.filter(empresa_reg=suc.empresa, branch=suc)
     if 'empleado' in request.GET:
         emp = request.GET.get("empleado")
         if len(emp) > 0:
@@ -9108,7 +9108,7 @@ def aumento_salario_listado(request):
 @permission_required('worksheet.add_incrementossalariales', raise_exception=True)
 def aumento_salario_form(request):
     suc = Branch.objects.get(pk=request.session["sucursal"])
-    empleados = Employee.objects.filter(active=True, empresa_reg=suc.empresa)
+    empleados = Employee.objects.filter(active=True, empresa_reg=suc.empresa, branch=suc)
     motivos = MotivoAumentoSueldo.objects.filter(active=True, empresa_reg=suc.empresa)
     return render(request, 'aumento-salario-form.html', {'empleados': empleados, 'motivos':motivos})
 
@@ -13603,7 +13603,7 @@ def planilla_generar_calculos(request):
                         if tot_reg > 0:
                             suc = Branch.objects.get(pk=request.session["sucursal"])
                             o_planilla = Planilla.objects.get(pk=planilla_id)
-                            empleados = Employee.objects.filter(tipo_nomina=o_planilla.tipo_planilla, tipo_contrato=o_planilla.tipo_contrato, salaryUnits=o_planilla.frecuencia_pago, active=True)
+                            empleados = Employee.objects.filter(tipo_nomina=o_planilla.tipo_planilla, tipo_contrato=o_planilla.tipo_contrato, salaryUnits=o_planilla.frecuencia_pago, active=True, branch=suc)
 
                             detalles_planillas_deducciones = PlanillaDetalleDeducciones.objects.filter(planilla=o_planilla)
                             if detalles_planillas_deducciones.count() > 0:
@@ -16263,7 +16263,6 @@ class ReportePersonaPDF(View):
         pdf.drawImage(archivo_imagen, 50, 325, 100, 60, preserveAspectRatio=True)
         pdf.setFont("Helvetica", 12)
         pdf.drawString(60, 320, u"Boleta de Pago")
-
 
     def get(self, request, *args, **kwargs):
         response = HttpResponse(content_type='application/pdf')

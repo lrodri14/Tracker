@@ -2196,7 +2196,7 @@ $(document).on('ready', () => {
                         emp_dias_salario = data.dias_salario;
                         if (emp_dias_salario > 0) {
                             if (emp_txtSalario.val() > 0) {
-                                sal_dia = parseFloat(emp_txtSalario.val() / emp_dias_salario).toFixed(4);
+                                sal_dia = parseFloat(emp_txtSalario.val() / 30).toFixed(4);
                                 emp_txtSalarioDiario.val(formatNumber.new(sal_dia));
                             }
                         }
