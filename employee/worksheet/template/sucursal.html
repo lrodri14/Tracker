@@ -59,11 +59,15 @@ Registro de Sucursal
                                     <div class="col-md-5"></div>
                                     <div class="col-md-7">
                                         <div class="checkbox checkbox-success">
+                                        {% if editar %}
                                             {% if dato.active %}
-                                            <input id="chkActivo" name="activo" type="checkbox" checked class="input-sm">
+                                            <input id="chkActivo" name="activo" type="checkbox" checked>
                                             {% else %}
-                                            <input id="chkActivo" name="activo" type="checkbox" class="input-sm">
+                                            <input id="chkActivo" name="activo" type="checkbox">
                                             {% endif %}
+                                        {% else %}
+                                        <input id="chkActivo" name="activo" type="checkbox" checked>
+                                        {% endif %}
                                             <label for="chkActivo" class="control-label"> Activo </label>
                                         </div>
                                     </div>

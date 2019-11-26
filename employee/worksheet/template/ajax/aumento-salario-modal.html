@@ -11,14 +11,14 @@
                 <tbody>
                     <tr>
                         <td><label>Nombre: </label> {{dato.empleado.firstName}} {% if dato.empleado.middleName %}{{dato.empleado.middleName}}{% endif %} {{dato.empleado.lastName}}</td>
-                        <td><label>Fecha de Incremento: </label> {% if dato.fecha_incremento %}{{dato.fecha_incremento|date:"j/n/Y"}}{% endif %}</label></td>
+                        <td><label>Fecha: </label> {% if dato.fecha_incremento %}{{dato.fecha_incremento|date:"j/n/Y"}}{% endif %}</label></td>
                     </tr>
                     <tr>
                         <td><label>Motivo: </label> {% if dato.motivo_aumento.descripcion %}{{dato.motivo_aumento.descripcion}}{% endif %}</td>
                         <td><label>Salario anterior: </label> {% if dato.salario_anterior %}{{dato.salario_anterior}}{% endif %}</label></td>
                     </tr>
                     <tr>
-                        <td><label>Incremento: </label> {% if dato.incremento %}{{dato.incremento}}{% endif %}</td>
+                        <td><label>Monto: </label> {% if dato.incremento %}{{dato.incremento}}{% endif %}</td>
                         <td><label>Nuevo salario: </label> {% if dato.nuevo_salario %}{{dato.nuevo_salario}}{% endif %}</label></td>
                     </tr>
                 </tbody>

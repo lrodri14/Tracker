@@ -9594,7 +9594,7 @@ def deduccion_individual_detalle_listado(request):
 def deduccion_individual_detalle_form(request):
     suc = Branch.objects.get(pk=request.session["sucursal"])
     deducciones = DeduccionIndividual.objects.filter(empresa_reg=suc.empresa, active=True)
-    empleados = Employee.objects.filter(empresa_reg=suc.empresa, active=True)
+    empleados = Employee.objects.filter(empresa_reg=suc.empresa, active=True, branch=suc)
     return render(request, 'deduccion-individual-detalle-form.html', {'deducciones':deducciones, 'empleados':empleados})
 
 @login_required(login_url='/form/iniciar-sesion/')
@@ -9603,7 +9603,7 @@ def deduccion_indidvidual_detalle_editar(request, id):
     dato = DeduccionIndividualDetalle.objects.get(pk=id)
     suc = Branch.objects.get(pk=request.session["sucursal"])
     deducciones = DeduccionIndividual.objects.filter(empresa_reg=suc.empresa, active=True)
-    empleados = Employee.objects.filter(empresa_reg=suc.empresa, active=True)
+    empleados = Employee.objects.filter(empresa_reg=suc.empresa, active=True, branch=suc)
     return render(request, 'deduccion-individual-detalle-form.html', {'dato':dato, 'deducciones':deducciones, 'empleados':empleados, 'editar':True})
 
 #----------------- END AJAX --------------------
@@ -9919,7 +9919,7 @@ def deduccion_individual_planilla_listado(request):
 def deduccion_individual_planilla_form(request):
     suc = Branch.objects.get(pk=request.session["sucursal"])
     deducciones = DeduccionIndividual.objects.filter(empresa_reg=suc.empresa, active=True)
-    empleados = Employee.objects.filter(empresa_reg=suc.empresa, active=True)
+    empleados = Employee.objects.filter(empresa_reg=suc.empresa, active=True, branch=suc)
     planillas = Planilla.objects.filter(sucursal_reg=suc, active=True)
     return render(request, 'deduccion-individual-planilla-form.html', {'deducciones':deducciones, 'empleados':empleados, 'planillas':planillas})
 
@@ -9930,7 +9930,7 @@ def deduccion_indidvidual_planilla_editar(request, id):
     dato = DeduccionIndividualPlanilla.objects.get(pk=id)
     suc = Branch.objects.get(pk=request.session["sucursal"])
     deducciones = DeduccionIndividual.objects.filter(empresa_reg=suc.empresa, active=True)
-    empleados = Employee.objects.filter(empresa_reg=suc.empresa, active=True)
+    empleados = Employee.objects.filter(empresa_reg=suc.empresa, active=True, branch=suc)
     planillas = Planilla.objects.filter(sucursal_reg=suc, active=True)
     return render(request, 'deduccion-individual-planilla-form.html', {'dato':dato, 'deducciones':deducciones, 'empleados':empleados, 'editar':True, 'planillas':planillas})
 
@@ -13649,8 +13649,8 @@ def planilla_generar_calculos(request):
                                 deduccion_vec = 0
                                 total_rap = 0
                                 tpagos = 0
-                                total_dias_trabajados = int(item.salaryUnits.dias_salario)
                                 salario_diario = float(item.salario_diario)
+                                total_dias_trabajados = int(item.salaryUnits.dias_salario)
                                 salario_mensual = salario_diario * 30
                                 total_ingreso = total_dias_trabajados * salario_diario
 

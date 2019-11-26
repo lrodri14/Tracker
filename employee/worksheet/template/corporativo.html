@@ -32,7 +32,7 @@ Grupo Corporativo
                                     <label for="txtRazonSocial" class="control-label">Razón social :</label>
                                 </div>
                                 <div class="col-md-7 col-sm-7">
-                                    <input type="text" name="razonSocial" value="{{dato.razonSocial}}" id="txtRazonSocial" class="form-control input-sm input-sm-1">
+                                    <input type="text" name="razonSocial" value="{{dato.razonSocial}}" id="txtRazonSocial" class="form-control">
                                 </div>
                             </div>
                         </div>
@@ -42,7 +42,7 @@ Grupo Corporativo
                                     <label for="txtNombreComercial" class="control-label">Nombre comercial :</label>
                                 </div>
                                 <div class="col-md-7 col-sm-7">
-                                    <input type="text" name="nombreComercial" value="{{dato.nombreComercial}}" id="txtNombreComercial" class="form-control input-sm input-sm-1">
+                                    <input type="text" name="nombreComercial" value="{{dato.nombreComercial}}" id="txtNombreComercial" class="form-control">
                                 </div>
                             </div>
                         </div>
@@ -51,10 +51,14 @@ Grupo Corporativo
                                 <div class="col-md-5 col-sm-5"></div>
                                 <div class="col-md-7 col-sm-7">
                                     <div class="checkbox checkbox-success">
-                                        {% if dato.active %}
-                                        <input id="chkActivo" name="activo" type="checkbox" checked class="input-sm">
+                                        {% if editar %}
+                                            {% if dato.active %}
+                                            <input id="chkActivo" name="activo" type="checkbox" checked>
+                                            {% else %}
+                                            <input id="chkActivo" name="activo" type="checkbox">
+                                            {% endif %}
                                         {% else %}
-                                        <input id="chkActivo" name="activo" type="checkbox" class="input-sm">
+                                            <input id="chkActivo" name="activo" type="checkbox" checked>
                                         {% endif %}
                                         <label for="chkActivo" class="control-label"> Activo </label>
                                     </div>

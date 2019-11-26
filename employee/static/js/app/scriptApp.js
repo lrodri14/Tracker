@@ -2210,7 +2210,6 @@ $(document).on('ready', () => {
                 typeData: 'json'
             });
         }
-
     });
 
     emp_txtSalario.on('change', function () {
