@@ -80,11 +80,16 @@ Empresas por Usuario
                                 <div class="col-md-5"></div>
                                 <div class="col-md-7">
                                     <div class="checkbox checkbox-success">
-                                        {% if dato.active %}
-                                        <input id="chkActivo" name="userEmp_activo" type="checkbox" checked class="input-sm">
+                                        {% if editar %}
+                                            {% if dato.active %}
+                                            <input id="chkActivo" name="userEmp_activo" type="checkbox" checked>
+                                            {% else %}
+                                            <input id="chkActivo" name="userEmp_activo" type="checkbox">
+                                            {% endif %}
                                         {% else %}
-                                        <input id="chkActivo" name="userEmp_activo" type="checkbox" class="input-sm">
+                                        <input id="chkActivo" name="userEmp_activo" type="checkbox" checked>
                                         {% endif %}
+                                        
                                         <label for="chkptActivo" class="control-label"> Activo </label>
                                     </div>
                                 </div>
@@ -119,5 +124,4 @@ Empresas por Usuario
     $(".select2").select2();
     //#endregion
 </script>
-<script src="{% static 'js/app/scriptApp.js' %}"></script>
 {% endblock scripts %}

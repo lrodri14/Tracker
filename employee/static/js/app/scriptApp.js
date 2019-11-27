@@ -2183,70 +2183,70 @@ $(document).on('ready', () => {
     var emp_txtSalarioDiario = $('#frmEmpleado input[name="txtSalarioDiario"]');
     var emp_dias_salario = 0;
 
-    $(document).ready(function () {
-        if (emp_cboTipoSalario.val() > 0) {
-            $.ajax({
-                type: "GET",
-                url: '/obtener/dias-salario/',
-                data: {
-                    'id': emp_cboTipoSalario.val(),
-                }, // serializes the form's elements.
-                success: function (data) {
-                    if (data.error == false) {
-                        emp_dias_salario = data.dias_salario;
-                        if (emp_dias_salario > 0) {
-                            if (emp_txtSalario.val() > 0) {
-                                sal_dia = parseFloat(emp_txtSalario.val() / 30).toFixed(4);
-                                emp_txtSalarioDiario.val(formatNumber.new(sal_dia));
-                            }
-                        }
-                    } else {
-                        mensaje("Seleccionar sucursal", data.mensaje, "error", 3500);
-                    }
-                },
-                error: function (data) {
-                    mensaje("Seleccionar sucursal", data.statusText, "error", 3500);
-                },
-                typeData: 'json'
-            });
-        }
-    });
+    //$(document).ready(function () {
+        // if (emp_cboTipoSalario.val() > 0) {
+        //     $.ajax({
+        //         type: "GET",
+        //         url: '/obtener/dias-salario/',
+        //         data: {
+        //             'id': emp_cboTipoSalario.val(),
+        //         }, // serializes the form's elements.
+        //         success: function (data) {
+        //             if (data.error == false) {
+        //                 emp_dias_salario = data.dias_salario;
+        //                 if (emp_dias_salario > 0) {
+        //                     if (emp_txtSalario.val() > 0) {
+        //                         sal_dia = parseFloat(emp_txtSalario.val() / 30).toFixed(4);
+        //                         emp_txtSalarioDiario.val(formatNumber.new(sal_dia));
+        //                     }
+        //                 }
+        //             } else {
+        //                 mensaje("Seleccionar sucursal", data.mensaje, "error", 3500);
+        //             }
+        //         },
+        //         error: function (data) {
+        //             mensaje("Seleccionar sucursal", data.statusText, "error", 3500);
+        //         },
+        //         typeData: 'json'
+        //     });
+        // }
+    //});
 
-    emp_txtSalario.on('change', function () {
-        if (emp_dias_salario > 0) {
-            if (emp_txtSalario.val() > 0) {
-                sal_dia = parseFloat(emp_txtSalario.val() / emp_dias_salario).toFixed(4);
-                emp_txtSalarioDiario.val(formatNumber.new(sal_dia));
-            }
-        }
-    });
+    // emp_txtSalario.on('change', function () {
+    //     if (emp_dias_salario > 0) {
+    //         if (emp_txtSalario.val() > 0) {
+    //             sal_dia = parseFloat(emp_txtSalario.val() / emp_dias_salario).toFixed(4);
+    //             emp_txtSalarioDiario.val(formatNumber.new(sal_dia));
+    //         }
+    //     }
+    // });
 
-    emp_cboTipoSalario.on('change', function () {
-        $.ajax({
-            type: "GET",
-            url: '/obtener/dias-salario/',
-            data: {
-                'id': emp_cboTipoSalario.val(),
-            }, // serializes the form's elements.
-            success: function (data) {
-                if (data.error == false) {
-                    emp_dias_salario = data.dias_salario;
-                    if (emp_dias_salario > 0) {
-                        if (emp_txtSalario.val() > 0) {
-                            sal_dia = parseFloat(emp_txtSalario.val() / emp_dias_salario).toFixed(4);
-                            emp_txtSalarioDiario.val(formatNumber.new(sal_dia));
-                        }
-                    }
-                } else {
-                    mensaje("Seleccionar sucursal", data.mensaje, "error", 3500);
-                }
-            },
-            error: function (data) {
-                mensaje("Seleccionar sucursal", data.statusText, "error", 3500);
-            },
-            typeData: 'json'
-        });
-    })
+    // emp_cboTipoSalario.on('change', function () {
+    //     $.ajax({
+    //         type: "GET",
+    //         url: '/obtener/dias-salario/',
+    //         data: {
+    //             'id': emp_cboTipoSalario.val(),
+    //         }, // serializes the form's elements.
+    //         success: function (data) {
+    //             if (data.error == false) {
+    //                 emp_dias_salario = data.dias_salario;
+    //                 if (emp_dias_salario > 0) {
+    //                     if (emp_txtSalario.val() > 0) {
+    //                         sal_dia = parseFloat(emp_txtSalario.val() / emp_dias_salario).toFixed(4);
+    //                         emp_txtSalarioDiario.val(formatNumber.new(sal_dia));
+    //                     }
+    //                 }
+    //             } else {
+    //                 mensaje("Seleccionar sucursal", data.mensaje, "error", 3500);
+    //             }
+    //         },
+    //         error: function (data) {
+    //             mensaje("Seleccionar sucursal", data.statusText, "error", 3500);
+    //         },
+    //         typeData: 'json'
+    //     });
+    // });
     //#endregion
 
     //#region Código para Aumento de Sueldo
@@ -2258,7 +2258,7 @@ $(document).on('ready', () => {
     var txtNuevoSalario = $('.aumento-salario input[name="nuevo_salario"]');
     var txtComentarios = $('.aumento-salario textarea[name="comentarios"]');
 
-    $('#aumento-salario-listado .btnVerRegistroAumentoSalario').on('click', function (e) {
+    $('#aumento-salario-listado').on('click', '.btnVerRegistroAumentoSalario', function (e) {
         e.preventDefault();
         url = '/ver-registro/aumento-salario/';
         metodo = 'GET';

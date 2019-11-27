@@ -1,9 +1,7 @@
 {% extends "base.html" %}
 {% block titulo %}Perfíl de empleado{% endblock titulo %}
 {% block estilo %}
-
 <style>
-
     #btnCargarFoto{
         margin-top: 10px;
     }
@@ -29,6 +27,13 @@
 <div class="row">
     <div class="col-lg-12">
         <div class="panel panel-default">
+            <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">
+                <ol class="breadcrumb">
+                    <li><a href="{% url 'home' %}">Inicio</a></li>
+                    <li><a href="{% url 'empleados-listado' %}">Listado de Empleados</a></li>
+                    <li class="active">Empleado</li>
+                </ol>
+            </div>
             <div class="panel-heading">
                 <h2 class="text-bold"><i class="ti-user"></i>
                     Perfil de empleado</h2>

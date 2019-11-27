@@ -12,9 +12,17 @@
 </style>
 {% endblock estilo %}
 {% block contenido %}
+
 <div id="frmEmpleado" class="row">
     <div class="col-lg-12">
         <div class="panel panel-default">
+            <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">
+                <ol class="breadcrumb">
+                    <li><a href="{% url 'home' %}">Inicio</a></li>
+                    <li><a href="{% url 'empleados-listado' %}">Listado de Empleados</a></li>
+                    <li class="active">Empleado</li>
+                </ol>
+            </div>
             <div class="panel-heading">
                 <h2 class="text-bold"><i class="ti-user"></i>
                      {% if editar %} Editar {% else %} Nuevo {% endif %}registro de empleado</h2>
@@ -42,7 +50,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <div class="col-md-5 text-right">
-                                                <label for="" class="control-label">No. de empleado Ext. :</label>
+                                                <label for="" class="control-label">Codigo :</label>
                                             </div>
                                             <div class="col-md-7">
                                                 <input type="text" name="noEmpExt" value="{% if dato.extEmpNo %}{{dato.extEmpNo}}{% endif %}" id="txtNoEmpExt" class="form-control input-sm input-sm-1">

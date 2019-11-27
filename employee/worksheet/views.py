@@ -9094,11 +9094,11 @@ def aumento_salario_listado(request):
             if int(emp) > 0:
                 busqueda = int(emp)
                 empleado = Employee.objects.get(pk=busqueda)
-                lista = IncrementosSalariales.objects.filter(empleado=empleado, empresa_reg = suc.empresa)
+                lista = IncrementosSalariales.objects.filter(empleado=empleado, empresa_reg = suc.empresa, empleado__branch=suc)
             else:
-                lista = IncrementosSalariales.objects.filter(empresa_reg = suc.empresa)
+                lista = IncrementosSalariales.objects.filter(empresa_reg = suc.empresa, empleado__branch=suc)
     else:
-        lista = IncrementosSalariales.objects.filter(empresa_reg = suc.empresa)
+        lista = IncrementosSalariales.objects.filter(empresa_reg = suc.empresa, empleado__branch=suc)
 
     # suc = Branch.objects.get(pk=request.session["sucursal"])
     # empleados = Employee.objects.filter(active=True, empresa_reg=suc.empresa)
@@ -9354,6 +9354,42 @@ def aumento_salario_ver_registro(request):
         titulo = "Ver registro"
     return render(request, 'ajax/aumento-salario-modal.html', {'error':error, 'mensaje': mensaje, 'titulo':titulo, 'dato':dato})
 
+def obtener_aumentos_salarios(request):
+    try:
+        data = {}
+        datos = []
+        lista = []
+        suc = Branch.objects.get(pk=request.session["sucursal"])
+        empleados = Employee.objects.filter(empresa_reg=suc.empresa, branch=suc)
+        if 'empleado' in request.GET:
+            emp = request.GET.get("empleado")
+            if len(emp) > 0:
+                if int(emp) > 0:
+                    busqueda = int(emp)
+                    empleado = Employee.objects.get(pk=busqueda)
+                    lista = IncrementosSalariales.objects.filter(empleado=empleado, empresa_reg = suc.empresa)
+                else:
+                    lista = IncrementosSalariales.objects.filter(empresa_reg = suc.empresa)
+        else:
+            lista = IncrementosSalariales.objects.filter(empresa_reg = suc.empresa)
+        for item in lista:
+            nombre = item.empleado.firstName
+            if item.empleado.middleName:
+                nombre += " " + item.empleado.middleName
+            nombre += item.empleado.lastName
+            o_dato = {
+                'id': item.pk,
+                'codigo': item.empleado.extEmpNo,
+                'empleado': nombre,
+                'fecha': item.fecha_incremento,
+                'es_salario_actual': item.salario_actual,
+            }
+            datos.append(o_dato)
+            data = {"data": datos}
+    except Exception as ex:
+        datos.append(data)
+        data = {"data":datos}
+    return JsonResponse(data)
 
 #----------------- END AJAX --------------------
 
