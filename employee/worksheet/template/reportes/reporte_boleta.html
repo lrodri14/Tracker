@@ -44,7 +44,7 @@
     <h1>Boleta de Pago de Salario</h1>
     <div class="encabezado">
         <label class="control-label">Codigo empleado: </label>
-        <label><strong>{{empleado.pk}}</strong></label>
+        <label><strong>{{empleado.extEmpNo}}</strong></label>
     </div>
     <div>
         <label class="label-control">Empleado: </label>
@@ -53,6 +53,10 @@
     <div>
         <label class="label-control">Fecha de pago: </label>
         <label class="label-control">{{planilla.fecha_pago}}</label>
+    </div>
+    <div>
+        <label class="label-control">Días laborados: </label>
+        <label class="label-control">{{dias_laborados}}</label>
     </div>
     <table id="tabla_pagos">
         <thead>

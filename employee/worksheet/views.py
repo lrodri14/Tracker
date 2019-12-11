@@ -1648,6 +1648,7 @@ def actualizar_empleado(request):
                 tipo_nomina = request.POST['tipo_nomina']
                 tipo_contrato = request.POST['tipo_contrato']
 
+
                 if len(pNom) == 0:
                     mensaje = "El campo 'Primer Nombre' es obligatorio."
                     data = {
@@ -1967,6 +1968,13 @@ def actualizar_empleado(request):
 
                 if len(salario_diario) == 0:
                     salario_diario = None
+
+                if len(metodo_pago) == 0:
+                    mensaje = "Seleccione un método de pago."
+                    data = {
+                        'mensaje': mensaje, 'error': True
+                    }
+                    return JsonResponse(data)
 
                 if metodo_pago == "2":
                     if len(banco) > 0:
@@ -9088,6 +9096,7 @@ def aumento_salario_listado(request):
     busqueda = None
     suc = Branch.objects.get(pk=request.session["sucursal"])
     empleados = Employee.objects.filter(empresa_reg=suc.empresa, branch=suc)
+    motivos_aumento = MotivoAumentoSueldo.objects.filter(empresa_reg=suc.empresa)
     if 'empleado' in request.GET:
         emp = request.GET.get("empleado")
         if len(emp) > 0:
@@ -9102,7 +9111,7 @@ def aumento_salario_listado(request):
 
     # suc = Branch.objects.get(pk=request.session["sucursal"])
     # empleados = Employee.objects.filter(active=True, empresa_reg=suc.empresa)
-    return render(request, 'aumento-salario-listado.html', {'empleados': empleados, 'datos':lista, 'busqueda': busqueda})
+    return render(request, 'aumento-salario-listado.html', {'empleados': empleados, 'datos':lista, 'busqueda': busqueda, 'motivos':motivos_aumento})
 
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.add_incrementossalariales', raise_exception=True)
@@ -9167,7 +9176,9 @@ def aumento_salario_guardar(request):
                         o_motivo = MotivoAumentoSueldo.objects.get(pk=motivo_aumento_fk)
                     else:
                         return JsonResponse({'error': True, 'mensaje': 'El "motivo de aumento" no existe.'})
-
+                
+                fecha_incremento = datetime.strptime(fecha_incremento, '%d/%m/%Y')
+                fecha_incremento = datetime.strftime(fecha_incremento, '%Y-%m-%d')
                 aumentos = IncrementosSalariales.objects.filter(empleado=o_empleado, fecha_incremento=fecha_incremento)
 
                 if aumentos.count() > 0:
@@ -9180,6 +9191,7 @@ def aumento_salario_guardar(request):
                         return JsonResponse({'error': True, 'mensaje': 'El incremento tiene que ser mayor a cero.'})
 
                 suc = Branch.objects.get(pk=request.session["sucursal"])
+                
                 oIncremento = IncrementosSalariales(
                     empleado = o_empleado,
                     fecha_incremento = fecha_incremento,
@@ -9203,7 +9215,7 @@ def aumento_salario_guardar(request):
     except Exception as ex:
         data = {
             'error': True,
-            'mensaje': ex.message,
+            'mensaje': str(ex),
         }
         return JsonResponse(data)
 
@@ -9211,11 +9223,10 @@ def aumento_salario_actualizar(request):
     try:
         if request.is_ajax():
             if request.method == 'POST':
-                id = request.POST["id"]
+                id = request.POST["reg_id"]
                 motivo = request.POST["motivo"]
-                fecha_incremento = request.POST["fecha_incremento"]
                 incremento = request.POST["incremento"]
-                nuevo_salario = request.POST["incremento"]
+                comentarios = request.POST["comentarios"]
 
                 if motivo == 0:
                     return JsonResponse({'error': True, 'mensaje': 'El campo "motivo de aumento" es obligatorio.'})
@@ -9236,10 +9247,17 @@ def aumento_salario_actualizar(request):
                 if tot_reg > 0:
                     o_Incremento = IncrementosSalariales.objects.get(pk=id)
                     o_Incremento.motivo_aumento = o_motivo
-                    o_Incremento.fecha_incremento = fecha_incremento
+                    #o_Incremento.fecha_incremento = fecha_incremento
                     o_Incremento.incremento = incremento
-                    o_Incremento.nuevo_salario = nuevo_salario
+                    o_Incremento.nuevo_salario = float(o_Incremento.salario_anterior) + float(incremento)
+                    o_Incremento.comentarios = comentarios
+                    o_Incremento.user_mod = request.user
+                    o_Incremento.date_mod = datetime.now()
                     o_Incremento.save()
+                    o_empleado = Employee.objects.get(pk=o_Incremento.empleado.pk)
+                    o_empleado.salary = float(o_Incremento.salario_anterior) + float(incremento)
+                    o_empleado.salario_diario = (float(o_Incremento.salario_anterior) + float(incremento)) / 30
+                    o_empleado.save()
                     return JsonResponse({'error': False, 'mensaje': 'Se ha guardado el registro.'})
                 else:
                     return JsonResponse({'error': True, 'mensaje': 'El registro no existe.'})
@@ -9254,7 +9272,7 @@ def aumento_salario_actualizar(request):
     except Exception as ex:
         data = {
             'error': True,
-            'mensaje': ex.message,
+            'mensaje': str(ex),
         }
         return JsonResponse(data)
 
@@ -9360,23 +9378,39 @@ def obtener_aumentos_salarios(request):
         datos = []
         lista = []
         suc = Branch.objects.get(pk=request.session["sucursal"])
-        empleados = Employee.objects.filter(empresa_reg=suc.empresa, branch=suc)
-        if 'empleado' in request.GET:
-            emp = request.GET.get("empleado")
-            if len(emp) > 0:
-                if int(emp) > 0:
-                    busqueda = int(emp)
-                    empleado = Employee.objects.get(pk=busqueda)
-                    lista = IncrementosSalariales.objects.filter(empleado=empleado, empresa_reg = suc.empresa)
-                else:
-                    lista = IncrementosSalariales.objects.filter(empresa_reg = suc.empresa)
-        else:
-            lista = IncrementosSalariales.objects.filter(empresa_reg = suc.empresa)
+        lista = IncrementosSalariales.objects.filter(empresa_reg = suc.empresa, empleado__branch=suc, empleado__active=True)
         for item in lista:
             nombre = item.empleado.firstName
             if item.empleado.middleName:
                 nombre += " " + item.empleado.middleName
             nombre += item.empleado.lastName
+            fecha = datetime.strftime(item.fecha_incremento, "%d/%m/%Y")
+            o_dato = {
+                'id': item.pk,
+                'codigo': item.empleado.extEmpNo,
+                'identidad': item.empleado.govID,
+                'empleado': nombre,
+                'fecha': fecha,
+                'es_salario_actual': item.salario_actual,
+            }
+            datos.append(o_dato)
+        data = {"data": datos}
+    except Exception as ex:
+        print(ex)
+        data = {"data":datos}
+    return JsonResponse(data)
+
+def obtener_aumentos_salarios2(request):
+    lista = []
+    data = {}
+    try:
+        suc = Branch.objects.get(pk=request.session["sucursal"])
+        lista = IncrementosSalariales.objects.filter(empresa_reg = suc.empresa)
+        for item in lista:
+            nombre = item.empleado.firstName
+            if item.empleado.middleName:
+                nombre += " " + item.empleado.middleName
+                nombre += item.empleado.lastName
             o_dato = {
                 'id': item.pk,
                 'codigo': item.empleado.extEmpNo,
@@ -9387,9 +9421,37 @@ def obtener_aumentos_salarios(request):
             datos.append(o_dato)
             data = {"data": datos}
     except Exception as ex:
-        datos.append(data)
-        data = {"data":datos}
-    return JsonResponse(data)
+        data = {'error': True}
+    return JsonResponse(data, safe=False)
+
+def obtener_aumento_salario(request):
+    try:
+        data = {}
+        if 'id' in request.GET:
+            reg_id = request.GET.get("id")
+            reg_id = int(reg_id)
+            o_datosalario = IncrementosSalariales.objects.get(pk=reg_id)
+            nombre = o_datosalario.empleado.firstName
+            if o_datosalario.empleado.middleName:
+                nombre += " " + o_datosalario.empleado.middleName
+            nombre += " " + o_datosalario.empleado.lastName
+            data = {
+                'pk': o_datosalario.pk,
+                'empleado': o_datosalario.empleado.pk,
+                'nombre_empleado': nombre,
+                'motivo_aumento': o_datosalario.motivo_aumento.pk,
+                'fecha_incremento': datetime.strftime(o_datosalario.fecha_incremento, '%d/%m/%Y'),
+                'salario_anterior': formato_millar(o_datosalario.salario_anterior),
+                'incremento': formato_millar(o_datosalario.incremento),
+                'nuevo_salario': formato_millar(o_datosalario.nuevo_salario),
+                'comentarios': o_datosalario.comentarios,
+            }
+            data = {'error':False, 'data':data, 'msg': '¡Exito!'}
+        else:
+            data = {'error': True, 'msg': 'No se esta pasando el parámetro'}
+    except Exception as ex:
+        data = {'error': True, 'msg':str(ex)}
+    return JsonResponse(data, status=200)
 
 #----------------- END AJAX --------------------
 
@@ -13673,6 +13735,7 @@ def planilla_generar_calculos(request):
                                 tot_gen_ded = 0
                                 tot_pla_ing = 0
                                 tot_pla_ded = 0
+                                tot_dias_sin_pago = 0
                                 total_dias_trabajados = 0
                                 salario_diario = 0
                                 total_ingreso = 0
@@ -13689,9 +13752,11 @@ def planilla_generar_calculos(request):
                                 total_dias_trabajados = int(item.salaryUnits.dias_salario)
                                 salario_mensual = salario_diario * 30
                                 total_ingreso = total_dias_trabajados * salario_diario
+                                valor_sueldo = total_dias_trabajados * salario_diario
 
                                 #Ingreso Individual Detalle
-                                ingresos_individuales = IngresoIndividualDetalle.objects.filter(empleado=item, fecha_valida__gte=o_planilla.fecha_inicio, fecha_valida__lte=o_planilla.fecha_fin, active=True)
+                                #ingresos_individuales = IngresoIndividualDetalle.objects.filter(empleado=item, fecha_valida__gte=o_planilla.fecha_inicio, fecha_valida__lte=o_planilla.fecha_fin, active=True)
+                                ingresos_individuales = IngresoIndividualDetalle.objects.filter(empleado=item, fecha_valida__gte=o_planilla.fecha_inicio, active=True)
                                 for item1 in ingresos_individuales:
                                     if item1.ingreso.gravable:
                                         tigi += item1.valor
@@ -13700,7 +13765,8 @@ def planilla_generar_calculos(request):
                                     GuardarDetalleDeduccionIngreso(1, item1.ingreso.ingreso_i, item1.valor, item, o_planilla, suc.empresa, suc, request.user, item1.ingreso.tipo_ingreso)
 
                                 #Ingreso general
-                                ingresos_generales = IngresoGeneralDetalle.objects.filter(nomina=o_planilla, tipo_pago=o_planilla.frecuencia_pago, tipo_contrato=item.tipo_contrato, fecha_valida__gte=o_planilla.fecha_inicio, fecha_valida__lte=o_planilla.fecha_fin, active=True)
+                                #ingresos_generales = IngresoGeneralDetalle.objects.filter(nomina=o_planilla, tipo_pago=o_planilla.frecuencia_pago, tipo_contrato=item.tipo_contrato, fecha_valida__gte=o_planilla.fecha_inicio, fecha_valida__lte=o_planilla.fecha_fin, active=True)
+                                ingresos_generales = IngresoGeneralDetalle.objects.filter(nomina=o_planilla, tipo_pago=o_planilla.frecuencia_pago, tipo_contrato=item.tipo_contrato, fecha_valida__gte=o_planilla.fecha_inicio, active=True)
                                 for item2 in ingresos_generales:
                                     if item2.ingreso.gravable:
                                         tigg += item2.valor
@@ -13714,9 +13780,10 @@ def planilla_generar_calculos(request):
                                     if item3.ingreso.gravable:
                                         tigp += item3.valor
                                     else:
-                                        tip = tot_pla_ing + item3.valor
-                                    GuardarDetalleDeduccionIngreso(1, item3.ingreso.ingreso_i, item3.value, item, o_planilla, suc.empresa, suc, request.user, item3.ingreso.tipo_ingreso)
+                                        tip += item3.valor
+                                    GuardarDetalleDeduccionIngreso(1, item3.ingreso.ingreso_i, item3.valor, item, o_planilla, suc.empresa, suc, request.user, item3.ingreso.tipo_ingreso)
 
+                                tot_pla_ing = float(tigi) + float(tii) + float(tigg) + float(tig) + float(tigp) + float(tip) 
                                 ausencias_con_pago = Ausentismo.objects.filter(Q(desde__range=(o_planilla.fecha_inicio, o_planilla.fecha_fin)) | Q(hasta__range=(o_planilla.fecha_inicio, o_planilla.fecha_fin)) | Q(desde__lt=o_planilla.fecha_inicio, hasta__gt=o_planilla.fecha_fin), empleado=item, sucursal_reg=suc, motivo__pagado=True, active=True)
                                 if ausencias_con_pago.count() > 0:
                                     dias_ausencia_con_pago = 1
@@ -13771,6 +13838,27 @@ def planilla_generar_calculos(request):
                                                 comentario = "Su salario ha disminuido por concepto de ausencia médica que cubre el IHSS"
                                                 GuardarDetalleDeduccionIngreso(2, "Deducción de salario por incapacidad cubierta por IHSS", tot_ajuste, item, o_planilla, suc.empresa, suc, request.user, None)
 
+                                # ausencias_sin_pago = Ausentismo.objects.filter(Q(desde__range=(o_planilla.fecha_inicio, o_planilla.fecha_fin)) | Q(hasta__range=(o_planilla.fecha_inicio, o_planilla.fecha_fin)) | Q(desde__gt=o_planilla.fecha_inicio, hasta__lt=o_planilla.fecha_fin), empleado=item, sucursal_reg=suc, motivo__pagado=False, active=True)
+                                ausencias_sin_pago = Ausentismo.objects.filter(desde__gte=o_planilla.fecha_inicio, hasta__lte=o_planilla.fecha_fin, empleado=item, sucursal_reg=suc, motivo__pagado=False, active=True)
+                                if ausencias_sin_pago.count() > 0:
+                                    for ausencia in ausencias_sin_pago:
+                                        dias_ausencia_sin_pago = 1
+                                        dias_ausencia_sin_pago = dias_ausencia_sin_pago + (ausencia.hasta - ausencia.desde).days
+                                        tot_dias_sin_pago += dias_ausencia_sin_pago
+                                    #GuardarDetalleDeduccionIngreso(2, "Ausencias no justificadas", dias_ausencia_sin_pago * salario_diario, item, o_planilla, suc.empresa, suc, request.user, None)
+
+                                    valor_sueldo = valor_sueldo - (dias_ausencia_sin_pago * salario_diario)
+
+                                    # o_planilla_detalle_deduccion = PlanillaDetalleDeducciones(
+                                    #     empleado = item,
+                                    #     planilla = o_planilla,
+                                    #     deduccion = "Ausencia no justificada",
+                                    #     valor = tot_dias_sin_pago * salario_diario,
+                                    #     empresa_reg = suc.empresa,
+                                    #     sucursal_reg = suc,
+                                    #     user_reg = request.user
+                                    # )
+                                    # o_planilla_detalle_deduccion.save()
 
                                 dedaplicada = EmpleadoDeducciones.objects.filter(empleado=item, empresa_reg=suc.empresa, deduccion='IHSS', active=True)
                                 if dedaplicada.count() > 0:
@@ -13885,14 +13973,16 @@ def planilla_generar_calculos(request):
                                         print("IMV: " + str(tipos_deducciones))
 
                                 #Deduccion Individual Detalle
-                                deducciones_individuales = DeduccionIndividualDetalle.objects.filter(empleado=item, fecha_valida__gte=o_planilla.fecha_inicio, fecha_valida__lte=o_planilla.fecha_fin, active=True)
+                                #deducciones_individuales = DeduccionIndividualDetalle.objects.filter(empleado=item, fecha_valida__gte=o_planilla.fecha_inicio, fecha_valida__lte=o_planilla.fecha_fin, active=True)
+                                deducciones_individuales = DeduccionIndividualDetalle.objects.filter(empleado=item, fecha_valida__gte=o_planilla.fecha_inicio, active=True)
                                 for item6 in deducciones_individuales:
                                     tipo_deduccion = {'nombre': item6.deduccion.deduccion_i, 'valor': item6.valor, 'orden': item6.deduccion.tipo_deduccion.orden}
                                     tipos_deducciones.append(tipo_deduccion)
                                     tot_ind_ded = tot_ind_ded + item6.valor
 
                                 #Deduccion general
-                                deducciones_generales = DeduccionGeneralDetalle.objects.filter(nomina=o_planilla, tipo_pago=o_planilla.frecuencia_pago, tipo_contrato=item.tipo_contrato, fecha_valido__gte=o_planilla.fecha_inicio, fecha_valido__lte=o_planilla.fecha_fin, active=True)
+                                # deducciones_generales = DeduccionGeneralDetalle.objects.filter(nomina=o_planilla, tipo_pago=o_planilla.frecuencia_pago, tipo_contrato=item.tipo_contrato, fecha_valido__gte=o_planilla.fecha_inicio, fecha_valido__lte=o_planilla.fecha_fin, active=True)
+                                deducciones_generales = DeduccionGeneralDetalle.objects.filter(nomina=o_planilla, tipo_pago=o_planilla.frecuencia_pago, tipo_contrato=item.tipo_contrato, fecha_valido__gte=o_planilla.fecha_inicio, active=True)
                                 for item7 in deducciones_generales:
                                     tipo_deduccion = {'nombre': item7.deduccion.deduccion_g, 'valor': item7.valor, 'orden': item7.deduccion.tipo_deduccion.orden}
                                     tipos_deducciones.append(tipo_deduccion)
@@ -13909,7 +13999,6 @@ def planilla_generar_calculos(request):
                                 for item9 in lista_deducciones_tipos:
                                     for item9_1 in tipos_deducciones:
                                         if float(item9_1["orden"]) == float(item9.orden):
-                                            print(item9_1["valor"])
                                             total_ingreso = total_ingreso - float(item9_1["valor"])
                                             total_egreso = total_egreso + float(item9_1["valor"])
                                             GuardarDetalleDeduccionIngreso(2, item9_1["nombre"], item9_1["valor"], item, o_planilla, suc.empresa, suc, request.user, item9)
@@ -13925,7 +14014,7 @@ def planilla_generar_calculos(request):
                                     dias_salario = item.salaryUnits.dias_salario,
                                     dias_ausentes_sin_pago = dias_ausencia_sin_pago,
                                     dias_ausentes_con_pago = dias_ausencia_con_pago,
-                                    total_ingresos = total_ingreso,
+                                    total_ingresos = valor_sueldo + tot_pla_ing,
                                     total_deducciones = total_egreso,
                                     comentario = comentario,
                                     empresa_reg = suc.empresa,
@@ -13939,7 +14028,8 @@ def planilla_generar_calculos(request):
                                     empleado = item,
                                     planilla = o_planilla,
                                     ingreso = "Sueldo empleado ",
-                                    valor = total_ingreso,
+                                    #valor = total_ingreso,
+                                    valor = valor_sueldo,
                                     empresa_reg = suc.empresa,
                                     sucursal_reg = suc,
                                     user_reg = request.user
@@ -13976,7 +14066,6 @@ def planilla_generar_calculos(request):
             }
             return JsonResponse(data)
     except ValueError as mensaje:
-        print(mensaje)
         data = {
             'error': True,
             'mensaje': mensaje
@@ -14383,7 +14472,6 @@ def generar_reporte_general(request):
         }
         return JsonResponse(data)
     else:
-        print(q_list)
         val_list_ing = PlanillaDetalleIngresos.objects.filter(functools.reduce(operator.and_, q_list)).values_list('empleado__id', flat=True).distinct()
         val_list_ded = PlanillaDetalleDeducciones.objects.filter(functools.reduce(operator.and_, q_list)).values_list('empleado__id', flat=True).distinct()
         empleados = Employee.objects.filter(pk__in=val_list_ing)
@@ -14392,7 +14480,6 @@ def generar_reporte_general(request):
         grupos_flat = PlanillaDetalleIngresos.objects.filter(Q(planilla__fecha_inicio__gte=desde, planilla__fecha_fin__lte=hasta)).exclude(tipo_ingreso=None).values_list('tipo_ingreso__grupo', flat=True).order_by('tipo_ingreso__orden', 'ingreso').distinct()
         grupos_flat_ded = PlanillaDetalleDeducciones.objects.filter(Q(planilla__fecha_inicio__gte=desde, planilla__fecha_fin__lte=hasta)).exclude(tipo_deduccion=None).values_list('tipo_deduccion__grupo', flat=True).order_by('tipo_deduccion__orden', 'deduccion').distinct()
         for empleado in empleados:
-            print("")
             detallesfila = []
             total_ingreso = 0
             total_deducciones = 0
@@ -14406,7 +14493,7 @@ def generar_reporte_general(request):
             if empleado.middleName:
                 Nombre = Nombre + " " + empleado.middleName
             Nombre = Nombre + " " + empleado.lastName
-            datos_empleado["Empleado_Id"] = empleado.pk
+            datos_empleado["Empleado_Id"] = empleado.extEmpNo
             datos_empleado["Nombre"] = Nombre
             datos_empleado['Fecha pago'] = None
             datos_empleado['Sueldo'] = 0
@@ -14433,14 +14520,14 @@ def generar_reporte_general(request):
                 if not grupo in datos_empleado:
                     datos_empleado[grupo] = formato_millar(0)
 
-                o_pla_ing = PlanillaDetalleIngresos.objects.filter(Q(planilla__fecha_inicio__gte=desde, planilla__fecha_fin__lte=hasta, tipo_ingreso__grupo=grupo)).order_by('tipo_ingreso__orden', 'ingreso')
+                o_pla_ing = PlanillaDetalleIngresos.objects.filter(Q(planilla__fecha_inicio__gte=desde, empleado=empleado, planilla__fecha_fin__lte=hasta, tipo_ingreso__grupo=grupo)).order_by('tipo_ingreso__orden', 'ingreso')
                 for detalle in o_pla_ing:
                     if detalle.tipo_ingreso:
                         if detalle.tipo_ingreso.grupo == grupo and detalle.empleado == empleado:
-                            datos_empleado[grupo] = formato_millar(float(datos_empleado[grupo]) + float(detalle.valor))
+                            datos_empleado[grupo] = formato_millar(float(datos_empleado[grupo].replace(",", "")) + float(detalle.valor))
                             total_ingreso += detalle.valor
                         else:
-                            datos_empleado[grupo] = formato_millar(float(datos_empleado[grupo]) + 0)
+                            datos_empleado[grupo] = formato_millar(float(datos_empleado[grupo].replace(",", "")) + 0)
 
             datos_empleado['Total Ingresos'] = formato_millar(total_ingreso)
             tot_col = 0
@@ -14463,15 +14550,13 @@ def generar_reporte_general(request):
                     datos_empleado[grupo] = formato_millar(0)
                 
                 o_pla_ded = PlanillaDetalleDeducciones.objects.filter(Q(planilla__fecha_inicio__gte=desde, planilla__fecha_fin__lte=hasta, tipo_deduccion__grupo=grupo)).order_by('tipo_deduccion__orden', 'deduccion')
-                print(o_pla_ded)
                 for detalle in o_pla_ded:
                     if detalle.tipo_deduccion:
                         if detalle.tipo_deduccion.grupo == grupo and detalle.empleado == empleado:
-                            print(detalle.valor)
-                            datos_empleado[grupo] = formato_millar(float(datos_empleado[grupo]) + float(detalle.valor))
+                            datos_empleado[grupo] = formato_millar(float(datos_empleado[grupo].replace(",", "")) + float(detalle.valor))
                             total_deducciones += detalle.valor
                         else:
-                            datos_empleado[grupo] = formato_millar(float(datos_empleado[grupo]) + 0)
+                            datos_empleado[grupo] = formato_millar(float(datos_empleado[grupo].replace(",", "")) + 0)
 
             datos_empleado['Total Deducciones'] = formato_millar(total_deducciones)
             datos_planilla.append(datos_empleado)
@@ -14540,7 +14625,6 @@ def planilla_generada(request):
     suma_total_deducciones = 0
     if request.is_ajax():
         planilla_id = int(request.GET.get("Id"))
-        print("Entra aqui")
         if planilla_id == 0:
             error = True
             mensaje = "El registro no existe."
@@ -14559,7 +14643,7 @@ def planilla_generada(request):
                     'dias_ausentes_con_pago': item.dias_ausentes_con_pago,
                     'total_ingresos': locale.format("%.2f", float(item.total_ingresos), grouping=True),
                     'total_deducciones': locale.format("%.2f", item.total_deducciones, grouping=True),
-                    'total_salario': locale.format("%.2f", total_salario, grouping=True),
+                    'total_salario': locale.format("%.2f", item.total_ingresos - item.total_deducciones, grouping=True),
                 }
                 datos.append(objeto)
                 suma_total_ingresos += float(item.total_ingresos)
@@ -14587,8 +14671,10 @@ def planilla_generada(request):
                 }
                 datos3.append(objeto2)
 
+            suma_neta = suma_total_ingresos - suma_total_deducciones
             suma_total_ingresos = locale.format("%.2f", suma_total_ingresos, grouping=True)
             suma_total_deducciones = locale.format("%.2f", suma_total_deducciones, grouping=True)
+            suma_neta = locale.format("%.2f", suma_neta, grouping=True)
             
             error = False
             mensaje = "Datos encontrados"
@@ -14596,7 +14682,7 @@ def planilla_generada(request):
         error = True
         mensaje = "Método no permitido"
 
-    return render(request, 'ajax/planilla_empleados_lista.html', {'detalle_planilla': datos, 'ingresos': datos2, 'deducciones': datos3, 'total_deducciones': suma_total_deducciones, 'total_ingresos':suma_total_ingresos})
+    return render(request, 'ajax/planilla_empleados_lista.html', {'detalle_planilla': datos, 'ingresos': datos2, 'deducciones': datos3, 'total_deducciones': suma_total_deducciones, 'total_ingresos':suma_total_ingresos, 'total_neto': suma_neta})
 #------------------------------END AJAX---------------------------------
 
 #endregion
@@ -16283,6 +16369,7 @@ class Pdf(View):
         params = {
             'empleado': o_empleado,
             'planilla': o_planilla,
+            'dias_laborados': int(o_pla_de.dias_salario) - int(o_pla_de.dias_ausentes_sin_pago),
             'ingresos': detalle_ing,
             'deducciones': detalle_ded,
             'total_ingresos': formato_millar(o_pla_de.total_ingresos),

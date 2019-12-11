@@ -2182,81 +2182,167 @@ $(document).on('ready', () => {
     var emp_txtSalario = $('#frmEmpleado input[name="salario"]');
     var emp_txtSalarioDiario = $('#frmEmpleado input[name="txtSalarioDiario"]');
     var emp_dias_salario = 0;
-
-    //$(document).ready(function () {
-        // if (emp_cboTipoSalario.val() > 0) {
-        //     $.ajax({
-        //         type: "GET",
-        //         url: '/obtener/dias-salario/',
-        //         data: {
-        //             'id': emp_cboTipoSalario.val(),
-        //         }, // serializes the form's elements.
-        //         success: function (data) {
-        //             if (data.error == false) {
-        //                 emp_dias_salario = data.dias_salario;
-        //                 if (emp_dias_salario > 0) {
-        //                     if (emp_txtSalario.val() > 0) {
-        //                         sal_dia = parseFloat(emp_txtSalario.val() / 30).toFixed(4);
-        //                         emp_txtSalarioDiario.val(formatNumber.new(sal_dia));
-        //                     }
-        //                 }
-        //             } else {
-        //                 mensaje("Seleccionar sucursal", data.mensaje, "error", 3500);
-        //             }
-        //         },
-        //         error: function (data) {
-        //             mensaje("Seleccionar sucursal", data.statusText, "error", 3500);
-        //         },
-        //         typeData: 'json'
-        //     });
-        // }
-    //});
-
-    // emp_txtSalario.on('change', function () {
-    //     if (emp_dias_salario > 0) {
-    //         if (emp_txtSalario.val() > 0) {
-    //             sal_dia = parseFloat(emp_txtSalario.val() / emp_dias_salario).toFixed(4);
-    //             emp_txtSalarioDiario.val(formatNumber.new(sal_dia));
-    //         }
-    //     }
-    // });
-
-    // emp_cboTipoSalario.on('change', function () {
-    //     $.ajax({
-    //         type: "GET",
-    //         url: '/obtener/dias-salario/',
-    //         data: {
-    //             'id': emp_cboTipoSalario.val(),
-    //         }, // serializes the form's elements.
-    //         success: function (data) {
-    //             if (data.error == false) {
-    //                 emp_dias_salario = data.dias_salario;
-    //                 if (emp_dias_salario > 0) {
-    //                     if (emp_txtSalario.val() > 0) {
-    //                         sal_dia = parseFloat(emp_txtSalario.val() / emp_dias_salario).toFixed(4);
-    //                         emp_txtSalarioDiario.val(formatNumber.new(sal_dia));
-    //                     }
-    //                 }
-    //             } else {
-    //                 mensaje("Seleccionar sucursal", data.mensaje, "error", 3500);
-    //             }
-    //         },
-    //         error: function (data) {
-    //             mensaje("Seleccionar sucursal", data.statusText, "error", 3500);
-    //         },
-    //         typeData: 'json'
-    //     });
-    // });
     //#endregion
 
     //#region Código para Aumento de Sueldo
-    var cboEmpleado = $('.aumento-salario select[name="empleado"]');
-    var txtFechaIncremento = $('.aumento-salario input[name="fecha_incremento"]');
-    var motivo_aumento = $('.aumento-salario select[name="motivo_aumento"]');
-    var txtSalarioAnterior = $('.aumento-salario input[name="salario_anterior"]');
-    var txtIncremento = $('.aumento-salario input[name="incremento"]');
-    var txtNuevoSalario = $('.aumento-salario input[name="nuevo_salario"]');
-    var txtComentarios = $('.aumento-salario textarea[name="comentarios"]');
+    var cboEmpleado = $('#frmGuardarDatoSalario select[name="empleado"]');
+    var txtFechaIncremento = $('#frmGuardarDatoSalario input[name="fecha_incremento"]');
+    var motivo_aumento = $('#frmGuardarDatoSalario select[name="motivo_aumento"]');
+    var txtSalarioAnterior = $('#frmGuardarDatoSalario input[name="salario_anterior"]');
+    var txtIncremento = $('#frmGuardarDatoSalario input[name="incremento"]');
+    var txtNuevoSalario = $('#frmGuardarDatoSalario input[name="nuevo_salario"]');
+    var txtComentarios = $('#frmGuardarDatoSalario textarea[name="comentarios"]');
+
+
+    var theadDatosSalario = $('#tablaDatosSalario thead tr').clone(true);
+    theadDatosSalario.appendTo( '#tablaDatosSalario thead' );
+    $('#tablaDatosSalario thead tr:eq(1) th').each( function (i) {
+        var title = $(this).text();
+        if (title != "Acciones") {
+            $(this).html( '<input type="text" class="form-control" placeholder="Buscar '+title+'" />' );
+        }else{
+            "";
+        }
+        $( 'input', this ).on( 'keyup change', function () {
+            if ( tableDatosSalario.column(i).search() !== this.value ) {
+                tableDatosSalario
+                    .column(i)
+                    .search( this.value )
+                    .draw();
+            }
+        } );
+    });
+    theadDatosSalario.find("#thAcciones").html("");
+
+    var tableDatosSalario = $('#tablaDatosSalario').DataTable({
+        "ajax": "/obtener/datos-salarios/",
+        "processing": true,
+        "columnDefs": [
+            {
+                "targets": 5,
+                "className": "text-center",
+            },
+            {
+                "targets": 4,
+                "className": "text-center",
+                "width": "8%",
+            },
+            {
+                "targets": 3,
+                "width": "12%",
+            },
+            {
+                "targets": 1,
+                "width": "15%",
+            },
+            {
+                "targets": 0,
+                "width": "13%",
+            }
+        ],
+        "columns": [
+            {"data": "codigo"},
+            {"data": "identidad"},
+            {"data": "empleado"},
+            {"data": "fecha"},
+            {
+                "data": "es_salario_actual",
+                render: function(data, type, row) {
+                    if (data) {
+                        return "SI"
+                    }else{
+                        return "NO"
+                    }
+                }
+            },
+            {
+                "data": "id",
+                render : function(data, type, row) {
+                    html = '<a href="#" class="btnEliminar" data="'+data+'" data-tooltip="Eliminar el registro" data-toggle="tooltip" data-original-title="Eliminar"> <i class="fa fa-close text-danger m-r-10"></i></a> ';
+                    html += '<a href="#" class="btnEditarDatosSalario" data-toggle="tooltip" data="'+data+'" data-original-title="Editar"><i class="fa fa-pencil text-inverse m-r-10"></i></a> ';
+                    html += '<a href="#" data-original-title="Ver registro" class="btnVerRegistroAumentoSalario" data="'+data+'"><i class="fa fa-search text-success m-r-10"></i></a>'
+                    return html;
+                }
+            }
+        ],
+        orderCellsTop: true,
+        fixedHeader: true,
+        "language": {
+            "lengthMenu": "Mostrar _MENU_ registros por página",
+            "zeroRecords": "No se encontraron datos.",
+            "info": "Página _PAGE_ de _PAGES_",
+            "infoEmpty": "No existen registros",
+            "infoFiltered": "(resultado de _MAX_ registros en total)",
+            "paginate": {
+                "first": "Primer registro",
+                "last": "Último registro",
+                "next": "Siguiente",
+                "previous": "Anterior",
+            },
+            "search": "Buscar:",
+            "loadingRecords": "Cargando datos...",
+            "processing": "Procesando datos...",
+        }
+    });
+
+    $('#aumento-salario-listado').on('click', '.btnEliminar', function(e) {
+        e.preventDefault();
+        var id = $(this).attr('data');
+        Eliminar(id);
+    });
+
+    function Eliminar(id) {
+        var Encabezado = 'Aumento de sueldo';
+        var url = "/eliminar/aumento-salario/"; // the script where you handle the form input.
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {
+                'id': id,
+                'csrfmiddlewaretoken': token.val(),
+            }, // serializes the form's elements.
+            success: function(data)
+            {
+                if(data.error == false){
+                    $.toast({
+                        heading: Encabezado,
+                        text: data.mensaje,
+                        position: 'top-right',
+                        loaderBg: '#ff6849',
+                        icon: 'success',
+                        hideAfter: 2000,
+                        stack: 6
+                    });
+                    // setTimeout(function () {
+                    //     location.reload();
+                    // }, 2000);
+                    tableDatosSalario.ajax.reload();
+                }else{
+                    $.toast({
+                        heading: Encabezado,
+                        text: data.mensaje,
+                        position: 'top-right',
+                        loaderBg: '#ff6849',
+                        icon: 'error',
+                        hideAfter: 5000,
+                        stack: 6
+                    });
+                }
+            },
+            error: function(data) {
+                console.log(data);
+                $.toast({
+                    heading: Encabezado,
+                    text: data.status + ' - ' + data.statusText,
+                    position: 'top-right',
+                    loaderBg: '#ff6849',
+                    icon: 'error',
+                    hideAfter: 5000,
+                    stack: 6
+                });
+            }
+        });
+    }
 
     $('#aumento-salario-listado').on('click', '.btnVerRegistroAumentoSalario', function (e) {
         e.preventDefault();
@@ -2278,6 +2364,16 @@ $(document).on('ready', () => {
         $('#responsive-modal').modal('toggle');
     });
 
+    $('#aumento-salario-listado #btnAgregar').on('click', function(e) {
+        e.preventDefault();
+        $('#frmGuardarDatoSalario').modal('toggle');
+    });
+
+    $('#aumento-salario-listado #btnRefrescar').on('click', function(e) {
+        e.preventDefault();
+        tableDatosSalario.ajax.reload();
+    });
+
     $('#btnIncGuardar').on('click', function (e) {
         e.preventDefault();
         url = '/enviar/aumento-salario/';
@@ -2295,6 +2391,28 @@ $(document).on('ready', () => {
         GuardarRegistro(url, metodo, data, "Aumento de salario");
     });
 
+    $('#frmGuardarDatoSalario #btnCancelar').on('click', function(e) {
+        e.preventDefault();
+    });
+
+    $('#frmGuardarDatoSalario #btnGF_DS').on('click', function(e) {
+        e.preventDefault();
+        url = '/enviar/aumento-salario/';
+        metodo = 'POST';
+        data = {
+            'empleado_fk': cboEmpleado.val(),
+            'fecha_incremento': txtFechaIncremento.val(),
+            'motivo_aumento': motivo_aumento.val(),
+            'salario_anterior': (txtSalarioAnterior.val().replace(",", "")),
+            'incremento': (txtIncremento.val().replace(",", "")),
+            'nuevo_salario': (txtNuevoSalario.val().replace(",", "")),
+            'comentarios': txtComentarios.val(),
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Aumento de salario");
+        tableDatosSalario.ajax.reload();
+    });
+
     $('#btnIncActualizar').on('click', function (e) {
         e.preventDefault();
         var novo_saldo = parseFloat(txtNuevoSalario.val().replace(",", "")).toFixed(2)
@@ -2309,11 +2427,65 @@ $(document).on('ready', () => {
             'csrfmiddlewaretoken': token.val(),
         };
         GuardarRegistro(url, metodo, data, "Aumento de salario", true, "/listar/aumento-salario/");
+        $('#frmEditarDatoSalario').modal('toggle');
     });
 
     $('#btnIncCancelar').on('click', function (e) {
         e.preventDefault();
         window.location.replace(dns + "/listar/aumento-salario/");
+    });
+
+    $('#aumento-salario-listado').on('click', '.btnEditarDatosSalario', function(e) {
+        e.preventDefault();
+        url = '/obtener/dato-salario/';
+        metodo = 'GET';
+        data = { 'id': $(this).attr('data') };
+        $.ajax({
+            type: metodo,
+            url: url,
+            data: data,
+            success: function (data) {
+                if (data.error === false) {
+                    $('#reg_id').val(data.data.pk);
+                    //$('#cboDSEmp').val(data.data.empleado).trigger('change');
+                    $('#txtDS_NE').val(data.data.nombre_empleado);
+                    $('#cboDSMotivo').val(data.data.motivo_aumento).trigger('change');
+                    $('#txtDSFecha').datepicker('setDate',data.data.fecha_incremento);
+                    $('#txtDS_SA').val(data.data.salario_anterior);
+                    $('#txtDS_I').val(data.data.incremento);
+                    $('#txtDS_NS').val(data.data.nuevo_salario);
+                    $('#txtDS_C').text(data.data.comentarios);
+                    $('#frmEditarDatoSalario').modal('toggle');
+                }
+            },
+            error: function (data) {
+                console.log(data);
+            },
+            dataType: 'json'
+        });
+    });
+
+    $('#btnA_DS').on('click', function(e) {
+        
+    });
+
+    $('#btnG_DS').on('click', function(e) {
+        e.preventDefault();
+        url = '/actualizar/aumento-salario/';
+        metodo = 'POST';
+        data = {
+            'reg_id': $('#reg_id').val(),
+            'motivo': $('#cboDSMotivo').val(),
+            'incremento': $('#txtDS_I').val().replace(",", ""),
+            'comentarios': $('#txtDS_C').val(),
+            'csrfmiddlewaretoken': token.val(),
+        };
+        GuardarRegistro(url, metodo, data, "Aumento de salario", true, null);
+        $('#frmEditarDatoSalario').modal('toggle');
+    });
+
+    $('#txtDS_I').on('change', function() {
+        calcular_nuevo_sueldo2();
     });
 
     cboEmpleado.on('change', function () {
@@ -2333,16 +2505,36 @@ $(document).on('ready', () => {
         var inc = 0;
         var nuevo_sal = 0;
         if (txtSalarioAnterior.val().length > 0) {
-            salant = $('input[name="salario_anterior"]').val().replace(",", "");
-            salario_anterior = Number($('input[name="salario_anterior"]').val());
+            salant = $('#frmGuardarDatoSalario  input[name="salario_anterior"]').val().replace(",", "");
+            salario_anterior = Number($('#frmGuardarDatoSalario input[name="salario_anterior"]').val());
         }
         if (txtIncremento.val().length > 0) {
-            inc = parseFloat($('input[name="incremento"]').val()).toFixed(4);
-            incremento = Number($('input[name="incremento"]').val());
+            inc = parseFloat($('#frmGuardarDatoSalario  input[name="incremento"]').val()).toFixed(4);
+            incremento = Number($('#frmGuardarDatoSalario  input[name="incremento"]').val());
         }
         nuevo_sal = Number(salant) + Number(inc);
         nuevo_sal = parseFloat(nuevo_sal).toFixed(4);
         txtNuevoSalario.val(formatNumber.new(nuevo_sal));
+    }
+
+    function calcular_nuevo_sueldo2(){
+        salario_anterior = 0;
+        incremento = 0;
+        nuevo_salario = 0;
+        var salant = 0;
+        var inc = 0;
+        var nuevo_sal = 0;
+        if ($('#txtDS_SA').val().length > 0) {
+            salant = $('#txtDS_SA').val().replace(",", "");
+            salario_anterior = Number($('#txtDS_SA').val());
+        }
+        if ($('#txtDS_I').val().length > 0) {
+            salant = $('#txtDS_I').val().replace(",", "");
+            salario_anterior = Number($('#txtDS_I').val());
+        }
+        nuevo_sal = Number(salant) + Number(inc);
+        nuevo_sal = parseFloat(nuevo_sal).toFixed(4);
+        $('#txtDS_NS').val(formatNumber.new(nuevo_sal));
     }
 
     function obtener_ultimo_salario(codEmpleado) {
@@ -2353,7 +2545,7 @@ $(document).on('ready', () => {
             success: function (data) {
                 if (data.error == false) {
 
-                    $('.aumento-salario input[name="salario_anterior"]').val(formatNumber.new(parseFloat(Number(data.salario_anterior)).toFixed(4)));
+                    $('#frmGuardarDatoSalario input[name="salario_anterior"]').val(formatNumber.new(parseFloat(Number(data.salario_anterior)).toFixed(4)));
                     calcular_nuevo_sueldo();
                 } else {
                     mensaje("Aumento de salario", data.mensaje, "error", 3500);
@@ -4042,9 +4234,13 @@ $(document).on('ready', () => {
                 if (data.error == false) {
                     mensaje(encabezado, texto, "ok", tiempo);
                     if (editar) {
-                        setTimeout(function () {
-                            window.location.replace(dns + urlRedirect);
-                        }, tiempo);
+                        if (urlRedirect) {
+                            setTimeout(function () {
+                                window.location.replace(dns + urlRedirect);
+                            }, tiempo);    
+                        }else{
+                            LimpiarControles();
+                        }
                     } else {
                         LimpiarControles();
                     }

@@ -11,6 +11,10 @@ admin.site.title = "Tracker"
 class EmpleadoDeduccionesAdmin(admin.ModelAdmin):
     list_display = ['empleado', 'deduccion', 'active']
 
+class DatosSalarioAdmin(admin.ModelAdmin):
+    list_display = ['empleado', 'fecha_incremento']
+    search_fields = ['empleado__firstName']
+
 
 # Register your models here.
 admin.site.register(ActivoAsignado)
@@ -39,7 +43,7 @@ admin.site.register(GrupoCorporativo)
 admin.site.register(ImagenEmpleado)
 admin.site.register(ImpuestoSobreRenta)
 admin.site.register(ImpuestoVecinal)
-admin.site.register(IncrementosSalariales)
+admin.site.register(IncrementosSalariales, DatosSalarioAdmin)
 admin.site.register(IngresoIndividual)
 admin.site.register(IngresoGeneral)
 admin.site.register(IngresoGeneralDetalle)

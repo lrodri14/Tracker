@@ -3,16 +3,20 @@
         <div class="table-responsive">
             <table id="detalle_planilla" class="table">
                 <htead>
+                    <th>Código</th>
                     <th>Empleado</th>
                     <th><span class="pull-right">Ingresos</span></th>
                     <th><span class="pull-right">Deducciones</span></th>
+                    <th><span class="pull-right">Salario Neto</span></th>
                 </htead>
                 <tbody>
                     {% for detalle in detalle_planilla %}
                     <tr data-toggle="collapse" data-target="#vdet{{detalle.id}}" class="detalle_item accordion-toggle">
+                        <td>{{detalle.empleado.extEmpNo}}</td>
                         <td>{{detalle.empleado.firstName}} {% if detalle.empleado.middleName %}{{detalle.empleado.middleName}}{% endif %} {{detalle.empleado.lastName}}</td>
                         <td><span class="pull-right"><strong>{{detalle.total_ingresos}}</strong></span></td>
                         <td><span class="pull-right"><strong>{{detalle.total_deducciones}}</strong></span></td>
+                        <td><span class="pull-right"><strong>{{detalle.total_salario}}</strong></span></td>
                     </tr>
                     <tr class="detalle_emp">    
                         <td colspan="6" class="hiddenRow">
@@ -51,9 +55,10 @@
                     </tr>
                     {% endfor %}
                     <tr>
-                    <td>TOTAL PLANILLA</td>
+                    <td colspan="2">TOTAL PLANILLA</td>
                     <td><span class="pull-right"><strong>{{total_ingresos}}</strong></span></td>
                     <td><span class="pull-right"><strong>{{total_deducciones}}</strong></span></td>
+                    <td><span class="pull-right"><strong>{{total_neto}}</strong></span></td>
                     </tr>
                 </tbody>
             </table>

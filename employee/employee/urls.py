@@ -391,6 +391,8 @@ urlpatterns = [
 
     url(r'^obtener/antiguedad/$', views.obtener_antiguedad, name="obtener_antiguedad"),
     url(r'^obtener/estados/$', views.lista_estados, name="lista_estados"),
+    url(r'^obtener/dato-salario/$', views.obtener_aumento_salario, name="obtener_aumento_salario"),
+    url(r'^obtener/datos-salarios/$', views.obtener_aumentos_salarios, name="obtener_aumentos_salarios"),
     url(r'^obtener/deduccion-empleado/$', views.obtener_deduccion_empleado, name="obtener_deduccion_empleado"),
     url(r'^obtener/deducciones-empleado/$', views.obtener_deducciones, name="obtener_deducciones"),
     url(r'^obtener/dias-salario/$', views.obtener_dias_salario, name="obtener_dias_salario"),

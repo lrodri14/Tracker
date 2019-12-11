@@ -90,13 +90,21 @@ $(document).on('ready', function() {
     $('#btnGuardar').on('click', function(e) {
         e.preventDefault();
         $(this).addClass('disabled')
-        GuardarEmpleado();
+        if ($('input[name="metodo_pago"]').is(':checked')) {
+            GuardarEmpleado();    
+        }else{
+            mensaje("Empleado", "Seleccione método de pago.", "warning", 3500);
+        }
     });
 
     $('#btnActualizar').on('click', function(e) {
         e.preventDefault();
         $(this).addClass('disabled')
-        Actualizar();
+        if ($('input[name="metodo_pago"]').is(':checked')) {
+            Actualizar();    
+        }else{
+            mensaje("Empleado", "Seleccione método de pago.", "warning", 3500);
+        }
     });
 
     $('#btnCancelar').on('click', function(e) {
