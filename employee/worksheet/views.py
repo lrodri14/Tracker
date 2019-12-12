@@ -5381,8 +5381,6 @@ def guardar_ausentismo(request):
                     }
                     return JsonResponse(data)
 
-
-
                 if int(activo) == 1:
                     activo = True
                 else:
@@ -5548,6 +5546,7 @@ def actualizar_ausentismo(request):
 def eliminar_ausentismo(request):
     try:
         if request.is_ajax():
+            print("Entro aqui")
             if request.method == 'POST':
                 reg_id = request.POST['id']
                 if int(reg_id) > 0:
@@ -5579,9 +5578,10 @@ def eliminar_ausentismo(request):
                 'mensaje': mensaje, 'error': True
             }
     except Exception as ex:
+        print(ex)
         data = {
             'error': True,
-            'mensaje': 'error',
+            'mensaje': str(ex),
         }
     return JsonResponse(data)
 
@@ -13023,7 +13023,7 @@ def ingreso_individual_planilla_listado(request):
     if request.user.has_perm("worksheet.see_all_ingresoindividualplanilla"):
         lista = IngresoIndividualPlanilla.objects.filter(empresa_reg=suc.empresa)
     else:
-        lista = IngresoIndividualPlanilla.objects.filter(empresa_reg=suc.empresa, active=True)
+        lista = IngresoIndividualPlanilla.objects.filter(empresa_reg=suc.empresa)
     return render(request, 'ingreso-individual-planilla-listado.html', {'lista':lista})
 
 @login_required(login_url='/form/iniciar-sesion/')
@@ -13031,7 +13031,7 @@ def ingreso_individual_planilla_listado(request):
 def ingreso_individual_planilla_form(request):
     suc = Branch.objects.get(pk=request.session["sucursal"])
     ingresos = IngresoIndividual.objects.filter(empresa_reg=suc.empresa, active=True)
-    empleados = Employee.objects.filter(empresa_reg=suc.empresa, active=True)
+    empleados = Employee.objects.filter(empresa_reg=suc.empresa, branch=suc, active=True)
     planillas = Planilla.objects.filter(sucursal_reg=suc, active=True)
     return render(request, 'ingreso-individual-planilla-form.html', {'ingresos':ingresos, 'empleados':empleados, 'planillas':planillas})
 
@@ -13841,6 +13841,7 @@ def planilla_generar_calculos(request):
                                 # ausencias_sin_pago = Ausentismo.objects.filter(Q(desde__range=(o_planilla.fecha_inicio, o_planilla.fecha_fin)) | Q(hasta__range=(o_planilla.fecha_inicio, o_planilla.fecha_fin)) | Q(desde__gt=o_planilla.fecha_inicio, hasta__lt=o_planilla.fecha_fin), empleado=item, sucursal_reg=suc, motivo__pagado=False, active=True)
                                 ausencias_sin_pago = Ausentismo.objects.filter(desde__gte=o_planilla.fecha_inicio, hasta__lte=o_planilla.fecha_fin, empleado=item, sucursal_reg=suc, motivo__pagado=False, active=True)
                                 if ausencias_sin_pago.count() > 0:
+                                    print("Entro aqui")
                                     for ausencia in ausencias_sin_pago:
                                         dias_ausencia_sin_pago = 1
                                         dias_ausencia_sin_pago = dias_ausencia_sin_pago + (ausencia.hasta - ausencia.desde).days
