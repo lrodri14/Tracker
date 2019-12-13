@@ -44,7 +44,7 @@ Listado de Detalle en Ingresos Generales
                                     <td>{{item.tipo_pago.description}}</td>
                                     <td>{{item.tipo_contrato.tipo_contrato}}</td>   
                                     <td>{{item.valor}}</td>                         
-                                    <td>{{item.fecha_valida}}</td>   
+                                    <td>{{item.fecha_valida|date:"d/m/Y"}}</td>   
                                     <td class="text-nowrap acciones">
                                         {% if perms.worksheet.change_ingresogeneraldetalle %}
                                         <a href="{% url 'ingreso_general_detalle_editar' item.pk %}" data-toggle="tooltip" data-original-title="Editar">

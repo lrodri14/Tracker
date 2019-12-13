@@ -12147,6 +12147,9 @@ def ingreso_general_detalle_guardar(request):
                     data = {'error': True, 'mensaje': mensaje}
                     return JsonResponse(data)
 
+                fecha_valida = datetime.strptime(fecha_valida, '%d/%m/%Y')
+                fecha_valida = datetime.strftime(fecha_valida, '%Y-%m-%d')
+
                 valor = valor.replace(",",  "")
 
                 if not validarEntero(ingreso):
@@ -12378,6 +12381,9 @@ def ingreso_general_detalle_actualizar(request):
                     activo = True
                 else:
                     activo = False
+
+                fecha_valida = datetime.strptime(fecha_valida, '%d/%m/%Y')
+                fecha_valida = datetime.strftime(fecha_valida, '%Y-%m-%d')
 
                 vingreso = IngresoGeneral.objects.get(pk=ingreso)
                 vnomina = Planilla.objects.get(pk=nomina)

@@ -142,7 +142,7 @@ Ingreso General - Detalle
                                     </div>
                                     <div class="col-md-7">
                                         <div class="input-group">
-                                            <input id="txtFechaVencPasaporte" value='{{dato.fecha_valida|date:"Y-m-d"}}' name="fecha" type="text" class="form-control mydatepicker" placeholder="yyyy-mm-dd"> <span class="input-group-addon"><i class="icon-calender"></i></span>
+                                            <input id="txtFechaVencPasaporte" value='{{dato.fecha_valida|date:"d/m/Y"}}' name="fecha" type="text" class="form-control mydatepicker" placeholder="dd/mm/aaaa"> <span class="input-group-addon"><i class="icon-calender"></i></span>
                                         </div>
                                     </div>
                                 </div>
@@ -154,7 +154,7 @@ Ingreso General - Detalle
                                     <div class="col-md-5"></div>
                                     <div class="col-md-7">
                                         <div class="checkbox checkbox-success">
-                                            <input id="chkActivo" name="activo" type="checkbox" {% if dato.active %}checked{% endif %} class="input">
+                                            <input id="chkActivo" name="activo" type="checkbox" {% if editar %}{% if dato.active %}checked{% endif %}{% else %}checked{% endif %} class="input">
                                             <label for="chkActivo" class="control-label"> Activo </label>
                                         </div>
                                     </div>
@@ -163,11 +163,7 @@ Ingreso General - Detalle
                         </div>
                         <div class="col-md-12">
                             <div class="form-action text-right">
-                                {% if editar %}
-                                <button id="btnActualizar" class="btn btn-success">Actualizar</button>
-                                {% else %}
-                                <button id="btnGuardar" class="btn btn-success">Guardar</button>
-                                {% endif %}
+                                <button {% if editar %}id="btnActualizar"{% else %}id="btnGuardar"{% endif %} class="btn btn-success">{% if editar %}Actualizar{% else %}Guardar{% endif %} </button>
                                 <button id="btnCancelar" class="btn btn-default">Cancelar</button>
                             </div>
                         </div>
@@ -185,10 +181,10 @@ Ingreso General - Detalle
     $('#aAcciones').addClass('active');
     $('#accionesNomina').addClass('active');
     $('#aIGD').addClass('active');
-    $('input[name="valor"]').mask('0,000,000,000,000.00', {reverse:true});
+    //$('input[name="valor"]').mask('0,000,000,000,000.00', {reverse:true});
 
     $('.mydatepicker, #datepicker').datepicker({
-        format: 'yyyy-mm-dd',
+        format: 'dd/mm/yyyy',
         autoclose:true,
         todayHighlight: true,
     });
