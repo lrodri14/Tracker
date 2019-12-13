@@ -13841,7 +13841,6 @@ def planilla_generar_calculos(request):
                                 # ausencias_sin_pago = Ausentismo.objects.filter(Q(desde__range=(o_planilla.fecha_inicio, o_planilla.fecha_fin)) | Q(hasta__range=(o_planilla.fecha_inicio, o_planilla.fecha_fin)) | Q(desde__gt=o_planilla.fecha_inicio, hasta__lt=o_planilla.fecha_fin), empleado=item, sucursal_reg=suc, motivo__pagado=False, active=True)
                                 ausencias_sin_pago = Ausentismo.objects.filter(desde__gte=o_planilla.fecha_inicio, hasta__lte=o_planilla.fecha_fin, empleado=item, sucursal_reg=suc, motivo__pagado=False, active=True)
                                 if ausencias_sin_pago.count() > 0:
-                                    print("Entro aqui")
                                     for ausencia in ausencias_sin_pago:
                                         dias_ausencia_sin_pago = 1
                                         dias_ausencia_sin_pago = dias_ausencia_sin_pago + (ausencia.hasta - ausencia.desde).days
