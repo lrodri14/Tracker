@@ -3502,6 +3502,8 @@ $(document).on('ready', () => {
     var cboFrecuenciaPago = $('#planilla-reporte-general #cboFrecuenciaPago');
     var cboDesde = $('#planilla-reporte-general #txtDesde');
     var cboHasta = $('#planilla-reporte-general #txtHasta');
+    var btnVerIngresos = $('#frmVerPlanilla #btnVerIngresos');
+    var btnVerDeducciones = $('#frmVerPlanilla #btnVerDeducciones');
 
     var btnGenerar = $('.planilla-generar #btnGenerar');
     var btnGenerar2 = $('.planilla-generar #btnGenerar2');
@@ -3538,6 +3540,17 @@ $(document).on('ready', () => {
         };
         GuardarRegistro(url, metodo, data, "Planilla");
     });
+
+    btnVerIngresos.on('click', function(e) {
+        $('#frmVerIngresos').toggle();
+    });
+
+    btnVerDeducciones.on('click', function(e) {
+        e.preventDefault();
+        $('#frmVerDeducciones').toggle();
+    });
+
+
 
     btnPlActualizar.on('click', function (e) {
         e.preventDefault();

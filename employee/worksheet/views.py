@@ -13395,6 +13395,8 @@ def planilla_form(request):
 @login_required(login_url='/form/iniciar-sesion/')
 def planilla_ver(request, id):
     datos = []
+    l_ingresos = []
+    l_deducciones = []
     datos2 = []
     datos3 = []
     ingresos = 0
@@ -13418,6 +13420,7 @@ def planilla_ver(request, id):
             'total_ingresos': locale.format("%.2f", float(item.total_ingresos), grouping=True),
             'total_deducciones': locale.format("%.2f", item.total_deducciones, grouping=True),
             'total_salario': locale.format("%.2f", total_salario, grouping=True),
+            'salario_neto': locale.format("%.2f", float(item.total_ingresos) - float(item.total_deducciones), grouping=True),
         }
         datos.append(objeto)
         # suma_total_ingresos += float(item.total_ingresos)
@@ -13447,9 +13450,26 @@ def planilla_ver(request, id):
         datos3.append(objeto2)
         suma_total_deducciones += float(item2.valor)
 
+    suma_total_neto = locale.format("%.2f", suma_total_ingresos - suma_total_deducciones, grouping=True)
     suma_total_ingresos = locale.format("%.2f", suma_total_ingresos, grouping=True)
     suma_total_deducciones = locale.format("%.2f", suma_total_deducciones, grouping=True)
-    return render(request, 'planilla-ver.html', {'planilla':planilla, 'detalle':datos, 'ingresos':datos2, 'deducciones': datos3})
+
+    vingresos = PlanillaDetalleIngresos.objects.filter(planilla=planilla).values('ingreso').annotate(Sum('valor'))
+    for ingreso in vingresos:
+        dato = {
+            'ingreso': ingreso["ingreso"],
+            'valor': formato_millar(ingreso["valor__sum"])
+        }
+        l_ingresos.append(dato)
+
+    vdeducciones = PlanillaDetalleDeducciones.objects.filter(planilla=planilla).values('deduccion').annotate(Sum('valor'))
+    for deduccion in vdeducciones:
+        dato = {
+            'deduccion': deduccion["deduccion"],
+            'valor':formato_millar(deduccion["valor__sum"])
+        }
+        l_deducciones.append(dato)
+    return render(request, 'planilla-ver.html', {'planilla':planilla, 'detalle':datos, 'ingresos':datos2, 'deducciones': datos3, 'suma_total_ingresos': suma_total_ingresos, 'suma_total_deducciones':suma_total_deducciones, 'suma_total_neto': suma_total_neto, 'gingresos': l_ingresos, 'gdeducciones': l_deducciones})
 
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.change_planilla', raise_exception=True)
@@ -14033,7 +14053,7 @@ def planilla_generar_calculos(request):
                                 o_planilla_detalle_ingreso = PlanillaDetalleIngresos(
                                     empleado = item,
                                     planilla = o_planilla,
-                                    ingreso = "Sueldo empleado ",
+                                    ingreso = "SALARIO ",
                                     #valor = total_ingreso,
                                     valor = valor_sueldo,
                                     empresa_reg = suc.empresa,
@@ -14589,6 +14609,23 @@ def generar_reporte_general(request):
             'mensaje': 'No se pasó un valor válido como parámetro.'
         }
     return render(request, 'reportes/reporte-planilla-general.html', data)
+
+def obtener_ingresos_planilla(request):
+    datos = []
+    dato = {}
+    suma = 0
+    planilla_id = request.GET.get("id")
+    o_planilla = Planilla.objects.get(pk=int(planilla_id))
+    ingresos = PlanillaDetalleIngresos.objects.filter(planilla=o_planilla).values('ingreso').annotate(Sum('valor'))
+    for ingreso in ingresos:
+        suma += float(ingreso["valor__sum"])
+        dato = {
+            'ingreso': ingreso["ingreso"],
+            'valor': formato_millar(ingreso["valor__sum"])
+        }
+        datos.append(dato)
+    return render(request, 'ajax/ver_ingresos.html', {'ingresos':datos, 'suma': formato_millar(suma)})
+
 
 def planilla_ver_registro(request):
     error = False

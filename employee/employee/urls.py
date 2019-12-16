@@ -409,6 +409,7 @@ urlpatterns = [
 
     url(r'^ver-registro/aumento-salario/$', views.aumento_salario_ver_registro, name="aumento_salario_ver_registro"),
     url(r'^ver-registro/planilla/$', views.planilla_ver_registro, name="planilla_ver_registro"),
+    url(r'^ver/ingresos-planilla/$', views.obtener_ingresos_planilla, name="obtener_ingresos_planilla"),
     url(r'^ver/planilla/(?P<id>\w+)/$', views.planilla_ver, name="planilla_ver"),
     url(r'^reporte/planilla/$', views.planilla_reporte_general, name="planilla_reporte_general"),
 

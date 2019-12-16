@@ -13,6 +13,7 @@ Ver registros de Planilla
             <div class="panel-wrapper">
                 <div class="panel-body">
                     <div class="row">
+                        <input type="hidden" name="reg_id" value="{{planilla.pk}}" />
                         <div class="col-md-12">
                             <div class="col-md-3 col-xs-6 b-r"> <strong>Descripción</strong>
                                 <br>
@@ -42,6 +43,10 @@ Ver registros de Planilla
                     </div>
                     <div class="row">
                         <div class="col-md-12 text-right">
+                            <a href="#" id="btnVerIngresos" class="btn btn-info" data-toggle="modal" data-target="#frmVerIngresos">Ver Ingresos</a>
+                            <a href="#" id="btnVerDeducciones" class="btn btn-info" data-toggle="modal" data-target="#frmVerDeducciones">Ver Deducciones</a>
+                            <!--button id="btnVerIngresos" class="btn btn-info">Ver Ingresos</button-->
+                            <!--button id="btnVerDeducciones" class="btn btn-info">Ver Deducciones</button-->
                             {% if planilla.cerrada == False %}
                             <button id="btnCerrarPlanilla" class="btn btn-warning">Cerrar Planilla</button>
                             {% endif %}
@@ -56,6 +61,7 @@ Ver registros de Planilla
                                             <th>Empleado</th>
                                             <th class="text-right">Ingresos</th>
                                             <th class="text-right">Deducción</th>
+                                            <th class="text-right">Salario Neto</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -64,6 +70,7 @@ Ver registros de Planilla
                                             <td>{{item.empleado.firstName}} {% if item.empleado.middleName %}{{item.empleado.middleName}}{% endif %} {{item.empleado.lastName}}</td>
                                             <td class="text-right">{{item.total_ingresos}}</td>
                                             <td class="text-right">{{item.total_deducciones}}</td>
+                                            <td class="text-right">{{item.salario_neto}}</td>
                                         </tr>
                                         <tr class="detalle_emp">    
                                             <td colspan="6" class="hiddenRow">
@@ -100,8 +107,92 @@ Ver registros de Planilla
                                                 </div>
                                             </td>
                                         {% endfor %}
+                                        <tr>
+                                            <td><strong>Total Neto</strong></td>
+                                            <td class="text-right"><strong>{{suma_total_ingresos}}</strong></td>
+                                            <td class="text-right"><strong>{{suma_total_deducciones}}</strong></td>
+                                            <td class="text-right"><strong>{{suma_total_neto}}</strong></td>
+                                        </tr>
                                     </tbody>
                                 </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div id="frmVerIngresos" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                <h4 class="modal-title" id="myModalLabel">Ingresos</h4>
+                            </div>
+                            <div class="modal-body">
+                                <table class="table color-table info-table">
+                                    <thead>
+                                        <tr>
+                                            <th>INGRESO</th>
+                                            <th class="text-center">VALOR</th>
+                                        </tr>
+                                    </thead>
+                                    {% for ingreso in gingresos %}
+                                    <tr>
+                                        <td>{{ingreso.ingreso}}</td>
+                                        <td class="text-right">{{ingreso.valor}}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="2">No se encontraron datos</td>
+                                    </tr>
+                                    {% endfor %}
+                                    <tr>
+                                        <td><strong>TOTAL</strong></td>
+                                        <td class="text-right"><strong>{{suma_total_ingresos}}</strong></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-info waves-effect" data-dismiss="modal">Cerrar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div id="frmVerDeducciones" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                <h4 class="modal-title" id="myModalLabel">Deducciones</h4>
+                            </div>
+                            <div class="modal-body">
+                                <table class="table color-table info-table">
+                                    <thead>
+                                        <tr>
+                                            <th>DEDUCCIÓN</th>
+                                            <th class="text-center">VALOR</th>
+                                        </tr>
+                                    </thead>
+                                    {% for deduccion in gdeducciones %}
+                                    <tr>
+                                        <td>{{deduccion.deduccion}}</td>
+                                        <td class="text-right">{{deduccion.valor}}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="2">No se encontraron datos</td>
+                                    </tr>
+                                    {% endfor %}
+                                    <tr>
+                                        <td><strong>TOTAL</strong></td>
+                                        <td class="text-right"><strong>{{suma_total_deducciones}}</strong></td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-info waves-effect" data-dismiss="modal">Cerrar</button>
                             </div>
                         </div>
                     </div>
