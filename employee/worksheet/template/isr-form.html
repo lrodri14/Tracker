@@ -35,7 +35,7 @@ Impuesto sobre la Renta
                                         <label class="control-label">Desde :</label>
                                     </div>
                                     <div class="col-md-7">
-                                        <input name="desde" value="{{dato.desde}}" type="text" class="form-control input" maxlength="50" />
+                                        <input name="txtdesde" value="{{dato.desde}}" type="text" class="form-control input" maxlength="50" />
                                     </div>
                                 </div>
                             </div>
@@ -45,7 +45,7 @@ Impuesto sobre la Renta
                                         <label class="control-label">Hasta :</label>
                                     </div>
                                     <div class="col-md-7">
-                                        <input name="hasta" value="{{dato.hasta}}" type="text" class="form-control input" maxlength="50" />
+                                        <input name="txthasta" value="{{dato.hasta}}" type="text" class="form-control input" maxlength="50" />
                                     </div>
                                 </div>
                             </div>
@@ -57,7 +57,7 @@ Impuesto sobre la Renta
                                         <label class="control-label">Porcentaje :</label>
                                     </div>
                                     <div class="col-md-7">
-                                        <input name="porcentaje" value="{{dato.porcentaje}}" type="text" class="form-control input" maxlength="50" />
+                                        <input name="txtporcentaje" value="{{dato.porcentaje}}" type="text" class="form-control input" maxlength="50" />
                                     </div>
                                 </div>
                             </div>
@@ -69,8 +69,8 @@ Impuesto sobre la Renta
                                     <div class="col-md-5"></div>
                                     <div class="col-md-7">
                                         <div class="checkbox checkbox-success">
-                                            <input id="chkActivo" name="activo" type="checkbox" {% if dato.active %}checked{% endif %} class="input">
-                                            <label for="chkActivo" class="control-label"> Activo </label>
+                                            <input id="chkactivo" name="chkactivo" type="checkbox" {% if editar %}{% if dato.active %}checked{% endif %}{% else %}checked{% endif %} class="input">
+                                            <label for="chkactivo" class="control-label"> Activo </label>
                                         </div>
                                     </div>
                                 </div>

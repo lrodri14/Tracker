@@ -20,11 +20,18 @@
     #grpImagenEmp .white-box{
         margin-bottom: 3px;
     }
+
+    #ver-resumen-planilla-empleado .table tbody tr td{
+        padding: 3px 8px;
+    }
+    #ver-resumen-planilla-empleado .table thead th{
+        padding: 3px 8px;
+    }
 </style>
 {% endblock estilo %}
 {% block contenido %}
 {% load static %}
-<div class="row">
+<div class="row" id="frmPerfilEmpleado">
     <div class="col-lg-12">
         <div class="panel panel-default">
             <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">
@@ -460,7 +467,7 @@
                                         <div id="detalle-deducciones"></div>
                                     </div>
                                     <div class="tab-pane" id="aimpresion">
-                                        <h3>Voucher de Pago | Impresión / Envío</h3>
+                                        <h3>Voucher de Pago | Impresión / Envío | Resumen</h3>
                                         <div class="white-box">
                                             <form action="{% url 'reporte-pdf' %}" method="GET" target="_blank">
                                                 <input type="hidden" id="txtEmpleado_Id" name="empleado_id" value="{{dato.pk}}">
@@ -477,7 +484,12 @@
                                                 <button id="btnEnviarBoletaEmail" class="btn btn-default">E-mail</button>
                                                 {% endif %}
                                                 <button type="submit" class="btn btn-primary">Reporte</button>
+                                                <button id="btnVerResumenPlanillaEmpleado" class="btn btn-info">Ver</button>
                                             </form>
+                                            <br>
+                                            <div class="row">
+                                                <div id="ver-resumen-planilla-empleado"></div>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="tab-pane" id="settings">
@@ -597,6 +609,33 @@
                                 </div>
                             </div>
                         <!-- Button trigger modal -->
+                    </div>
+                    <div class="col-md-4">
+                        <div id="frmVerSubDetalles" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                        <h4 class="modal-title" id="myModalLabel">DETALLE DEDUCCIONES INDIVIDUALES</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <table class="table color-table info-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>DESCRIPCIÓN</th>
+                                                    <th class="text-right">CUOTA</th>
+                                                    <th class="text-right">MONTO TOTAL</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody></tbody>
+                                        </table>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-info waves-effect" data-dismiss="modal">Cerrar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

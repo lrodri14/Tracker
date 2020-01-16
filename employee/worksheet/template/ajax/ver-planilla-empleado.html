@@ -1,0 +1,42 @@
+<div class="table-responsive col-md-12">
+    <table class="table">
+        <thead class="detalle-encabezado">
+            <th>DESCRIPCIÓN</th>
+            <th class="text-right"><span >INGRESO</span></th>
+            <th class="text-right"><span >DEDUCCIÓN</span></th>
+        </thead>
+        <tbody class="body-item-detalle">
+            {% for item1 in ingresos %}
+            <tr>
+                <td>{{item1.ingreso}}</td>
+                <td class="text-right"><span class="text-success text-right"><strong>{{item1.valor}}</strong></span></td>
+                <td></td>
+            </tr>
+            {% endfor %}
+            {% for item2 in deducciones %}
+                {% if item2.tiene_sub %}
+                <tr class="planilla-segundafila">
+                    <td><a href="#" class="btnSubDetalle" data="{{item2.tipo_deduccion}}">{{item2.deduccion}}</a></td>
+                    <td></td>
+                    <td class="text-right"><span class="text-danger text-right"><strong>{{item2.valor}}</strong></span></td>
+                </tr>
+                {% else %}
+                <tr class="planilla-segundafila">
+                    <td>{{item2.deduccion}}</td>
+                    <td></td>
+                    <td class="text-right"><span class="text-danger text-right"><strong>{{item2.valor}}</strong></span></td>
+                </tr>
+                {% endif %}
+            {% endfor %}
+            <tr>
+                <td><strong>SUBTOTAL</strong></td>
+                <td class="text-right"><strong>{{subingresos}}</strong></td>
+                <td class="text-right"><strong>{{subdeducciones}}</strong></td>
+            </tr>
+                <td><strong>TOTAL NETO</strong></td>
+                <td colspan="2" class="text-right"><strong>{{total_neto}}</strong></td>
+            <tr>
+            </tr>
+        </tbody>
+    </table>
+</div>

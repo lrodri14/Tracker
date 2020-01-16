@@ -984,6 +984,10 @@ class Planilla(models.Model):
     fecha_inicio = models.DateField(("Fecha Inicio"), auto_now=False, auto_now_add=False)
     fecha_fin = models.DateField(("Fecha Fin"), auto_now=False, auto_now_add=False)
     fecha_pago = models.DateField(("Fecha Pago"), auto_now=False, auto_now_add=False)
+    ihss = models.BooleanField(("Deducir IHSS"), default=False, help_text="Indica si en la planilla a registrar se deducirá IHSS")
+    rap = models.BooleanField(("Deducir RAP"), default=False, help_text="Indica si en la planilla a registrar se deducirá RAP")
+    imv = models.BooleanField(("Deducir IMV"), default=False, help_text="Indica si en la planilla a registrar se deducirá Impuesto Vecinal")
+    isr = models.BooleanField(("Deducir RAP"), default=False, help_text="Indica si en la planilla a registrar se deducirá Impuesto Sobre Renta")
     cerrada = models.BooleanField(("Cerrada"))
     empresa_reg = models.ForeignKey(Empresa, on_delete=models.PROTECT)
     sucursal_reg = models.ForeignKey(Branch, on_delete=models.PROTECT)
@@ -1189,6 +1193,39 @@ class DeduccionIndividualPlanilla(models.Model):
     def __str__(self):
         return self.planilla.descripcion
 
+class DeduccionIndividualSubDetalle(models.Model):
+    descripcion = models.TextField(("Descripción"), blank=True, null=True)
+    deducciondetalle = models.ForeignKey("worksheet.DeduccionIndividualDetalle", verbose_name=("Detalle Deduccion Individual"), on_delete=models.PROTECT, blank=True, null=True)
+    monto = models.DecimalField(("Monto"), max_digits=18, decimal_places=2)
+    user_reg = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    active = models.NullBooleanField(default=True)
+
+    class Meta:
+        verbose_name = ("deduccionindividualsubdetalle")
+        verbose_name_plural = ("deduccionindividualsubdetalles")
+
+    def __str__(self):
+        return self.descripcion
+
+    def get_absolute_url(self):
+        return reverse("deduccionindividualsubdetalle_detail", kwargs={"pk": self.pk})
+
+class ControlPagosDeduccionIndividual(models.Model):
+    planilla = models.ForeignKey("worksheet.Planilla", verbose_name=("Planilla"), on_delete=models.PROTECT)
+    deduccion = models.ForeignKey("worksheet.DeduccionIndividualDetalle", verbose_name=("Deducción Individual"), on_delete=models.PROTECT, blank=True, null=True)
+    valor = models.DecimalField(("Valor"), max_digits=18, decimal_places=2)
+
+    class Meta:
+        verbose_name = ("controlpagosdeduccionindividual")
+        verbose_name_plural = ("controlpagosdeduccionindividuales")
+
+    def __str__(self):
+        return self.planilla.descripcion + " | " + self.deduccion.deduccion.deduccion_i
+
+    def get_absolute_url(self):
+        return reverse("controlpagosdeduccionindividual_detail", kwargs={"pk": self.pk})
+
 class UsuarioCorporacion(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='uscorp_user', related_query_name='uscorp_user')
     corporacion = models.ForeignKey("worksheet.GrupoCorporativo", verbose_name=("Grupo Corporativo"), on_delete=models.PROTECT)
@@ -1270,6 +1307,21 @@ class EmpleadoDeducciones(models.Model):
 
     def __str__(self):
         return str(self.empleado.firstName + " " + self.empleado.lastName) + " | " + self.deduccion
+
+class DetallePlanillaDetalleDeduccion(models.Model):
+    planilla_detalle_ded = models.OneToOneField("worksheet.PlanillaDetalleDeducciones", verbose_name=("Planilla Detalle Deducción"), on_delete=models.CASCADE)
+    deduccion_detalle = models.OneToOneField("worksheet.DeduccionIndividualDetalle", verbose_name=("Deduccion Individual Planilla"), on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = ("detalleplanilladetallededuccion")
+        verbose_name_plural = ("detalleplanilladetallededucciones")
+
+    def __str__(self):
+        return self.planilla_detalle_ded.planilla.descripcion
+
+    def get_absolute_url(self):
+        return reverse("detalleplanilladetallededuccion_detail", kwargs={"pk": self.pk})
+
 
 class LimiteSalarioDeduccion(models.Model):
     salario = models.DecimalField(("Salario"), max_digits=18, decimal_places=4)

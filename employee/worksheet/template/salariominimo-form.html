@@ -60,7 +60,7 @@ Datos de Salario Mínimo
                                     <div class="col-md-5"></div>
                                     <div class="col-md-7">
                                         <div class="checkbox checkbox-success">
-                                            <input id="chkActivo" name="activo" type="checkbox" {% if dato.active %}checked{% endif %} class="input">
+                                            <input id="chkActivo" name="activo" type="checkbox" {% if editar %}{% if dato.active %}checked{% endif %}{% else %}checked{% endif %} class="input">
                                             <label for="chkActivo" class="control-label"> Activo </label>
                                         </div>
                                     </div>
@@ -91,7 +91,7 @@ Datos de Salario Mínimo
     $('#aPersonal').addClass('active');
     $('#aLegales').addClass('active');
     $('#aSalarioMinimo').addClass('active');
-    $('input[name="salariominimo"]').mask('0,000,000,000,000.00', {reverse:true});
+    //$('input[name="salariominimo"]').mask('0,000,000,000,000.00', {reverse:true});
     $('#aPersonal').parents('li').addClass('active');
     $('#aLegales').parents('li').addClass('active');
 </script>

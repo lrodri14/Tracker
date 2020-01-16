@@ -396,12 +396,15 @@ urlpatterns = [
     url(r'^obtener/deduccion-empleado/$', views.obtener_deduccion_empleado, name="obtener_deduccion_empleado"),
     url(r'^obtener/deducciones-empleado/$', views.obtener_deducciones, name="obtener_deducciones"),
     url(r'^obtener/dias-salario/$', views.obtener_dias_salario, name="obtener_dias_salario"),
+    url(r'^obtener/fecha-limite/$', views.obtener_fecha_limite, name="obtener_fecha_limite"),
     url(r'^obtener/empleados-planilla/$', views.obtener_empleados_planilla, name="obtener_empleados_planilla"),
     url(r'^obtener/grafico1/$', views.grafico1, name="grafico1"),
     url(r'^obtener/isr-encabezado/$', views.impuestosobrerenta_obtener, name="impuestosobrerenta_obtener"),
     url(r'^obtener/planilla-generada/$', views.planilla_generada, name="planilla_generada"),
+    url(r'^obtener/planilla-empleado/$', views.planilla_obtener_ver_empleado, name="planilla_obtener_ver_empleado"),
     url(r'^obtener/puestos/$', views.obtenerPuestos, name="obtenerPuestos"),
     url(r'^obtener/salario-ultimo/$', views.obtener_ultimo_salario, name="obtener_ultimo_salario"),
+    url(r'^obtener/subdetalle/$', views.planilla_obtener_subdetalle_deduccion, name="planilla_obtener_subdetalle_deduccion"),
     url(r'^obtener/sucursales/$', views.lista_sucursal, name="lista_sucursal"),
 
     url(r'^enviar/aumento-salario/$', views.aumento_salario_guardar, name="aumento_salario_guardar"),
@@ -409,9 +412,10 @@ urlpatterns = [
 
     url(r'^ver-registro/aumento-salario/$', views.aumento_salario_ver_registro, name="aumento_salario_ver_registro"),
     url(r'^ver-registro/planilla/$', views.planilla_ver_registro, name="planilla_ver_registro"),
-    url(r'^ver/ingresos-planilla/$', views.obtener_ingresos_planilla, name="obtener_ingresos_planilla"),
     url(r'^ver/planilla/(?P<id>\w+)/$', views.planilla_ver, name="planilla_ver"),
     url(r'^reporte/planilla/$', views.planilla_reporte_general, name="planilla_reporte_general"),
+
+    url(r'^verifica/saldo-controlado/$', views.verifica_saldo_controlado, name="verifica_saldo_controlado"),
 
     # ----------------->>>REPORTES<<<-------------------#
     url(r'reporte_personas_pdf/$', views.ReportePersonaPDF.as_view(), name="reporte_personas_pdf"),

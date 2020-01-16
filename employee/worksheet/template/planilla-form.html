@@ -1,7 +1,16 @@
 {% extends "base.html" %}
 {% block titulo %}Datos Generales de Planilla{% endblock titulo %}
 {% load static %}
-
+{% block estilo %}
+<style>
+    .checkbox{
+        font-weight: 500;
+    }
+    .checkbox label{
+        font-weight: 500;
+    }
+</style>
+{% endblock estilo %}
 {% block contenido %}
 <div class="row planilla">
     <div class="col-md-12">
@@ -129,6 +138,64 @@
                                     </div>
                                 </div>
                             </div>
+                            <!-- CHECKBOX -->
+                            <div class="col-md-12">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <div class="col-md-5 text-right"></div>
+                                        <div class="col-md-7">
+                                            <div class="checkbox checkbox-info">
+                                                {% if editar %}
+                                                    {% if dato.ihss %}
+                                                    <input id="chkIHSS" name="ded_ihss" type="checkbox" checked>
+                                                    {% else %}
+                                                    <input id="chkIHSS" name="ded_ihss" type="checkbox">
+                                                    {% endif %}
+                                                {% else %}
+                                                <input id="chkIHSS" name="ded_ihss" type="checkbox">
+                                                {% endif %}
+                                                <label for="chkIHSS">Deducción IHSS </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <div class="col-md-5 text-right"></div>
+                                        <div class="col-md-7">
+                                            <div class="checkbox checkbox-info">
+                                                <input id="chkRAP" name="ded_rap" type="checkbox">
+                                                <label for="chkRAP">Deducción RAP </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <div class="col-md-5 text-right"></div>
+                                        <div class="col-md-7">
+                                            <div class="checkbox checkbox-info">
+                                                <input id="chkISR" name="ded_isr" type="checkbox">
+                                                <label for="chkISR">Deducción Impuesto Sobre Renta </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <div class="col-md-5 text-right"></div>
+                                        <div class="col-md-7">
+                                            <div class="checkbox checkbox-info">
+                                                <input id="chkIMV" name="ded_imv" type="checkbox">
+                                                <label for="chkIMV">Deducción Impuesto Vecinal </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- CHECKBOX -->
                             <div class="col-md-12">
                                 <div class="col-md-6">
                                     <div class="form-group">

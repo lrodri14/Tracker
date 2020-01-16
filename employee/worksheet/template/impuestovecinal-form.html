@@ -69,7 +69,7 @@ Datos de Impuesto Vecinal
                                     <div class="col-md-5"></div>
                                     <div class="col-md-7">
                                         <div class="checkbox checkbox-success">
-                                            <input id="chkActivo" name="activo" type="checkbox" {% if dato.active %}checked{% endif %} class="input">
+                                            <input id="chkActivo" name="activo" type="checkbox" {% if editar %}{% if dato.active %}checked{% endif %}{% else %}checked{% endif %}  class="input">
                                             <label for="chkActivo" class="control-label"> Activo </label>
                                         </div>
                                     </div>
@@ -100,8 +100,8 @@ Datos de Impuesto Vecinal
     $('#aIV').addClass('active');
     $('#aPersonal').parents('li').addClass('active');
     $('#aLegales').parents('li').addClass('active');
-    $('input[name="desde"]').mask('000,000,000,000,000.00', {reverse: true});
-    $('input[name="hasta"]').mask('000,000,000,000,000.00', {reverse: true});
-    $('input[name="porcentaje"]').mask('##0.00%', {reverse: true});
+    //$('input[name="desde"]').mask('000,000,000,000,000.00', {reverse: true});
+    //$('input[name="hasta"]').mask('000,000,000,000,000.00', {reverse: true});
+    //$('input[name="porcentaje"]').mask('##0.00%', {reverse: true});
 </script>
 {% endblock scripts %}

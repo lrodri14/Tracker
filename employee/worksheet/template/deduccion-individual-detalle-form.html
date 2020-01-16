@@ -17,6 +17,13 @@ Deducción Individual - Detalle
 <div id="deduccion_individual_detalle" class="row">
     <div class="col-md-12">
         <div class="panel panel-default">
+            <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">
+                <ol class="breadcrumb">
+                    <li><a href="{% url 'home' %}">Inicio</a></li>
+                    <li><a href="{% url 'deduccion_individual_detalle_listado' %}">Lista</a></li>
+                    <li class="active">{% if editar %}Editar{% else %}Agregar{% endif %}</li>
+                </ol>
+            </div>
             <div class="panel-heading">
                 <h2 class="text-bold"><i class="ti-pencil-alt"></i>
                     Deducción Individual - Detalle</h2>
@@ -35,7 +42,7 @@ Deducción Individual - Detalle
                                         <label class="control-label">Deducción:</label>
                                     </div>
                                     <div class="col-md-7">
-                                        <select class="form-control select2" name="deduccion">
+                                        <select class="form-control" name="deduccion">
                                             <option value="0">Seleccionar...</option>
                                             {% for item in deducciones %}
                                                 {% if editar %}
@@ -58,11 +65,11 @@ Deducción Individual - Detalle
                                         <label class="control-label">Empleado:</label>
                                     </div>
                                     <div class="col-md-7">
-                                        <select class="form-control select2" name="empleado">
+                                        <select class="form-control" name="empleado">
                                             <option value="0">Seleccionar...</option>
                                             {% for item in empleados %}
                                                 {% if editar %}
-                                                    {% if item == dato.empleado %}
+                                                    {% if item.pk == dato.empleado.pk %}
                                                     <option value="{{item.pk}}" selected>{{item.firstName}} {% if item.middleName %}{{item.middleName}}{% endif %} {{item.lastName}}</option>
                                                     {% else %}
                                                     <option value="{{item.pk}}">{{item.firstName}} {% if item.middleName %}{{item.middleName}}{% endif %} {{item.lastName}}</option>
@@ -80,7 +87,7 @@ Deducción Individual - Detalle
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <div class="col-md-5 text-right">
-                                        <label class="control-label">Valor :</label>
+                                        <label class="control-label">Valor cuota:</label>
                                     </div>
                                     <div class="col-md-7">
                                         <input name="valor" value="{{dato.valor}}" type="text" class="form-control input" maxlength="18" />
@@ -90,11 +97,35 @@ Deducción Individual - Detalle
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <div class="col-md-5 text-right">
-                                        <label for="txtFechaVencPasaporte" class="control-label">Válido hasta :</label>
+                                        <label class="control-label">Fecha Inicial:</label>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <div class="input-group">
+                                            <input name="fecha_inicial" type="text" class="form-control mydatepicker" placeholder="dd/mm/aaaa" /> <span class="input-group-addon"><i class="icon-calender"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label class="control-label">Cuotas:</label>
                                     </div>
                                     <div class="col-md-7">
+                                        <input name="cuotas" value="{{dato.valor}}" type="text" class="form-control input" maxlength="18" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label class="control-label">Válido hasta:</label>
+                                    </div>
+                                    <div class="col-md-5">
                                         <div class="input-group">
-                                            <input value='{{dato.fecha_valida|date:"Y-m-d"}}' name="fecha" type="text" class="form-control mydatepicker" placeholder="yyyy-mm-dd"> <span class="input-group-addon"><i class="icon-calender"></i></span>
+                                            <input value='{{dato.fecha_valida|date:"d/m/Y"}}' name="fecha" type="text" class="form-control mydatepicker" placeholder="dd/mm/aaaa"> <span class="input-group-addon"><i class="icon-calender"></i></span>
                                         </div>
                                     </div>
                                 </div>
@@ -106,9 +137,48 @@ Deducción Individual - Detalle
                                     <div class="col-md-5"></div>
                                     <div class="col-md-7">
                                         <div class="checkbox checkbox-success">
-                                            <input id="chkActivo" name="activo" type="checkbox" {% if dato.active %}checked{% endif %} class="input">
+                                            <input id="chkActivo" name="activo" type="checkbox" {% if editar %}{% if dato.active %}checked{% endif %}{% else %}checked{% endif %} class="input" />
                                             <label for="chkActivo" class="control-label"> Activo </label>
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6"></div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5"></div>
+                                    <div class="col-md-7">
+                                        <div id="chkAdDetalle" class="checkbox checkbox-warning">
+                                            {% if detalle %}
+                                            <input id="chkADetalle" name="adetalle" type="checkbox" class="input" />
+                                            <label for="chkADetalle" class="control-label">Agregar Detalle </label>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6"></div>
+                        </div>
+                        <div id="frmADetalle" class="col-md-12">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label for="txtFechaVencPasaporte" class="control-label">Descripción:</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <textarea name="descripcion" class="form-control" id="txtDescripcion" rows="7">{{subdetalle.descripcion}}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-md-5 text-right">
+                                        <label class="control-label">Monto total:</label>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <input name="monto_total" value="{{subdetalle.monto}}" type="text" class="form-control input" maxlength="18" />
                                     </div>
                                 </div>
                             </div>
@@ -137,12 +207,21 @@ Deducción Individual - Detalle
     $('#aAcciones').addClass('active');
     $('#accionesNomina').addClass('active');
     $('#aDID').addClass('active');
-    $('input[name="valor"]').mask('0,000,000,000,000.00', {reverse:true});
+    //$('input[name="valor"]').mask('0,000,000,000,000.00', {reverse:true});
 
     $('.mydatepicker, #datepicker').datepicker({
+        format: 'dd/mm/yyyy',
+        autoclose:true,
+        todayHighlight: true,
+    });
+    $('.mydatepicker2').datepicker({
         format: 'yyyy-mm-dd',
         autoclose:true,
         todayHighlight: true,
     });
+
+    $('select[name="empleado"]').select2();
+    $('select[name="deduccion"]').select2();
+    
 </script>
 {% endblock scripts %}

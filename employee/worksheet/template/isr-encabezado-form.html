@@ -122,11 +122,11 @@ Datos de Impuesto Sobre Renta
     $('#aISREncabezado').addClass('active');
     $('#aPersonal').parents('li').addClass('active');
     $('#aLegales').parents('li').addClass('active');
-$('.moneda').mask('0,000,000,000,000.00', {reverse:true});
-jQuery('.mydatepicker, #datepicker').datepicker({
-    format: 'yyyy-mm-dd',
-    autoclose:true,
-    todayHighlight: true,
-});
+    //$('.moneda').mask('0,000,000,000,000.00', {reverse:true});
+    jQuery('.mydatepicker, #datepicker').datepicker({
+        format: 'yyyy-mm-dd',
+        autoclose:true,
+        todayHighlight: true,
+    });
 </script>
 {% endblock scripts %}

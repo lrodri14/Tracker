@@ -60,11 +60,7 @@ Motivos Ausencia
                                     </div>
                                     <div class="col-md-7">
                                         <div class="checkbox checkbox-success">
-                                            {% if dato.pagado %}
-                                            <input id="chkPagado" name="mau_pagado" type="checkbox" checked class="input-sm">
-                                            {% else %}
-                                            <input id="chkPagado" name="mau_pagado" type="checkbox" class="input-sm">
-                                            {% endif %}
+                                            <input id="chkPagado" name="mau_pagado" type="checkbox" class="input-sm" {% if dato.pagado %}checked{% endif %}>
                                             <label for="chkPagado" class="control-label"> Pagado </label>
                                         </div>
                                     </div>
@@ -77,11 +73,7 @@ Motivos Ausencia
                                     <div class="col-md-5"></div>
                                     <div class="col-md-7">
                                         <div class="checkbox checkbox-success">
-                                            {% if dato.active %}
-                                            <input id="chkActivo" name="mau_activo" type="checkbox" checked class="input-sm">
-                                            {% else %}
-                                            <input id="chkActivo" name="mau_activo" type="checkbox" class="input-sm">
-                                            {% endif %}
+                                            <input id="chkActivo" name="mau_activo" type="checkbox" checked class="input-sm" {% if editar %}{% if dato.active %}checked{% endif %}{% else %}checked{% endif %}>
                                             <label for="chkActivo" class="control-label"> Activo </label>
                                         </div>
                                     </div>

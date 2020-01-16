@@ -39,6 +39,14 @@ Ver registros de Planilla
                                 <br>
                                 <p class="text-muted"><span {% if planilla.cerrada %}class="label label-danger estado-planilla"{% else %}class="label label-success estado-planilla"{% endif %} >{% if planilla.cerrada %}CERRADA{% else %}ABIERTA{% endif %}</span></p>
                             </div>
+                            <div class="col-md-3 col-xs-6"> <strong>Desde</strong>
+                                <br>
+                                <p class="text-muted">{{planilla.fecha_inicio}}</p>
+                            </div>
+                            <div class="col-md-3 col-xs-6"> <strong>Hasta</strong>
+                                <br>
+                                <p class="text-muted">{{planilla.fecha_fin}}</p>
+                            </div>
                         </div>
                     </div>
                     <div class="row">
@@ -148,7 +156,7 @@ Ver registros de Planilla
                                     {% endfor %}
                                     <tr>
                                         <td><strong>TOTAL</strong></td>
-                                        <td class="text-right"><strong>{{suma_total_ingresos}}</strong></td>
+                                        <td class="text-right"><strong>{{sum_gingresos}}</strong></td>
                                     </tr>
                                 </table>
                             </div>
@@ -187,7 +195,7 @@ Ver registros de Planilla
                                     {% endfor %}
                                     <tr>
                                         <td><strong>TOTAL</strong></td>
-                                        <td class="text-right"><strong>{{suma_total_deducciones}}</strong></td>
+                                        <td class="text-right"><strong>{{sum_gdeducciones}}</strong></td>
                                     </tr>
                                 </table>
                             </div>

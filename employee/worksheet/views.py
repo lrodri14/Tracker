@@ -34,6 +34,7 @@ from xhtml2pdf import pisa
 import json
 import locale
 import operator
+import datetime as dtiempo
 from django.db.models import Q
 locale.setlocale(locale.LC_ALL, '')
 TWOPLACES = Decimal(10) ** -2
@@ -1018,13 +1019,13 @@ def tipo_costo_empleado_listar(request):
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.add_bank', raise_exception=True)
 def banco_form(request):
-    return render(request, 'banco-form.html')
+    return render(request, 'banco-formulario.html')
 
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.change_bank', raise_exception=True)
 def banco_editar(request, id):
     dato = Bank.objects.get(pk=id)
-    return render(request, 'banco-form.html', {'editar':True, 'dato':dato})
+    return render(request, 'banco-formulario.html', {'editar':True, 'dato':dato})
 
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.see_bank', raise_exception=True)
@@ -9698,11 +9699,17 @@ def deduccion_individual_detalle_form(request):
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.change_ingresogeneraldetalle', raise_exception=True)
 def deduccion_indidvidual_detalle_editar(request, id):
+    tiene_detalle = False
+    subdetalle = None
     dato = DeduccionIndividualDetalle.objects.get(pk=id)
+    if DeduccionIndividualSubDetalle.objects.filter(deducciondetalle=dato).exists():
+        tiene_detalle = True
+        subdetalle = DeduccionIndividualSubDetalle.objects.get(deducciondetalle=dato)
+    
     suc = Branch.objects.get(pk=request.session["sucursal"])
     deducciones = DeduccionIndividual.objects.filter(empresa_reg=suc.empresa, active=True)
     empleados = Employee.objects.filter(empresa_reg=suc.empresa, active=True, branch=suc)
-    return render(request, 'deduccion-individual-detalle-form.html', {'dato':dato, 'deducciones':deducciones, 'empleados':empleados, 'editar':True})
+    return render(request, 'deduccion-individual-detalle-form.html', {'dato':dato, 'deducciones':deducciones, 'empleados':empleados, 'editar':True, 'detalle': tiene_detalle, 'subdetalle':subdetalle})
 
 #----------------- END AJAX --------------------
 
@@ -9715,6 +9722,8 @@ def deduccion_individual_detalle_guardar(request):
                 valor = request.POST['valor']
                 fecha_valida = request.POST['fecha']
                 activo = request.POST['activo']
+                descripcion = request.POST['descripcion']
+                monto = request.POST['monto']
 
                 if len(deduccion_id) == 0:
                     mensaje = "El campo 'Deducción' es obligatorio."
@@ -9793,6 +9802,8 @@ def deduccion_individual_detalle_guardar(request):
                 else:
                     activo = False
 
+                fecha_valida = datetime.strptime(fecha_valida, '%d/%m/%Y')
+                fecha_valida = datetime.strftime(fecha_valida, '%Y-%m-%d')
                 vdeduccion = DeduccionIndividual.objects.get(pk=deduccion_id)
                 vempleado = Employee.objects.get(pk=empleado_id)
                 suc = Branch.objects.get(pk=request.session["sucursal"])
@@ -9808,6 +9819,16 @@ def deduccion_individual_detalle_guardar(request):
                     user_reg=request.user,
                 )
                 oMd.save()
+                
+                if not len(descripcion) == 0 or monto == 0:
+                    o = DeduccionIndividualSubDetalle(
+                        descripcion = descripcion,
+                        deducciondetalle = oMd,
+                        monto = monto,
+                        user_reg=request.user,
+                    )
+                    o.save()
+
                 mensaje = 'Se ha guardado el registro'
                 data = {
                     'mensaje': mensaje, 'error': False
@@ -9825,7 +9846,7 @@ def deduccion_individual_detalle_guardar(request):
     except Exception as ex:
         data = {
             'error': True,
-            'mensaje': 'error',
+            'mensaje': str(ex),
         }
     return JsonResponse(data)
 
@@ -9838,6 +9859,8 @@ def deduccion_individual_detalle_actualizar(request):
                 empleado_id = request.POST['empleado']
                 valor = request.POST['valor']
                 fecha_valida = request.POST['fecha']
+                descripcion = request.POST['descripcion']
+                monto = request.POST['monto']
                 activo = request.POST['activo']
 
                 if len(deduccion_id) == 0:
@@ -9917,6 +9940,9 @@ def deduccion_individual_detalle_actualizar(request):
                 else:
                     activo = False
 
+                fecha_valida = datetime.strptime(fecha_valida, '%d/%m/%Y')
+                fecha_valida = datetime.strftime(fecha_valida, '%Y-%m-%d')
+
                 vdeduccion = DeduccionIndividual.objects.get(pk=deduccion_id)
                 vempleado = Employee.objects.get(pk=empleado_id)
                 suc = Branch.objects.get(pk=request.session["sucursal"])
@@ -9939,6 +9965,12 @@ def deduccion_individual_detalle_actualizar(request):
                     data = {
                         'mensaje': mensaje, 'error': True
                     }
+                
+                subdetalle = DeduccionIndividualSubDetalle.objects.get(deducciondetalle=oMd)
+                if not len(descripcion) == 0 or monto == 0:
+                    subdetalle.descripcion = descripcion
+                    subdetalle.monto = monto
+                    subdetalle.save()
             else:
                 mensaje = "Método no permitido."
                 data = {
@@ -11203,7 +11235,9 @@ def horaextra_form(request):
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.change_horaextra', raise_exception=True)
 def horaextra_editar(request, id):
-    dato = HoraExtra.objects.get(pk=id)
+    idreg = 0
+    idreg = int(id)
+    dato = HoraExtra.objects.get(pk=idreg)
     return render(request, 'horaextra-form.html', {'dato': dato, 'editar': True})
 
 #---------------------AJAX-------------------------------
@@ -11733,12 +11767,12 @@ def impuestosobrerenta_actualizar(request):
                     data = {'error': True, 'mensaje': mensaje}
                     return JsonResponse(data)
 
-                desde = desde.replace(".", "")
-                desde = desde.replace(",", ".")
-                hasta = hasta.replace(".", "")
-                hasta = hasta.replace(",", ".")
-                porcentaje = porcentaje.replace(".", "")
-                porcentaje = porcentaje.replace(",", ".")
+                # desde = desde.replace(".", "")
+                # desde = desde.replace(",", ".")
+                # hasta = hasta.replace(".", "")
+                # hasta = hasta.replace(",", ".")
+                # porcentaje = porcentaje.replace(".", "")
+                # porcentaje = porcentaje.replace(",", ".")
 
                 if not validarDecimal(desde):
                     mensaje = "El campo 'Desde' es de tipo decimal."
@@ -11792,7 +11826,7 @@ def impuestosobrerenta_actualizar(request):
     except Exception as ex:
         data = {
             'error': True,
-            'mensaje': 'error',
+            'mensaje': str(ex),
         }
     return JsonResponse(data)
 
@@ -13382,7 +13416,6 @@ def planilla_listado(request):
         datos = Planilla.objects.filter(sucursal_reg=suc, active=True)
     return render(request, 'planilla-listado.html', {'datos':datos})
 
-
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.add_planilla', raise_exception=True)
 def planilla_form(request):
@@ -13403,6 +13436,8 @@ def planilla_ver(request, id):
     deducciones = 0
     suma_total_ingresos = 0
     suma_total_deducciones = 0
+    suma_gingresos = 0
+    suma_gdeducciones = 0
     suc = Branch.objects.filter(pk=request.session["sucursal"])
     planilla = Planilla.objects.get(pk=id)
     detalle_planilla = PlanillaDetalle.objects.filter(planilla__pk=planilla.id)
@@ -13438,17 +13473,18 @@ def planilla_ver(request, id):
         datos2.append(objeto1)
         suma_total_ingresos += float(item1.valor)
 
-    deducciones = PlanillaDetalleDeducciones.objects.filter(planilla__pk=planilla.id)
+    deducciones = PlanillaDetalleDeducciones.objects.filter(planilla__pk=planilla.id).values('id', 'empleado', 'planilla', 'deduccion').annotate(Sum('valor'))
     for item2 in deducciones:
+        o_empleado = Employee.objects.get(pk=item2["empleado"])
         objeto2 = {
-            'id': item2.pk,
-            'empleado': item2.empleado,
-            'planilla': item2.planilla,
-            'deduccion': item2.deduccion,
-            'valor': locale.format("%.2f", item2.valor, grouping=True),
+            'id': item2["id"],
+            'empleado': o_empleado,
+            'planilla': planilla,
+            'deduccion': item2['deduccion'],
+            'valor': locale.format("%.2f", item2["valor__sum"], grouping=True),
         }
         datos3.append(objeto2)
-        suma_total_deducciones += float(item2.valor)
+        #suma_total_deducciones += float(item2.valor)
 
     suma_total_neto = locale.format("%.2f", suma_total_ingresos - suma_total_deducciones, grouping=True)
     suma_total_ingresos = locale.format("%.2f", suma_total_ingresos, grouping=True)
@@ -13456,6 +13492,7 @@ def planilla_ver(request, id):
 
     vingresos = PlanillaDetalleIngresos.objects.filter(planilla=planilla).values('ingreso').annotate(Sum('valor'))
     for ingreso in vingresos:
+        suma_gingresos += float(ingreso["valor__sum"])
         dato = {
             'ingreso': ingreso["ingreso"],
             'valor': formato_millar(ingreso["valor__sum"])
@@ -13464,12 +13501,13 @@ def planilla_ver(request, id):
 
     vdeducciones = PlanillaDetalleDeducciones.objects.filter(planilla=planilla).values('deduccion').annotate(Sum('valor'))
     for deduccion in vdeducciones:
+        suma_gdeducciones += float(deduccion["valor__sum"])
         dato = {
             'deduccion': deduccion["deduccion"],
             'valor':formato_millar(deduccion["valor__sum"])
         }
         l_deducciones.append(dato)
-    return render(request, 'planilla-ver.html', {'planilla':planilla, 'detalle':datos, 'ingresos':datos2, 'deducciones': datos3, 'suma_total_ingresos': suma_total_ingresos, 'suma_total_deducciones':suma_total_deducciones, 'suma_total_neto': suma_total_neto, 'gingresos': l_ingresos, 'gdeducciones': l_deducciones})
+    return render(request, 'planilla-ver.html', {'planilla':planilla, 'detalle':datos, 'ingresos':datos2, 'deducciones': datos3, 'suma_total_ingresos': suma_total_ingresos, 'suma_total_deducciones':suma_total_deducciones, 'suma_total_neto': suma_total_neto, 'gingresos': l_ingresos, 'gdeducciones': l_deducciones, 'sum_gingresos': formato_millar(suma_gingresos), 'sum_gdeducciones': formato_millar(suma_gdeducciones)})
 
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.change_planilla', raise_exception=True)
@@ -13552,6 +13590,10 @@ def planilla_actualizar(request):
                 fecha_inicio = request.POST['fecha_inicio']
                 fecha_fin = request.POST['fecha_fin']
                 descripcion = request.POST['descripcion']
+                chk_dedihss = request.POST['ded_ihss']
+                chk_dedrap = request.POST['ded_rap']
+                chk_dedisr = request.POST['ded_isr']
+                chk_dedimv = request.POST['ded_imv']
 
                 if int(tipo_planilla_id) == 0:
                     return JsonResponse({'error': True, 'mensaje': 'El campo "Tipo de Planilla" es obligatorio.'})
@@ -13595,6 +13637,7 @@ def planilla_actualizar(request):
                     return JsonResponse({'error': True, 'mensaje': 'El campo "Descripcion" es obligatorio.'})
 
                 tot_reg = Planilla.objects.filter(pk=id).count()
+                print(chk_dedihss)
                 if tot_reg > 0:
                     o_Mdl = Planilla.objects.get(pk=id)
                     if o_Mdl.cerrada:
@@ -13606,6 +13649,10 @@ def planilla_actualizar(request):
                     o_Mdl.fecha_inicio = fecha_inicio
                     o_Mdl.fecha_fin = fecha_fin
                     o_Mdl.descripcion = descripcion
+                    o_Mdl.ihss = chk_dedihss
+                    o_Mdl.rap = chk_dedrap
+                    o_Mdl.isr = chk_dedisr
+                    o_Mdl.imv = chk_dedimv
                     o_Mdl.save()
                     return JsonResponse({'error': False, 'mensaje': 'Se ha guardado el registro.'})
                 else:
@@ -13637,6 +13684,10 @@ def planilla_guardar(request):
                 fecha_inicio = request.POST['fecha_inicio']
                 fecha_fin = request.POST['fecha_fin']
                 descripcion = request.POST['descripcion']
+                chk_dedihss = request.POST['ded_ihss']
+                chk_dedrap = request.POST['ded_rap']
+                chk_dedisr = request.POST['ded_isr']
+                chk_dedimv = request.POST['ded_imv']
                 
                 if int(tipo_planilla_id) == 0:
                     return JsonResponse({'error': True, 'mensaje': 'El campo "Tipo de Planilla" es obligatorio.'})
@@ -13678,6 +13729,7 @@ def planilla_guardar(request):
                     return JsonResponse({'error': True, 'mensaje': 'El campo "Descripcion" es obligatorio.'})
 
                 suc = Branch.objects.get(pk=request.session["sucursal"])
+                print(chk_dedihss)
                 oPlanilla = Planilla(
                     correlativo = 1,
                     tipo_planilla = o_tipo_planilla,
@@ -13687,6 +13739,10 @@ def planilla_guardar(request):
                     fecha_inicio = fecha_inicio,
                     fecha_fin = fecha_fin,
                     fecha_pago = fecha_pago,
+                    ihss = chk_dedihss,
+                    rap = chk_dedrap,
+                    isr = chk_dedisr,
+                    imv = chk_dedimv,
                     cerrada = False,
                     empresa_reg = suc.empresa,
                     sucursal_reg = suc,
@@ -13714,6 +13770,12 @@ def planilla_generar_calculos(request):
     try:
         if request.is_ajax():
             if request.method == 'POST':
+                if not "sucursal" in request.session:
+                    data = {
+                        'error': True,
+                        'mensaje': 'Su sesión ha caducado'
+                    }
+                    return JsonResponse(data)
                 planilla_id = request.POST["id"]
                 if len(planilla_id) == 0:
                     data = {
@@ -13740,6 +13802,14 @@ def planilla_generar_calculos(request):
                             regs_planilla_ingresos = PlanillaDetalleIngresos.objects.filter(planilla=o_planilla)
                             if regs_planilla_ingresos.count() > 0:
                                 regs_planilla_ingresos.delete()
+
+                            regs_control_saldo = ControlPagosDeduccionIndividual.objects.filter(planilla=o_planilla)
+                            if regs_control_saldo.count() > 0:
+                                regs_control_saldo.delete()
+
+                            regs_plan_det_ded_det = DetallePlanillaDetalleDeduccion.objects.filter(planilla_detalle_ded__planilla=o_planilla)
+                            if regs_plan_det_ded_det.count() > 0:
+                                regs_plan_det_ded_det.delete()
 
                             for item in empleados:
                                 tipos_deducciones = []
@@ -13788,7 +13858,7 @@ def planilla_generar_calculos(request):
                                         tigi += item1.valor
                                     else:
                                         tii += item1.valor
-                                    GuardarDetalleDeduccionIngreso(1, item1.ingreso.ingreso_i, item1.valor, item, o_planilla, suc.empresa, suc, request.user, item1.ingreso.tipo_ingreso)
+                                    GuardarDetalleDeduccionIngreso(1, item1.ingreso.ingreso_i, item1.valor, item, o_planilla, suc.empresa, suc, request.user, item1.ingreso.tipo_ingreso, False, 0)
 
                                 #Ingreso general
                                 #ingresos_generales = IngresoGeneralDetalle.objects.filter(nomina=o_planilla, tipo_pago=o_planilla.frecuencia_pago, tipo_contrato=item.tipo_contrato, fecha_valida__gte=o_planilla.fecha_inicio, fecha_valida__lte=o_planilla.fecha_fin, active=True)
@@ -13798,7 +13868,7 @@ def planilla_generar_calculos(request):
                                         tigg += item2.valor
                                     else:
                                         tig += item2.valor
-                                    GuardarDetalleDeduccionIngreso(1, item2.ingreso.ingreso_g, item2.value, item, o_planilla, suc.empresa, suc, request.user, item2.ingreso.tipo_ingreso)
+                                    GuardarDetalleDeduccionIngreso(1, item2.ingreso.ingreso_g, item2.value, item, o_planilla, suc.empresa, suc, request.user, item2.ingreso.tipo_ingreso, False, 0)
 
                                 #Ingreso Individual Planilla
                                 ingresos_planilla = IngresoIndividualPlanilla.objects.filter(empleado=item, planilla=o_planilla, active=True)
@@ -13807,7 +13877,7 @@ def planilla_generar_calculos(request):
                                         tigp += item3.valor
                                     else:
                                         tip += item3.valor
-                                    GuardarDetalleDeduccionIngreso(1, item3.ingreso.ingreso_i, item3.valor, item, o_planilla, suc.empresa, suc, request.user, item3.ingreso.tipo_ingreso)
+                                    GuardarDetalleDeduccionIngreso(1, item3.ingreso.ingreso_i, item3.valor, item, o_planilla, suc.empresa, suc, request.user, item3.ingreso.tipo_ingreso, False, 0)
 
                                 tot_pla_ing = float(tigi) + float(tii) + float(tigg) + float(tig) + float(tigp) + float(tip) 
                                 ausencias_con_pago = Ausentismo.objects.filter(Q(desde__range=(o_planilla.fecha_inicio, o_planilla.fecha_fin)) | Q(hasta__range=(o_planilla.fecha_inicio, o_planilla.fecha_fin)) | Q(desde__lt=o_planilla.fecha_inicio, hasta__gt=o_planilla.fecha_fin), empleado=item, sucursal_reg=suc, motivo__pagado=True, active=True)
@@ -13864,6 +13934,19 @@ def planilla_generar_calculos(request):
                                                 comentario = "Su salario ha disminuido por concepto de ausencia médica que cubre el IHSS"
                                                 GuardarDetalleDeduccionIngreso(2, "Deducción de salario por incapacidad cubierta por IHSS", tot_ajuste, item, o_planilla, suc.empresa, suc, request.user, None)
 
+                                # deduccion_ihss = 0
+                                # if EmpleadoDeducciones.objects.filter(deduccion='IHSS', empleado=item).exists():
+                                #     if TipoDeduccion.objects.filter(grupo="IHSS").exists():
+                                #         o_grup = TipoDeduccion.objects.get(grupo="IHSS")
+                                #         tipos_ihss = SeguroSocial.objects.filter(active=True)
+                                #         for item_21 in tipos_ihss:
+                                #             if salario_mensual > float(item_21.techo):
+                                #                 salario_mensual = float(item_21.techo)
+                                #             deduccion_ihss = deduccion_ihss + ((salario_diario * 30) * (float(item_21.porcentaje_e) / 100))
+                                        
+                                #         tipo_deduccion = {'nombre': 'IHSS', 'valor': deduccion_ihss, 'orden': o_grup.orden}
+                                #         tipos_deducciones.append(tipo_deduccion)
+
                                 # ausencias_sin_pago = Ausentismo.objects.filter(Q(desde__range=(o_planilla.fecha_inicio, o_planilla.fecha_fin)) | Q(hasta__range=(o_planilla.fecha_inicio, o_planilla.fecha_fin)) | Q(desde__gt=o_planilla.fecha_inicio, hasta__lt=o_planilla.fecha_fin), empleado=item, sucursal_reg=suc, motivo__pagado=False, active=True)
                                 ausencias_sin_pago = Ausentismo.objects.filter(desde__gte=o_planilla.fecha_inicio, hasta__lte=o_planilla.fecha_fin, empleado=item, sucursal_reg=suc, motivo__pagado=False, active=True)
                                 if ausencias_sin_pago.count() > 0:
@@ -13886,80 +13969,83 @@ def planilla_generar_calculos(request):
                                     # )
                                     # o_planilla_detalle_deduccion.save()
 
-                                dedaplicada = EmpleadoDeducciones.objects.filter(empleado=item, empresa_reg=suc.empresa, deduccion='IHSS', active=True)
-                                if dedaplicada.count() > 0:
-                                    tipos_ihss = SeguroSocial.objects.filter(empresa_reg=suc.empresa, active=True)
-                                    sbb = salario_mensual + tigi + tigg + tigp
-                                    
-                                    for item4 in tipos_ihss:
-                                        if sbb > float(item4.techo):
-                                            sbb = float(item4.techo)
-                                        deduccion_ihss = deduccion_ihss + (sbb * (float(item4.porcentaje_e) / 100))
+                                if o_planilla.ihss:
+                                    dedaplicada = EmpleadoDeducciones.objects.filter(empleado=item, empresa_reg=suc.empresa, deduccion='IHSS', active=True)
+                                    if dedaplicada.count() > 0:
+                                        tipos_ihss = SeguroSocial.objects.filter(empresa_reg=suc.empresa, active=True)
+                                        sbb = salario_mensual + tigi + tigg + tigp
+                                        
+                                        for item4 in tipos_ihss:
+                                            if sbb > float(item4.techo):
+                                                sbb = float(item4.techo)
+                                            deduccion_ihss = deduccion_ihss + (sbb * (float(item4.porcentaje_e) / 100))
 
-                                    deduccion_tipo = TipoDeduccion.objects.filter(tipo_deduccion='IHSS', empresa_reg=suc.empresa, active=True)
-                                    if deduccion_tipo.count() > 0:
-                                        orden = int(deduccion_tipo[0].orden)
-                                    else:
-                                        orden = 0
-                                    if deduccion_ihss > 0:
-                                        tipo_deduccion = {'nombre': 'IHSS', 'valor': deduccion_ihss, 'orden': orden}
-                                        tipos_deducciones.append(tipo_deduccion)
+                                        deduccion_tipo = TipoDeduccion.objects.filter(tipo_deduccion='IHSS', empresa_reg=suc.empresa, active=True)
+                                        if deduccion_tipo.count() > 0:
+                                            orden = int(deduccion_tipo[0].orden)
+                                        else:
+                                            orden = 0
+                                        if deduccion_ihss > 0:
+                                            tipo_deduccion = {'nombre': 'IHSS', 'valor': deduccion_ihss, 'orden': orden}
+                                            tipos_deducciones.append(tipo_deduccion)
 
-                                dedaplicada = EmpleadoDeducciones.objects.filter(empleado=item, empresa_reg=suc.empresa, deduccion='RAP', active=True)
-                                if dedaplicada.count() > 0:
-                                    sbb = salario_mensual + tigi + tigg + tigp
-                                    tipos_rap = RapDeduccion.objects.filter(empresa_reg=suc.empresa, active=True)
-                                    for item5 in tipos_rap:
-                                        if sbb > float(item5.techo):
-                                            sbb = float(item5.techo)
-                                        deduccion_rap = deduccion_rap + (sbb * (float(item5.porcentaje)/100))
-                                    deduccion_tipo = TipoDeduccion.objects.filter(tipo_deduccion='RAP', empresa_reg=suc.empresa, active=True)
-                                    if deduccion_tipo.count() > 0:
-                                        orden = int(deduccion_tipo[0].orden)
-                                    else:
-                                        orden = 0
-
-                                    if deduccion_rap > 0:
-                                        tipo_deduccion = {'nombre': 'RAP', 'valor': deduccion_rap, 'orden': orden}
-                                        tipos_deducciones.append(tipo_deduccion)
-
-                                dedaplicada = EmpleadoDeducciones.objects.filter(empleado=item, empresa_reg=suc.empresa, deduccion='ISR', active=True)
-                                if dedaplicada.count() > 0:
-                                    sbb = float(salario_mensual) + float(tigi) + float(tigg) + float(tigp)
-                                    isr_encabezados = EncabezadoImpuestoSobreRenta.objects.filter(empresa_reg=suc.empresa, active=True).order_by('-id')
-                                    if isr_encabezados.count() > 0:
-                                        o_encabezadoisr = isr_encabezados[0]
-                                        deduccion_tipo = TipoDeduccion.objects.filter(tipo_deduccion='ISR', empresa_reg=suc.empresa, active=True)
+                                if o_planilla.rap:
+                                    dedaplicada = EmpleadoDeducciones.objects.filter(empleado=item, empresa_reg=suc.empresa, deduccion='RAP', active=True)
+                                    if dedaplicada.count() > 0:
+                                        sbb = salario_mensual + tigi + tigg + tigp
+                                        tipos_rap = RapDeduccion.objects.filter(empresa_reg=suc.empresa, active=True)
+                                        for item5 in tipos_rap:
+                                            if sbb > float(item5.techo):
+                                                sbb = float(item5.techo)
+                                            deduccion_rap = deduccion_rap + (sbb * (float(item5.porcentaje)/100))
+                                        deduccion_tipo = TipoDeduccion.objects.filter(tipo_deduccion='RAP', empresa_reg=suc.empresa, active=True)
                                         if deduccion_tipo.count() > 0:
                                             orden = int(deduccion_tipo[0].orden)
                                         else:
                                             orden = 0
 
-                                        isr_detalles = ImpuestoSobreRenta.objects.filter(encabezado__pk=o_encabezadoisr.pk, active=True).order_by('id')
-                                        sueldo_anual = (salario_diario * 30) * 14
+                                        if deduccion_rap > 0:
+                                            tipo_deduccion = {'nombre': 'RAP', 'valor': deduccion_rap, 'orden': orden}
+                                            tipos_deducciones.append(tipo_deduccion)
 
-                                        registro_i = 1
-                                        for item_detalle in isr_detalles:
-                                            if registro_i == 1:
-                                                if o_encabezadoisr.valor:
-                                                    item_detalle.hasta = float(item_detalle.hasta) + float(o_encabezadoisr.valor)
-                                                if o_encabezadoisr.valor1:
-                                                    item_detalle.hasta = float(item_detalle.hasta) + float(o_encabezadoisr.valor1)
-                                                if o_encabezadoisr.valor2:
-                                                    item_detalle.hasta = float(item_detalle.hasta) + float(o_encabezadoisr.valor2)
-
-                                            if sueldo_anual > 0:
-                                                deduccion_isr += sueldo_anual * (float(item_detalle.porcentaje) / 100)
-                                                sueldo_anual = float(sueldo_anual) - float(item_detalle.hasta)
+                                if o_planilla.isr:
+                                    dedaplicada = EmpleadoDeducciones.objects.filter(empleado=item, empresa_reg=suc.empresa, deduccion='ISR', active=True)
+                                    if dedaplicada.count() > 0:
+                                        sbb = float(salario_mensual) + float(tigi) + float(tigg) + float(tigp)
+                                        isr_encabezados = EncabezadoImpuestoSobreRenta.objects.filter(empresa_reg=suc.empresa, active=True).order_by('-id')
+                                        if isr_encabezados.count() > 0:
+                                            o_encabezadoisr = isr_encabezados[0]
+                                            deduccion_tipo = TipoDeduccion.objects.filter(tipo_deduccion='ISR', empresa_reg=suc.empresa, active=True)
+                                            if deduccion_tipo.count() > 0:
+                                                orden = int(deduccion_tipo[0].orden)
                                             else:
-                                                deduccion_isr += 0
-                                            registro_i += 1
-                                        
-                                        if item.salaryUnits.dias_salario:
-                                            tpagos = int(30 / item.salaryUnits.dias_salario)
-                                            tpagos = tpagos * 12
+                                                orden = 0
+
+                                            isr_detalles = ImpuestoSobreRenta.objects.filter(encabezado__pk=o_encabezadoisr.pk, active=True).order_by('id')
+                                            sueldo_anual = (salario_diario * 30) * 14
+
+                                            registro_i = 1
+                                            for item_detalle in isr_detalles:
+                                                if registro_i == 1:
+                                                    if o_encabezadoisr.valor:
+                                                        item_detalle.hasta = float(item_detalle.hasta) + float(o_encabezadoisr.valor)
+                                                    if o_encabezadoisr.valor1:
+                                                        item_detalle.hasta = float(item_detalle.hasta) + float(o_encabezadoisr.valor1)
+                                                    if o_encabezadoisr.valor2:
+                                                        item_detalle.hasta = float(item_detalle.hasta) + float(o_encabezadoisr.valor2)
+
+                                                if sueldo_anual > 0:
+                                                    deduccion_isr += sueldo_anual * (float(item_detalle.porcentaje) / 100)
+                                                    sueldo_anual = float(sueldo_anual) - float(item_detalle.hasta)
+                                                else:
+                                                    deduccion_isr += 0
+                                                registro_i += 1
                                             
-                                            deduccion_isr = deduccion_isr / tpagos
+                                            if item.salaryUnits.dias_salario:
+                                                tpagos = int(30 / item.salaryUnits.dias_salario)
+                                                tpagos = tpagos * 12
+                                                
+                                                deduccion_isr = deduccion_isr / tpagos
 
                                     # tipos_isr = ImpuestoSobreRenta.objects.filter(empresa_reg=suc.empresa, desde__lte=sbb, hasta__gte=sbb, active=True).order_by('-id')
                                     # if tipos_isr.count() > 0:
@@ -13973,38 +14059,65 @@ def planilla_generar_calculos(request):
                                         if deduccion_isr > 0:
                                             tipo_deduccion = {'nombre': 'ISR', 'valor': deduccion_isr, 'orden': orden}
                                             tipos_deducciones.append(tipo_deduccion)
-
-                                dedaplicada = EmpleadoDeducciones.objects.filter(empleado=item, empresa_reg=suc.empresa, deduccion='IMV', active=True)
-                                if dedaplicada.count() > 0:
-                                    sbb = float(salario_mensual) + float(tigi) + float(tigg) + float(tigp)
-                                    sbb = float(Decimal(sbb).quantize(TWOPLACES))
-                                    tipos_vec = ImpuestoVecinal.objects.filter(empresa_reg=suc.empresa, desde__lte=sbb, hasta__gte=sbb, active=True).order_by('-id')
-                                    if tipos_vec.count() > 0:
-                                        o_tipovec = tipos_vec[0]
-                                        deduccion_tipo = TipoDeduccion.objects.filter(tipo_deduccion='IMV', empresa_reg=suc.empresa, active=True)
-                                        if deduccion_tipo.count() > 0:
-                                            orden = int(deduccion_tipo[0].orden)
-                                        else:
-                                            orden = 0
-                                        
-                                        print(sbb)
-                                        deduccion_vec = sbb * (float(o_tipovec.porcentaje) / 100)
-                                        tpagos = int(30 / item.salaryUnits.dias_salario)
-                                        tpagos = tpagos * 12
+                                
+                                if o_planilla.imv:
+                                    dedaplicada = EmpleadoDeducciones.objects.filter(empleado=item, empresa_reg=suc.empresa, deduccion='IMV', active=True)
+                                    if dedaplicada.count() > 0:
+                                        sbb = float(salario_mensual) + float(tigi) + float(tigg) + float(tigp)
+                                        sbb = float(Decimal(sbb).quantize(TWOPLACES))
+                                        tipos_vec = ImpuestoVecinal.objects.filter(empresa_reg=suc.empresa, desde__lte=sbb, hasta__gte=sbb, active=True).order_by('-id')
+                                        if tipos_vec.count() > 0:
+                                            o_tipovec = tipos_vec[0]
+                                            deduccion_tipo = TipoDeduccion.objects.filter(tipo_deduccion='IMV', empresa_reg=suc.empresa, active=True)
+                                            if deduccion_tipo.count() > 0:
+                                                orden = int(deduccion_tipo[0].orden)
+                                            else:
+                                                orden = 0
                                             
-                                        deduccion_vec = deduccion_vec / tpagos
-                                        if deduccion_vec > 0:
-                                            tipo_deduccion = {'nombre': 'IMV', 'valor': deduccion_vec, 'orden': orden}
-                                            tipos_deducciones.append(tipo_deduccion)
-                                        print("IMV: " + str(tipos_deducciones))
+                                            print(sbb)
+                                            deduccion_vec = sbb * (float(o_tipovec.porcentaje) / 100)
+                                            tpagos = int(30 / item.salaryUnits.dias_salario)
+                                            tpagos = tpagos * 12
+                                                
+                                            deduccion_vec = deduccion_vec / tpagos
+                                            if deduccion_vec > 0:
+                                                tipo_deduccion = {'nombre': 'IMV', 'valor': deduccion_vec, 'orden': orden}
+                                                tipos_deducciones.append(tipo_deduccion)
+                                            print("IMV: " + str(tipos_deducciones))
 
                                 #Deduccion Individual Detalle
                                 #deducciones_individuales = DeduccionIndividualDetalle.objects.filter(empleado=item, fecha_valida__gte=o_planilla.fecha_inicio, fecha_valida__lte=o_planilla.fecha_fin, active=True)
                                 deducciones_individuales = DeduccionIndividualDetalle.objects.filter(empleado=item, fecha_valida__gte=o_planilla.fecha_inicio, active=True)
                                 for item6 in deducciones_individuales:
+                                    sumaControl = 0
                                     tipo_deduccion = {'nombre': item6.deduccion.deduccion_i, 'valor': item6.valor, 'orden': item6.deduccion.tipo_deduccion.orden}
-                                    tipos_deducciones.append(tipo_deduccion)
+                                    
                                     tot_ind_ded = tot_ind_ded + item6.valor
+                                    if item6.deduccion.control_saldo:
+                                        if DeduccionIndividualSubDetalle.objects.filter(deducciondetalle=item6).exists():
+                                            o_deduccionsub = DeduccionIndividualSubDetalle.objects.filter(deducciondetalle=item6)[:1]
+                                            o_deduccionsub = o_deduccionsub[0]
+                                            sumaControl = ControlPagosDeduccionIndividual.objects.filter(deduccion=item6).aggregate(Sum('valor'))
+                                            if sumaControl["valor__sum"] != None:
+                                                if float(sumaControl["valor__sum"]) + float(item6.valor) <= o_deduccionsub.monto:
+                                                    o_control = ControlPagosDeduccionIndividual(
+                                                        planilla = o_planilla,
+                                                        deduccion = item6,
+                                                        valor = float(sumaControl["valor__sum"]) + float(item6.valor)
+                                                    )
+                                                    o_control.save()
+                                            else:
+                                                if item6.valor <= o_deduccionsub.monto:
+                                                    o_control = ControlPagosDeduccionIndividual(
+                                                        planilla = o_planilla,
+                                                        deduccion = item6,
+                                                        valor = float(item6.valor)
+                                                    )
+                                                    o_control.save()
+                                            
+                                            tipo_deduccion["deduccion"] = item6.pk
+                                    
+                                    tipos_deducciones.append(tipo_deduccion)
 
                                 #Deduccion general
                                 # deducciones_generales = DeduccionGeneralDetalle.objects.filter(nomina=o_planilla, tipo_pago=o_planilla.frecuencia_pago, tipo_contrato=item.tipo_contrato, fecha_valido__gte=o_planilla.fecha_inicio, fecha_valido__lte=o_planilla.fecha_fin, active=True)
@@ -14024,10 +14137,16 @@ def planilla_generar_calculos(request):
                                 lista_deducciones_tipos = TipoDeduccion.objects.filter(empresa_reg=suc.empresa, active=True).order_by('orden')
                                 for item9 in lista_deducciones_tipos:
                                     for item9_1 in tipos_deducciones:
+                                        hay_deduccion = False
+                                        id_dedu = 0
+
                                         if float(item9_1["orden"]) == float(item9.orden):
                                             total_ingreso = total_ingreso - float(item9_1["valor"])
                                             total_egreso = total_egreso + float(item9_1["valor"])
-                                            GuardarDetalleDeduccionIngreso(2, item9_1["nombre"], item9_1["valor"], item, o_planilla, suc.empresa, suc, request.user, item9)
+                                            if "deduccion" in item9_1:
+                                                hay_deduccion = True
+                                                id_dedu = item9_1["deduccion"]
+                                            GuardarDetalleDeduccionIngreso(2, item9_1["nombre"], item9_1["valor"], item, o_planilla, suc.empresa, suc, request.user, item9, hay_deduccion, id_dedu)
                                 
                                 # total_egreso = float(total_egreso) + float(tot_ind_ded)
                                 # total_ingreso = float(total_ingreso) - float(tot_ind_ded)
@@ -14098,7 +14217,7 @@ def planilla_generar_calculos(request):
         }
         return JsonResponse(data)
 
-def GuardarDetalleDeduccionIngreso(tipo, mensaje, valor, empleado, planilla, empresa, sucursal, usuario, tipo_registro):
+def GuardarDetalleDeduccionIngreso(tipo, mensaje, valor, empleado, planilla, empresa, sucursal, usuario, tipo_registro, hay_deduccion, id_dedu):
     tipo_reg = None
     if tipo_registro:
         tipo_reg = tipo_registro
@@ -14127,6 +14246,16 @@ def GuardarDetalleDeduccionIngreso(tipo, mensaje, valor, empleado, planilla, emp
             user_reg = usuario,
         )
         o_deduccion.save()
+        if hay_deduccion:
+            print("Entro aqui")
+            print(id_dedu)
+            if DeduccionIndividualDetalle.objects.filter(pk=id_dedu).exists():
+                o_deduded = DeduccionIndividualDetalle.objects.get(pk=id_dedu)
+                o_reg = DetallePlanillaDetalleDeduccion(
+                    planilla_detalle_ded = o_deduccion,
+                    deduccion_detalle = o_deduded
+                )
+                o_reg.save()
 
 import time
 def planilla_calculos_empleado(request):
@@ -14228,7 +14357,6 @@ def planilla_calculos_empleado(request):
                     user_reg = request.user
                 )
                 o_planilladetalle.save()
-                print(o_planilladetalle)
                 detalles_planillas_deducciones = PlanillaDetalleDeducciones.objects.filter(planilla=o_planilla)
                 if detalles_planillas_deducciones.count() > 0:
                     detalles_planillas_deducciones.delete()
@@ -14503,8 +14631,11 @@ def generar_reporte_general(request):
         empleados = Employee.objects.filter(pk__in=val_list_ing)
 
         columnas = [{'title':'Codigo'}, {'title': 'Nombre'}, {'title':'Fecha pago'}, {'title': 'Salario'}]
-        grupos_flat = PlanillaDetalleIngresos.objects.filter(Q(planilla__fecha_inicio__gte=desde, planilla__fecha_fin__lte=hasta)).exclude(tipo_ingreso=None).values_list('tipo_ingreso__grupo', flat=True).order_by('tipo_ingreso__orden', 'ingreso').distinct()
-        grupos_flat_ded = PlanillaDetalleDeducciones.objects.filter(Q(planilla__fecha_inicio__gte=desde, planilla__fecha_fin__lte=hasta)).exclude(tipo_deduccion=None).values_list('tipo_deduccion__grupo', flat=True).order_by('tipo_deduccion__orden', 'deduccion').distinct()
+        grupos_flat = PlanillaDetalleIngresos.objects.filter(Q(planilla__fecha_inicio__gte=desde, planilla__fecha_fin__lte=hasta)).exclude(tipo_ingreso=None).values_list('tipo_ingreso__grupo', flat=True).order_by('tipo_ingreso__orden').distinct()
+        grupos_flat_ded = PlanillaDetalleDeducciones.objects.filter(Q(planilla__fecha_inicio__gte=desde, planilla__fecha_fin__lte=hasta)).exclude(tipo_deduccion=None).values_list('tipo_deduccion__grupo', flat=True).order_by('tipo_deduccion__orden')
+        print(grupos_flat_ded)
+        grupos_flat = list(set(grupos_flat))
+        grupos_flat_ded = list(set(grupos_flat_ded))
         for empleado in empleados:
             detallesfila = []
             total_ingreso = 0
@@ -14529,7 +14660,7 @@ def generar_reporte_general(request):
                 if not datos_empleado['Fecha pago']:
                     datos_empleado['Fecha pago'] = detalle1.planilla.fecha_pago.strftime("%d/%m/%Y")
                 
-                if empleado == detalle1.empleado and detalle1.ingreso.count("Sueldo empleado") > 0 and not detalle1.tipo_ingreso:
+                if empleado == detalle1.empleado and detalle1.ingreso.count("SALARIO") > 0 and not detalle1.tipo_ingreso:
                     datos_empleado['Sueldo'] = formato_millar(detalle1.valor)
                     total_ingreso = detalle1.valor
 
@@ -14564,6 +14695,7 @@ def generar_reporte_general(request):
                 columnas.append({'title': 'Total Ingreso'})
 
             for grupo in grupos_flat_ded:
+                print(grupo)
                 tot_col = 0
                 for columna in columnas:
                     if columna["title"] == grupo:
@@ -14575,7 +14707,9 @@ def generar_reporte_general(request):
                 if not grupo in datos_empleado:
                     datos_empleado[grupo] = formato_millar(0)
                 
-                o_pla_ded = PlanillaDetalleDeducciones.objects.filter(Q(planilla__fecha_inicio__gte=desde, planilla__fecha_fin__lte=hasta, tipo_deduccion__grupo=grupo)).order_by('tipo_deduccion__orden', 'deduccion')
+                o_pla_ded = PlanillaDetalleDeducciones.objects.filter(Q(planilla__fecha_inicio__gte=desde, planilla__fecha_fin__lte=hasta, tipo_deduccion__grupo=grupo, empleado=empleado)).order_by('tipo_deduccion__orden', 'deduccion')
+                
+
                 for detalle in o_pla_ded:
                     if detalle.tipo_deduccion:
                         if detalle.tipo_deduccion.grupo == grupo and detalle.empleado == empleado:
@@ -14583,6 +14717,7 @@ def generar_reporte_general(request):
                             total_deducciones += detalle.valor
                         else:
                             datos_empleado[grupo] = formato_millar(float(datos_empleado[grupo].replace(",", "")) + 0)
+                
 
             datos_empleado['Total Deducciones'] = formato_millar(total_deducciones)
             datos_planilla.append(datos_empleado)
@@ -14592,6 +14727,7 @@ def generar_reporte_general(request):
             filas_detalles.append(list(elemento.values()))
 
         columnas.append({'title': 'Total Deducciones'})
+        print(columnas)
         data = {
             'error':False,
             'mensaje': 'Se han encontrado datos.',
@@ -14609,23 +14745,6 @@ def generar_reporte_general(request):
             'mensaje': 'No se pasó un valor válido como parámetro.'
         }
     return render(request, 'reportes/reporte-planilla-general.html', data)
-
-def obtener_ingresos_planilla(request):
-    datos = []
-    dato = {}
-    suma = 0
-    planilla_id = request.GET.get("id")
-    o_planilla = Planilla.objects.get(pk=int(planilla_id))
-    ingresos = PlanillaDetalleIngresos.objects.filter(planilla=o_planilla).values('ingreso').annotate(Sum('valor'))
-    for ingreso in ingresos:
-        suma += float(ingreso["valor__sum"])
-        dato = {
-            'ingreso': ingreso["ingreso"],
-            'valor': formato_millar(ingreso["valor__sum"])
-        }
-        datos.append(dato)
-    return render(request, 'ajax/ver_ingresos.html', {'ingresos':datos, 'suma': formato_millar(suma)})
-
 
 def planilla_ver_registro(request):
     error = False
@@ -14646,7 +14765,6 @@ def planilla_ver_registro(request):
             else:
                 error = True
                 mensaje = "No existe el registro."
-
     else:
         error = True
         mensaje = "El método no está permitido."
@@ -14656,6 +14774,114 @@ def planilla_ver_registro(request):
     else:
         titulo = "Ver registro"
     return render(request, 'ajax/planilla-modal.html', {'error':error, 'mensaje': mensaje, 'titulo':titulo, 'dato':dato})
+
+def planilla_obtener_ver_empleado(request):
+    try:
+        mensaje = ''
+        codigos =  {}
+        datos2 = []
+        datos3 = []
+        total_salario = 0
+        suma_total_ingresos = 0
+        suma_total_deducciones = 0
+        total_neto = 0
+        l_empleados = []
+        if request.is_ajax():
+            empleado_id = request.GET.get('empleado_id')
+            planilla_id = request.GET.get('planilla_id')
+            empleado_id = int(empleado_id)
+            planilla_id = int(planilla_id)
+            planilla = Planilla.objects.get(pk=planilla_id)
+            empleado = Employee.objects.get(pk=empleado_id)
+            ingresos = PlanillaDetalleIngresos.objects.filter(planilla=planilla, empleado=empleado)
+            for item1 in ingresos:
+                objeto1 = {
+                    'id':item1.pk,
+                    'empleado': item1.empleado,
+                    'planilla': item1.planilla,
+                    'ingreso': item1.ingreso,
+                    'valor': locale.format("%.2f", item1.valor, grouping=True),
+                }
+                suma_total_ingresos += float(item1.valor)
+                datos2.append(objeto1)
+            
+            deducciones = PlanillaDetalleDeducciones.objects.filter(planilla=planilla, empleado=empleado).values('empleado', 'planilla', 'deduccion', 'tipo_deduccion').annotate(Sum('valor'))
+            
+            for item2 in deducciones:
+                tiene_sub = False
+                tipo_ded = TipoDeduccion.objects.get(pk=item2["tipo_deduccion"])
+                var1_flat = PlanillaDetalleDeducciones.objects.filter(planilla=planilla, empleado=empleado, tipo_deduccion=tipo_ded).values_list('pk', flat=True)
+                print(var1_flat)
+                var2_flat = DetallePlanillaDetalleDeduccion.objects.filter(planilla_detalle_ded__in=var1_flat).values_list('deduccion_detalle', flat=True)
+                if DeduccionIndividualSubDetalle.objects.filter(deducciondetalle__in=var2_flat).exists():
+                    tiene_sub = True
+                    
+                objeto2 = {
+                    'planilla': planilla,
+                    'deduccion': item2['deduccion'],
+                    'valor': locale.format("%.2f", item2["valor__sum"], grouping=True),
+                    'tipo_deduccion': item2['tipo_deduccion'],
+                    'tiene_sub': tiene_sub,
+                }
+                datos3.append(objeto2)
+                suma_total_deducciones += float(item2["valor__sum"])
+            
+            total_neto = suma_total_ingresos - suma_total_deducciones
+            total_neto = locale.format("%.2f", total_neto, grouping=True)
+            suma_total_ingresos = locale.format("%.2f", suma_total_ingresos, grouping=True)
+            suma_total_deducciones = locale.format("%.2f", suma_total_deducciones, grouping=True)
+            error = False
+            mensaje = "¡El proceso se ha completado con éxito!"
+            data = {'error':error, 'mensaje': mensaje, 'ingresos': datos2, 'deducciones': datos3, 'subingresos':suma_total_ingresos, 'subdeducciones': suma_total_deducciones, 'total_neto': total_neto}
+        else:
+            error = True
+            mensaje = "El método no está permitido."
+            data = {'error': error, 'mensaje':mensaje}
+    except Exception as ex:
+        data = {
+            'error': True,
+            'mensaje': str(ex),
+        }
+    return render(request, 'ajax/ver-planilla-empleado.html', data)
+
+def planilla_obtener_subdetalle_deduccion(request):
+    data = {'error':True, 'msj': 'No se realizó la operación'}
+    planilla = None
+    deduccion_tipo = None
+    if request.is_ajax():
+        deducciontipo_id = request.GET.get('deduccion_id')
+        planilla_id = request.GET.get('planilla_id')
+        empleado_id = request.GET.get('empleado_id')
+        if Planilla.objects.filter(pk=planilla_id).exists():
+            planilla = Planilla.objects.get(pk=planilla_id)
+            if TipoDeduccion.objects.filter(pk=deducciontipo_id).exists():
+                tipo_deduccion = TipoDeduccion.objects.get(pk=deducciontipo_id)
+                if Employee.objects.filter(pk=empleado_id).exists():
+                    datos = []
+                    empleado = Employee.objects.get(pk=empleado_id)
+                    #lista_detal = ControlPagosDeduccionIndividual.objects.filter(planilla=planilla, deduccion__deduccion__tipo_deduccion=tipo_deduccion, deduccion__deduccion__empleado=empleado)
+                    lista_control_flat = ControlPagosDeduccionIndividual.objects.filter(planilla=planilla, deduccion__deduccion__tipo_deduccion=tipo_deduccion, deduccion__empleado=empleado).values_list('deduccion_id', flat=True)
+                    lista_detal = DeduccionIndividualSubDetalle.objects.filter(deducciondetalle__in=lista_control_flat)
+                    for item in lista_detal:
+                        o_ldetal = {
+                            'descripcion': item.descripcion,
+                            'monto_total': item.monto,
+                            'cuota': item.deducciondetalle.valor,
+                        }
+                        datos.append(o_ldetal)
+                    data = {'error':False, 'msj': 'Se han encontrado los datos', 'datos': datos}
+                else:
+                    data = {'error': True, 'msj': 'El empleado como parámetro no existe.'}
+                    return JsonResponse(data)
+            else:
+                data = {'error': True, 'msj': 'El tipo de deducción como parámetro no existe.'}
+                return JsonResponse(data)
+        else:
+            data = {'error': True, 'msj': 'La planilla como parámetro no existe.'}
+            return JsonResponse(data)
+    else:
+        pass
+    return JsonResponse(data)
 
 def planilla_generada(request):
     datos = []
@@ -15425,7 +15651,7 @@ def tipo_deduccion_eliminar(request):
 @permission_required('worksheet.see_tiponomina', raise_exception=True)
 def tipo_nomina_listado(request):
     suc = Branch.objects.get(pk=request.session["sucursal"])
-    listado = TipoNomina.objects.filter(active=True, empresa_reg=suc.empresa)
+    listado = TipoNomina.objects.filter(empresa_reg=suc.empresa)
     return render(request, 'tipo-nomina-listado.html', {'listado':listado})
 
 @login_required(login_url='/form/iniciar-sesion/')
@@ -15613,7 +15839,7 @@ def tipo_nomina_eliminar(request):
 @permission_required('worksheet.see_tipoingreso', raise_exception=True)
 def tipo_ingreso_listado(request):
     suc = Branch.objects.get(pk=request.session["sucursal"])
-    lista = TipoIngreso.objects.filter(empresa_reg=suc.empresa, active=True)
+    lista = TipoIngreso.objects.filter(empresa_reg=suc.empresa)
     return render(request, 'tipo-ingreso-listado.html', {'lista':lista})
 
 @login_required(login_url='/form/iniciar-sesion/')
@@ -16309,6 +16535,8 @@ def boleta_pago_reporte(request):
     response.write(pdf)
     return response
 
+
+
 def boleta_pago_email(request):
     empleado_id = request.GET.get('empleado_id')
     planilla_id = request.GET.get('planilla_id')
@@ -16360,6 +16588,101 @@ def reporte_probando(request):
 
 #endregion
 
+def verifica_saldo_controlado(request):
+    try:
+        if request.is_ajax():
+            id = request.GET.get("id")
+            id = int(id)
+            if DeduccionIndividual.objects.filter(pk=id).exists():
+                o_ded = DeduccionIndividual.objects.get(pk=id)
+                data = {'status':True, 'controla_saldo':o_ded.control_saldo, 'mensaje': '¡OK!'}
+                return JsonResponse(data, status=200)
+            else:
+                data = {'status':False, 'mensaje': 'El tipo de petición no es válido'}
+                return JsonResponse(data, status=404)    
+        else:
+            data = {'status':False, 'mensaje': 'El tipo de petición no es válido'}
+            return JsonResponse(data, status=404)
+    except Exception as ex:
+        data = {'status': False, 'mensaje':str(ex)}
+        return JsonResponse(data, status=500)
+
+def obtener_fecha_limite(request):
+    fecha_limite = None
+    if request.is_ajax():
+        id_empleado = request.GET.get("empleado")
+        cuota = request.GET.get("cuotas")
+        fecha_inicial = request.GET.get("fecha_inicial")
+        if len(id_empleado) == 0:
+            data = {'error': True, 'msj': 'Valor inválido de empleado'}
+            return JsonResponse(data)
+
+        if not validarEntero(id_empleado):
+            data = {'error': True, 'msj': 'Valor inválido de empleado'}
+            return JsonResponse(data)
+
+        if not Employee.objects.filter(pk=id_empleado).exists():
+            data = {'error': True, 'msj': 'Valor inválido de empleado'}
+            return JsonResponse(data)
+
+        if not cuota:
+            data = {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+                'error': True,
+                'msj': 'Valor no válido como cantidad de cuotas.'
+            }
+            return JsonResponse(data)
+
+        if len(cuota) == 0:
+            data = {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+                'error': True,
+                'msj': 'Valor no válido como cantidad de cuotas.'
+            }
+            return JsonResponse(data)
+        
+        if not validarEntero(cuota):
+            data = {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+                'error': True,
+                'msj': 'Valor no válido como cantidad de cuotas'
+            }
+            return JsonResponse(data)
+
+        if int(cuota) == 0:
+            data = {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+                'error': True,
+                'msj': 'Valor no válido como cantidad de cuotas'
+            }
+            return JsonResponse(data)
+
+        if len(fecha_inicial) == 0:
+            data = {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+                'error': True,
+                'msj': 'Valor no válido como fecha inicial'
+            }
+            return JsonResponse(data)
+
+        o_empleado = Employee.objects.get(pk=id_empleado)
+        
+        if not o_empleado.salaryUnits:
+            if len(fecha_inicial) == 0:
+                data = {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+                    'error': True,
+                    'msj': 'Empleado no tiene asignado frecuencia de pago'
+                }
+                return JsonResponse(data)
+
+        dias_t = int(o_empleado.salaryUnits.dias_salario) * int(cuota)
+        print(dias_t)
+        fecha_inicial = datetime.strptime(fecha_inicial, '%d/%m/%Y')
+        fecha_limite = fecha_inicial + dtiempo.timedelta(days=dias_t)
+        fecha_limite = datetime.strftime(fecha_limite, "%d/%m/%Y")
+        data = {'error':False, 'fecha': fecha_limite}
+        return JsonResponse(data)
+    else:
+        data = {
+            'error': True,
+            'msj': 'Método no permitido'
+        }
+        return JsonResponse(data)
 #--------------------------VALIDACIONES------------------------------
 def validarEntero(dato):
     try:
@@ -16367,7 +16690,7 @@ def validarEntero(dato):
         dato += 1
         dato = dato / 1
         return True
-    except TypeError:
+    except Exception:
         return False
 
 def validarDecimal(dato):
@@ -16388,25 +16711,44 @@ def formato_millar(valor):
 class Pdf(View):
 
     def get(self, request):
+        params = {}
         empleado_id = request.GET.get('empleado_id')
         planilla_id = request.GET.get('planilla_id')
         detalle_ing = []
         detalle_ded = []
+        empleado_id = int(empleado_id)
         o_empleado = Employee.objects.get(pk=empleado_id)
         o_planilla = Planilla.objects.get(pk=planilla_id)
         o_pla_de_ing = PlanillaDetalleIngresos.objects.filter(empleado=o_empleado, planilla=o_planilla)
-        o_pla_de_ded = PlanillaDetalleDeducciones.objects.filter(empleado=o_empleado, planilla=o_planilla)
+        o_pla_de_ded = PlanillaDetalleDeducciones.objects.filter(empleado=o_empleado, planilla=o_planilla).values('deduccion').annotate(Sum('valor'))
+        print(o_pla_de_ded)
         o_pla_de = PlanillaDetalle.objects.get(empleado=o_empleado, planilla=o_planilla)
         for item in o_pla_de_ing:
+            vingres = ''
+            vparam = 'SALARIO'
+            vingres = item.ingreso
             data = {
                 'ingreso': item.ingreso,
                 'valor': formato_millar(item.valor)
             }
-            detalle_ing.append(data)
+            if vingres.strip() == vparam:
+                detalle_ing.append(data)
+
+        for item in o_pla_de_ing:
+            vingres = ''
+            vparam = 'SALARIO'
+            vingres = item.ingreso
+            data = {
+                'ingreso': item.ingreso,
+                'valor': formato_millar(item.valor)
+            }
+            if vingres.strip() != vparam:
+                detalle_ing.append(data)
+
         for item in o_pla_de_ded:
             data = {
-                'deduccion': item.deduccion,
-                'valor': formato_millar(item.valor),
+                'deduccion': item['deduccion'],
+                'valor': formato_millar(item['valor__sum']),
             }
             detalle_ded.append(data)
         params = {

@@ -1,7 +1,17 @@
-﻿{% extends "base.html" %}
+{% extends 'base.html' %}
 {% block titulo %}
 Datos de Banco
 {% endblock titulo %}
+{% block estilo %}
+<style>
+    .checkbox{
+        font-weight: 500;
+    }
+    .checkbox label{
+        font-weight: 500;
+    }
+</style>
+{% endblock estilo %}
 {% load static %}
 {% block contenido %}
 <div class="row">

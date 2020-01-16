@@ -2743,7 +2743,15 @@ $(document).on('ready', () => {
     var did_empleado = $('#deduccion_individual_detalle select[name="empleado"]');
     var did_valor = $('#deduccion_individual_detalle input[name="valor"]');
     var did_fecha = $('#deduccion_individual_detalle input[name="fecha"]');
+    var did_fecha_desde = $('#deduccion_individual_detalle input[name="fecha_inicial"]');
     var did_activo = $('#deduccion_individual_detalle input[name="activo"]');
+    var did_cuotas = $('#deduccion_individual_detalle input[name="cuotas"]');
+    var did_dias_salario = 0;
+    
+    var did_adetalle = $('#deduccion_individual_detalle input[name="adetalle"]');
+    var controla_saldo = false;
+
+    $('#frmADetalle').hide();
 
     $('#deduccion_individual_detalle #btnGuardar').on('click', function (e) {
         e.preventDefault();
@@ -2752,17 +2760,103 @@ $(document).on('ready', () => {
         } else {
             vActivo = 0;
         }
+        if (controla_saldo === false) {
+            data = {
+                'deduccion': did_deduccion.val(),
+                'empleado': did_empleado.val(),
+                'valor': did_valor.val(),
+                'fecha': did_fecha.val(),
+                'descripcion': '',
+                'monto': 0,
+                'activo': vActivo,
+                'csrfmiddlewaretoken': token.val(),    
+            }
+        }else{
+            data = {
+                'deduccion': did_deduccion.val(),
+                'empleado': did_empleado.val(),
+                'valor': did_valor.val(),
+                'fecha': did_fecha.val(),
+                'descripcion': $('textarea[name="descripcion"]').val(),
+                'monto': $('input[name="monto_total"]').val(),
+                'activo': vActivo,
+                'csrfmiddlewaretoken': token.val(),    
+            }
+        }
         url = '/guardar/deduccion-individual-detalle/';
         metodo = 'POST';
-        data = {
-            'deduccion': did_deduccion.val(),
-            'empleado': did_empleado.val(),
-            'valor': did_valor.val(),
-            'fecha': did_fecha.val(),
-            'activo': vActivo,
-            'csrfmiddlewaretoken': token.val(),
-        };
+        // data = {
+        //     'deduccion': did_deduccion.val(),
+        //     'empleado': did_empleado.val(),
+        //     'valor': did_valor.val(),
+        //     'fecha': did_fecha.val(),
+        //     'activo': vActivo,
+        //     'csrfmiddlewaretoken': token.val(),
+        // };
         GuardarRegistro(url, metodo, data, "Detalles de Deducción Individual");
+    });
+
+    did_deduccion.on('change', function(e) {
+        $.ajax({
+            url : '/verifica/saldo-controlado/',
+            data : {'id':$(this).val()},
+            type : 'GET',
+            dataType: 'json',
+            success: function(json){
+                if (json.controla_saldo === true) {
+                    controla_saldo = json.controla_saldo;
+                    $('#deduccion_individual_detalle #chkAdDetalle').html('<input id="chkADetalle" name="adetalle" type="checkbox" class="input" />  <label for="chkADetalle" class="control-label">Agregar Detalle </label>');
+                    
+                }else{
+                    controla_saldo = json.controla_saldo;
+                    $('#deduccion_individual_detalle #chkAdDetalle').html('');
+                }
+                $('#frmADetalle').hide();
+            },
+            error: function(jqXHR, status, error){
+                console.log(error);
+            },
+            complete: function(jqXHR, status){
+            }
+        });
+    });
+
+    did_empleado.on('change', function(e) {
+        e.preventDefault();
+        obtener_fecha_limite(did_empleado.val(), did_fecha_desde.val(), did_cuotas.val());
+        // $.ajax({
+        //     url : '/obtener/dias-salario-empleado/',
+        //     data : {'id':$(this).val()},
+        //     type : 'GET',
+        //     dataType: 'json',
+        //     success: function(json){
+        //         if (json.error) {
+        //             alert(json.msj);
+        //         }else{
+        //             dip_dias_salario = json.dias;
+        //         }
+        //     },
+        //     error: function(jqXHR, status, error){
+        //         console.log(error);
+        //     },
+        // });
+    });
+
+    did_fecha_desde.on('change', function(e) {
+        obtener_fecha_limite(did_empleado.val(), did_fecha_desde.val(), did_cuotas.val());
+    })
+
+    did_cuotas.on('change', function(e) {
+        e.preventDefault();
+        obtener_fecha_limite(did_empleado.val(), did_fecha_desde.val(), $(this).val());
+    });
+
+    $('#deduccion_individual_detalle').on('change', '#chkADetalle', function() {
+        if ($(this).is(':checked')) {
+            $('#frmADetalle').show();
+        }else{
+            $('#frmADetalle').hide();
+        }
     });
 
     $('#deduccion_individual_detalle #btnActualizar').on('click', function (e) {
@@ -2780,6 +2874,8 @@ $(document).on('ready', () => {
             'empleado': did_empleado.val(),
             'valor': did_valor.val(),
             'fecha': did_fecha.val(),
+            'descripcion': $('textarea[name="descripcion"]').val(),
+            'monto': $('input[name="monto_total"]').val(),
             'activo': vActivo,
             'csrfmiddlewaretoken': token.val(),
         };
@@ -2790,6 +2886,27 @@ $(document).on('ready', () => {
         e.preventDefault();
         window.location.replace(dns + "/listar/deduccion-individual-detalle/");
     });
+
+    function obtener_fecha_limite(empleado, fecha_inicial, cuotas){
+        $.ajax({
+            url : '/obtener/fecha-limite/',
+            data : {'empleado':empleado, 'fecha_inicial': fecha_inicial, 'cuotas': cuotas},
+            type : 'GET',
+            dataType: 'json',
+            success: function(json){
+                if (json.error) {
+                    //alert(json.msj);
+                    mensaje("Advertencia", json.msj, "error", 3500);
+                }else{
+                    did_fecha.datepicker('setDate',json.fecha);
+                    console.log(json.fecha);
+                }
+            },
+            error: function(jqXHR, status, error){
+                console.log(error);
+            },
+        });
+    }
 
     //#endregion
 
@@ -2841,6 +2958,39 @@ $(document).on('ready', () => {
             'csrfmiddlewaretoken': token.val(),
         };
         GuardarRegistro(url, metodo, data, "Deducción Individual en Planilla", true, "/listar/deduccion-individual-planilla/");
+    });
+
+    $('#deduccion_individual_planilla').on('change', '#chkADetalle', function() {
+        if ($(this).is(':checked')) {
+            $('#frmADetalle').show();
+        }else{
+            $('#frmADetalle').hide();
+        }
+    });
+
+    dip_deduccion.on('change', function(e) {
+        $.ajax({
+            url : '/verifica/saldo-controlado/',
+            data : {'id':$(this).val()},
+            type : 'GET',
+            dataType: 'json',
+            success: function(json){
+                if (json.controla_saldo === true) {
+                    controla_saldo = json.controla_saldo;
+                    $('#deduccion_individual_planilla #chkAdDetalle').html('<input id="chkADetalle" name="adetalle" type="checkbox" class="input" />  <label for="chkADetalle" class="control-label">Agregar Detalle </label>');
+                    
+                }else{
+                    controla_saldo = json.controla_saldo;
+                    $('#deduccion_individual_planilla #chkAdDetalle').html('');
+                }
+                $('#frmADetalle').hide();
+            },
+            error: function(jqXHR, status, error){
+                console.log(error);
+            },
+            complete: function(jqXHR, status){
+            }
+        });
     });
 
     $('#deduccion_individual_planilla #btnCancelar').on('click', function (e) {
@@ -2919,14 +3069,18 @@ $(document).on('ready', () => {
     //#region Código para ISR
 
     var isr_id = $('#isr input[name="id"]');
-    var isr_desde = $('#isr input[name="desde"]');
-    var isr_hasta = $('#isr input[name="hasta"]');
-    var isr_prcnt = $('#isr input[name="porcentaje"]');
-    var isr_activo = $('#isr input[name="activo"]');
+    var txtDesde = $('#isr input[name="txtdesde"]');
+    var txtHasta = $('#isr input[name="txthasta"]');
+    var txtPorcnt = $('#isr input[name="txtporcentaje"]');
+    var chkactivo = $('#isr input[name="chkactivo"]');
+
+    $('#isr #btnProbar').on('click', function() {
+        alert(isr_hasta.val());
+    });
 
     $('#isr #btnGuardar').on('click', function (e) {
         e.preventDefault();
-        if (isr_activo.is(":checked")) {
+        if (chkactivo.is(":checked")) {
             vActivo = 1;
         } else {
             vActivo = 0;
@@ -2934,9 +3088,9 @@ $(document).on('ready', () => {
         url = '/guardar/isr/';
         metodo = 'POST';
         data = {
-            'desde': isr_desde.val(),
-            'hasta': isr_hasta.val(),
-            'porcentaje': isr_prcnt.val(),
+            'desde': txtDesde.val(),
+            'hasta': txtHasta.val(),
+            'porcentaje': txtPorcnt.val(),
             'activo': vActivo,
             'csrfmiddlewaretoken': token.val(),
         };
@@ -2944,7 +3098,7 @@ $(document).on('ready', () => {
     });
     $('#isr #btnActualizar').on('click', function (e) {
         e.preventDefault();
-        if (isr_activo.is(":checked")) {
+        if (chkactivo.is(":checked")) {
             vActivo = 1;
         } else {
             vActivo = 0;
@@ -2953,9 +3107,9 @@ $(document).on('ready', () => {
         metodo = 'POST';
         data = {
             'id': isr_id.val(),
-            'desde': isr_desde.val(),
-            'hasta': isr_hasta.val(),
-            'porcentaje': isr_prcnt.val(),
+            'desde': txtDesde.val(),
+            'hasta': txtHasta.val(),
+            'porcentaje': txtPorcnt.val(),
             'activo': vActivo,
             'csrfmiddlewaretoken': token.val(),
         };
@@ -3504,6 +3658,10 @@ $(document).on('ready', () => {
     var cboHasta = $('#planilla-reporte-general #txtHasta');
     var btnVerIngresos = $('#frmVerPlanilla #btnVerIngresos');
     var btnVerDeducciones = $('#frmVerPlanilla #btnVerDeducciones');
+    var chkdedihss = $('#frmPlanilla input[name="ded_ihss"]');
+    var chkdedrap = $('#frmPlanilla input[name="ded_rap"]');
+    var chkdedisr = $('#frmPlanilla input[name="ded_isr"]');
+    var chkdedimv = $('#frmPlanilla input[name="ded_imv"]');
 
     var btnGenerar = $('.planilla-generar #btnGenerar');
     var btnGenerar2 = $('.planilla-generar #btnGenerar2');
@@ -3528,7 +3686,31 @@ $(document).on('ready', () => {
         e.preventDefault();
         url = '/guardar/planilla/';
         metodo = 'POST';
+        if (chkdedihss.is(":checked")) {
+            vdidihss = 1;
+        } else {
+            vdidihss = 0;
+        }
+        if (chkdedrap.is(":checked")) {
+            vdidrap = 1;
+        } else {
+            vdidrap = 0;
+        }
+        if (chkdedisr.is(":checked")) {
+            vdidisr = 1;
+        } else {
+            vdidisr = 0;
+        }
+        if (chkdedimv.is(":checked")) {
+            vdidimv = 1;
+        } else {
+            vdidimv = 0;
+        }
         data = {
+            'ded_ihss': vdidihss,
+            'ded_rap': vdidrap,
+            'ded_isr': vdidisr,
+            'ded_imv': vdidimv,
             'tipo_planilla': cboPlTipoPlanilla.val(),
             'tipo_pago': cboPlTipoPago.val(),
             'tipo_contrato': cboPlTipoContrato.val(),
@@ -3556,8 +3738,32 @@ $(document).on('ready', () => {
         e.preventDefault();
         url = '/actualizar/planilla/';
         metodo = 'POST';
+        if (chkdedihss.is(":checked")) {
+            vdidihss = 1;
+        } else {
+            vdidihss = 0;
+        }
+        if (chkdedrap.is(":checked")) {
+            vdidrap = 1;
+        } else {
+            vdidrap = 0;
+        }
+        if (chkdedisr.is(":checked")) {
+            vdidisr = 1;
+        } else {
+            vdidisr = 0;
+        }
+        if (chkdedimv.is(":checked")) {
+            vdidimv = 1;
+        } else {
+            vdidimv = 0;
+        }
         data = {
             'id': id.val(),
+            'ded_ihss': vdidihss,
+            'ded_rap': vdidrap,
+            'ded_isr': vdidisr,
+            'ded_imv': vdidimv,
             'tipo_planilla': cboPlTipoPlanilla.val(),
             'tipo_pago': cboPlTipoPago.val(),
             'tipo_contrato': cboPlTipoContrato.val(),
@@ -3915,7 +4121,57 @@ $(document).on('ready', () => {
             console.log("Entro aqui");
             $('.cbo-periodo').removeClass('hide');
         }
-    })
+    });
+
+    //$('#ver-resumen-planilla-empleado').hide();
+
+    $('#btnVerResumenPlanillaEmpleado').on('click', function(e) {
+        e.preventDefault();
+        $.ajax({
+            type: "GET",
+            url: "/obtener/planilla-empleado/",
+            data: { 'empleado_id': $('input[name="empleado"]').val(), 'planilla_id':  $('select[name="planilla_id"]').val(),},
+            success: function (data) {
+                $('#ver-resumen-planilla-empleado').html(data);
+                //$('#ver-resumen-planilla-empleado').show();
+            },
+            error: function (data) {
+                console.log("Error: " + data);
+            },
+            dataType: 'html'
+        });
+    });
+
+    $('#frmPerfilEmpleado').on('click', '.btnSubDetalle', function(e) {
+        e.preventDefault();
+        console.log($('#frmPerfilEmpleado input[name="empleado"]').val());
+        $.ajax({
+            type: "GET",
+            url: "/obtener/subdetalle/",
+            data: { 'deduccion_id': $(this).attr('data'), 'planilla_id':  $('select[name="planilla_id"]').val(), 'empleado_id': $('input[name="empleado"]').val()},
+            success: function (data) {
+                if (data.error) {
+                    mensaje("Ver detalle de deducción", data.msj, "error", 3500);
+                }else{
+                    html = "";
+                    data.datos.forEach(element => {
+                        html += '<tr>';
+                        html += '<td>'+element.descripcion+'</td>';
+                        html += '<td class="text-right">'+element.cuota+'</td>';
+                        html += '<td class="text-right">'+element.monto_total+'</td>';
+                        html += '</tr>';
+                    });
+
+                    $('#frmVerSubDetalles tbody').html(html);
+                    $('#frmVerSubDetalles').modal('show');
+                }
+            },
+            error: function (data) {
+                console.log("Error: " + data);
+            },
+            dataType: 'json'
+        });
+    });
 
     //#endregion
 

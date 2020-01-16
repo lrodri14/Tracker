@@ -58,11 +58,7 @@ Puesto de Trabajo
                                     <div class="col-md-5"></div>
                                     <div class="col-md-7">
                                         <div class="checkbox checkbox-success">
-                                            {% if dato.active %}
-                                            <input id="chkptActivo" name="pt_activo" type="checkbox" class="input-sm" checked>
-                                            {% else %}
-                                            <input id="chkptActivo" name="pt_activo" type="checkbox" class="input-sm">
-                                            {% endif %}
+                                            <input id="chkptActivo" name="pt_activo" type="checkbox" class="input-sm" {% if editar %}{% if dato.active %}checked{% endif %}{% else %}checked{% endif %}>
                                             <label for="chkptActivo" class="control-label"> Activo </label>
                                         </div>
                                     </div>
@@ -118,6 +114,7 @@ Puesto de Trabajo
     $('#aFunTrab').addClass('active');
     $('#aPersonal').parents('li').addClass('active');
     $('#aGenerales').parents('li').addClass('active');
+    $('.select2').select2();
     //#endregion
 </script>
 {% endblock scripts %}

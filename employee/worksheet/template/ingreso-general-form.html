@@ -82,7 +82,7 @@ Ingreso General
                                     <div class="col-md-5"></div>
                                     <div class="col-md-7">
                                         <div class="checkbox checkbox-success">
-                                            <input id="chkActivo" name="chkActivo" type="checkbox" {% if dato.active %}checked{% endif %} class="input">
+                                            <input id="chkActivo" name="chkActivo" type="checkbox" {% if editar %}{% if dato.active %}checked{% endif %}{% else %}checked{% endif %} class="input" />
                                             <label for="chkActivo" class="control-label"> Activo </label>
                                         </div>
                                     </div>
