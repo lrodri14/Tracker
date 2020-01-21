@@ -13442,9 +13442,36 @@ def planilla_ver(request, id):
     planilla = Planilla.objects.get(pk=id)
     detalle_planilla = PlanillaDetalle.objects.filter(planilla__pk=planilla.id)
     for item in detalle_planilla:
+        datos2 = []
+        datos3 = []
         dias_trabajo = 0
         dias_trabajo = float(item.dias_salario) - float(item.dias_ausentes_sin_pago)
         total_salario = float(dias_trabajo) * float(item.salario_diario)
+
+        ingresos = PlanillaDetalleIngresos.objects.filter(planilla__pk=planilla.id, empleado=item.empleado).values('empleado', 'planilla', 'ingreso').annotate(Sum('valor'))
+
+        for item1 in ingresos:
+            objeto1 = {
+                'empleado': item.empleado,
+                'planilla': planilla,
+                'ingreso': item1["ingreso"],
+                'valor': locale.format("%.2f", item1["valor__sum"], grouping=True),
+            }
+            datos2.append(objeto1)
+            suma_total_ingresos += float(item1["valor__sum"])
+
+        deducciones = PlanillaDetalleDeducciones.objects.filter(planilla__pk=planilla.id, empleado=item.empleado).values('empleado', 'planilla', 'deduccion').annotate(Sum('valor'))
+        for item2 in deducciones:
+            o_empleado = Employee.objects.get(pk=item2["empleado"])
+            objeto2 = {
+                'empleado': o_empleado,
+                'planilla': planilla,
+                'deduccion': item2['deduccion'],
+                'valor': locale.format("%.2f", item2["valor__sum"], grouping=True),
+            }
+            datos3.append(objeto2)
+            suma_total_deducciones += float(item2["valor__sum"])
+
         objeto = {
             'id':item.pk,
             'empleado': item.empleado,
@@ -13456,35 +13483,50 @@ def planilla_ver(request, id):
             'total_deducciones': locale.format("%.2f", item.total_deducciones, grouping=True),
             'total_salario': locale.format("%.2f", total_salario, grouping=True),
             'salario_neto': locale.format("%.2f", float(item.total_ingresos) - float(item.total_deducciones), grouping=True),
+            'detalle_ingresos': datos2,
+            'detalle_egresos': datos3
         }
         datos.append(objeto)
         # suma_total_ingresos += float(item.total_ingresos)
         # suma_total_deducciones += float(item.total_deducciones)
-    ingresos = PlanillaDetalleIngresos.objects.filter(planilla__pk=planilla.id)
+    # ingresos = PlanillaDetalleIngresos.objects.filter(planilla__pk=planilla.id).values('empleado', 'planilla', 'ingreso').annotate(Sum('valor'))
 
-    for item1 in ingresos:
-        objeto1 = {
-            'id':item1.pk,
-            'empleado': item1.empleado,
-            'planilla': item1.planilla,
-            'ingreso': item1.ingreso,
-            'valor': locale.format("%.2f", item1.valor, grouping=True),
-        }
-        datos2.append(objeto1)
-        suma_total_ingresos += float(item1.valor)
+    # for item1 in ingresos:
+    #     o_empleado = Employee.objects.get(pk=item1["empleado"])
+    #     if item1["ingreso"] == "SALARIO":
+    #         objeto1 = {
+    #             'empleado': o_empleado,
+    #             'planilla': planilla,
+    #             'ingreso': item1["ingreso"],
+    #             'valor': locale.format("%.2f", item1["valor__sum"], grouping=True),
+    #         }
+    #         datos2.append(objeto1)
+    #         suma_total_ingresos += float(item1["valor__sum"])
 
-    deducciones = PlanillaDetalleDeducciones.objects.filter(planilla__pk=planilla.id).values('id', 'empleado', 'planilla', 'deduccion').annotate(Sum('valor'))
-    for item2 in deducciones:
-        o_empleado = Employee.objects.get(pk=item2["empleado"])
-        objeto2 = {
-            'id': item2["id"],
-            'empleado': o_empleado,
-            'planilla': planilla,
-            'deduccion': item2['deduccion'],
-            'valor': locale.format("%.2f", item2["valor__sum"], grouping=True),
-        }
-        datos3.append(objeto2)
-        #suma_total_deducciones += float(item2.valor)
+    # for item1 in ingresos:
+    #     if item1["ingreso"] != "SALARIO":
+    #         o_empleado = Employee.objects.get(pk=item1["empleado"])
+    #         objeto1 = {
+    #             'empleado': o_empleado,
+    #             'planilla': planilla,
+    #             'ingreso': item1["ingreso"],
+    #             'valor': locale.format("%.2f", item1["valor__sum"], grouping=True),
+    #         }
+    #         datos2.append(objeto1)
+    #         suma_total_ingresos += float(item1["valor__sum"])
+
+
+    # deducciones = PlanillaDetalleDeducciones.objects.filter(planilla__pk=planilla.id).values('empleado', 'planilla', 'deduccion').annotate(Sum('valor'))
+    # for item2 in deducciones:
+    #     o_empleado = Employee.objects.get(pk=item2["empleado"])
+    #     objeto2 = {
+    #         'empleado': o_empleado,
+    #         'planilla': planilla,
+    #         'deduccion': item2['deduccion'],
+    #         'valor': locale.format("%.2f", item2["valor__sum"], grouping=True),
+    #     }
+    #     datos3.append(objeto2)
+    #     suma_total_deducciones += float(item2["valor__sum"])
 
     suma_total_neto = locale.format("%.2f", suma_total_ingresos - suma_total_deducciones, grouping=True)
     suma_total_ingresos = locale.format("%.2f", suma_total_ingresos, grouping=True)
