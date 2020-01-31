@@ -114,6 +114,31 @@ Ver registros de Planilla
                                                             </tbody>
                                                         </table>
                                                     </div>
+                                                    <div class="table-responsive col-md-6">
+                                                        <table class="table">
+                                                            <thead class="detalle-encabezado">
+                                                                <th><span>Datos Agrupados</span> </th>
+                                                                <th class="text-right">Ingreso</th>
+                                                                <th class="text-right">Deducción</th>
+                                                            </thead>
+                                                            <tbody class="body-item-detalle">
+                                                                {% for item1 in item.ingresos_agrupa %}
+                                                                    <tr>
+                                                                        <td>{{item1.ingreso}}</td>
+                                                                        <td class="text-right"><span class="text-success text-right"><strong>{{item1.valor}}</strong></span></td>
+                                                                        <td></td>
+                                                                    </tr>
+                                                                {% endfor %}
+                                                                {% for item1 in item.deducciones_agrupa %}
+                                                                    <tr>
+                                                                        <td>{{item1.deduccion}}</td>
+                                                                        <td></td>
+                                                                        <td class="text-right"><span class="text-danger text-right"><strong>{{item1.valor}}</strong></span></td>
+                                                                    </tr>
+                                                                {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
                                                 </div>
                                             </td>
                                         {% endfor %}
@@ -186,9 +211,15 @@ Ver registros de Planilla
                                         </tr>
                                     </thead>
                                     {% for deduccion in gdeducciones %}
+                                        {% for detalle in deduccion.detalle %}
+                                        <tr>
+                                            <td>{{detalle.deduccion}}</td>
+                                            <td class="text-right">{{detalle.valor}}</td>
+                                        </tr>
+                                        {% endfor %}
                                     <tr>
-                                        <td>{{deduccion.deduccion}}</td>
-                                        <td class="text-right">{{deduccion.valor}}</td>
+                                        <td><strong>SUBTOTAL {{deduccion.grupo}}</strong></td>
+                                        <td class="text-right"><strong>{{deduccion.valor}}</strong></td>
                                     </tr>
                                     {% empty %}
                                     <tr>

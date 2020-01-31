@@ -28,7 +28,9 @@
                     <tfoot>
                         <tr>
                             {% for columna in columns %}
-                                <th>{{columna.title}}</th>
+                                <th>{% comment '' %}
+                                {{columna.title}}
+                                {% endcomment %}</th>
                             {% endfor %}
                         </tr>
                     </tfoot>
@@ -53,12 +55,13 @@
         columnDefs: [
             { className: 'text-right', targets: objetivos },
         ],
+        paging: false,
         dom: 'Bfrtip',
         buttons: [
-            'copy', 'csv', 'excel',
+            'copy', 'csv', 
             {
-                extend:'print',
-                text: 'Imprimir',
+                extend:'excelHtml5',
+                text: 'Excel',
                 title: function() { return 'Reporte General Detalle Planilla'},
                 customize: function(win) {
                     $(win.document.body)
@@ -66,7 +69,13 @@
                         .prepend(
                             '<img src="'+dns+'/static/images/promaco-logo-3.png" />'
                         )
-                }
+                },
+                footer: true,
+            },
+            {
+                extend:'print',
+                text: 'Imprimir',
+                footer: true,
             },
             {
                 extend: 'pdfHtml5',
@@ -74,7 +83,22 @@
                 pageSize: 'LEGAL',
                 title: function() { return 'Reporte General Detalle Planilla'},
             }
-        ]
+        ],
+        "footerCallback": function ( row, data, start, end, display ) {
+            var api = this.api();
+            nb_cols = api.columns().nodes().length;
+            var j = 3;
+            while(j < nb_cols){
+                var pageTotal = api.column(j, { page: 'current'}).data().reduce( function (a, b) {
+                    b = b.replace(",", "");
+                    return Number(a) + Number(b);
+                }, 0 );
+                // Update footer
+                pageTotal = (pageTotal).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')
+                $(api.column(j).footer()).html(pageTotal);
+                j++;
+            }
+        }
     });
     $('#side-menu a').removeClass('active');
     $('#aAcciones').addClass('active');
@@ -82,5 +106,10 @@
     $('#aReportes').addClass('active');
     $('#aAcciones').parents('li').addClass('active');
     $('#accionesNomina').parents('li').addClass('active');
+    $('#reporteTabla tfoot tr th:first-child').removeAttr('colspan');
+    $('#reporteTabla tfoot tr th:nth-child(1)').remove();
+    $('#reporteTabla tfoot tr th:nth-child(2)').remove();
+    $('#reporteTabla tfoot tr th:first-child').attr('colspan', '3');
+    $('#reporteTabla tfoot tr th:first-child').html('Total');
 </script>
 {% endblock scripts %}

@@ -29,23 +29,31 @@
                                             <th><span class="pull-right">Deducción</span></th>
                                         </thead>
                                         <tbody class="body-item-detalle">
-                                            {% for item1 in ingresos %}
+                                            {% for item1 in detalle.ingreso_detalle %}
+                                                {% comment '' %}
                                                 {% if detalle.empleado == item1.empleado %}
+                                                {% endcomment %}
                                                 <tr>
                                                     <td>{{item1.ingreso}}</td>
                                                     <td><span class="text-success pull-right"><strong>{{item1.valor}}</strong></span></td>
                                                     <td></td>
                                                 </tr>
+                                                {% comment '' %}
                                                 {% endif %}
+                                                {% endcomment %}
                                             {% endfor %}
-                                            {% for item2 in deducciones %}
+                                            {% for item2 in detalle.deduccion_detalle %}
+                                                {% comment '' %}
                                                 {% if detalle.empleado == item2.empleado %}
+                                                {% endcomment %}
                                                 <tr>
                                                     <td>{{item2.deduccion}}</td>
                                                     <td></td>
                                                     <td><span class="text-danger pull-right"><strong>{{item2.valor}}</strong></span></td>
                                                 </tr>
+                                                {% comment '' %}
                                                 {% endif %}
+                                                {% endcomment %}
                                             {% endfor %}
                                         </tbody>
                                     </table>

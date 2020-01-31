@@ -92,7 +92,6 @@ def ingresar(request):
         frmSesion = AuthenticationForm()
         return HttpResponseRedirect('/form/iniciar-sesion/')
 
-
 @login_required(login_url='/form/iniciar-sesion/')
 def seleccionar_sucursal(request):
     #print(request.GET.get('next'))
@@ -187,6 +186,8 @@ def empleado_listado(request):
 def empleado_perfil(request, id):
     periodos_pago = 0
     periodos = []
+    l_datos = []
+    l_pagos = []
     deducciones_legales = [{'deduccion':'IHSS', 'descripcion':'I.H.S.S'}, {'deduccion':'RAP', 'descripcion':'R.A.P.'}, {'deduccion':'ISR', 'descripcion': 'Impuesto sobre renta'}, {'deduccion':'IMV', 'descripcion': 'Impuesto Vecinal'}]
     dato = Employee.objects.get(pk=id)
     if dato:
@@ -207,7 +208,34 @@ def empleado_perfil(request, id):
         rd = rdelta.relativedelta(dato.termDate, dato.startDate)
     antiguedad = "{0.years} años, {0.months} meses y {0.days} días".format(rd)
     planillas = PlanillaDetalle.objects.select_related('planilla').filter(empleado=dato, planilla__cerrada=True).values('planilla__id', 'planilla__descripcion')
-    return render(request, 'perfil-empleado.html', {'dato':dato, 'imagen': imagen, 'periodos':periodos, 'deducciones_legales': deducciones_legales, 'antiguedad':antiguedad, 'planillas': planillas})
+    lista1 = DeduccionIndividualSubDetalle.objects.filter(deducciondetalle__empleado=dato)
+    for item in lista1:
+        l_pagos = []
+        v_suma_ = 0
+        pagos = ControlPagosDeduccionIndividual.objects.filter(deduccion=item.deducciondetalle)
+
+        for pago in pagos:
+            o_pago = {
+                'planilla': pago.planilla,
+                'deduccion': pago.deduccion,
+                'valor': formato_millar(pago.valor)
+            }
+            l_pagos.append(o_pago)
+
+        suma_v = ControlPagosDeduccionIndividual.objects.filter(deduccion=item.deducciondetalle).aggregate(Sum('valor'))
+        if suma_v["valor__sum"]:
+            v_suma_ = suma_v["valor__sum"]
+        print(suma_v)
+        objeto = {
+            'id':item.pk,
+            'descripcion': item.descripcion,
+            'monto': formato_millar(item.monto),
+            'deduccion': item.deducciondetalle,
+            'detalle_pagos': l_pagos,
+            'total_pagado': formato_millar(v_suma_)
+        }
+        l_datos.append(objeto)
+    return render(request, 'perfil-empleado.html', {'dato':dato, 'imagen': imagen, 'periodos':periodos, 'deducciones_legales': deducciones_legales, 'antiguedad':antiguedad, 'planillas': planillas, 'control_saldo':l_datos})
 
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.add_grupocorporativo', raise_exception=True)
@@ -9966,11 +9994,12 @@ def deduccion_individual_detalle_actualizar(request):
                         'mensaje': mensaje, 'error': True
                     }
                 
-                subdetalle = DeduccionIndividualSubDetalle.objects.get(deducciondetalle=oMd)
-                if not len(descripcion) == 0 or monto == 0:
-                    subdetalle.descripcion = descripcion
-                    subdetalle.monto = monto
-                    subdetalle.save()
+                if DeduccionIndividualSubDetalle.objects.filter(deducciondetalle=oMd).exists():
+                    subdetalle = DeduccionIndividualSubDetalle.objects.get(deducciondetalle=oMd)
+                    if not len(descripcion) == 0 or monto == 0:
+                        subdetalle.descripcion = descripcion
+                        subdetalle.monto = monto
+                        subdetalle.save()
             else:
                 mensaje = "Método no permitido."
                 data = {
@@ -9984,7 +10013,7 @@ def deduccion_individual_detalle_actualizar(request):
     except Exception as ex:
         data = {
             'error': True,
-            'mensaje': 'error',
+            'mensaje': str(ex),
         }
     return JsonResponse(data)
 
@@ -11876,7 +11905,6 @@ def impuestosobrerenta_eliminar(request):
 #endregion
 
 #region Código para Ingreso General
-
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.see_ingresogeneral', raise_exception=True)
 def ingreso_general_listado(request):
@@ -11886,7 +11914,6 @@ def ingreso_general_listado(request):
     else:
         lista = IngresoGeneral.objects.filter(empresa_reg=suc.empresa, active=True)
     return render(request, 'ingreso-general-listado.html', {'lista': lista})
-
 
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.add_ingresogeneral', raise_exception=True)
@@ -13430,8 +13457,12 @@ def planilla_ver(request, id):
     datos = []
     l_ingresos = []
     l_deducciones = []
+    l_gdeducciones = []
     datos2 = []
     datos3 = []
+    datos4 = []
+    datos5 = []
+    datos6 = []
     ingresos = 0
     deducciones = 0
     suma_total_ingresos = 0
@@ -13444,11 +13475,14 @@ def planilla_ver(request, id):
     for item in detalle_planilla:
         datos2 = []
         datos3 = []
+        datos4 = []
+        datos5 = []
         dias_trabajo = 0
         dias_trabajo = float(item.dias_salario) - float(item.dias_ausentes_sin_pago)
         total_salario = float(dias_trabajo) * float(item.salario_diario)
 
-        ingresos = PlanillaDetalleIngresos.objects.filter(planilla__pk=planilla.id, empleado=item.empleado).values('empleado', 'planilla', 'ingreso').annotate(Sum('valor'))
+        ingresos = PlanillaDetalleIngresos.objects.filter(planilla__pk=planilla.id, empleado=item.empleado).values('empleado', 'planilla', 'ingreso').annotate(Sum('valor')).order_by('tipo_ingreso__orden', 'ingreso')
+        ingresos_agrupa = PlanillaDetalleIngresos.objects.filter(planilla__pk=planilla.id, empleado=item.empleado).values('tipo_ingreso__tipo_ingreso').annotate(Sum('valor')).order_by('tipo_ingreso__orden', 'tipo_ingreso__tipo_ingreso')
 
         for item1 in ingresos:
             objeto1 = {
@@ -13460,7 +13494,16 @@ def planilla_ver(request, id):
             datos2.append(objeto1)
             suma_total_ingresos += float(item1["valor__sum"])
 
-        deducciones = PlanillaDetalleDeducciones.objects.filter(planilla__pk=planilla.id, empleado=item.empleado).values('empleado', 'planilla', 'deduccion').annotate(Sum('valor'))
+        for item2 in ingresos_agrupa:
+            objeto1 = {
+                'ingreso': item2['tipo_ingreso__tipo_ingreso'],
+                'valor': locale.format("%.2f", item2["valor__sum"], grouping=True),
+            }
+            datos4.append(objeto1)
+
+        deducciones = PlanillaDetalleDeducciones.objects.filter(planilla__pk=planilla.id, empleado=item.empleado).values('empleado', 'planilla', 'deduccion').annotate(Sum('valor')).order_by('tipo_deduccion__orden', 'deduccion')
+        deducciones_agrupa = PlanillaDetalleDeducciones.objects.filter(planilla__pk=planilla.id, empleado=item.empleado).values('tipo_deduccion__tipo_deduccion').annotate(Sum('valor')).order_by('tipo_deduccion__orden', 'tipo_deduccion__tipo_deduccion')
+
         for item2 in deducciones:
             o_empleado = Employee.objects.get(pk=item2["empleado"])
             objeto2 = {
@@ -13471,6 +13514,13 @@ def planilla_ver(request, id):
             }
             datos3.append(objeto2)
             suma_total_deducciones += float(item2["valor__sum"])
+
+        for item2 in deducciones_agrupa:
+            objeto1 = {
+                'deduccion': item2['tipo_deduccion__tipo_deduccion'],
+                'valor': locale.format("%.2f", item2["valor__sum"], grouping=True),
+            }
+            datos5.append(objeto1)
 
         objeto = {
             'id':item.pk,
@@ -13484,55 +13534,17 @@ def planilla_ver(request, id):
             'total_salario': locale.format("%.2f", total_salario, grouping=True),
             'salario_neto': locale.format("%.2f", float(item.total_ingresos) - float(item.total_deducciones), grouping=True),
             'detalle_ingresos': datos2,
-            'detalle_egresos': datos3
+            'detalle_egresos': datos3,
+            'ingresos_agrupa': datos4,
+            'deducciones_agrupa': datos5,
         }
         datos.append(objeto)
-        # suma_total_ingresos += float(item.total_ingresos)
-        # suma_total_deducciones += float(item.total_deducciones)
-    # ingresos = PlanillaDetalleIngresos.objects.filter(planilla__pk=planilla.id).values('empleado', 'planilla', 'ingreso').annotate(Sum('valor'))
-
-    # for item1 in ingresos:
-    #     o_empleado = Employee.objects.get(pk=item1["empleado"])
-    #     if item1["ingreso"] == "SALARIO":
-    #         objeto1 = {
-    #             'empleado': o_empleado,
-    #             'planilla': planilla,
-    #             'ingreso': item1["ingreso"],
-    #             'valor': locale.format("%.2f", item1["valor__sum"], grouping=True),
-    #         }
-    #         datos2.append(objeto1)
-    #         suma_total_ingresos += float(item1["valor__sum"])
-
-    # for item1 in ingresos:
-    #     if item1["ingreso"] != "SALARIO":
-    #         o_empleado = Employee.objects.get(pk=item1["empleado"])
-    #         objeto1 = {
-    #             'empleado': o_empleado,
-    #             'planilla': planilla,
-    #             'ingreso': item1["ingreso"],
-    #             'valor': locale.format("%.2f", item1["valor__sum"], grouping=True),
-    #         }
-    #         datos2.append(objeto1)
-    #         suma_total_ingresos += float(item1["valor__sum"])
-
-
-    # deducciones = PlanillaDetalleDeducciones.objects.filter(planilla__pk=planilla.id).values('empleado', 'planilla', 'deduccion').annotate(Sum('valor'))
-    # for item2 in deducciones:
-    #     o_empleado = Employee.objects.get(pk=item2["empleado"])
-    #     objeto2 = {
-    #         'empleado': o_empleado,
-    #         'planilla': planilla,
-    #         'deduccion': item2['deduccion'],
-    #         'valor': locale.format("%.2f", item2["valor__sum"], grouping=True),
-    #     }
-    #     datos3.append(objeto2)
-    #     suma_total_deducciones += float(item2["valor__sum"])
 
     suma_total_neto = locale.format("%.2f", suma_total_ingresos - suma_total_deducciones, grouping=True)
     suma_total_ingresos = locale.format("%.2f", suma_total_ingresos, grouping=True)
     suma_total_deducciones = locale.format("%.2f", suma_total_deducciones, grouping=True)
 
-    vingresos = PlanillaDetalleIngresos.objects.filter(planilla=planilla).values('ingreso').annotate(Sum('valor'))
+    vingresos = PlanillaDetalleIngresos.objects.filter(planilla=planilla).values('ingreso').annotate(Sum('valor')).order_by('tipo_ingreso__orden', 'ingreso')
     for ingreso in vingresos:
         suma_gingresos += float(ingreso["valor__sum"])
         dato = {
@@ -13541,15 +13553,41 @@ def planilla_ver(request, id):
         }
         l_ingresos.append(dato)
 
-    vdeducciones = PlanillaDetalleDeducciones.objects.filter(planilla=planilla).values('deduccion').annotate(Sum('valor'))
-    for deduccion in vdeducciones:
-        suma_gdeducciones += float(deduccion["valor__sum"])
+    
+    vdeducciones2 = PlanillaDetalleDeducciones.objects.filter(planilla=planilla).values('tipo_deduccion__grupo').annotate(Sum('valor')).order_by('tipo_deduccion__orden', 'tipo_deduccion__grupo')
+    
+    for fila in vdeducciones2:
+        l_deducciones = []
+        vgrupo = fila["tipo_deduccion__grupo"]
+        vdeducciones = PlanillaDetalleDeducciones.objects.filter(planilla=planilla, tipo_deduccion__grupo=vgrupo).values('deduccion').annotate(Sum('valor')).order_by('tipo_deduccion__orden', 'deduccion')
+        for deduccion in vdeducciones:
+            dato = {
+                'deduccion': deduccion["deduccion"],
+                'valor':formato_millar(deduccion["valor__sum"])
+            }
+            l_deducciones.append(dato)
+
         dato = {
-            'deduccion': deduccion["deduccion"],
-            'valor':formato_millar(deduccion["valor__sum"])
+            'grupo': vgrupo,
+            'valor': formato_millar(fila["valor__sum"]),
+            'detalle': l_deducciones,
         }
-        l_deducciones.append(dato)
-    return render(request, 'planilla-ver.html', {'planilla':planilla, 'detalle':datos, 'ingresos':datos2, 'deducciones': datos3, 'suma_total_ingresos': suma_total_ingresos, 'suma_total_deducciones':suma_total_deducciones, 'suma_total_neto': suma_total_neto, 'gingresos': l_ingresos, 'gdeducciones': l_deducciones, 'sum_gingresos': formato_millar(suma_gingresos), 'sum_gdeducciones': formato_millar(suma_gdeducciones)})
+        l_gdeducciones.append(dato)
+        suma_gdeducciones += float(fila["valor__sum"])
+    
+    # vdeducciones = PlanillaDetalleDeducciones.objects.filter(planilla=planilla).values('deduccion').annotate(Sum('valor')).order_by('tipo_deduccion__orden', 'deduccion')
+
+    # for deduccion in vdeducciones:
+    #     suma_gdeducciones += float(deduccion["valor__sum"])
+    #     dato = {
+    #         'deduccion': deduccion["deduccion"],
+    #         'valor':formato_millar(deduccion["valor__sum"])
+    #     }
+    #     l_deducciones.append(dato)
+
+    
+
+    return render(request, 'planilla-ver.html', {'planilla':planilla, 'detalle':datos, 'ingresos':datos2, 'deducciones': datos3, 'suma_total_ingresos': suma_total_ingresos, 'suma_total_deducciones':suma_total_deducciones, 'suma_total_neto': suma_total_neto, 'gingresos': l_ingresos, 'gdeducciones': l_gdeducciones, 'sum_gingresos': formato_millar(suma_gingresos), 'sum_gdeducciones': formato_millar(suma_gdeducciones)})
 
 @login_required(login_url='/form/iniciar-sesion/')
 @permission_required('worksheet.change_planilla', raise_exception=True)
@@ -13886,8 +13924,24 @@ def planilla_generar_calculos(request):
                                 deduccion_vec = 0
                                 total_rap = 0
                                 tpagos = 0
+                                res_fec = 0
                                 salario_diario = float(item.salario_diario)
                                 total_dias_trabajados = int(item.salaryUnits.dias_salario)
+                                if item.startDate:
+                                    res_fec += (item.startDate - o_planilla.fecha_inicio).days
+                                    if res_fec >= 0:
+                                        #total_dias_trabajados = total_dias_trabajados - res_fec
+                                        dias_ausencia_sin_pago = dias_ausencia_sin_pago + res_fec
+                                    else:
+                                        res_fec = 0
+
+                                if item.termDate:
+                                    res_fec += (o_planilla.fecha_fin - item.termDate).days
+                                    if res_fec >= 0:
+                                        dias_ausencia_sin_pago = dias_ausencia_sin_pago + res_fec
+                                    else:
+                                        res_fec = 0
+                                    
                                 salario_mensual = salario_diario * 30
                                 total_ingreso = total_dias_trabajados * salario_diario
                                 valor_sueldo = total_dias_trabajados * salario_diario
@@ -13993,7 +14047,7 @@ def planilla_generar_calculos(request):
                                 ausencias_sin_pago = Ausentismo.objects.filter(desde__gte=o_planilla.fecha_inicio, hasta__lte=o_planilla.fecha_fin, empleado=item, sucursal_reg=suc, motivo__pagado=False, active=True)
                                 if ausencias_sin_pago.count() > 0:
                                     for ausencia in ausencias_sin_pago:
-                                        dias_ausencia_sin_pago = 1
+                                        dias_ausencia_sin_pago = dias_ausencia_sin_pago + 1
                                         dias_ausencia_sin_pago = dias_ausencia_sin_pago + (ausencia.hasta - ausencia.desde).days
                                         tot_dias_sin_pago += dias_ausencia_sin_pago
                                     #GuardarDetalleDeduccionIngreso(2, "Ausencias no justificadas", dias_ausencia_sin_pago * salario_diario, item, o_planilla, suc.empresa, suc, request.user, None)
@@ -14030,7 +14084,8 @@ def planilla_generar_calculos(request):
                                         if deduccion_ihss > 0:
                                             tipo_deduccion = {'nombre': 'IHSS', 'valor': deduccion_ihss, 'orden': orden}
                                             tipos_deducciones.append(tipo_deduccion)
-
+                                
+                                v_rap = 0
                                 if o_planilla.rap:
                                     dedaplicada = EmpleadoDeducciones.objects.filter(empleado=item, empresa_reg=suc.empresa, deduccion='RAP', active=True)
                                     if dedaplicada.count() > 0:
@@ -14038,7 +14093,7 @@ def planilla_generar_calculos(request):
                                         tipos_rap = RapDeduccion.objects.filter(empresa_reg=suc.empresa, active=True)
                                         for item5 in tipos_rap:
                                             if sbb > float(item5.techo):
-                                                sbb = float(item5.techo)
+                                                sbb = sbb - float(item5.techo)
                                             deduccion_rap = deduccion_rap + (sbb * (float(item5.porcentaje)/100))
                                         deduccion_tipo = TipoDeduccion.objects.filter(tipo_deduccion='RAP', empresa_reg=suc.empresa, active=True)
                                         if deduccion_tipo.count() > 0:
@@ -14210,12 +14265,17 @@ def planilla_generar_calculos(request):
                                     active=True
                                 )
                                 o_planilla_detalle.save()
-
+                                
+                                o_tipo_ing_sal = None
+                                if TipoIngreso.objects.filter(grupo='SALARIOS', empresa_reg=suc.empresa, active=True).exists():
+                                    o_tipo_ing_sal = TipoIngreso.objects.get(grupo='SALARIOS', empresa_reg=suc.empresa, active=True)
+                                    
                                 o_planilla_detalle_ingreso = PlanillaDetalleIngresos(
                                     empleado = item,
                                     planilla = o_planilla,
                                     ingreso = "SALARIO ",
                                     #valor = total_ingreso,
+                                    tipo_ingreso = o_tipo_ing_sal,
                                     valor = valor_sueldo,
                                     empresa_reg = suc.empresa,
                                     sucursal_reg = suc,
@@ -14597,6 +14657,7 @@ def generar_reporte_general(request):
     o_frecuencia_pago = None
     desde = None
     hasta = None
+    cerrada = True
     q_list = []
     columnas = []
     detalle = []
@@ -14610,9 +14671,11 @@ def generar_reporte_general(request):
     tipo_contrato_id = request.GET.get('cboTipoContrato')
     tipo_planilla_id = request.GET.get('cboTipoPlanilla')
     frecuencia_pago_id = request.GET.get('cboFrecuenciaPago')
+    estado_contrato = request.GET.get('cboEstadoContrato')
     desde = request.GET.get('txtDesde')
     hasta = request.GET.get('txtHasta')
     suc = Branch.objects.get(pk=request.session["sucursal"])
+
     
     if len(desde) == 0:
         data = {
@@ -14631,7 +14694,10 @@ def generar_reporte_general(request):
     
     desde = datetime.strptime(desde, "%d/%m/%Y").date()
     hasta = datetime.strptime(hasta, "%d/%m/%Y").date()
-    q_list.append(Q(planilla__cerrada=True))
+    if estado_contrato == "2":
+        q_list.append(Q(planilla__cerrada=True))
+    elif estado_contrato == "1":
+        q_list.append(Q(planilla__cerrada=False))
     q_list.append(Q(planilla__fecha_inicio__gte=desde, planilla__fecha_fin__lte=hasta))
     if int(departamento_id) > 0:
         tot_reg = Department.objects.filter(pk=departamento_id).count()
@@ -14672,12 +14738,11 @@ def generar_reporte_general(request):
         val_list_ded = PlanillaDetalleDeducciones.objects.filter(functools.reduce(operator.and_, q_list)).values_list('empleado__id', flat=True).distinct()
         empleados = Employee.objects.filter(pk__in=val_list_ing)
 
-        columnas = [{'title':'Codigo'}, {'title': 'Nombre'}, {'title':'Fecha pago'}, {'title': 'Salario'}]
+        columnas = [{'title':'Codigo'}, {'title': 'Nombre'}, {'title':'Departamento'}]
         grupos_flat = PlanillaDetalleIngresos.objects.filter(Q(planilla__fecha_inicio__gte=desde, planilla__fecha_fin__lte=hasta)).exclude(tipo_ingreso=None).values_list('tipo_ingreso__grupo', flat=True).order_by('tipo_ingreso__orden').distinct()
-        grupos_flat_ded = PlanillaDetalleDeducciones.objects.filter(Q(planilla__fecha_inicio__gte=desde, planilla__fecha_fin__lte=hasta)).exclude(tipo_deduccion=None).values_list('tipo_deduccion__grupo', flat=True).order_by('tipo_deduccion__orden')
-        print(grupos_flat_ded)
-        grupos_flat = list(set(grupos_flat))
-        grupos_flat_ded = list(set(grupos_flat_ded))
+        grupos_flat_ded = PlanillaDetalleDeducciones.objects.filter(Q(planilla__fecha_inicio__gte=desde, planilla__fecha_fin__lte=hasta)).exclude(tipo_deduccion=None).values_list('tipo_deduccion__grupo', flat=True).order_by('tipo_deduccion__orden').distinct()
+        #grupos_flat = list(set(grupos_flat))
+        #grupos_flat_ded = list(set(grupos_flat_ded))
         for empleado in empleados:
             detallesfila = []
             total_ingreso = 0
@@ -14694,17 +14759,20 @@ def generar_reporte_general(request):
             Nombre = Nombre + " " + empleado.lastName
             datos_empleado["Empleado_Id"] = empleado.extEmpNo
             datos_empleado["Nombre"] = Nombre
-            datos_empleado['Fecha pago'] = None
-            datos_empleado['Sueldo'] = 0
+            if empleado.dept:
+                datos_empleado['Departamento'] = empleado.dept.description
+            else:
+                datos_empleado['Departamento'] = ''
+            #datos_empleado['Sueldo'] = 0
 
-            o_pla_ing = PlanillaDetalleIngresos.objects.filter(Q(planilla__fecha_inicio__gte=desde, planilla__fecha_fin__lte=hasta, empleado=empleado))
-            for detalle1 in o_pla_ing:
-                if not datos_empleado['Fecha pago']:
-                    datos_empleado['Fecha pago'] = detalle1.planilla.fecha_pago.strftime("%d/%m/%Y")
+            # o_pla_ing = PlanillaDetalleIngresos.objects.filter(Q(planilla__fecha_inicio__gte=desde, planilla__fecha_fin__lte=hasta, empleado=empleado))
+            # for detalle1 in o_pla_ing:
+            #     if not datos_empleado['Fecha pago']:
+            #         datos_empleado['Fecha pago'] = detalle1.planilla.fecha_pago.strftime("%d/%m/%Y")
                 
-                if empleado == detalle1.empleado and detalle1.ingreso.count("SALARIO") > 0 and not detalle1.tipo_ingreso:
-                    datos_empleado['Sueldo'] = formato_millar(detalle1.valor)
-                    total_ingreso = detalle1.valor
+                # if empleado == detalle1.empleado and detalle1.ingreso.count("SALARIO") > 0 and not detalle1.tipo_ingreso:
+                #     datos_empleado['Sueldo'] = formato_millar(detalle1.valor)
+                #     total_ingreso = detalle1.valor
 
             for grupo in grupos_flat:
 
@@ -14737,7 +14805,6 @@ def generar_reporte_general(request):
                 columnas.append({'title': 'Total Ingreso'})
 
             for grupo in grupos_flat_ded:
-                print(grupo)
                 tot_col = 0
                 for columna in columnas:
                     if columna["title"] == grupo:
@@ -14763,13 +14830,14 @@ def generar_reporte_general(request):
 
             datos_empleado['Total Deducciones'] = formato_millar(total_deducciones)
             datos_planilla.append(datos_empleado)
+            datos_empleado['Total Neto'] = formato_millar(total_ingreso - total_deducciones)
         filas_detalles = []
 
         for elemento in datos_planilla:
             filas_detalles.append(list(elemento.values()))
 
         columnas.append({'title': 'Total Deducciones'})
-        print(columnas)
+        columnas.append({'title': 'Total Devengado'})
         data = {
             'error':False,
             'mensaje': 'Se han encontrado datos.',
@@ -14835,7 +14903,7 @@ def planilla_obtener_ver_empleado(request):
             planilla_id = int(planilla_id)
             planilla = Planilla.objects.get(pk=planilla_id)
             empleado = Employee.objects.get(pk=empleado_id)
-            ingresos = PlanillaDetalleIngresos.objects.filter(planilla=planilla, empleado=empleado)
+            ingresos = PlanillaDetalleIngresos.objects.filter(planilla=planilla, empleado=empleado).order_by('tipo_ingreso__orden')
             for item1 in ingresos:
                 objeto1 = {
                     'id':item1.pk,
@@ -14847,13 +14915,12 @@ def planilla_obtener_ver_empleado(request):
                 suma_total_ingresos += float(item1.valor)
                 datos2.append(objeto1)
             
-            deducciones = PlanillaDetalleDeducciones.objects.filter(planilla=planilla, empleado=empleado).values('empleado', 'planilla', 'deduccion', 'tipo_deduccion').annotate(Sum('valor'))
+            deducciones = PlanillaDetalleDeducciones.objects.filter(planilla=planilla, empleado=empleado).values('empleado', 'planilla', 'deduccion', 'tipo_deduccion').annotate(Sum('valor')).order_by('tipo_deduccion__orden')
             
             for item2 in deducciones:
                 tiene_sub = False
                 tipo_ded = TipoDeduccion.objects.get(pk=item2["tipo_deduccion"])
                 var1_flat = PlanillaDetalleDeducciones.objects.filter(planilla=planilla, empleado=empleado, tipo_deduccion=tipo_ded).values_list('pk', flat=True)
-                print(var1_flat)
                 var2_flat = DetallePlanillaDetalleDeduccion.objects.filter(planilla_detalle_ded__in=var1_flat).values_list('deduccion_detalle', flat=True)
                 if DeduccionIndividualSubDetalle.objects.filter(deducciondetalle__in=var2_flat).exists():
                     tiene_sub = True
@@ -14942,9 +15009,29 @@ def planilla_generada(request):
         else:
             detalle_planilla = PlanillaDetalle.objects.filter(planilla__pk=planilla_id)
             for item in detalle_planilla:
+                datos2 = []
+                datos3 = []
                 dias_trabajo = 0
                 dias_trabajo = float(item.dias_salario) - float(item.dias_ausentes_sin_pago)
                 total_salario = float(dias_trabajo) * float(item.salario_diario)
+                ingresos = PlanillaDetalleIngresos.objects.filter(planilla__pk=planilla_id, empleado=item.empleado).order_by('tipo_ingreso__orden').values('empleado', 'planilla', 'ingreso').annotate(Sum('valor'))
+
+                for item1 in ingresos:
+                    objeto1 = {
+                        'ingreso': item1["ingreso"],
+                        'valor': locale.format("%.2f", item1["valor__sum"], grouping=True),
+                    }
+                    datos2.append(objeto1)
+
+                deducciones = PlanillaDetalleDeducciones.objects.filter(planilla__pk=planilla_id, empleado=item.empleado).order_by('tipo_deduccion__orden').values('empleado', 'planilla', 'deduccion').annotate(Sum('valor'))
+
+                for item2 in deducciones:
+                    objeto2 = {
+                        'deduccion': item2["deduccion"],
+                        'valor': locale.format("%.2f", item2["valor__sum"], grouping=True),
+                    }
+                    datos3.append(objeto2)
+                
                 objeto = {
                     'id':item.pk,
                     'empleado': item.empleado,
@@ -14955,32 +15042,13 @@ def planilla_generada(request):
                     'total_ingresos': locale.format("%.2f", float(item.total_ingresos), grouping=True),
                     'total_deducciones': locale.format("%.2f", item.total_deducciones, grouping=True),
                     'total_salario': locale.format("%.2f", item.total_ingresos - item.total_deducciones, grouping=True),
+                    'ingreso_detalle': datos2,
+                    'deduccion_detalle': datos3,
                 }
                 datos.append(objeto)
                 suma_total_ingresos += float(item.total_ingresos)
                 suma_total_deducciones += float(item.total_deducciones)
-            ingresos = PlanillaDetalleIngresos.objects.filter(planilla__pk=planilla_id)
 
-            for item1 in ingresos:
-                objeto1 = {
-                    'id':item1.pk,
-                    'empleado': item1.empleado,
-                    'planilla': item1.planilla,
-                    'ingreso': item1.ingreso,
-                    'valor': locale.format("%.2f", item1.valor, grouping=True),
-                }
-                datos2.append(objeto1)
-
-            deducciones = PlanillaDetalleDeducciones.objects.filter(planilla__pk=planilla_id)
-            for item2 in deducciones:
-                objeto2 = {
-                    'id': item2.pk,
-                    'empleado': item2.empleado,
-                    'planilla': item2.planilla,
-                    'deduccion': item2.deduccion,
-                    'valor': locale.format("%.2f", item2.valor, grouping=True),
-                }
-                datos3.append(objeto2)
 
             suma_neta = suma_total_ingresos - suma_total_deducciones
             suma_total_ingresos = locale.format("%.2f", suma_total_ingresos, grouping=True)

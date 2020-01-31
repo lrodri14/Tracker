@@ -674,13 +674,15 @@ class TipoDeduccion(models.Model):
     RAP = 'RAP'
     ISR = 'ISR'
     IMV = 'IMV'
-    OTROS = 'Otras Deducciones'
+    INTERNAS = 'DEDUCCIONES INTERNAS'
+    EXTERNAS = 'DEDUCCIONES EXTERNAS'
     TIPOS = [
         (IHSS, 'IHSS'),
         (IMV, 'IMPUESTO VECINAL'),
         (ISR, 'ISR'),
         (RAP, 'RAP'),
-        (OTROS, 'OTRAS DEDUCCIONES')
+        (INTERNAS, 'DEDUCCIONES INTERNAS'),
+        (EXTERNAS, 'DEDUCCIONES EXTERNAS')
     ]
     tipo_deduccion = models.CharField(max_length=50)
     descripcion = models.TextField()
@@ -701,11 +703,17 @@ class TipoDeduccion(models.Model):
         return self.tipo_deduccion + " - " + str(self.orden)
 
 class TipoIngreso(models.Model):
-    BONO = 'Bonos'
-    OTROS = 'Otros Ingresos'
+    SALARIO = 'SALARIOS'
+    BONO = 'BONOS'
+    VACACIONES = 'VACACIONES'
+    DIA_LIBRE = 'DÍAS LIBRES'
+    OTROS = 'OTROS INGRESOS'
     TIPOS = [
+        (SALARIO, 'SALARIOS'),
         (BONO, 'BONOS'),
+        (DIA_LIBRE, 'DÍAS LIBRES'),
         (OTROS, 'OTROS INGRESOS'),
+        (VACACIONES, 'VACACIONES'),
     ]
     grupo = models.CharField(("Grupo"), max_length=20, choices=TIPOS, blank=True, null=True)
     tipo_ingreso = models.CharField(max_length=50)
@@ -719,7 +727,7 @@ class TipoIngreso(models.Model):
     active = models.NullBooleanField(blank=True, null=True)
 
     def __str__(self):
-        return self.tipo_ingreso
+        return self.tipo_ingreso + " - " + str(self.orden)
 
 class IngresoIndividual(models.Model):
     ingreso_i = models.CharField(max_length=50)
@@ -1151,7 +1159,7 @@ class DeduccionIndividualDetalle(models.Model):
         verbose_name_plural = ("Deducciones Individuales Detalles")
 
     def __str__(self):
-        return self.deduccion.deduccion_i
+        return self.empleado.extEmpNo + " - " + self.empleado.firstName + " " + self.empleado.middleName + " " + self.empleado.lastName + " | " + self.deduccion.deduccion_i + " | " + str(self.valor)
 
 class IngresoIndividualPlanilla(models.Model):
     planilla = models.ForeignKey("worksheet.Planilla", verbose_name=("Planilla"), on_delete=models.PROTECT)
@@ -1206,7 +1214,7 @@ class DeduccionIndividualSubDetalle(models.Model):
         verbose_name_plural = ("deduccionindividualsubdetalles")
 
     def __str__(self):
-        return self.descripcion
+        return self.deducciondetalle.empleado.firstName + "|" + self.descripcion + " " + str(self.monto)
 
     def get_absolute_url(self):
         return reverse("deduccionindividualsubdetalle_detail", kwargs={"pk": self.pk})

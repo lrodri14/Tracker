@@ -138,6 +138,15 @@ table>tbody>.detalle_emp>td{
     padding: 0px;
 }
 
+#detalle_planilla>tbody>tr>td{
+    padding: 5px 8px;
+}
+
+#detalle_planilla table{
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
 
 
 @media (min-width: 768px){

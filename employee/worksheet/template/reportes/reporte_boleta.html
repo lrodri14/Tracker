@@ -48,11 +48,19 @@
     </div>
     <div>
         <label class="label-control">Empleado: </label>
-        <label class="label-control">{{empleado.firstName}} {% if empleado.middleName %}{% endif %} {{empleado.lastName}}</label>
+        <label class="label-control">{{empleado.firstName}} {% if empleado.middleName %}{{empleado.middleName}}{% endif %} {{empleado.lastName}}</label>
     </div>
     <div>
         <label class="label-control">Fecha de pago: </label>
-        <label class="label-control">{{planilla.fecha_pago}}</label>
+        <label class="label-control">{{planilla.fecha_pago|date:"d/m/Y"}}</label>
+    </div>
+    <div>
+        <label class="label-control">Planilla desde: </label>
+        <label class="label-control">{{planilla.fecha_inicio|date:"d/m/Y"}}</label>
+    </div>
+    <div>
+        <label class="label-control">Planilla hasta: </label>
+        <label class="label-control">{{planilla.fecha_fin|date:"d/m/Y"}}</label>
     </div>
     <div>
         <label class="label-control">Cuenta: </label>

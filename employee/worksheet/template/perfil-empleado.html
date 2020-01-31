@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block titulo %}Perfíl de empleado{% endblock titulo %}
 {% block estilo %}
+{% load l10n %}
 <style>
     #btnCargarFoto{
         margin-top: 10px;
@@ -115,63 +116,61 @@
                                             </div>
                                             <div class="col-md-4 col-xs-6 b-r"> <strong>Denominación de función</strong>
                                                 <br>
-                                                <p class="text-muted">{{dato.jobTitle}}</p>
+                                                <p class="text-muted">{% if dato.jobTitle %}{{dato.jobTitle}}{% else %}--{% endif %}</p>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-4 col-xs-6 b-r"> <strong>Posición</strong>
                                                 <br>
-                                                <p class="text-muted">{% if dato.position %}{{dato.position.name}}{% endif %}</p>
+                                                <p class="text-muted">{% if dato.position %}{{dato.position.description}}{% else %}--{% endif %}</p>
                                             </div>
                                             <div class="col-md-4 col-xs-6 b-r"> <strong>Departamento</strong>
                                                 <br>
-                                                <p class="text-muted">{% if dato.dept %}{{dato.dept.name}}{% endif %}</p>
+                                                <p class="text-muted">{% if dato.dept %}{{dato.dept.description}}{% else %}--{% endif %}</p>
                                             </div>
                                             <div class="col-md-4 col-xs-6 b-r"> <strong>Sucursal</strong>
                                                 <br>
-                                                <p class="text-muted">{% if dato.branch %}{{dato.branch.name}}{% endif %}</p>
+                                                <p class="text-muted">{% if dato.branch %}{{dato.branch.description}}{% else %}--{% endif %}</p>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-4 col-xs-6 b-r"> <strong>Gerente</strong>
                                                 <br>
-                                                <p class="text-muted"></p>
+                                                <p class="text-muted">{{dato.jefe.firstName}} {% if dato.jefe.middleName %}{{dato.jefe.middleName}}{% endif %} {{dato.jefe.lastName}}</p>
                                             </div>
                                             <div class="col-md-4 col-xs-6 b-r"> <strong>E-mail</strong>
                                                 <br>
-                                                <p class="text-muted">{% if dato.email %}{{dato.email}}{% endif %}</p>
+                                                <p class="text-muted">{% if dato.email %}{{dato.email}}{% else %}--{% endif %}</p>
                                             </div>
                                             <div class="col-md-4 col-xs-6 b-r"> <strong>Extensión</strong>
                                                 <br>
-                                                <p class="text-muted">{% if dato.officeExt %}{{dato.officeExt}}{% endif %}</p>
+                                                <p class="text-muted">{% if dato.officeExt %}{{dato.officeExt}}{% else %}--{% endif %}</p>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-4 col-xs-6 b-r"> <strong>Teléfono de oficina</strong>
                                                 <br>
-                                                <p class="text-muted">{% if dato.officeTel %}{{dato.officeTel}}{% endif %}</p>
+                                                <p class="text-muted">{% if dato.officeTel %}{{dato.officeTel}}{% else %}--{% endif %}</p>
                                             </div>
                                             <div class="col-md-4 col-xs-6 b-r"> <strong>Teléfono movil</strong>
                                                 <br>
-                                                <p class="text-muted">{% if dato.mobile %}{{dato.mobile}}{% endif %}</p>
+                                                <p class="text-muted">{% if dato.mobile %}{{dato.mobile}}{% else %}--{% endif %}</p>
                                             </div>
                                             <div class="col-md-4 col-xs-6 b-r"> <strong>Teléfono casa</strong>
                                                 <br>
-                                                <p class="text-muted">{% if dato.homeTel %}{{dato.homeTel}}{% endif %}</p>
+                                                <p class="text-muted">{% if dato.homeTel %}{{dato.homeTel}}{% else %}--{% endif %}</p>
                                             </div>
                                         </div>
                                         <div class="row">
                                             <div class="col-md-4 col-xs-6 b-r"> <strong>Pager</strong>
                                                 <br>
-                                                <p class="text-muted">{% if dato.pager %}{{dato.pager}}{% endif %}</p>
+                                                <p class="text-muted">{% if dato.pager %}{{dato.pager}}{% else %}--{% endif %}</p>
                                             </div>
                                             <div class="col-md-4 col-xs-6 b-r"> <strong>Fax</strong>
                                                 <br>
-                                                <p class="text-muted">{% if dato.fax %}{{dato.fax}}{% endif %}</p>
+                                                <p class="text-muted">{% if dato.fax %}{{dato.fax}}{% else %}--{% endif %}</p>
                                             </div>
-                                            <div class="col-md-4 col-xs-6 b-r">
-                                                
-                                            </div>
+                                            <div class="col-md-4 col-xs-6 b-r"></div>
                                         </div>
                                         <hr>
                                         <div class="row">
@@ -231,91 +230,91 @@
                                                             <div class="row">
                                                                 <div class="col-md-6 col-xs-6 b-r"> <strong>Calle</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.homeStreet %}{{dato.homeStreet}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.homeStreet %}{{dato.homeStreet}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                                 <div class="col-md-6 col-xs-6 b-r"> <strong>Calle</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.workStreet %}{{dato.workStreet}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.workStreet %}{{dato.workStreet}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                             </div>
                                                             <div class="row">
                                                                 <div class="col-md-6 col-xs-6 b-r"> <strong>No. Calle</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.streetNoH %}{{dato.streetNoH}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.streetNoH %}{{dato.streetNoH}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                                 <div class="col-md-6 col-xs-6 b-r"> <strong>No. Calle</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.streetNoW %}{{dato.streetNoW}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.streetNoW %}{{dato.streetNoW}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                             </div>
                                                             <div class="row">
                                                                 <div class="col-md-6 col-xs-6 b-r"> <strong>Bloque</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.homeBlock %}{{dato.homeBlock}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.homeBlock %}{{dato.homeBlock}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                                 <div class="col-md-6 col-xs-6 b-r"> <strong>Bloque</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.workBlock %}{{dato.workBlock}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.workBlock %}{{dato.workBlock}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                             </div>
                                                             <div class="row">
                                                                 <div class="col-md-6 col-xs-6 b-r"> <strong>Edificio/Casa</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.homeBuild %}{{dato.homeBuild}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.homeBuild %}{{dato.homeBuild}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                                 <div class="col-md-6 col-xs-6 b-r"> <strong>Edificio/Casa</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.workBuild %}{{dato.workBuild}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.workBuild %}{{dato.workBuild}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                             </div>
                                                             <div class="row">
                                                                 <div class="col-md-6 col-xs-6 b-r"> <strong>Código postal</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.homeZip %}{{dato.homeZip}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.homeZip %}{{dato.homeZip}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                                 <div class="col-md-6 col-xs-6 b-r"> <strong>Código postal</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.workZip %}{{dato.workZip}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.workZip %}{{dato.workZip}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                             </div>
                                                             <div class="row">
                                                                 <div class="col-md-6 col-xs-6 b-r"> <strong>Ciudad</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.homeCity %}{{dato.homeCity}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.homeCity %}{{dato.homeCity}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                                 <div class="col-md-6 col-xs-6 b-r"> <strong>Ciudad</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.workCity %}{{dato.workCity}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.workCity %}{{dato.workCity}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                             </div>
                                                             <div class="row">
                                                                 <div class="col-md-6 col-xs-6 b-r"> <strong>Condado/Municipio</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.homeCounty %}{{dato.homeCounty}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.homeCounty %}{{dato.homeCounty}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                                 <div class="col-md-6 col-xs-6 b-r"> <strong>Condado/Municipio</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.workCounty %}{{dato.workCounty}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.workCounty %}{{dato.workCounty}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                             </div>
                                                             <div class="row">
                                                                 <div class="col-md-6 col-xs-6 b-r"> <strong>Estado/Departamento</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.homeState %}{{dato.homeState.name}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.homeState %}{{dato.homeState.name}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                                 <div class="col-md-6 col-xs-6 b-r"> <strong>Estado/Departamento</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.homeState %}{{dato.homeState.name}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.homeState %}{{dato.homeState.name}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                             </div>
                                                             <div class="row">
                                                                 <div class="col-md-6 col-xs-6 b-r"> <strong>País</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.homeCountry %}{{dato.homeCountry.name}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.homeCountry %}{{dato.homeCountry.name}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                                 <div class="col-md-6 col-xs-6 b-r"> <strong>País</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.homeCountry %}{{dato.homeCountry.name}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.homeCountry %}{{dato.homeCountry.name}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -325,25 +324,25 @@
                                                             <div class="row">
                                                                 <div class="col-md-6 col-xs-6 b-r"> <strong>Fecha de Inicio</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.startDate %}{{dato.startDate|date:"d/m/Y"}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.startDate %}{{dato.startDate|date:"d/m/Y"}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                                 <div class="col-md-6 col-xs-6 b-r"> <strong>Fecha rescisión de contrato</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.termDate %}{{dato.termDate|date:"d/m/Y"}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.termDate %}{{dato.termDate|date:"d/m/Y"}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                             </div>
                                                             <div class="row">
                                                                 <div class="col-md-6 col-xs-6 b-r"> <strong>Estado</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.status %}{{dato.status.name}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.status %}{{dato.status.name}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                                 <div class="col-md-6 col-xs-6 b-r"> <strong>Motivo rescisión de contrato</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.termReason %}{{dato.termReason.name}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.termReason %}{{dato.termReason.name}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                             </div>
                                                             <div class="row">
-                                                                <div class="col-md-6 col-xs-6 b-r"><strong>Antiguedad</strong><br><p class="text-muted">{{antiguedad}}</p></div>
+                                                                <div class="col-md-6 col-xs-6 b-r"><strong>Antigüedad</strong><br><p class="text-muted">{% if antiguedad %}{{antiguedad}}{% else %}--{% endif %}</p></div>
                                                                 <div class="col-md-6 col-xs-6 b-r"></div>
                                                             </div>
                                                         </div>
@@ -353,53 +352,53 @@
                                                             <div class="row">
                                                                 <div class="col-md-4 col-xs-6 b-r"> <strong>Sexo</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.sex %}{{dato.sex.description}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.sex %}{{dato.sex.description}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                                 <div class="col-md-4 col-xs-6 b-r"> <strong>Fecha de nacimiento</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.birthDate %}{{dato.birthDate|date:"d/m/Y"}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.birthDate %}{{dato.birthDate|date:"d/m/Y"}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                                 <div class="col-md-4 col-xs-6 b-r"> <strong>Lugar de nacimiento</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.birthCountry %}{{dato.birthCountry.name}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.birthCountry %}{{dato.birthCountry.name}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                             </div>
                                                             <div class="row">
                                                                 <div class="col-md-4 col-xs-6 b-r"> <strong>Estado civil</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.marrStatus %}{{dato.marrStatus.description}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.marrStatus %}{{dato.marrStatus.description}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                                 <div class="col-md-4 col-xs-6 b-r"> <strong>Cantidad de hijos</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.nChildren %}{{dato.nChildren}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.nChildren %}{{dato.nChildren}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                                 <div class="col-md-4 col-xs-6 b-r"> <strong>No. de ID</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.govID %}{{dato.govID}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.govID %}{{dato.govID}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                             </div>
                                                             <div class="row">
                                                                 <div class="col-md-4 col-xs-6 b-r"> <strong>Nacionalidad</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.citizenship %}{{dato.citizenship.name}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.citizenship %}{{dato.citizenship.name}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                                 <div class="col-md-4 col-xs-6 b-r"> <strong>No de Pasaporte</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.passportNo %}{{dato.passportNo}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.passportNo %}{{dato.passportNo}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                                 <div class="col-md-4 col-xs-6 b-r"> <strong>Fecha vencimiento</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.passportExt %}{{dato.passportExt|date:"d/m/Y"}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.passportExt %}{{dato.passportExt|date:"d/m/Y"}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                             </div>
                                                             <div class="row">
                                                                 <div class="col-md-4 col-xs-6 b-r"> <strong>Fecha de Emisión</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.passIssue %}{{dato.passIssue}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.passIssue %}{{dato.passIssue}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                                 <div class="col-md-4 col-xs-6 b-r"> <strong>Emisor de Pasaporte</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.passIssuer %}{{dato.passIssuer}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.passIssuer %}{{dato.passIssuer}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                                 <div class="col-md-4 col-xs-6 b-r">
                                                                     <br>
@@ -422,17 +421,17 @@
                                                             <div class="row">
                                                                 <div class="col-md-6 col-xs-6 b-r"> <strong>Salario</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.salary %}{{dato.salary}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.salary %}{{dato.salary|localize}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                                 <div class="col-md-6 col-xs-6 b-r"> <strong>Banco</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.bankCode %}{{dato.bankCode.name}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.bankCode %}{{dato.bankCode.description}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                             </div>
                                                             <div class="row">
                                                                 <div class="col-md-6 col-xs-6 b-r"> <strong>Costos de empleado</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.empCost %}{{dato.empCost}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.empCost %}{{dato.empCost}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                                 <div class="col-md-6 col-xs-6 b-r"> <strong>No. de cuenta</strong>
                                                                     <br>
@@ -443,7 +442,7 @@
                                                                 <div class="col-md-6 col-xs-6 b-r"></div>
                                                                 <div class="col-md-6 col-xs-6 b-r"> <strong>Sucursal</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.branchBank %}{{dato.branchBank}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.branchBank %}{{dato.branchBank}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -453,7 +452,7 @@
                                                             <div class="row">
                                                                 <div class="col-md-12 col-xs-6 b-r"> <strong>Comentario</strong>
                                                                     <br>
-                                                                    <p class="text-muted">{% if dato.remark %}{{dato.remark}}{% endif %}</p>
+                                                                    <p class="text-muted">{% if dato.remark %}{{dato.remark}}{% else %}--{% endif %}</p>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -464,7 +463,35 @@
                                     </div>
                                     <div class="tab-pane" id="deducciones">
                                         <input type="hidden" name="empleado_id" text="{{dato.pk}}" />
-                                        <div id="detalle-deducciones"></div>
+                                        <ul class="nav nav-tabs" role="tablist">
+                                            <li role="presentation" class="active"><a href="#tbDedLegal" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true"><span class="visible-xs"><i class="ti-home"></i></span><span class="hidden-xs"> Asignar Deducciones Legales</span></a></li>
+                                            <li role="presentation" class=""><a href="#tbControlSaldo" aria-controls="profile" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-user"></i></span> <span class="hidden-xs">Control de Saldo</span></a></li>
+                                            <!--li role="presentation" class=""><a href="#messages" aria-controls="messages" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-email"></i></span> <span class="hidden-xs">Messages</span></a></li>
+                                            <li role="presentation" class=""><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-settings"></i></span> <span class="hidden-xs">Settings</span></a></li-->
+                                        </ul>
+                                        <div class="tab-content">
+                                            <div role="tabpanel" class="tab-pane active" id="tbDedLegal">
+                                                <div id="detalle-deducciones"></div>
+                                            </div>
+                                            <div role="tabpanel" class="tab-pane" id="tbControlSaldo">
+                                                <table class="table table-default">
+                                                    <thead>
+                                                        <th> Descripción</th>
+                                                        <th class="text-center">Monto</th>
+                                                        <th class="text-center">Pagado</th>
+                                                    </thead>
+                                                    <tbody>
+                                                        {% for item in control_saldo %}
+                                                            <tr>
+                                                                <td><a href="#" data-toggle="modal" data-target="#frmVerDetallePago{{item.id}}" class="accordion-toggle">{{item.descripcion}}</a></td>
+                                                                <td class="text-right">{{item.monto}}</td>
+                                                                <td class="text-right">{{item.total_pagado}}</td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div class="tab-pane" id="aimpresion">
                                         <h3>Voucher de Pago | Impresión / Envío | Resumen</h3>
@@ -504,8 +531,7 @@
                                                     <button id="btnCargarFoto">Cargar</button>
                                                 </div>
                                             </div>
-                                            <div class="form-group">
-                                            </div>
+                                            <div class="form-group"></div>
                                         </form>
                                         {% comment %} <form class="form-horizontal form-material">
                                             <div class="form-group">
@@ -553,89 +579,129 @@
                         </div>
                     </div>
                     <div class="row">
-                    <div class="col-md-4">
-                        <!-- sample modal content -->
-                        <!-- /.modal -->
-                        <div id="form-empleado-deduccion" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                                        <h4 class="modal-title">Deducción por Empleado</h4> </div>
-                                    <div class="modal-body">
-                                        <form>
-                                            <div class="form-group">
-                                                <label class="control-label">Deducción:</label>
-                                                <select name="cbodeduccion" class="form-control">
+                        <div class="col-md-4">
+                            <!-- sample modal content -->
+                            <!-- /.modal -->
+                            <div id="form-empleado-deduccion" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                            <h4 class="modal-title">Deducción por Empleado</h4> </div>
+                                        <div class="modal-body">
+                                            <form>
+                                                <div class="form-group">
+                                                    <label class="control-label">Deducción:</label>
+                                                    <select name="cbodeduccion" class="form-control">
+                                                        <option value="0">Seleccione un periodo...</option>
+                                                        {% for deduccion_legal in deducciones_legales %}
+                                                        <option value="{{deduccion_legal.deduccion}}">{{deduccion_legal.descripcion}}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="control-label">Tipos de Periodo:</label>
+                                                    <div class="radio radio-success">
+                                                        <input type="radio" name="radio" id="rcompleto" value="0">
+                                                        <label for="rcompleto"> Completo </label>
+                                                    </div>
+                                                    <div class="radio radio-info">
+                                                        <input type="radio" name="radio" id="rparcial" value="1">
+                                                        <label for="rparcial"> Parcial </label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group cbo-periodo">
+                                                    <label class="control-label">Periodo de Pago:</label>
+                                                    <select name="cboperiodopago" class="form-control">
                                                     <option value="0">Seleccione un periodo...</option>
-                                                    {% for deduccion_legal in deducciones_legales %}
-                                                    <option value="{{deduccion_legal.deduccion}}">{{deduccion_legal.descripcion}}</option>
+                                                    {% for periodo in periodos %}
+                                                    <option value="{{periodo}}">{{periodo}}</option>
                                                     {% endfor %}
-                                                </select>
-                                            </div>
-                                            <div class="form-group">
-                                                <label class="control-label">Tipos de Periodo:</label>
-                                                <div class="radio radio-success">
-                                                    <input type="radio" name="radio" id="rcompleto" value="0">
-                                                    <label for="rcompleto"> Completo </label>
+                                                    </select>
                                                 </div>
-                                                <div class="radio radio-info">
-                                                    <input type="radio" name="radio" id="rparcial" value="1">
-                                                    <label for="rparcial"> Parcial </label>
+                                                <div class="form-group">
+                                                    <div id="ctrl-chkActivo" class="checkbox checkbox-success">
+                                                        <input id="chkActivoDedEmp" type="checkbox" />
+                                                        <label for="chkActivoDedEmp"> Activo </label>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="form-group cbo-periodo">
-                                                <label class="control-label">Periodo de Pago:</label>
-                                                <select name="cboperiodopago" class="form-control">
-                                                <option value="0">Seleccione un periodo...</option>
-                                                {% for periodo in periodos %}
-                                                <option value="{{periodo}}">{{periodo}}</option>
-                                                {% endfor %}
-                                                </select>
-                                            </div>
-                                            <div class="form-group">
-                                                <div id="ctrl-chkActivo" class="checkbox checkbox-success">
-                                                    <input id="chkActivoDedEmp" type="checkbox" />
-                                                    <label for="chkActivoDedEmp"> Activo </label>
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-cerrar waves-effect" data-dismiss="modal">Cerrar</button>
-                                        <button type="button" id="btnGuardarEmplDed" class="btn btn-guardar waves-effect waves-light">Guardar</button>
-                                        <button type="button" id="btnActualizarEmplDed" class="btn btn-guardar waves-effect waves-light">Actualizar</button>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-cerrar waves-effect" data-dismiss="modal">Cerrar</button>
+                                            <button type="button" id="btnGuardarEmplDed" class="btn btn-guardar waves-effect waves-light">Guardar</button>
+                                            <button type="button" id="btnActualizarEmplDed" class="btn btn-guardar waves-effect waves-light">Actualizar</button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        <!-- Button trigger modal -->
-                    </div>
-                    <div class="col-md-4">
-                        <div id="frmVerSubDetalles" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                                        <h4 class="modal-title" id="myModalLabel">DETALLE DEDUCCIONES INDIVIDUALES</h4>
-                                    </div>
-                                    <div class="modal-body">
-                                        <table class="table color-table info-table">
-                                            <thead>
-                                                <tr>
-                                                    <th>DESCRIPCIÓN</th>
-                                                    <th class="text-right">CUOTA</th>
-                                                    <th class="text-right">MONTO TOTAL</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody></tbody>
-                                        </table>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-info waves-effect" data-dismiss="modal">Cerrar</button>
+                            <!-- Button trigger modal -->
+                        </div>
+                        <div class="col-md-4">
+                            <div id="frmVerSubDetalles" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                            <h4 class="modal-title" id="myModalLabel">DETALLE DEDUCCIONES INDIVIDUALES</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <table class="table color-table info-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>DESCRIPCIÓN</th>
+                                                        <th class="text-right">CUOTA</th>
+                                                        <th class="text-right">MONTO TOTAL</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                            </table>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-info waves-effect" data-dismiss="modal">Cerrar</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="row">
+                        {% for item2 in control_saldo %}
+                            <div class="col-md-4">
+                                <div id="frmVerDetallePago{{item2.id}}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                                <h4 class="modal-title" id="myModalLabel">DETALLE DEDUCCIONES INDIVIDUALES</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <table class="table color-table info-table">
+                                                    <thead>
+                                                        <th>Detalle de pagos</th>
+                                                        <th>Valor</th>
+                                                    </thead>
+                                                    <tbody>
+                                                    {% for item3 in item2.detalle_pagos %}
+                                                        <tr>
+                                                            <td>{{item3.deduccion.deduccion.deduccion_i}}</td>
+                                                            <td>{{item3.valor|localize}}</td>
+                                                        </tr>
+                                                    {% empty %}
+                                                        <tr>
+                                                            <td colspan="2">No hay datos de pago registrado</td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-info waves-effect" data-dismiss="modal">Cerrar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
