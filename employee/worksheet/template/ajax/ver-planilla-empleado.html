@@ -14,9 +14,9 @@
             </tr>
             {% endfor %}
             {% for item2 in deducciones %}
-                {% if item2.tiene_sub %}
+                {% if item2.detalles %}
                 <tr class="planilla-segundafila">
-                    <td><a href="#" class="btnSubDetalle" data="{{item2.tipo_deduccion}}">{{item2.deduccion}}</a></td>
+                    <td><a href="#" class="btnSubDetalle" data="{{item2.deduccion_f.pk}}">{{item2.deduccion}}</a></td>
                     <td></td>
                     <td class="text-right"><span class="text-danger text-right"><strong>{{item2.valor}}</strong></span></td>
                 </tr>

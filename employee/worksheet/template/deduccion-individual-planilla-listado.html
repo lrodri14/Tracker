@@ -15,11 +15,12 @@ Listado Deducciones Individuales en Planilla
             <div class="panel-wrapper">
                 <div class="panel-body">
                     <div class="row text-right">
-                        {% if perms.worksheet.add_deduccionindividualplanilla %}
                         <div class="col-md-12">
+                            <a href="{% url 'deduccion_individual_planilla_archivo' %}" class="btn btn-info">Cargar por archivo</a>
+                            {% if perms.worksheet.add_deduccionindividualplanilla %}
                             <a href="{% url 'deduccion_individual_planilla_form' %}" class="btn btn-primary">Agregar</a>
+                            {% endif %}
                         </div>
-                        {% endif %}
                     </div>
                     <br>
                     <div class="table-responsive">

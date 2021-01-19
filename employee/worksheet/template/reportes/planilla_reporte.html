@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Planilla</title>
+    <style type="text/css">
+        @page {
+            size: 50cm 21.6cm;
+            
+            margin: 1cm;
+
+            @frame footer {
+            -pdf-frame-content: footerContent;
+            bottom: 0.5cm;
+            margin-left: 1cm;
+            margin-right: 1cm;
+            height: 0.5cm;
+        }
+        }
+        #datos-tabla td.numeros{
+            text-align: right;
+        }
+        #datos-tabla th, #datos-tabla td{
+            border: 1px solid black;
+            padding: 2px;
+            font-size: 8px;
+        }
+        #datos-tabla td.contador, #datos-tabla th.contador{
+            width: 2%;
+            border: none;
+            text-align:center;
+            padding: 0;
+        }
+        img, h1, #fechas{
+            text-align: center;
+        }
+        h1, #fechas{
+            font-size: 14px;
+        }
+      
+    </style>
+</head>
+<body>
+    <img src="{% static 'images/promaco-logo.png' %}" alt="Logo Promaco">
+    <h1>Reporte de Planilla</h1>
+    <div id="fechas">
+        <label>Desde: <strong>{{desde}}</strong></label>
+        <label>Hasta: <strong>{{hasta}}</strong></label>
+    </div>
+    <br>
+    <table id="datos-tabla">
+        <thead>
+            <tr>
+                <th class="contador">#</th>
+                {% for columna in columnas %}
+                    <th class="text-left">{{columna.title}}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for empleado in empleados %}
+                <tr>
+                    <td class="contador">{{forloop.counter}}</td>
+                    <td>{{empleado.codigo}}</td>
+                    <td>{{empleado.nombre}}</td>
+                    <td>{% if empleado.departamento %}{{empleado.departamento}}{% else %}N/A{% endif %}</td>
+                    {% for ingreso in empleado.ingresos %}
+                        <td class="numeros">{{ingreso.valor}}</td>
+                    {% endfor %}
+                    <td class="numeros">{{empleado.total_ingresos}}</td>
+                    {% for deduccion in empleado.deducciones %}
+                        <td class="numeros">{{deduccion.valor}}</td>
+                    {% endfor %}
+                    <td class="numeros">{{empleado.total_deducciones}}</td>
+                    <td class="numeros">{{empleado.total_neto}}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        <tfooter>
+            <tr>
+                <td class="contador"></td>
+                <td colspan="3"><strong>Total</strong></td>
+                {% for pie in footer %}
+                    <td class="numeros"><strong>{{pie.valor}}</strong></td>
+                {% endfor %}
+            </tr>
+        </tfooter>
+    </table>
+    <div id="footerContent">
+        Página <pdf:pagenumber> / <pdf:pagecount>
+    </div>
+</body>
+</html>

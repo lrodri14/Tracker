@@ -842,6 +842,7 @@ $(document).on('ready', () => {
     var Au_hasta = $('input[name="au_hasta"]');
     var Au_motivo = $('select[name="au_motivos"]');
     var Au_aprobo = $('select[name="au_aprobo"]');
+    var Au_fecha_aplica = $('input[name="au_fecha_aplica"]');
     var Au_activo = $('input[name="au_activo"]');
     //#endregion
 
@@ -862,6 +863,7 @@ $(document).on('ready', () => {
                 'hasta': Au_hasta.val(),
                 'motivo': Au_motivo.val(),
                 'aprobo': Au_aprobo.val(),
+                'aplica': Au_fecha_aplica.val(),
                 'activo': vActivo,
                 'csrfmiddlewaretoken': token.val(),
             };
@@ -887,6 +889,7 @@ $(document).on('ready', () => {
                 'hasta': Au_hasta.val(),
                 'motivo': Au_motivo.val(),
                 'aprobo': Au_aprobo.val(),
+                'aplica': Au_fecha_aplica.val(),
                 'activo': vActivo,
                 'csrfmiddlewaretoken': token.val(),
             };
@@ -915,10 +918,10 @@ $(document).on('ready', () => {
             mensaje("Registro de Ausentismo", "El campo 'Hasta' es obligatorio.", "warning");
             return false;
         }
-        // if (Au_motivo.val().length == 0) {
-        //     mensaje("Registro de Ausentismo", "El campo 'Motivo' es obligatorio.", "warning");
-        //     return false;
-        // }
+        if (Au_fecha_aplica.val().length == 0) {
+            mensaje("Registro de Ausentismo", "El campo 'Fecha que aplica' es obligatorio.", "warning");
+            return false;
+        }
 
         // if (Au_aprobo.val() == 0) {
         //     mensaje("Registro de Ausentismo", "El campo 'Aprobó' es obligatorio.", "warning");
@@ -3123,6 +3126,126 @@ $(document).on('ready', () => {
 
     //#endregion
 
+    //#region Código para Rap
+    var frmRap = $('#formRap');
+
+    frmRap.submit(function(e) {
+        var datos = new FormData(this);
+        e.preventDefault();
+        peticion("/guardar/rap/", "POST", frmRap.serialize());
+        $('#frmRap-modal').modal('toggle');
+    });
+
+    $('#rap').on('click', '.btnEliminar', function(e) {
+        e.preventDefault();
+        data = { 'id': $(this).attr('data'), 'csrfmiddlewaretoken': token.val(), };
+        peticion("/eliminar/rap/", "POST", data);
+    });
+
+    $('#rap').on('click', '#btnRefrescar', function(e) {
+        tableRap.ajax.reload();
+    });
+
+    $('#rap').on('click', '.btnEditar', function(e) {
+        e.preventDefault();
+        url = '/obtener/reg_rap/';
+        metodo = 'GET';
+        data = { 'id': $(this).attr('data') };
+        $.ajax({
+            type: metodo,
+            url: url,
+            data: data,
+            success: function (data) {
+                if (data.error === false) {
+                    $('input[name="rap_id"]').val(data.data.pk);
+                    $('input[name="txttecho"]').val(data.data.techo);
+                    $('input[name="txtporcentaje"]').val(data.data.porcentaje);
+                    $('#frmRap-modal').modal('toggle');
+                }
+            },
+            error: function (data) {
+                console.log(data);
+            },
+            dataType: 'json'
+        });
+    });
+
+
+    var theadRap = $('#tablaRap thead tr').clone(true);
+    theadRap.appendTo( '#tablaRap thead' );
+    $('#tablaRap thead tr:eq(1) th').each( function (i) {
+        var title = $(this).text();
+        if (title != "Acciones") {
+            $(this).html( '<input type="text" class="form-control" placeholder="Buscar '+title+'" />' );
+        }else{
+            "";
+        }
+        $( 'input', this ).on( 'keyup change', function () {
+            if ( tableRap.column(i).search() !== this.value ) {
+                tableRap
+                    .column(i)
+                    .search( this.value )
+                    .draw();
+            }
+        });
+    });
+    theadRap.find("#thAcciones").html("");
+
+    var tableRap = $('#tablaRap').DataTable({
+        "ajax": "/obtener/rap/",
+        "processing": true,
+        "columnDefs": [
+            {
+                "targets": 3,
+                "className": "text-right",
+            },
+            {
+                "targets": 2,
+                "className": "text-center",
+            },
+            {
+                "targets": 1,
+                "className": "text-center",
+            },
+            {
+                "targets": 0,
+                "className": "text-right",
+            },
+        ],
+        "columns": [
+            {"data": "techo"},
+            {"data": "porcentaje"},
+            {"data": "active"},
+            {
+                "data": "id",
+                render : function(data, type, row) {
+                    html = '<a href="#" class="btnEliminar" data="'+data+'" data-tooltip="Eliminar el registro" data-toggle="tooltip" data-original-title="Eliminar"> <i class="fa fa-close text-danger m-r-10"></i></a> ';
+                    html += '<a href="#" class="btnEditar" data-toggle="tooltip" data="'+data+'" data-original-title="Editar"><i class="fa fa-pencil text-inverse m-r-10"></i></a> ';
+                    return html;
+                }
+            }
+        ],
+        orderCellsTop: true,
+        fixedHeader: true,
+        "language": {
+            "lengthMenu": "Mostrar _MENU_ registros por página",
+            "zeroRecords": "No se encontraron datos.",
+            "info": "Página _PAGE_ de _PAGES_",
+            "infoEmpty": "No existen registros",
+            "infoFiltered": "(resultado de _MAX_ registros en total)",
+            "paginate": {
+                "first": "Primer registro",
+                "last": "Último registro",
+                "next": "Siguiente",
+                "previous": "Anterior",
+            },
+            "search": "Buscar:",
+            "loadingRecords": "Cargando datos...",
+            "processing": "Procesando datos...",
+        }
+    });
+    //#endregion
+
     //#region Código para ISR Encabezado
     botonGuardar = $('#formEncabezadoISR #btnGuardar');
     botonGuardarDetalleISR = $('#formAgregarDetalle #btnGuardarDetalleISR');
@@ -3658,7 +3781,7 @@ $(document).on('ready', () => {
     var cboHasta = $('#planilla-reporte-general #txtHasta');
     var btnVerIngresos = $('#frmVerPlanilla #btnVerIngresos');
     var btnVerDeducciones = $('#frmVerPlanilla #btnVerDeducciones');
-    var chkdedihss = $('#frmPlanilla input[name="ded_ihss"]');
+    var chkEspecial = $('#frmPlanilla input[name="especial"]');
     var chkdedrap = $('#frmPlanilla input[name="ded_rap"]');
     var chkdedisr = $('#frmPlanilla input[name="ded_isr"]');
     var chkdedimv = $('#frmPlanilla input[name="ded_imv"]');
@@ -3686,10 +3809,10 @@ $(document).on('ready', () => {
         e.preventDefault();
         url = '/guardar/planilla/';
         metodo = 'POST';
-        if (chkdedihss.is(":checked")) {
-            vdidihss = 1;
+        if (chkEspecial.is(":checked")) {
+            vespecial = 1;
         } else {
-            vdidihss = 0;
+            vespecial = 0;
         }
         if (chkdedrap.is(":checked")) {
             vdidrap = 1;
@@ -3707,7 +3830,7 @@ $(document).on('ready', () => {
             vdidimv = 0;
         }
         data = {
-            'ded_ihss': vdidihss,
+            'especial': vespecial,
             'ded_rap': vdidrap,
             'ded_isr': vdidisr,
             'ded_imv': vdidimv,
@@ -3732,16 +3855,14 @@ $(document).on('ready', () => {
         $('#frmVerDeducciones').toggle();
     });
 
-
-
     btnPlActualizar.on('click', function (e) {
         e.preventDefault();
         url = '/actualizar/planilla/';
         metodo = 'POST';
-        if (chkdedihss.is(":checked")) {
-            vdidihss = 1;
+        if (chkEspecial.is(":checked")) {
+            vespecial = 1;
         } else {
-            vdidihss = 0;
+            vespecial = 0;
         }
         if (chkdedrap.is(":checked")) {
             vdidrap = 1;
@@ -3760,7 +3881,7 @@ $(document).on('ready', () => {
         }
         data = {
             'id': id.val(),
-            'ded_ihss': vdidihss,
+            'especial': vespecial,
             'ded_rap': vdidrap,
             'ded_isr': vdidisr,
             'ded_imv': vdidimv,
@@ -3990,7 +4111,7 @@ $(document).on('ready', () => {
     });
 
     $('#btnGuardarEmplDed').on('click', function (e) {
-        $('select[name="cbodeduccion"]')
+        $('select[name="cbodeduccion"]');
         e.preventDefault();
         $.ajax({
             type: "POST",
@@ -4157,7 +4278,6 @@ $(document).on('ready', () => {
                     data.datos.forEach(element => {
                         html += '<tr>';
                         html += '<td>'+element.descripcion+'</td>';
-                        html += '<td class="text-right">'+element.cuota+'</td>';
                         html += '<td class="text-right">'+element.monto_total+'</td>';
                         html += '</tr>';
                     });
@@ -4530,6 +4650,25 @@ $(document).on('ready', () => {
         });
     }
 
+    function peticion(url, metodo, data){
+        $.ajax({
+            type: metodo,
+            url: url,
+            dataType: 'json',
+            data: data,
+            success: function (data) {
+                if (data.error == false) {
+                    swal("Rap", data.mensaje, "success");
+                }else{
+                    swal("Rap", data.mensaje, "error");    
+                }
+            },
+            error: function (data) {
+                swal("Rap", data.mensaje, "error");
+            }
+        });
+    }
+
     function mensaje(encabezado, texto, tipomsj, tiempo) {
         vicon = "warning";
         if (tipomsj == "warning") {
@@ -4549,6 +4688,7 @@ $(document).on('ready', () => {
             stack: 6
         });
     }
+    
     function LimpiarControles() {
         $('input[type="text"]').val(null);
         $('input[type="number"]').val(null);

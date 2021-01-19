@@ -13,7 +13,7 @@
     <!-- Bootstrap Core CSS -->
     <link href="{% static 'bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'plugins/bower_components/bootstrap-table/dist/bootstrap-table.min.css' %}" rel="stylesheet">
-    <link href="{% static 'plugins/bower_components/datatables/jquery.dataTables.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'plugins/bower_components/datatables/media/css/jquery.dataTables.min.css' %}" rel="stylesheet" type="text/css" />
     <!--link href="https://cdn.datatables.net/buttons/1.2.2/css/buttons.dataTables.min.css" rel="stylesheet" type="text/css" /-->
     <!-- Menu CSS -->
     <link href="{% static 'plugins/bower_components/sidebar-nav/dist/sidebar-nav.min.css' %}" rel="stylesheet">
@@ -32,6 +32,10 @@
     <link rel="stylesheet" href="{% static 'plugins/bower_components/dropify/dist/css/dropify.min.css' %}" type="text/css" />
     <!-- animation CSS -->
     <link href="{% static 'css/animate.css' %}" rel="stylesheet">
+    <link href="{% static 'css/icons/themify-icons/themify-icons.css' %}" rel="stylesheet">
+    <link href="{% static 'css/icons/font-awesome/css/fontawesome-all.min.css' %}" rel="stylesheet">
+    <link href="{% static 'css/icons/themify-icons/themify-icons.css' %}" rel="stylesheet">
+    <link href="{% static 'css/icons/themify-icons/themify-icons.css' %}" rel="stylesheet">
     <link href="{% static 'css/icons/themify-icons/themify-icons.css' %}" rel="stylesheet">
     <!-- Custom CSS -->
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
@@ -62,6 +66,9 @@
         .sidebar .nav-second-level li a{
             padding-top: 1px;
             padding-bottom: 1px;
+        }
+        .opciones>a{
+            margin: 0 3px;
         }
     </style>
     <!-- HTML5 Shim d Respond.js IE8 support of HTML5 elements and media queries -->
@@ -241,6 +248,7 @@
                         <ul class="nav nav-second-level">
                             <li><a href="#" id="aLegales" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Legales <span class="fa arrow"></span></span></a>
                                 <ul class="nav nav-third-level">
+                                {% comment '' %}
                                     {% if perms.worksheet.see_segurosocial %}
                                     <li><a href="{% url 'segurosocial_listado' %}" id="aSeguroSocial" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">IHSS</span></a></li>
                                     {% endif %}
@@ -253,6 +261,10 @@
                                     {% if perms.worksheet.see_impuestovecinal %}
                                     <li><a href="{% url 'impuestovecinal_listado' %}" id="aIV" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Impuesto Vecinal</span></a></li>
                                     {% endif %}
+                                    {% if perms.worksheet.see_impuestovecinal %}
+                                    <li><a href="{% url 'rap_listado' %}" id="aRAP" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">RAP</span></a></li>
+                                    {% endif %}
+                                {% endcomment %}
                                     {% if perms.worksheet.see_horaextra %}
                                     <li><a href="{% url 'horaextra_listado' %}" id="aHE" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Horas Extras</span></a></li>
                                     {% endif %}
@@ -304,22 +316,25 @@
                             <li><a href="#" id="aConceptos" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Conceptos <span class="fa arrow"></span></span></a>
                                 <ul class="nav nav-third-level">
                                     {% if perms.worksheet.see_tipoingreso %}
-                                    <li><a href="{% url 'tipo_ingreso_listado' %}" id="aTipoIngreso" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Tipos de Ingreso</span></a></li>
+                                    <li><a href="{% url 'ingresos_tipo_listado' %}" id="aTipoIngreso" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Ingreso</span></a></li>
                                     {% endif %}
+                                {% comment '' %}
                                     {% if perms.worksheet.see_ingresogeneral %}
                                     <li><a href="{% url 'ingreso_general_listado' %}" id="aIngresoG" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Ingreso General</span></a></li>
                                     {% endif %}
                                     {% if perms.worksheet.see_ingresoindividual %}
                                     <li><a href="{% url 'ingreso_individual_listado' %}" id="aIngresoI" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Ingreso Individual</span></a></li>
                                     {% endif %}
-                                    {% if perms.worksheet.see_tipodeduccion %}
-                                    <li><a href="{% url 'tipo_deduccion_listado' %}" id="aTipoDeduccion" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Tipo de Deducción</span></a></li>
-                                    {% endif %}
                                     {% if perms.worksheet.see_deducciongeneral %}
                                     <li><a href="{% url 'deduccion_general_listado' %}" id="aDeduccionG" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Deducción General</span></a></li>
                                     {% endif %}
                                     {% if perms.worksheet.see_deduccionindividual %}
                                     <li><a href="{% url 'deduccion_individual_listado' %}" id="aDeduccionI" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Deducción Individual</span></a></li>
+                                    {% endif %}
+                                {% endcomment %}
+                                    {% if perms.worksheet.see_tipodeduccion %}
+                                    <!--li><a href="{% url 'tipo_deduccion_listado' %}" id="aTipoDeduccion" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Tipo de Deducción</span></a></li-->
+                                    <li><a href="{% url 'deducciones_tipos' %}" id="aTipoDeduccion" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Deducción</span></a></li>
                                     {% endif %}
                                 </ul>
                             </li>
@@ -343,6 +358,7 @@
                                     {% if perms.worksheet.see_ausentismo %}
                                     <li><a href="{% url 'ausentismo_listado' %}" id="aAu" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Ausentismo</span></a></li>
                                     {% endif %}
+                                    <li><a href="{% url 'contratos_page' %}" id="aCont" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Contratos</span></a></li>
                                     {% if perms.worksheet.see_evaluacion %}
                                     <li><a href="{% url 'evaluacion_listar' %}" id="aEv" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Evaluación</span></a></li>
                                     {% endif %}
@@ -353,6 +369,7 @@
                             </li>
                             <li><a href="#" id="accionesNomina" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Nómina <span class="fa arrow"></span></span></a>
                                 <ul class="nav nav-third-level">
+                                {% comment '' %}
                                     {% if perms.worksheet.see_ingresogeneraldetalle %}
                                     <li><a href="{% url 'ingreso_general_detalle_listado' %}" id="aIGD" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Percepciones Generales</span></a></li>
                                     {% endif %}
@@ -371,10 +388,22 @@
                                     {% if perms.worksheet.see_deduccionindividualplanilla %}
                                     <li><a href="{% url 'deduccion_individual_planilla_listado' %}" id="aDIP" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Deducción única</span></a></li>
                                     {% endif %}
+                                {% endcomment %}
+                                    {% if perms.worksheet.see_deduccionindividualplanilla %}
+                                    <li><a href="{% url 'deducciones_empleado_listado' %}" id="aDE" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Deducciones Empleado</span></a></li>
+                                    {% endif %}
+                                    {% if perms.worksheet.see_deduccionindividualplanilla %}
+                                    <li><a href="{% url 'ingresos_empleado_listado' %}" id="aIE" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Ingreso Empleado</span></a></li>
+                                    {% endif %}
                                     {% if perms.worksheet.see_planilla %}
                                     <li><a href="{% url 'planilla_listado' %}" id="aPlanilla" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Planilla</span></a></li>
                                     {% endif %}
                                     <li><a href="{% url 'planilla_reporte_general' %}" id="aReportes" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Reportes</span></a></li>
+                                </ul>
+                            </li>
+                            <li><a href="#" id="accionesReportes" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Reportes <span class="fa arrow"></span></span></a>
+                                <ul class="nav nav-third-level">
+                                    <li><a href="{% url 'reporte_empleados' %}" id="aReporte1" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Datos de Salario</span></a></li>
                                 </ul>
                             </li>
                         </ul>
@@ -450,7 +479,7 @@
     <script src="{% static 'plugins/bower_components/bootstrap-select/bootstrap-select.min.js' %}"></script>
     <script src="{% static 'plugins/bower_components/toast-master/js/jquery.toast.js' %}"></script>
     <script src="{% static 'plugins/bower_components/dropify/dist/js/dropify.min.js' %}"></script>
-    <script src="{% static 'plugins/bower_components/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'plugins/bower_components/datatables/media/js/jquery.dataTables.min.js' %}"></script>
     <script src="{% static 'plugins/bower_components/sweetalert/sweetalert.min.js' %}"></script>
     <script src="{% static 'plugins/bower_components/sweetalert/jquery.sweet-alert.custom.js' %}"></script>
     <script src="{% static 'plugins/bower_components/blockUI/jquery.blockUI.js' %}"></script>
@@ -471,9 +500,13 @@
     <script src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
     <script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.html5.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.print.min.js"></script>
+    <script src="{% static 'plugins/bower_components/axios/dist/axios.min.js' %}"></script>
+    <script src="{% static 'plugins/bower_components/vue/dist/vue.min.js' %}"></script>
+
     {% block scripts %}{% endblock scripts %}
     <script>
         $('#myTable').DataTable({
+            "ordering": false,
             "language": {
                 "lengthMenu": "Mostrar _MENU_ registros por página",
                 "zeroRecords": "No se encontraron datos.",

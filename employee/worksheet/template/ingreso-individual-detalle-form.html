@@ -133,11 +133,13 @@ Ingreso Individual - Detalle
 {% block scripts %}
 <script src="{% static 'js/lib/jquery.mask.js' %}"></script>
 <script>
+    $('#chkActivo').attr('checked', 'true');
+    $(".select2").select2();
     $('#side-menu a').removeClass('active');
     $('#aAcciones').addClass('active');
     $('#accionesNomina').addClass('active');
     $('#aIID').addClass('active');
-    $('input[name="valor"]').mask('0,000,000,000,000.00', {reverse:true});
+    //$('input[name="valor"]').mask('0,000,000,000,000.00', {reverse:true});
 
     $('.mydatepicker, #datepicker').datepicker({
         format: 'yyyy-mm-dd',

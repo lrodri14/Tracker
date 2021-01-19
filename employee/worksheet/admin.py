@@ -11,10 +11,29 @@ admin.site.title = "Tracker"
 class EmpleadoDeduccionesAdmin(admin.ModelAdmin):
     list_display = ['empleado', 'deduccion', 'active']
 
+class EmployeeAdmin(admin.ModelAdmin):
+    list_display = ['extEmpNo', 'firstName', 'middleName', 'lastName', 'govID']
+    search_fields = ['extEmpNo', 'firstName', 'middleName', 'lastName', 'govID']
+
 class DatosSalarioAdmin(admin.ModelAdmin):
     list_display = ['empleado', 'fecha_incremento']
     search_fields = ['empleado__firstName']
 
+class DeduccionIndividualDetalleAdmin(admin.ModelAdmin):
+    list_display = ['empleado', 'deduccion', 'valor', 'date_reg', 'sucursal_reg']
+    list_filter = ('deduccion', 'sucursal_reg')
+    search_fields = ['empleado__govID', 'empleado__firstName', 'empleado__middleName', 'empleado__lastName']
+
+class DeduccionIndividualPlanillaAdmin(admin.ModelAdmin):
+    list_display = ['empleado', 'planilla', 'deduccion', 'valor', 'date_reg', 'sucursal_reg']
+    list_filter = ('deduccion', 'sucursal_reg')
+    search_fields = ['empleado__govID', 'empleado__firstName', 'empleado__middleName', 'empleado__lastName']
+
+# class DetallePlanillaDetalleDeduccionAdmin(admin.ModelAdmin):
+#     pass
+    #list_display = ['planilla_detalle_ded', 'deduccion_detalle']
+    #list_filter = ('sucursal_reg',)
+    #search_fields = ['deduccion_detalle__empleado__firstName']
 
 # Register your models here.
 admin.site.register(ActivoAsignado)
@@ -25,18 +44,21 @@ admin.site.register(CentrosCostos)
 admin.site.register(Ciudad)
 admin.site.register(CivilStatus)
 admin.site.register(ClaseEducacion)
+admin.site.register(Contrato)
 admin.site.register(CostUnit)
 admin.site.register(Country)
 admin.site.register(ControlPagosDeduccionIndividual)
 admin.site.register(Department)
-admin.site.register(DetallePlanillaDetalleDeduccion)
+#admin.site.register(DetallePlanillaDetalleDeduccion, DetallePlanillaDetalleDeduccionAdmin)
 admin.site.register(DeduccionGeneral)
 admin.site.register(DeduccionGeneralDetalle)
 admin.site.register(DeduccionIndividual)
-admin.site.register(DeduccionIndividualDetalle)
+admin.site.register(DeduccionIndividualDetalle, DeduccionIndividualDetalleAdmin)
 admin.site.register(DeduccionIndividualSubDetalle)
-admin.site.register(DeduccionIndividualPlanilla)
-admin.site.register(Employee)
+admin.site.register(DeduccionIndividualPlanilla, DeduccionIndividualPlanillaAdmin)
+admin.site.register(DeduccionTipo)
+admin.site.register(DeduccionEmpleado)
+admin.site.register(Employee, EmployeeAdmin)
 admin.site.register(EncabezadoImpuestoSobreRenta)
 admin.site.register(LimiteSalarioDeduccion)
 admin.site.register(Empresa)
@@ -53,6 +75,8 @@ admin.site.register(IngresoGeneral)
 admin.site.register(IngresoGeneralDetalle)
 admin.site.register(IngresoIndividualDetalle)
 admin.site.register(IngresoIndividualPlanilla)
+admin.site.register(IngresoTipo)
+admin.site.register(IngresoEmpleado)
 admin.site.register(Planilla)
 admin.site.register(PlanillaDetalle)
 admin.site.register(PlanillaDetalleDeducciones)

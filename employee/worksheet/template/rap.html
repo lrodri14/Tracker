@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block titulo %}RAP
+{% endblock titulo %}
+
+{% block contenido %}
+<div id="rap" class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="text-bold"><i class="ti-pencil-alt"></i>
+                    Datos de Régimen de aportaciones privadas</h2>
+            </div>
+            <div class="panel-wrapper">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-12 text-right">
+                            <button id="btnRefrescar" class="btn btn-success">Refrescar</button>
+                            <button id="btnAgregar" data-toggle="modal" data-target="#frmRap-modal" class="btn btn-primary">Agregar</button>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="table-responsive">
+                        <table id="tablaRap" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Techo</th>
+                                    <th>Porcentaje</th>
+                                    <th class="text-center">Activo</th>
+                                    <th id="thAcciones" class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-8">
+        <div id="frmRap-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+            <div class="modal-dialog">
+                <form id="formRap">
+                    {% csrf_token %}
+                    <input type="hidden" name="rap_id" value="">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                            <h4 class="modal-title">Datos de Deducción</h4> </div>
+                        <div class="modal-body">
+                            
+                                <div class="form-group">
+                                    <label for="recipient-name" class="control-label">Techo:</label>
+                                    <input type="number" step="0.01" class="form-control" name="txttecho" required />
+                                </div>
+                                <div class="form-group">
+                                    <label for="message-text" class="control-label">Porcentaje:</label>
+                                    <input type="number" step="0.01" class="form-control" name="txtporcentaje" required />
+                                </div>
+                            
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
+                            <button type="submit" class="btn btn-danger waves-effect waves-light">Guardar cambios</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div> <!--img src="../plugins/images/model.png" alt="default" data-toggle="modal" data-target="#responsive-modal" class="model_img img-responsive" /-->
+    </div>
+</div>
+{% endblock contenido %}
+{% block scripts %}
+<script>
+    $('#side-menu a').removeClass('active');
+    $('#aPersonal').addClass('active');
+    $('#aLegales').addClass('active');
+    $('#aRAP').addClass('active');
+    $('#aPersonal').parents('li').addClass('active');
+    $('#aLegales').parents('li').addClass('active');
+</script>
+{% endblock scripts %}

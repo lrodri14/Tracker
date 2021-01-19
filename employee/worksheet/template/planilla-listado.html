@@ -61,7 +61,7 @@ Listado de Planillas
                                             {% endif %}
                                         {% endif %}
                                         {% if perms.worksheet.see_reg_planilla %}
-                                        <a href="{% url 'planilla_ver' item.pk %}" id="btnVerRegistro" data-tooltip="Ver registro" data-toggle="tooltip" data-original-title="Ver registro" class="btnVerRegistroPlanilla" data="{{item.pk}}">
+                                        <a href="{% url 'planilla_registro_ver' item.pk %}" id="btnVerRegistro" data-tooltip="Ver registro" data-toggle="tooltip" data-original-title="Ver registro" class="btnVerRegistroPlanilla" data="{{item.pk}}">
                                             <i class="fa fa-search text-success m-r-10"></i>
                                         </a>
                                         {% endif %}

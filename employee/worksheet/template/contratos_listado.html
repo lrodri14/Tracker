@@ -1,0 +1,380 @@
+{% extends 'base.html' %}
+{% block titulo %}
+Contratos
+{% endblock titulo %}
+{% block estilo %}
+{% endblock estilo %}
+{% block contenido %}
+<div id="app" class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="text-bold"><i class="fa fa-list"></i>
+                    Datos de contratos</h2>
+            </div>
+            <div class="panel-wrapper">
+                <div class="panel-body">
+                    <div class="row text-right">
+                        <div class="col-md-12">
+                            <button class="btn btn-primary" @click="agregar();">Agregar</button>
+                            <button class="btn btn-default" @click="cargar();">Refrescar</button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-md-6">
+                            <label for="" class="control-label">Empleado:</label>
+                            <select id="cboEmpleadoB" class="form-control select2">
+                                <option value="">SELECCIONE...</option>
+                                <option value="0">VER TODOS</option>
+                                {% for empleado in empleados %}
+                                    <option value="{{empleado.pk}}">{{empleado.extEmpNo}} | {{empleado.firstName}} {% if empleado.middleName %}{{empleado.middleName}}{% endif %} {{empleado.lastName}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="tabla-contratos" class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>No. de contrato</th>
+                                    <th>Empleado</th>
+                                    <th>Fecha inicio</th>
+                                    <th>Fecha vencimiento</th>
+                                    <th>Tipo de contrato</th>
+                                    <th>Estado registro</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.modal Agregar -->
+    <div id="formulario-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="Formulario de datos" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" v-if="edicion">Editar datos del contrato</h4>
+                    <h4 class="modal-title" v-else-if="ver">Ver datos del contrato</h4>
+                    <h4 class="modal-title" v-else>Agregar datos del contrato</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="cboEmpleadoF">Empleado</label>
+                            <select v-if="edicion || ver" id="cboEmpleadoF" class="form-control select2" disabled>
+                                <option value="0">Seleccionar...</option>
+                                {% for empleado in empleados %}
+                                <option value="{{empleado.pk}}">{% if empleado.extEmpNo %}{{empleado.extEmpNo}}{% else %}N/A{% endif %} | {{empleado.firstName}} {% if empleado.middleName %}{{empleado.middleName}}{% endif %} {{empleado.lastName}}</option>
+                                {% endfor %}
+                            </select>
+                            <select v-else id="cboEmpleadoF" class="form-control select2">
+                                <option value="0">Seleccionar...</option>
+                                {% for empleado in empleados %}
+                                <option value="{{empleado.pk}}">{% if empleado.extEmpNo %}{{empleado.extEmpNo}}{% else %}N/A{% endif %} | {{empleado.firstName}} {% if empleado.middleName %}{{empleado.middleName}}{% endif %} {{empleado.lastName}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="cboTipoContratoF">Tipo de contrato</label>
+                            <select v-if="edicion || ver" id="cboTipoContratoF" class="form-control select2" disabled>
+                                <option value="0">Seleccionar...</option>
+                                {% for tipo in tipos_contrato %}
+                                <option value="{{tipo.pk}}">{{tipo.tipo_contrato}}</option>
+                                {% endfor %}
+                            </select>
+                            <select v-else id="cboTipoContratoF" class="form-control select2">
+                                <option value="0">Seleccionar...</option>
+                                {% for tipo in tipos_contrato %}
+                                <option value="{{tipo.pk}}">{{tipo.tipo_contrato}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="txtFechaInicio">Fecha inicio</label>
+                            <div v-if="ver" class="input-group">
+                                <input disabled id="txtFechaInicio" v-model="contrato.fecha_inicio" name="fecha_inicio" type="text" class="form-control mydatepicker" placeholder="dd/mm/aaaa"> <span class="input-group-addon"><i class="icon-calender"></i></span>
+                            </div>
+                            <div v-else class="input-group">
+                                <input id="txtFechaInicio" v-model="contrato.fecha_inicio" name="fecha_inicio" type="text" class="form-control mydatepicker" placeholder="dd/mm/aaaa"> <span class="input-group-addon"><i class="icon-calender"></i></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="txtFechaVencimiento">Fecha vencimiento</label>
+                            <div v-if="ver" class="input-group">
+                                <input disabled id="txtFechaVencimiento" v-model="contrato.fecha_fin" name="fecha_fin" type="text" class="form-control mydatepicker" placeholder="dd/mm/aaaa"> <span class="input-group-addon"><i class="icon-calender"></i></span>
+                            </div>
+                            <div v-else class="input-group">
+                                <input id="txtFechaVencimiento" v-model="contrato.fecha_fin" name="fecha_fin" type="text" class="form-control mydatepicker" placeholder="dd/mm/aaaa"> <span class="input-group-addon"><i class="icon-calender"></i></span>
+                            </div>
+                        </div>
+                        <div v-if="edicion || ver" class="form-group">
+                            <div class="checkbox">
+                                <input v-if="ver" disabled id="chkActivo" type="checkbox" v-model="contrato.active">
+                                <input v-else id="chkActivo" type="checkbox" v-model="contrato.active">
+                                <label for="chkActivo"> Es activo </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default waves-effect" data-dismiss="modal" @click="limpiar();">Cerrar</button>
+                    <button v-if="edicion" type="button" class="btn btn-danger waves-effect waves-light" @click="actualizar();">Actualizar</button>
+                    <button v-if="!edicion && !ver" type="button" class="btn btn-danger waves-effect waves-light" @click="guardar();">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contenido %}
+{% block scripts %}
+<script>
+    var app = new Vue({
+        el: '#app',
+        delimiters: ['${', '}'],
+        data: {
+            edicion: false,
+            ver: false,
+            contratos: [],
+            busqueda: {"id": null},
+            contrato: {"id": 0, "numero":0, "empleado": 0, "fecha_inicio": "", "fecha_fin":"", "tipo_contrato": 0, "active": false},
+        },
+        mounted: function() {
+            $('.select2').select2();
+            $('#side-menu a').removeClass('active');
+            $('#aAcciones').addClass('active');
+            $('#accionesPersonal').addClass('active');
+            $('#aCont').addClass('active');
+            $('#aAcciones').parents('li').addClass('active');
+            $('#accionesPersonal').parents('li').addClass('active');
+
+            jQuery('.mydatepicker, #datepicker').datepicker({
+                format: 'dd/mm/yyyy',
+                autoclose:true,
+                todayHighlight: true,
+            });
+        },
+        methods: {
+            cargar: function() {
+                console.log("Cargar listado");
+            },
+            agregar: function() {
+                this.ver = false;
+                this.edicion = false;
+                $('#formulario-modal').modal('toggle');
+            },
+            guardar: function() {
+                var self = this;
+                $('.preloader').fadeIn();
+                self.contrato.fecha_inicio = $('#txtFechaInicio').val();
+                self.contrato.fecha_fin = $('#txtFechaVencimiento').val();
+                axios.post('/guardar/contrato/', self.contrato,
+                {
+                    headers: {
+                        'X-Requested-With' : 'XMLHttpRequest',
+                        'X-CSRFToken': this.getCookie('csrftoken')}, 
+                        'Content-Type': 'application/json;charset=UTF-8',
+                })
+                .then(function(response) {
+                    $('.preloader').fadeOut();
+                    if(response.data.error) {
+                        swal("¡Algo salio mal!", response.data.mensaje, "warning");
+                    }else{
+                        swal("¡Exito!", response.data.mensaje, "success");
+                        $('#formulario-modal').modal('toggle');
+                        self.limpiar();
+                    }
+                })
+                .catch(function (error){
+                    console.log(error);
+                    $('.preloader').fadeOut();
+                    swal("¡Algo salió mal!", error, "warning");
+                });
+            },
+            editar: function(id) {
+                var self = this;
+                self.edicion = true;
+                self.ver = false;
+                axios.get('/obtener/contrato/', {params:{'id':id}},{
+                    headers: {
+                        'X-Requested-With' : 'XMLHttpRequest',
+                        'Content-Type': 'application/json;charset=UTF-8',
+                    }
+                }).then((response) => {
+                    if(response.data.error){
+                        swal("¡Algo salió mal!", response.data.mensaje, "warning");
+                    }else{
+                        self.contrato = response.data.dato;
+                        $('#cboEmpleadoF').select2('val', self.contrato.empleado);
+                        $('#cboTipoContratoF').select2('val', self.contrato.tipo_contrato);
+                        $('#formulario-modal').modal('toggle');
+                    }
+                }).catch(function(error) {
+                    swal("¡Algo salió mal!", error, "warning");
+                });
+            },
+            actualizar: function() {
+                var self = this;
+                $('.preloader').fadeIn();
+                self.contrato.fecha_inicio = $('#txtFechaInicio').val();
+                self.contrato.fecha_fin = $('#txtFechaVencimiento').val();
+                axios.post('/actualizar/contrato/', self.contrato, 
+                    {
+                        headers: {
+                            'X-Requested-With' : 'XMLHttpRequest',
+                            'X-CSRFToken': this.getCookie('csrftoken')}, 
+                            'Content-Type': 'application/json;charset=UTF-8',
+                    })
+                    .then((response) => {
+                        $('.preloader').fadeOut();
+                        if(response.data.error){
+                            swal("¡Algo salió mal!", response.data.mensaje, "warning");
+                        }else{
+                            $('#formulario-modal').modal('toggle');
+                            self.limpiar();
+                            swal("¡Éxito!", response.data.mensaje, "success");
+                            self.edicion = false;
+                        }
+                    }).catch(function(error) {
+                        $('.preloader').fadeOut();
+                        swal("¡Algo salió mal!", error, "warning");
+                    });
+            },
+            ver_registro: function(id) {
+                var self = this;
+                self.ver = true;
+                axios.get('/obtener/contrato/', {params:{'id':id}},{
+                    headers: {
+                        'X-Requested-With' : 'XMLHttpRequest',
+                        'Content-Type': 'application/json;charset=UTF-8',
+                    }
+                }).then((response) => {
+                    if(response.data.error){
+                        swal("¡Algo salió mal!", response.data.mensaje, "warning");
+                    }else{
+                        self.contrato = response.data.dato;
+                        $('#cboEmpleadoF').select2('val', self.contrato.empleado);
+                        $('#cboTipoContratoF').select2('val', self.contrato.tipo_contrato);
+                        $('#formulario-modal').modal('toggle');
+                    }
+                }).catch(function(error) {
+                    swal("¡Algo salió mal!", error, "warning");
+                });
+            },
+            limpiar: function() {
+                this.edicion = false;
+                this.ver = false;
+                this.contrato.empleado = 0;
+                this.contrato.tipo_contrato = 0;
+                this.contrato.fecha_inicio = "";
+                this.contrato.fecha_fin = "";
+                $('#formulario-modal .select2').select2('val', '0');
+            },
+            getCookie (name) {
+                var value = '; ' + document.cookie
+                var parts = value.split('; ' + name + '=')
+                if (parts.length === 2) return parts.pop().split(';').shift()
+            },
+        }
+    });
+
+    $('#cboEmpleadoF').on('change', function() {
+        app.contrato.empleado = $(this).val();
+    });
+
+    $('#cboTipoContratoF').on('change', function() {
+        app.contrato.tipo_contrato = $(this).val();
+    });
+
+    function TablaDatosF(parametros) {
+        tabla = $('#tabla-contratos').DataTable({
+            "ajax": {
+                url:'/obtener/contratos/',
+                data: parametros
+            },
+            "processing": true,
+            "columnDefs": [
+                {
+                    "className": "text-center",
+                    "targets": 5,
+                    "width": "13%",
+                },
+                {
+                    "targets": 4,
+                    "width": "13%",
+                },
+                {
+                    "targets": 3,
+                    "width": "15%",
+                },
+                {
+                    "targets": 2,
+                    "width": "11%",
+                },
+                {
+                    "targets": 1,
+                    "width": "25%",
+                },
+                {
+                    "targets": 0,
+                    "width": "13%",
+                }
+            ],
+            "columns": [
+                {"data": "numero_contrato"},
+                {"data": "empleado"},
+                {"data": "fecha_inicio"},
+                {"data": "fecha_fin"},
+                {"data": "tipo_contrato"},
+                {
+                    "data": "active",
+                    render: function(data, type, row) {
+                        if (data) {
+                            return "<span class='label label-success'>Activo</span>"
+                        }else{
+                            return "<span class='label label-danger'>Inactivo</span>"
+                        }
+                    }
+                },
+                {
+                    "data": "id",
+                    render : function(data, type, row) {
+                        /*html = '<a href="#" class="btnEliminar" data="'+data+'" data-tooltip="Eliminar el registro" data-toggle="tooltip" data-original-title="Eliminar"> <i class="fa fa-close text-danger m-r-10"></i></a> ';*/
+                        html = '<a href="#" class="btnEditarDatos" data="'+data+'" data-original-title="Editar"><i class="fa fa-pencil text-inverse m-r-10"></i></a> ';
+                        html += '<a href="#" data-original-title="Ver registro" class="btnVerRegistro" data="'+data+'"><i class="fa fa-search text-success m-r-10"></i></a>'
+                        return html;
+                    }
+                }
+            ],
+            "destroy":true,
+        });
+        tabla.ajax.reload();
+    }
+
+    TablaDatosF({});
+        
+    $('#cboEmpleadoB').on('change', function() {
+        app.busqueda.id = $(this).val();
+        if(app.busqueda.id){
+            TablaDatosF(app.busqueda);
+        }else{
+            TablaDatosF({});
+        }
+    });
+
+    //Eventos Botones
+    $('#app').on('click', '.btnEditarDatos', function(e) {
+        e.preventDefault();
+        var id = $(this).attr('data');
+        app.editar(id);
+    });
+    $('#app').on('click', '.btnVerRegistro', function(e) {
+        e.preventDefault();
+        var id = $(this).attr('data');
+        app.ver_registro(id);
+    });
+</script>
+{% endblock scripts %}

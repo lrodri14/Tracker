@@ -1,0 +1,53 @@
+{% comment %} <ul class="list-group list-group-full">
+{% for departamento in datos %}
+<li class="list-group-item"> <span class="badge badge-info">{{departamento.total_empleados}}</span> {{departamento.descripcion}} </li>
+<div class="row">
+    <div class="col-md-12">
+        <table class="table">
+            <thead>
+                <th>Código</th>
+                <th>Empleado</th>
+                <th>Salario</th>
+                <th>Salario Diario</th>
+            </thead>
+            <tbody>
+                {% for departamento in datos %}
+                <tr>
+                    <td colspan="3">{{departamento.descripcion}}</td>
+                    <td>Total empleados: {{departamento.total_empleados}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endfor %}
+</ul> {% endcomment %}
+<div class="col-lg-8 col-md-8 col-sm-8 col-xs-12 col-xs-offset-2">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th class="text-center">DEPARTAMENTO</th>
+                <th class="text-center">TOTAL EMPLEADOS</th>
+                <th class="text-center">SALARIO MENSUAL</th>
+                <th class="text-center">ACCIÓN</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for departamento in datos %}
+            <tr>
+                <td>{{departamento.descripcion}}</td>
+                <td class="text-center">{{departamento.total_empleados}}</td>
+                <td class="text-right">{{departamento.total_salarios}}</td>
+                <td class="text-center"><a href="#"><span class="fa fa-search"></span></a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfooter>
+            <tr>
+                <td colspan="2"><strong>TOTAL</strong></td>
+                <td class="text-right"><strong>{{suma_salarios}}</strong></td>
+            </tr>
+        </tfooter>
+    </table>
+</div>

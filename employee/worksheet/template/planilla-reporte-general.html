@@ -2,6 +2,16 @@
 {% block titulo %}
 Reporte de Planilla Generada
 {% endblock titulo %}
+{% block estilo %}
+<style>
+    .checkbox{
+        font-weight: 500;
+    }
+    .checkbox label{
+        font-weight: 500;
+    }
+</style>
+{% endblock estilo %}
 {% block contenido %}
 <div id="planilla-reporte-general">
     <div class="col-md-12">
@@ -12,81 +22,161 @@ Reporte de Planilla Generada
             <div class="panel-wrapper">
                 <div class="panel-body">
                     <div class="row">
-                        <form role="form" method="GET" action="/generar/reporte-general/planilla/" class="col-lg-12 form-horizontal">
-                            <div class="row">
-                                <div class="form-group col-lg-4 text-left">
-                                    <label for="" class="col-lg-12 control-label">Departamento: </label>
-                                    <div class="col-lg-12">
-                                        <select name="cboDepartamento" class="form-control" id="cboDepartamento">
-                                            <option value="0">Seleccione...</option>
-                                            {% for departamento in departamentos %}
-                                                <option value="{{departamento.pk}}">{{departamento.description|upper}}</option>
-                                            {% endfor %}
-                                        </select>
+                        <!-- Nav tabs -->
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li role="presentation" class="active"><a href="#rplanilla" aria-controls="rplanilla" role="tab" data-toggle="tab" aria-expanded="true"><span class="visible-xs"><i class="ti-home"></i></span><span class="hidden-xs"> Reporte de planilla</span></a></li>
+                            <li role="presentation" class=""><a href="#rgeneral" aria-controls="rgeneral" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-user"></i></span> <span class="hidden-xs">Reporte General</span></a></li>
+                        </ul>
+                        <!-- Tab panes -->
+                        <div class="tab-content">
+                            <div role="tabpanel" class="tab-pane active" id="rplanilla">
+                                <form action="{% url 'reporte_planilla_especifica' %}" role="form" method="GET" target="blank" class="col-lg-12 form-horizontal">
+                                    <div class="row">
+                                        <div class="form-group col-lg-8 text-right">
+                                            <div class="col-lg-2">
+                                                <label for="cboPlanilla">Planilla:</label>
+                                            </div>
+                                            <div class="col-lg-10">
+                                                <select name="cboPlanilla" class="form-control" id="cboPlanilla">
+                                                    <option value="0">Seleccione...</option>
+                                                    {% for planilla in planillas %}
+                                                        <option value="{{planilla.pk}}">{{planilla.descripcion|upper}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
                                     </div>
-                                    
-                                </div>
-                                <div class="form-group col-lg-4">
-                                    <label class="col-lg-12 control-label">Tipo de Contrato:</label>
-                                    <div class="col-lg-12">
-                                        <select name="cboTipoContrato" class="form-control" id="cboTipoContrato">
-                                            <option value="0">Seleccione...</option>
-                                            {% for tipo_contrato in tipos_contratos %}
-                                                <option value="{{tipo_contrato.pk}}">{{tipo_contrato.descripcion|upper}}</option>
-                                            {% endfor %}
-                                        </select>
+                                    <div class="row">
+                                        <div class="form-group col-lg-8 text-right">
+                                            <div class="col-lg-2">
+                                                <label for="cboPlanilla">Formato:</label>
+                                            </div>
+                                            <div class="col-lg-10">
+                                                <select name="cboFormato" id="cboFormato" class="form-control">
+                                                    <option value="1">PDF</option>
+                                                    <option value="2">EXCEL</option>
+                                                </select>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="form-group col-lg-4">
-                                    <label class="col-lg-12 control-label">Tipo de Planilla:</label>
-                                    <div class="col-lg-12">
-                                        <select name="cboTipoPlanilla" id="cboTipoPlanilla" class="form-control">
-                                            <option value="0">Seleccione...</option>
-                                            {% for tipo_planilla in tipos_planillas %}
-                                                <option value="{{tipo_planilla.pk}}">{{tipo_planilla.descripcion|upper}}</option>
-                                            {% endfor %}
-                                        </select>
+                                    <div class="row">
+                                        <div class="form-group col-lg-8 text-right">
+                                            <div class="col-lg-12">
+                                                <button class="btn btn-info">Buscar</button>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="form-group col-lg-4">
-                                    <label class="col-lg-12 control-label">Frecuencia de Pago:</label>
-                                    <div class="col-lg-12">
-                                        <select name="cboFrecuenciaPago" id="cboFrecuenciaPago" class="form-control">
-                                            <option value="0">Seleccione...</option>
-                                            {% for frecuencia_pago in frecuencias_pagos %}
-                                                <option value="{{frecuencia_pago.pk}}">{{frecuencia_pago.description|upper}}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="form-group col-lg-4">
-                                    <label class="col-lg-12 control-label">Desde:</label>
-                                    <div class="col-lg-12">
-                                        <input type="text" id="txtDesde" name="txtDesde" class="form-control mydatepicker" placeholder="dd/mm/yyyy">
-                                    </div>
-                                </div>
-                                <div class="form-group col-lg-4">
-                                    <label class="col-lg-12 control-label">Hasta:</label>
-                                    <div class="col-lg-12">
-                                        <input type="text" id="txtHasta" name="txtHasta" class="form-control mydatepicker" placeholder="dd/mm/yyyy">
-                                    </div>
-                                </div>
-                                <div class="form-group col-lg-4">
-                                    <label class="col-lg-12 control-label">Estado de planila:</label>
-                                    <div class="col-lg-12">
-                                        <select name="cboEstadoContrato" id="cboEstadoContrato" class="form-control">
-                                            <option value="1">Abierto</option>
-                                            <option value="2">Cerrado</option>
-                                        </select>
-                                    </div>
-                                </div>
+                                </form>
+                                <div class="clearfix"></div>
                             </div>
-                            <div class="row text-right">
-                                <div class="form-group col-lg-12">
-                                    <button id="btnBuscar" type="submit" class="btn btn-info">BUSCAR</button>
-                                </div>
+                            <div id="rgeneral" class="tab-pane" role="tabpanel">
+                                <form role="form" method="GET" action="{% url 'reporte_planilla' %}" target="_blank" class="col-lg-12 form-horizontal">
+                                <!--form role="form" method="GET" action="{% url 'reporte_personas_pdf' %}" target="_blank" class="col-lg-12 form-horizontal"-->
+                                    <div class="row">
+                                        <div class="form-group col-lg-4 text-left">
+                                            <label for="" class="col-lg-12 control-label">Departamento: </label>
+                                            <div class="col-lg-12">
+                                                <select name="cboDepartamento" class="form-control" id="cboDepartamento">
+                                                    <option value="0">Seleccione...</option>
+                                                    {% for departamento in departamentos %}
+                                                        <option value="{{departamento.pk}}">{{departamento.description|upper}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            
+                                        </div>
+                                        <div class="form-group col-lg-4">
+                                            <label class="col-lg-12 control-label">Tipo de Contrato:</label>
+                                            <div class="col-lg-12">
+                                                <select name="cboTipoContrato" class="form-control" id="cboTipoContrato">
+                                                    <option value="0">Seleccione...</option>
+                                                    {% for tipo_contrato in tipos_contratos %}
+                                                        <option value="{{tipo_contrato.pk}}">{{tipo_contrato.tipo_contrato|upper}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-lg-4">
+                                            <label class="col-lg-12 control-label">Tipo de Planilla:</label>
+                                            <div class="col-lg-12">
+                                                <select name="cboTipoPlanilla" id="cboTipoPlanilla" class="form-control">
+                                                    <option value="0">Seleccione...</option>
+                                                    {% for tipo_planilla in tipos_planillas %}
+                                                        <option value="{{tipo_planilla.pk}}">{{tipo_planilla.tipo_planilla|upper}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-lg-4">
+                                            <label class="col-lg-12 control-label">Frecuencia de Pago:</label>
+                                            <div class="col-lg-12">
+                                                <select name="cboFrecuenciaPago" id="cboFrecuenciaPago" class="form-control">
+                                                    <option value="0">Seleccione...</option>
+                                                    {% for frecuencia_pago in frecuencias_pagos %}
+                                                        <option value="{{frecuencia_pago.pk}}">{{frecuencia_pago.description|upper}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-lg-4">
+                                            <label class="col-lg-12 control-label">Desde:</label>
+                                            <div class="col-lg-12">
+                                                <input type="text" id="txtDesde" name="txtDesde" class="form-control mydatepicker" placeholder="dd/mm/yyyy">
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-lg-4">
+                                            <label class="col-lg-12 control-label">Hasta:</label>
+                                            <div class="col-lg-12">
+                                                <input type="text" id="txtHasta" name="txtHasta" class="form-control mydatepicker" placeholder="dd/mm/yyyy">
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-lg-4">
+                                            <label class="col-lg-12 control-label">Estado de planilla:</label>
+                                            <div class="col-lg-12">
+                                                <select name="cboEstadoContrato" id="cboEstadoContrato" class="form-control">
+                                                    <option value="1">Abierto</option>
+                                                    <option value="2">Cerrado</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-lg-4">
+                                            <label class="col-lg-12 control-label">Formato:</label>
+                                            <div class="col-lg-12">
+                                                <select name="cboFormato" id="cboFormato" class="form-control">
+                                                    <option value="1">PDF</option>
+                                                    <option value="2">EXCEL</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-lg-4">
+                                            <label class="col-lg-12 control-label">Sucursal:</label>
+                                            <div class="col-lg-12">
+                                                <select name="cboSucursal" id="cboSucursal" class="form-control">
+                                                    <option value="0">VER TODOS</option>
+                                                    {% for sucursal in sucursales %}
+                                                    <option value="{{sucursal.id}}">{{sucursal.description}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4 form-group">
+                                            <div class="col-lg-12">
+                                                <div class="checkbox checkbox-info checkbox-circle">
+                                                    <input id="chkExPE" type="checkbox" name="excluir_pe" checked>
+                                                    <label for="chkExPE"> Excluir planillas especiales </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row text-right">
+                                        <div class="form-group col-lg-12">
+                                            <button id="btnBuscar" type="submit" class="btn btn-info">BUSCAR</button>
+                                        </div>
+                                    </div>
+                                </form>
+                                <div class="clearfix"></div>
                             </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -97,6 +187,25 @@ Reporte de Planilla Generada
 {% block scripts %}
     <!-- start - This is for export functionality only -->
     <script type="text/javascript">
+
+        $('#btnExcel').on('click', function() {
+            url = '/reporte/planilla-total-excel/';
+            metodo = 'GET';
+            //data = { 'id': $(this).attr('data') };
+            $.ajax({
+                type: metodo,
+                url: url,
+                //data: data,
+                success: function (data) {
+                    console.log(data);
+                },
+                error: function (data) {
+                    console.log(data);
+                },
+                dataType: 'json'
+            });
+        });
+
         jQuery('.mydatepicker, #datepicker').datepicker({
             format: 'dd/mm/yyyy',
             autoclose:true,

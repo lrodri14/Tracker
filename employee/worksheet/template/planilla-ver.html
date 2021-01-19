@@ -66,6 +66,8 @@ Ver registros de Planilla
                                 <table id="detalle_planilla" class="table">
                                     <thead class="planilla-encabezado">
                                         <tr>
+                                            <th>#</th>
+                                            <th>Código</th>
                                             <th>Empleado</th>
                                             <th class="text-right">Ingresos</th>
                                             <th class="text-right">Deducción</th>
@@ -75,6 +77,8 @@ Ver registros de Planilla
                                     <tbody>
                                         {% for item in detalle %}
                                         <tr data-toggle="collapse" data-target="#vdet{{item.id}}" class="planilla-fila detalle_item accordion-toggle">
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{item.empleado.extEmpNo}}</td>
                                             <td>{{item.empleado.firstName}} {% if item.empleado.middleName %}{{item.empleado.middleName}}{% endif %} {{item.empleado.lastName}}</td>
                                             <td class="text-right">{{item.total_ingresos}}</td>
                                             <td class="text-right">{{item.total_deducciones}}</td>
@@ -143,7 +147,7 @@ Ver registros de Planilla
                                             </td>
                                         {% endfor %}
                                         <tr>
-                                            <td><strong>Total Neto</strong></td>
+                                            <td colspan="3"><strong>Total Neto</strong></td>
                                             <td class="text-right"><strong>{{suma_total_ingresos}}</strong></td>
                                             <td class="text-right"><strong>{{suma_total_deducciones}}</strong></td>
                                             <td class="text-right"><strong>{{suma_total_neto}}</strong></td>
@@ -210,26 +214,38 @@ Ver registros de Planilla
                                             <th class="text-center">VALOR</th>
                                         </tr>
                                     </thead>
-                                    {% for deduccion in gdeducciones %}
-                                        {% for detalle in deduccion.detalle %}
+                                    <tbody>
+                                    {% for deduccion in gdeducciones_i %}
                                         <tr>
-                                            <td>{{detalle.deduccion}}</td>
-                                            <td class="text-right">{{detalle.valor}}</td>
+                                            <td>{{deduccion.deduccion}}</td>
+                                            <td class="text-right">{{deduccion.valor}}</td>
                                         </tr>
-                                        {% endfor %}
-                                    <tr>
-                                        <td><strong>SUBTOTAL {{deduccion.grupo}}</strong></td>
-                                        <td class="text-right"><strong>{{deduccion.valor}}</strong></td>
-                                    </tr>
                                     {% empty %}
                                     <tr>
                                         <td colspan="2">No se encontraron datos</td>
                                     </tr>
                                     {% endfor %}
                                     <tr>
+                                        <td><strong>SUBTOTAL DEDUCCIONES INTERNAS</strong></td>
+                                        <td class="text-right"><strong>{{suma_ded_i}}</strong></td>
+                                    </tr>
+                                    {% for deduccion in gdeducciones_e %}
+                                        <tr>
+                                            <td>{{deduccion.deduccion}}</td>
+                                            <td class="text-right">{{deduccion.valor}}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    <tr>
+                                        <td><strong>SUBTOTAL DEDUCCIONES EXTERNAS</strong></td>
+                                        <td class="text-right"><strong>{{suma_ded_e}}</strong></td>
+                                    </tr>
+                                    </tbody>
+                                    <tfooter>
+                                    <tr>
                                         <td><strong>TOTAL</strong></td>
                                         <td class="text-right"><strong>{{sum_gdeducciones}}</strong></td>
                                     </tr>
+                                    </tfooter>
                                 </table>
                             </div>
                             <div class="modal-footer">

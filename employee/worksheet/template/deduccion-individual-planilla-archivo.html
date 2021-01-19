@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% block titulo %}
+Deducción Individual en Planilla
+{% endblock titulo %}
+{% load static %}
+{% block estilo %}
+<style>
+    .checkbox{
+        font-weight: 500;
+    }
+    .checkbox label{
+        font-weight: 500;
+    }
+</style>
+{% endblock estilo %}
+{% block contenido %}
+<div id="deduccion_individual_planilla_archivo" class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="text-bold"><i class="ti-pencil-alt"></i>
+                    Deducción Individual Planilla</h2>
+            </div>
+            <div class="panel-wrapper">
+                <div class="panel-body">
+                    <form id="frmArchivoDeducciones" action="{% url 'deduccion_individual_planilla_archivo_guardar' %}" method='post' enctype="multipart/form-data">
+                    <!--form id="frmArchivoDeducciones" method='post' enctype="multipart/form-data"-->
+                        {% csrf_token %}
+                        <div class="col-md-12">
+                            <div class="col-md-12 margin-bottom-5px">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <div class="col-md-5 text-right">
+                                            <label class="control-label">Deducción:</label>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <select class="form-control select2" name="deduccion">
+                                                <option value="0">Seleccionar...</option>
+                                                {% for item in deducciones %}
+                                                    {% if editar %}
+                                                        {% if item == dato.deduccion %}
+                                                        <option value="{{item.pk}}" selected>{{item.deduccion_i}}</option>
+                                                        {% else %}
+                                                        <option value="{{item.pk}}">{{item.deduccion_i}}</option>
+                                                        {% endif %}
+                                                    {% else %}
+                                                    <option value="{{item.pk}}">{{item.deduccion_i}}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <div class="col-md-5 text-right">
+                                            <label for="txtFechaVencPasaporte" class="control-label">Planilla :</label>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <select class="form-control select2" name="planilla">
+                                                <option value="0">Seleccionar...</option>
+                                                {% for item in planillas %}
+                                                    {% if editar %}
+                                                        {% if item == dato.planilla %}
+                                                        <option value="{{item.pk}}" selected>{{item.descripcion}}</option>
+                                                        {% else %}
+                                                        <option value="{{item.pk}}">{{item.descripcion}}</option>
+                                                        {% endif %}
+                                                    {% else %}
+                                                    <option value="{{item.pk}}">{{item.descripcion}}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <div class="col-md-5 text-right">
+                                            <label for="archivosDeducciones" class="control-label">Archivo de datos :</label>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <input type="file" id="archivosDeducciones" name="archivo" class="dropify" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-action text-right">
+                                    <input text="Guardar" class="btn btn-success" type="submit" />
+                                    <!--button id="btnGuardar" class="btn btn-success">Guardar</button-->
+                                    <a href="{% url 'deduccion_individual_planilla_listado' %}" id="btnCancelar" class="btn btn-default">Cancelar</a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contenido %}
+{% block scripts %}
+<script>
+    $('#side-menu a').removeClass('active');
+    $('#aAcciones').addClass('active');
+    $('#accionesNomina').addClass('active');
+    $('#aDIP').addClass('active');
+    $('.select2').select2();
+
+    $('#frmArchivoDeducciones').submit(function(e) {
+        e.preventDefault();
+        $('#deduccion_individual_planilla_archivo').block({
+            message: '<h4><img src="../../static/plugins/images/busy.gif" /> Espere un momento...</h4>',
+            css: {
+                border: '1px solid #fff',
+            }
+        });
+        var archivo = $('input[name="archivo"]');
+        var formData = new FormData(this);
+        var token = $('input[name="csrfmiddlewaretoken"]');
+        if (archivo[0].files.length == 0) {
+            swal("¡Advertencia!", "No se ha cargado archivo", "warning");
+            $('#deduccion_individual_planilla_archivo').unblock();
+            return;
+        }
+        $.ajax({
+            url: '/guardar/deduccion-individual-planilla-archivo/',
+            type: 'POST',
+            data: formData,
+            success: function (response) {
+                $('#deduccion_individual_planilla_archivo').unblock();
+                if (response.error) {
+                    swal("¡Error!", response.msj, "error");
+                    console.log(response.msj);
+                }else{
+                    swal("¡Registrado!", response.msj, "success");
+                    $('.select2').select2('val', '0');
+                    $(".dropify-clear").trigger("click");
+                }
+            },
+            cache: false,
+            contentType: false,
+            processData: false,
+        });
+    });
+</script>
+{% endblock scripts %}

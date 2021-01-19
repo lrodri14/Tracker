@@ -26,6 +26,7 @@ Listado de Empleados
                             {% csrf_token %}
                             <thead>
                                 <tr>
+                                    <th>Código</th>
                                     <th>Nombre</th>
                                     <th>Puesto de Trabajo</th>
                                     <th>Estado Registro</th>
@@ -35,6 +36,7 @@ Listado de Empleados
                             <tbody>
                                 {% for item in empleados %}
                                 <tr>
+                                    <td>{{item.extEmpNo}}</td>
                                     <td>{{item.firstName}} {% if item.middleName %}
                                     {{item.middleName}}
                                     {% endif %} {{item.lastName}}</td>

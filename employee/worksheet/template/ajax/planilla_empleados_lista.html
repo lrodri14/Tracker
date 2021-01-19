@@ -3,6 +3,7 @@
         <div class="table-responsive">
             <table id="detalle_planilla" class="table">
                 <htead>
+                    <th>#</th>
                     <th>Código</th>
                     <th>Empleado</th>
                     <th><span class="pull-right">Ingresos</span></th>
@@ -12,6 +13,7 @@
                 <tbody>
                     {% for detalle in detalle_planilla %}
                     <tr data-toggle="collapse" data-target="#vdet{{detalle.id}}" class="detalle_item accordion-toggle">
+                        <td>{{forloop.counter}}</td>
                         <td>{{detalle.empleado.extEmpNo}}</td>
                         <td>{{detalle.empleado.firstName}} {% if detalle.empleado.middleName %}{{detalle.empleado.middleName}}{% endif %} {{detalle.empleado.lastName}}</td>
                         <td><span class="pull-right"><strong>{{detalle.total_ingresos}}</strong></span></td>
@@ -63,7 +65,7 @@
                     </tr>
                     {% endfor %}
                     <tr>
-                    <td colspan="2">TOTAL PLANILLA</td>
+                    <td colspan="3">TOTAL PLANILLA</td>
                     <td><span class="pull-right"><strong>{{total_ingresos}}</strong></span></td>
                     <td><span class="pull-right"><strong>{{total_deducciones}}</strong></span></td>
                     <td><span class="pull-right"><strong>{{total_neto}}</strong></span></td>

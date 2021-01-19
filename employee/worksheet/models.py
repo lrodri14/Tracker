@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django.contrib.auth.models import User
+from django.db.models.fields import DateField
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 import datetime
@@ -475,6 +476,7 @@ class Ausentismo(models.Model):
     hasta = models.DateField(blank=True, null=True)
     motivo = models.ForeignKey(MotivosAusencia, blank=True, null=True, on_delete=models.DO_NOTHING)
     aprobado = models.ForeignKey(Employee, related_name='au_emp', related_query_name='au_emp', blank=True, null=True, on_delete=models.PROTECT)
+    fecha_aplica = models.DateField(("Fecha aplica"), blank=True, null=True)
     empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="au_empreg", related_query_name="au_empreg")
     sucursal_reg = models.ForeignKey("worksheet.Branch", on_delete=models.PROTECT)
     user_reg = models.ForeignKey(User, on_delete=models.PROTECT)
@@ -985,17 +987,18 @@ def post_save_salariominimo(sender, instance, **kwargs):
 
 class Planilla(models.Model):
     correlativo = models.CharField(("Correlativo"), max_length=50, blank=True, null=True)
-    descripcion = models.CharField(max_length=100)
+    descripcion = models.CharField(max_length=500)
     tipo_planilla = models.ForeignKey("worksheet.TipoNomina", on_delete=models.PROTECT)
     tipo_contrato = models.ForeignKey("worksheet.TipoContrato", verbose_name=("Tipo Contrato"), on_delete=models.PROTECT, blank=True, null=True)
     frecuencia_pago = models.ForeignKey("worksheet.SalaryUnit", on_delete=models.PROTECT)
     fecha_inicio = models.DateField(("Fecha Inicio"), auto_now=False, auto_now_add=False)
     fecha_fin = models.DateField(("Fecha Fin"), auto_now=False, auto_now_add=False)
     fecha_pago = models.DateField(("Fecha Pago"), auto_now=False, auto_now_add=False)
-    ihss = models.BooleanField(("Deducir IHSS"), default=False, help_text="Indica si en la planilla a registrar se deducirá IHSS")
+    #ihss = models.BooleanField(("Deducir IHSS"), default=False, help_text="Indica si en la planilla a registrar se deducirá IHSS")
     rap = models.BooleanField(("Deducir RAP"), default=False, help_text="Indica si en la planilla a registrar se deducirá RAP")
     imv = models.BooleanField(("Deducir IMV"), default=False, help_text="Indica si en la planilla a registrar se deducirá Impuesto Vecinal")
     isr = models.BooleanField(("Deducir RAP"), default=False, help_text="Indica si en la planilla a registrar se deducirá Impuesto Sobre Renta")
+    especial = models.BooleanField(("Planilla especial"), help_text="Planilla especial")
     cerrada = models.BooleanField(("Cerrada"))
     empresa_reg = models.ForeignKey(Empresa, on_delete=models.PROTECT)
     sucursal_reg = models.ForeignKey(Branch, on_delete=models.PROTECT)
@@ -1040,42 +1043,6 @@ class PlanillaDetalle(models.Model):
             return self.planilla.descripcion + " - " + self.empleado.firstName + " " + self.empleado.middleName + " " + self.empleado.lastName
         else:
             return self.planilla.descripcion + " - " + self.empleado.firstName + " " + self.empleado.lastName
-
-class PlanillaDetalleDeducciones(models.Model):
-    empleado = models.ForeignKey("worksheet.Employee", verbose_name=("Empleado"), on_delete=models.PROTECT)
-    planilla = models.ForeignKey("worksheet.Planilla", verbose_name=("Planilla"), on_delete=models.PROTECT)
-    deduccion = models.CharField(("Deduccion"), max_length=250)
-    valor = models.DecimalField(("Valor"), max_digits=18, decimal_places=2)
-    tipo_deduccion = models.ForeignKey("worksheet.TipoDeduccion", verbose_name=("Tipo Deduccion"), on_delete=models.PROTECT, blank=True, null=True)
-    empresa_reg = models.ForeignKey(Empresa, on_delete=models.PROTECT)
-    sucursal_reg = models.ForeignKey(Branch, on_delete=models.PROTECT)
-    user_reg = models.ForeignKey(User, on_delete=models.PROTECT)
-    date_reg = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        verbose_name = ("PlanillaDetalleDeducciones")
-        verbose_name_plural = ("PlanillaDetalleDeducciones")
-
-    def __str__(self):
-        return self.empleado.firstName + " " + self.empleado.lastName + " | " +  self.planilla.descripcion + " | " + self.deduccion
-
-class PlanillaDetalleIngresos(models.Model):
-    empleado = models.ForeignKey("worksheet.Employee", verbose_name=("Empleado"), on_delete=models.PROTECT)
-    planilla = models.ForeignKey("worksheet.Planilla", verbose_name=("Planilla"), on_delete=models.PROTECT)
-    ingreso = models.CharField(("Ingreso"), max_length=250)
-    valor = models.DecimalField(("Valor"), max_digits=18, decimal_places=2)
-    tipo_ingreso = models.ForeignKey("worksheet.TipoIngreso", verbose_name=("Tipo Ingreso"), on_delete=models.PROTECT , blank=True, null=True)
-    empresa_reg = models.ForeignKey(Empresa, on_delete=models.PROTECT)
-    sucursal_reg = models.ForeignKey(Branch, on_delete=models.PROTECT)
-    user_reg = models.ForeignKey(User, on_delete=models.PROTECT)
-    date_reg = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        verbose_name = ("Planilla Detalle Ingresos")
-        verbose_name_plural = ("Planilla Detalle Ingresos")
-
-    def __str__(self):
-        return self.empleado.firstName + " " + self.empleado.lastName + " | " +  self.planilla.descripcion + " | " + self.ingreso
 
 class IngresoGeneralDetalle(models.Model):
     ingreso = models.ForeignKey("worksheet.IngresoGeneral", verbose_name=("Ingreso General"), on_delete=models.PROTECT)
@@ -1159,7 +1126,7 @@ class DeduccionIndividualDetalle(models.Model):
         verbose_name_plural = ("Deducciones Individuales Detalles")
 
     def __str__(self):
-        return self.empleado.extEmpNo + " - " + self.empleado.firstName + " " + self.empleado.middleName + " " + self.empleado.lastName + " | " + self.deduccion.deduccion_i + " | " + str(self.valor)
+        return self.empleado.extEmpNo + " - " + self.empleado.firstName + " " + self.empleado.lastName + " | " + self.deduccion.deduccion_i + " | " + str(self.valor)
 
 class IngresoIndividualPlanilla(models.Model):
     planilla = models.ForeignKey("worksheet.Planilla", verbose_name=("Planilla"), on_delete=models.PROTECT)
@@ -1200,24 +1167,6 @@ class DeduccionIndividualPlanilla(models.Model):
 
     def __str__(self):
         return self.planilla.descripcion
-
-class DeduccionIndividualSubDetalle(models.Model):
-    descripcion = models.TextField(("Descripción"), blank=True, null=True)
-    deducciondetalle = models.ForeignKey("worksheet.DeduccionIndividualDetalle", verbose_name=("Detalle Deduccion Individual"), on_delete=models.PROTECT, blank=True, null=True)
-    monto = models.DecimalField(("Monto"), max_digits=18, decimal_places=2)
-    user_reg = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT)
-    date_reg = models.DateTimeField(auto_now_add=True)
-    active = models.NullBooleanField(default=True)
-
-    class Meta:
-        verbose_name = ("deduccionindividualsubdetalle")
-        verbose_name_plural = ("deduccionindividualsubdetalles")
-
-    def __str__(self):
-        return self.deducciondetalle.empleado.firstName + "|" + self.descripcion + " " + str(self.monto)
-
-    def get_absolute_url(self):
-        return reverse("deduccionindividualsubdetalle_detail", kwargs={"pk": self.pk})
 
 class ControlPagosDeduccionIndividual(models.Model):
     planilla = models.ForeignKey("worksheet.Planilla", verbose_name=("Planilla"), on_delete=models.PROTECT)
@@ -1316,20 +1265,19 @@ class EmpleadoDeducciones(models.Model):
     def __str__(self):
         return str(self.empleado.firstName + " " + self.empleado.lastName) + " | " + self.deduccion
 
-class DetallePlanillaDetalleDeduccion(models.Model):
-    planilla_detalle_ded = models.OneToOneField("worksheet.PlanillaDetalleDeducciones", verbose_name=("Planilla Detalle Deducción"), on_delete=models.CASCADE)
-    deduccion_detalle = models.OneToOneField("worksheet.DeduccionIndividualDetalle", verbose_name=("Deduccion Individual Planilla"), on_delete=models.CASCADE)
+# class DetallePlanillaDetalleDeduccion(models.Model):
+#     planilla_detalle_ded = models.OneToOneField("worksheet.PlanillaDetalleDeducciones", verbose_name=("Planilla Detalle Deducción"), on_delete=models.CASCADE)
+#     deduccion_detalle = models.OneToOneField("worksheet.DeduccionEmpleado", verbose_name=("Deduccion Individual Planilla"), on_delete=models.CASCADE)
 
-    class Meta:
-        verbose_name = ("detalleplanilladetallededuccion")
-        verbose_name_plural = ("detalleplanilladetallededucciones")
+#     class Meta:
+#         verbose_name = ("detalleplanilladetallededuccion")
+#         verbose_name_plural = ("detalleplanilladetallededucciones")
 
-    def __str__(self):
-        return self.planilla_detalle_ded.planilla.descripcion
+#     def __str__(self):
+#         return self.planilla_detalle_ded.planilla.descripcion
 
-    def get_absolute_url(self):
-        return reverse("detalleplanilladetallededuccion_detail", kwargs={"pk": self.pk})
-
+#     def get_absolute_url(self):
+#         return reverse("detalleplanilladetallededuccion_detail", kwargs={"pk": self.pk})
 
 class LimiteSalarioDeduccion(models.Model):
     salario = models.DecimalField(("Salario"), max_digits=18, decimal_places=4)
@@ -1348,3 +1296,173 @@ class LimiteSalarioDeduccion(models.Model):
 
     def __str__(self):
         return self.empleado.firstName + " " +self.empleado.lastName +" | "+ str(self.fecha)
+
+class DeduccionesUnicasArchivo(models.Model):
+    deduccion = models.ForeignKey("worksheet.DeduccionGeneral", verbose_name=("Deducción única"), on_delete=models.PROTECT, blank=False, null=False)
+    planilla = models.ForeignKey("worksheet.Planilla", verbose_name=("Planilla"), on_delete=models.PROTECT, blank=False, null=False)
+    archivo = models.FileField(("Archivo deducciones"), upload_to=None, blank=False, null=False)
+
+class DeduccionTipo(models.Model):
+    deduccion_tipo = models.CharField(("Deducción Tipo"), max_length=50)
+    es_legal = models.BooleanField(("Es legal"))
+    es_externa = models.BooleanField(("Es externa"))
+    indice_relevancia = models.IntegerField(("Indice relevancia"))
+    visible = models.BooleanField(("Visible"))
+    active = models.BooleanField(("Activo"))
+
+    class Meta:
+        verbose_name = ("deducciontipo")
+        verbose_name_plural = ("deducciontipos")
+
+    def __str__(self):
+        return self.deduccion_tipo
+
+    def get_absolute_url(self):
+        return reverse("deducciontipo_detail", kwargs={"pk": self.pk})
+
+class DeduccionEmpleado(models.Model):
+    empleado = models.ForeignKey("worksheet.Employee", verbose_name=("Empleado"), on_delete=models.PROTECT)
+    planilla = models.ForeignKey("worksheet.Planilla", verbose_name=("Planilla"), on_delete=models.PROTECT)
+    deduccion = models.ForeignKey("worksheet.DeduccionTipo", verbose_name=("Tipo Deduccion"), on_delete=models.PROTECT)
+    monto = models.DecimalField(("Monto"), max_digits=16, decimal_places=4)
+    detalle = models.BooleanField(("Requiere detalle"), default=False)
+
+    user_reg = models.ForeignKey(User, on_delete=models.PROTECT, related_name='dedemp_userreg', related_query_name='dedemp_userreg')
+    date_reg = models.DateTimeField(("Fecha registro"), auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT, related_name='dedemp_usermod', related_query_name='dedemp_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    active = models.BooleanField(("Activo"), default=True)
+
+    class Meta:
+        verbose_name = ("DeduccionEmpleado")
+        verbose_name_plural = ("DeduccionEmpleados")
+
+    def __str__(self):
+        return self.empleado.extEmpNo
+
+    def get_absolute_url(self):
+        return reverse("DeduccionEmpleado_detail", kwargs={"pk": self.pk})
+
+class DeduccionIndividualSubDetalle(models.Model):
+    descripcion = models.TextField(("Descripción"), blank=True, null=True)
+    deduccion = models.ForeignKey("worksheet.DeduccionEmpleado", verbose_name=("Detalle Deduccion de Empleado"), on_delete=models.PROTECT, blank=True, null=True)
+    monto = models.DecimalField(("Monto"), max_digits=18, decimal_places=2)
+    fecha = models.DateField(("Fecha"), blank=True, null=True)
+    user_reg = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT)
+    date_reg = models.DateTimeField(auto_now_add=True)
+    active = models.NullBooleanField(default=True)
+
+    class Meta:
+        verbose_name = ("deduccionindividualsubdetalle")
+        verbose_name_plural = ("deduccionindividualsubdetalles")
+
+    def __str__(self):
+        nomb = ""
+        if self.deduccion:
+            nomb = self.deduccion.empleado.extEmpNo
+        return nomb + " | " + self.descripcion + " " + str(self.monto)
+
+    def get_absolute_url(self):
+        return reverse("deduccionindividualsubdetalle_detail", kwargs={"pk": self.pk})
+
+class IngresoTipo(models.Model):
+    ingreso_tipo = models.CharField(("Tipo de ingreso"), max_length=150)
+    indice_relevancia = models.IntegerField(("Indice relevancia"))
+    empresa_reg = models.ForeignKey(Empresa, blank=False, null=False, on_delete=models.PROTECT)
+    visible = models.BooleanField(("Visible"))
+    active = models.BooleanField(("Activo")) 
+
+    class Meta:
+        verbose_name = ("ingresotipo")
+        verbose_name_plural = ("ingresotipos")
+
+    def __str__(self):
+        return self.ingreso_tipo
+
+    def get_absolute_url(self):
+        return reverse("ingresotipo_detail", kwargs={"pk": self.pk})
+
+class IngresoEmpleado(models.Model):
+    empleado = models.ForeignKey("worksheet.Employee", verbose_name=("Empleado"), on_delete=models.PROTECT)
+    planilla = models.ForeignKey("worksheet.Planilla", verbose_name=("Planilla"), on_delete=models.PROTECT)
+    ingreso = models.ForeignKey("worksheet.IngresoTipo", verbose_name=("Tipo Deduccion"), on_delete=models.PROTECT)
+    monto = models.DecimalField(("Monto"), max_digits=16, decimal_places=4)
+    user_reg = models.ForeignKey(User, on_delete=models.PROTECT, related_name='devemp_userreg', related_query_name='devemp_userreg')
+    date_reg = models.DateTimeField(("Fecha registro"), auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT, related_name='devemp_usermod', related_query_name='devemp_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    empresa_reg = models.ForeignKey(Empresa, blank=False, null=False, on_delete=models.PROTECT)
+    active = models.BooleanField(("Activo"), default=True)
+
+    class Meta:
+        verbose_name = ("ingresoempleado")
+        verbose_name_plural = ("ingresoempleados")
+
+    def __str__(self):
+        return self.empleado.extEmpNo
+
+    def get_absolute_url(self):
+        return reverse("ingresoempleado_detail", kwargs={"pk": self.pk})
+
+class DeduccionesEmpleadoArchivo(models.Model):
+    archivo = models.FileField(("Archivo deducciones"), upload_to=None, blank=False, null=False)
+
+class PlanillaDetalleDeducciones(models.Model):
+    empleado = models.ForeignKey("worksheet.Employee", verbose_name=("Empleado"), on_delete=models.PROTECT)
+    planilla = models.ForeignKey("worksheet.Planilla", verbose_name=("Planilla"), on_delete=models.PROTECT)
+    deduccion = models.CharField(("Deduccion"), max_length=250)
+    deduccion_f = models.ForeignKey("worksheet.DeduccionEmpleado", verbose_name=("Deduccion empleado"), on_delete=models.PROTECT, blank=True, null=True)
+    valor = models.DecimalField(("Valor"), max_digits=18, decimal_places=2)
+    tipo_deduccion = models.ForeignKey("worksheet.DeduccionTipo", verbose_name=("Tipo Deduccion"), on_delete=models.PROTECT, blank=True, null=True)
+    empresa_reg = models.ForeignKey(Empresa, on_delete=models.PROTECT)
+    sucursal_reg = models.ForeignKey(Branch, on_delete=models.PROTECT)
+    user_reg = models.ForeignKey(User, on_delete=models.PROTECT)
+    date_reg = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = ("PlanillaDetalleDeducciones")
+        verbose_name_plural = ("PlanillaDetalleDeducciones")
+
+    def __str__(self):
+        return self.empleado.firstName + " " + self.empleado.lastName + " | " +  self.planilla.descripcion + " | " + self.deduccion
+
+class PlanillaDetalleIngresos(models.Model):
+    empleado = models.ForeignKey("worksheet.Employee", verbose_name=("Empleado"), on_delete=models.PROTECT)
+    planilla = models.ForeignKey("worksheet.Planilla", verbose_name=("Planilla"), on_delete=models.PROTECT)
+    ingreso = models.CharField(("Ingreso"), max_length=250)
+    valor = models.DecimalField(("Valor"), max_digits=18, decimal_places=2)
+    tipo_ingreso = models.ForeignKey("worksheet.IngresoTipo", verbose_name=("Tipo Ingreso"), on_delete=models.PROTECT , blank=True, null=True)
+    empresa_reg = models.ForeignKey(Empresa, on_delete=models.PROTECT)
+    sucursal_reg = models.ForeignKey(Branch, on_delete=models.PROTECT)
+    user_reg = models.ForeignKey(User, on_delete=models.PROTECT)
+    date_reg = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = ("Planilla Detalle Ingresos")
+        verbose_name_plural = ("Planilla Detalle Ingresos")
+
+    def __str__(self):
+        return self.empleado.firstName + " " + self.empleado.lastName + " | " +  self.planilla.descripcion + " | " + self.ingreso
+
+class Contrato(models.Model):
+    numero = models.CharField(("Numero de contrato"), max_length=250)
+    empleado = models.ForeignKey("worksheet.Employee", verbose_name=("Empleado"), on_delete=models.PROTECT)
+    fecha_inicio = models.DateField(("Fecha Inicio"), auto_now=False, auto_now_add=False)
+    fecha_fin = models.DateField(("Fecha Fin"), auto_now=False, auto_now_add=False)
+    tipo_contrato = models.ForeignKey("worksheet.TipoContrato", verbose_name=("Tipo de Contrato"), on_delete=models.PROTECT)
+    user_reg = models.ForeignKey(User, on_delete=models.PROTECT, related_name='cont_userreg', related_query_name='cont_userreg')
+    date_reg = models.DateTimeField(("Fecha registro"), auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT, related_name='cont_usermod', related_query_name='cont_usermod')
+    date_mod = models.DateTimeField(blank=True, null=True)
+    empresa_reg = models.ForeignKey(Empresa, blank=False, null=False, on_delete=models.PROTECT)
+    active = models.BooleanField(("Activo"), default=True)
+    
+    class Meta:
+        verbose_name = ("contrato")
+        verbose_name_plural = ("contratos")
+
+    def __str__(self):
+        return self.numero + " | " + self.empleado.extEmpNo
+
+    def get_absolute_url(self):
+        return reverse("contrato_detail", kwargs={"pk": self.pk})
