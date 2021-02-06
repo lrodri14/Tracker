@@ -1,0 +1,109 @@
+{% load static %}
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            @page {
+                size: 80mm 150mm;
+                @frame content_frame {
+                    left: 5mm; width: 70mm; top 5mm;
+                }
+            }
+            figure{
+                text-align: center;
+            }
+            h1{
+                text-align: center;
+            }
+                #tabla_pagos td{
+                border: 1px solid black;
+                padding-top: 2pt;
+                padding-left: 2pt;
+            }
+            .valores-datos{
+                text-align: right;
+                padding-right: 2pt;
+            }
+            .tabla_salario{
+                margin-top: 7pt;
+                font-size: 14px;
+            }
+        </style>
+
+    </head>
+    {% for detalle in planilla_detalles %}
+    <body>
+        <figure>
+            <img src="{% static 'images/promaco-logo.png' %}" alt="Logo Promaco">
+        </figure>
+        <h1>Boleta de Pago de Salario</h1>
+        <div class="encabezado">
+            <label class="control-label">Codigo empleado: </label>
+            <label><strong>{{detalle.empleado.codigo}}</strong></label>
+        </div>
+        <div>
+            <label class="label-control">Empleado: </label>
+            <label class="label-control">{{detalle.empleado.primer_nombre}} {% if detalle.empleado.segundo_nombre %}{{detalle.empleado.segundo_nombre}}{% endif %} {{detalle.empleado.apellido}}</label>
+        </div>
+        <div>
+            <label class="label-control">Fecha de pago: </label>
+            <label class="label-control">{{detalle.planilla.fecha_pago|date:"d/m/Y"}}</label>
+        </div>
+        <div>
+            <label class="label-control">Planilla desde: </label>
+            <label class="label-control">{{detalle.planilla.fecha_inicio|date:"d/m/Y"}}</label>
+        </div>
+        <div>
+            <label class="label-control">Planilla hasta: </label>
+            <label class="label-control">{{detalle.planilla.fecha_fin|date:"d/m/Y"}}</label>
+        </div>
+        <div>
+            <label class="label-control">Cuenta: </label>
+            <label class="label-control">{{detalle.empleado.cuenta}}</label>
+        </div>
+        <div>
+            <label class="label-control">Días laborados: </label>
+            <label class="label-control">{{detalle.dias_trabajados}}</label>
+        </div>
+        <table id="tabla_pagos">
+            <thead>
+                <th class="desc">Descripción</th>
+                <th>Ingresos</th>
+                <th>Deducc.</th>
+            </thead>
+            <tbody>
+            {% for item in detalle.ingresos %}
+            <tr>
+                <td class="desc">{{item.ingreso|upper}}</td>
+                <td class="valores-datos">{{item.valor}}</td>
+                <td class="valores-datos">0.00</td>
+            </tr>
+            {% endfor %}
+            {% for item in detalle.deducciones %}
+            <tr>
+                <td class="desc">{{item.deduccion}}</td>
+                <td class="valores-datos">0.00</td>
+                <td class="valores-datos">{{item.valor}}</td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td class="desc"><strong>Subtotal</strong></td>
+                <td class="valores-datos"><strong>{{detalle.suma_ingresos}}</strong></td>
+                <td class="valores-datos"><strong>{{detalle.suma_deducciones}}</strong></td>
+            </tr>
+            </tbody>
+        </table>
+        <table class="tabla_salario">
+            <tbody>
+                <tr>
+                    <td>Salario Neto:</td>
+                    <td></td>
+                    <td class="valores-datos">{{detalle.total_neto}}</td>
+                </tr>
+            </tbody>
+        </table>
+        <p class="mensaje">*Información personal, tome su discreción.</p>
+        <pdf:nextpage />
+    </body>
+    {% endfor %}
+</html>

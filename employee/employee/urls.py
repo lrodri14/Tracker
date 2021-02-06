@@ -31,6 +31,9 @@ urlpatterns = [
     url(r'^salir/$', LogoutView.as_view(), name='salir'),
     #url(r'^salir/$', logout, name="salir", kwargs={'next_page': '/'}),
     url(r'^login/$', views.login, name="login"),
+    url(r'^impresion-boletas/', views.impresion_boletas, name="impresion_boletas"),
+    url(r'reporte-pdf-boletas/$', views.ReporteBoletas.as_view(), name='reporte-pdf-boletas'),
+
 
     url(r'^forms/empleado/$', views.empleado_form, name="empleados-form"),
     url(r'^editar/empleado/(?P<id>\w+)/$', views.empleado_editar, name="empleado_editar"),

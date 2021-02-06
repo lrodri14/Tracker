@@ -9,9 +9,9 @@ from django.core import serializers
 from django.core.mail import EmailMultiAlternatives
 from django.core.serializers import serialize
 from dateutil import relativedelta
-from django.db.models import Count, Min, Sum, Avg
+from django.db.models import Count, Min, Sum, Avg, OuterRef, Subquery
 from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.template import Context
 from django.template.loader import get_template, render_to_string
 from django.utils import timezone
@@ -18234,6 +18234,17 @@ def contrato_actualizar(request):
 # >>>>>>>>>>>>>>>>> AJAX <<<<<<<<<<<<<<<<<<<<<<<<<
 # endregion
 
+# region Código para Impresión Boleta de Pago
+def impresion_boletas(request):
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    departamentos = Department.objects.filter(empresa_reg=suc.empresa)
+    planillas = Planilla.objects.filter(sucursal_reg=suc, cerrada=True)
+    context = {
+        'planillas': planillas,
+        'departamentos': departamentos
+    }
+    return render(request, "reportes/impresion_boletas.html", context)
+# endregion
 
 def verifica_saldo_controlado(request):
     try:
@@ -19046,6 +19057,70 @@ class ReportePlanilla(View):
 
             return response
 
+class ReporteBoletas(View):
+    def get(self, request):
+        totales = []
+        l_detalle = []
+        q_list = []
+        planilla_id = request.GET.get("cboPlanilla")
+        departamento_id = request.GET.get("cboDepartamento")
+        if int(planilla_id) > 0:
+            q_list.append(Q(planilla_id=planilla_id, active=True))
+        if int(departamento_id) > 0:
+            q_list.append(Q(empleado__dept__id=departamento_id))
+        obj_planilla = Planilla.objects.get(pk=planilla_id)
+        planilla_detalles = PlanillaDetalle.objects.filter(functools.reduce(operator.and_, q_list))
+        #objects.filter(functools.reduce(operator.and_, q_list))
+        # if departamento_id > 0:
+        #     obj_depto = get_object_or_404(Department, pk=departamento_id)
+        #     if obj_depto:
+        #         planilla_detalles = PlanillaDetalle.objects.filter(planilla_id=planilla_id, empleado__dept=obj_depto, active=True)
+        #     else:
+        #         planilla_detalles = PlanillaDetalle.objects.filter(planilla_id=planilla_id, active=True)
+        # else:
+        #     planilla_detalles = PlanillaDetalle.objects.filter(planilla_id=planilla_id, active=True)
+        ingresos = PlanillaDetalleIngresos.objects.filter(planilla=obj_planilla)
+        deducciones = PlanillaDetalleDeducciones.objects.filter(planilla=obj_planilla)
+        for e in planilla_detalles:
+            suma_ingresos = 0
+            suma_deducciones = 0
+            l_ingreso = []
+            l_deduccion = []
+            for i in ingresos:
+                if e.empleado.extEmpNo == i.empleado.extEmpNo:
+                    detalle_i = {
+                        'id': i.pk,
+                        'ingreso': i.ingreso,
+                        'valor': formato_millar(i.valor),
+                    }
+                    l_ingreso.append(detalle_i)
+            for o in deducciones:
+                if e.empleado.extEmpNo == o.empleado.extEmpNo:
+                    detalle_d = {
+                        'id': o.pk,
+                        'deduccion': o.deduccion,
+                        'valor': formato_millar(o.valor),
+                    }
+                    l_deduccion.append(detalle_d)
+            obj_det = {
+                'id': e.pk,
+                'empleado': {'id': e.empleado.pk, 'primer_nombre': e.empleado.firstName, 'segundo_nombre': e.empleado.middleName, 'apellido': e.empleado.lastName, 'codigo': e.empleado.extEmpNo, 'cuenta': e.empleado.bankAccount},
+                'planilla': {'id': e.planilla.pk, 'fecha_pago': e.planilla.fecha_pago, 'fecha_inicio': e.planilla.fecha_inicio, 'fecha_fin': e.planilla.fecha_fin},
+                'dias_trabajados': int(e.dias_salario) - int(e.dias_ausentes_sin_pago),
+                'ingresos': l_ingreso,
+                'deducciones': l_deduccion,
+                'suma_ingresos': formato_millar(e.total_ingresos),
+                'suma_deducciones': formato_millar(e.total_deducciones),
+                'total_neto': formato_millar(e.total_ingresos - e.total_deducciones),
+            }
+            l_detalle.append(obj_det)
+        params = {
+            'planilla_detalles': l_detalle,
+            'ingresos': ingresos,
+            'deducciones': deducciones,
+            'totales': totales,
+        }
+        return Render.render("reportes/boletas_pago.html", params)
 
 class ReportePlanillaExcel(View):
 

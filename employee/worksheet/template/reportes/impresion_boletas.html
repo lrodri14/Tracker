@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block titulo %}Impresión de Boleta de Pago{% endblock titulo %}
+{% load static %}
+{% block contenido %}
+    <div id="app">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h2 class="text-bold"><i class="ti-pencil-alt"></i> Impresión de Boleta de Pagos</h2>
+                    </div>
+                    <div class="panel-wrapper">
+                        <div class="panel-body">
+                            <form action="{% url 'reporte-pdf-boletas' %}" target="_blank">
+                                <div class="col-lg-6">
+                                    <div class="form-group">
+                                        <label for="">Planilla: </label>
+                                        <select name="cboPlanilla" class="form-control select2" >
+                                            <option value="0">Seleccionar...</option>
+                                            {% for planilla in planillas %}
+                                            <option value="{{planilla.pk}}">{{planilla.descripcion}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="cboDeduccionB">Departamento: </label>
+                                        <select name="cboDepartamento" class="form-control select2">
+                                            <option value="0">Seleccionar...</option>
+                                            {% for departamento in departamentos %}
+                                            <option value="{{departamento.pk}}">{{departamento.description}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group text-right">
+                                        <button class="btn btn-primary" type="submit">Buscar</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock contenido %}
+{% block scripts %}
+<script>
+    $('#side-menu a').removeClass('active');
+    $('#aAcciones').addClass('active');
+    $('#accionesReportes').addClass('active');
+    $('#aImpresionBoleta').addClass('active');
+    $('#aAcciones').parents('li').addClass('active');
+    $('#accionesReportes').parents('li').addClass('active');
+</script>
+{% endblock scripts %}
