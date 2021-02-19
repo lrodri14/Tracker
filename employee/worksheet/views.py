@@ -14095,7 +14095,7 @@ def planilla_generar_calculos(request):
                                 #     tipos_deducciones.append(tipo_deduccion)
                                 #     tot_pla_ded = tot_pla_ded + item8.valor
 
-                                d_deducciones = DeduccionEmpleado.objects.filter(empleado=item, planilla=o_planilla)
+                                d_deducciones = DeduccionEmpleado.objects.filter(empleado=item, planilla=o_planilla, active=True)
                                 for d_deduccion in d_deducciones:
                                     tot_deducciones += d_deduccion.monto
                                     GuardarDetalleDeduccion(

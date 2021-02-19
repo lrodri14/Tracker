@@ -29,6 +29,11 @@ class DeduccionIndividualPlanillaAdmin(admin.ModelAdmin):
     list_filter = ('deduccion', 'sucursal_reg')
     search_fields = ['empleado__govID', 'empleado__firstName', 'empleado__middleName', 'empleado__lastName']
 
+class DeduccionEmpleadoAdmin(admin.ModelAdmin):
+    list_display = ['empleado', 'planilla', 'deduccion', 'monto', 'date_reg']
+    list_filter = ('planilla', 'empleado','deduccion')
+    search_fields = ['empleado__govID', 'empleado__firstName', 'empleado__middleName', 'empleado__lastName']
+
 # class DetallePlanillaDetalleDeduccionAdmin(admin.ModelAdmin):
 #     pass
     #list_display = ['planilla_detalle_ded', 'deduccion_detalle']
@@ -57,7 +62,7 @@ admin.site.register(DeduccionIndividualDetalle, DeduccionIndividualDetalleAdmin)
 admin.site.register(DeduccionIndividualSubDetalle)
 admin.site.register(DeduccionIndividualPlanilla, DeduccionIndividualPlanillaAdmin)
 admin.site.register(DeduccionTipo)
-admin.site.register(DeduccionEmpleado)
+admin.site.register(DeduccionEmpleado, DeduccionEmpleadoAdmin)
 admin.site.register(Employee, EmployeeAdmin)
 admin.site.register(EncabezadoImpuestoSobreRenta)
 admin.site.register(LimiteSalarioDeduccion)

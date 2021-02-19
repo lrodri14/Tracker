@@ -386,7 +386,16 @@ class Employee(models.Model):
     active = models.BooleanField()
 
     def __str__(self):
-        return self.firstName + " " + self.lastName
+        empleado = ''
+        if self.extEmpNo:
+            empleado += " " + self.extEmpNo
+        if self.firstName:
+            empleado += " " + self.firstName
+        if self.middleName:
+            empleado += " " + self.middleName
+        if self.lastName:
+            empleado += " " + self.lastName
+        return empleado
 
     # def __str__(self):
     #     return self.firstName + ' ' + self.lastName
