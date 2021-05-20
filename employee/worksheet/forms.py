@@ -1,5 +1,5 @@
 from django import forms
-from .models import UsuarioEmpresa, ImagenEmpleado, DeduccionesUnicasArchivo, DeduccionesEmpleadoArchivo
+from .models import UsuarioEmpresa, ImagenEmpleado, DeduccionesUnicasArchivo, DeduccionesEmpleadoArchivo, Planilla, DeduccionTipo
 
 class UsuarioEmpresaForm(forms.ModelForm):
     class Meta:

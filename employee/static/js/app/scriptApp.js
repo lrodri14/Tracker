@@ -2457,7 +2457,7 @@ $(document).on('ready', () => {
                     $('#txtDS_SA').val(data.data.salario_anterior);
                     $('#txtDS_I').val(data.data.incremento);
                     $('#txtDS_NS').val(data.data.nuevo_salario);
-                    $('#txtDS_C').text(data.data.comentarios);
+                    $('#txtDS_C').val(data.data.comentarios);
                     $('#frmEditarDatoSalario').modal('toggle');
                 }
             },

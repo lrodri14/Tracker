@@ -14,8 +14,9 @@
                     <div class="panel-body">
                         <!-- Nav tabs -->
                         <ul class="nav nav-tabs" role="tablist">
-                            <li role="presentation" class="active"><a href="#listado" aria-controls="listado" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-user"></i></span> <span class="hidden-xs">Listado de deducciones</span></a></li>
-                            <li role="presentation" class=""><a href="#formulario" aria-controls="formulario" role="tab" data-toggle="tab" aria-expanded="true"><span class="visible-xs"><i class="ti-home"></i></span><span class="hidden-xs"> Formulario</span></a></li>
+                            <li role="presentation" class="active"><a href="#listado" aria-controls="listado" role="tab" data-toggle="tab" aria-expanded="true"><span class="visible-xs"><i class="ti-user"></i></span> <span class="hidden-xs">Listado de deducciones</span></a></li>
+                            <li role="presentation" class=""><a href="#formulario" aria-controls="formulario" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-home"></i></span><span class="hidden-xs"> Formulario</span></a></li>
+                            <li role="presentation" class=""><a href="#revertir" aria-controls="revertir" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-home"></i></span><span class="hidden-xs"> Revertir datos</span></a></li>
                         </ul>
                         <!-- Tab panes -->
                         <div class="tab-content">
@@ -137,6 +138,29 @@
                                     </div>
                                 </div>
                             </div>
+                            <div role="tabpanel" class="tab-pane" id="revertir">
+                                <div class="col-md-6 form-group">
+                                    <label for="cboPlanillaI">Planilla</label>
+                                    <select id="cboPlanillaI"  class="form-control select2" >
+                                        <option value="0">Seleccionar...</option>
+                                        {% for planilla in planillas %}
+                                        <option value="{{planilla.pk}}">{{planilla.descripcion}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-6 form-group">
+                                    <label for="cboTipoIngresoI">Tipo de Ingreso</label>
+                                    <select id="cboTipoIngresoI" class="form-control select2">
+                                        <option value="0">Seleccionar...</option>
+                                        {% for tipo in ingresos %}
+                                        <option value="{{tipo.pk}}">{{tipo.ingreso_tipo}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-12 form-group text-right">
+                                    <button class="btn btn-info" @click="revertirIngresos();">Revertir</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -232,6 +256,7 @@
             total: 0.00,
             nuevoIngreso: {"id": 0, "planilla": 0, "empleado": 0, "ingreso": 0, "monto": 0.00, "active": true},
             nuevoRegistro: {"planilla": 0, "ingreso": 0},
+            revertirRegistros: {"planilla": 0, "ingreso": 0},
             edicion: false,
         },
         mounted: function() {
@@ -421,7 +446,37 @@
                         swal("¡Algo salió mal!", error, "warning");
                     });
             },
-
+            revertirIngresos: function() {
+                var self = this;
+                event.preventDefault();
+                swal({   
+                    title: "¿Desea revertir los registros?",   
+                    text: "Al eliminar éste registro no se podrá recuperar en la base de datos. Si no ha seleccionado un 'Tipo de Ingreso' se procederá a revertir todos los registros de ingreso de la planilla seleccionada.",   
+                    type: "warning",   
+                    showCancelButton: true,   
+                    confirmButtonColor: "#DD6B55",   
+                    confirmButtonText: "Si, eliminar",   
+                    closeOnConfirm: false 
+                }, function(){   
+                    axios.post('/revertir/ingresos/', self.revertirRegistros, 
+                        {
+                            headers: {
+                                'X-Requested-With' : 'XMLHttpRequest',
+                                'X-CSRFToken': self.getCookie('csrftoken'),
+                                'Content-Type': 'application/json;charset=UTF-8',
+                            }
+                        })
+                        .then(function(response){
+                            if(response.data.error){
+                                swal("Algo salió mal!", response.data.mensaje, "warning");
+                            }else{
+                                swal("¡Exito!", response.data.mensaje, "success");
+                            }
+                        }).catch(function(error){
+                            swal("¡Algo salió mal!", error.mensaje, "warning");
+                        });
+                });
+            },
             getCookie (name) {
                 var value = '; ' + document.cookie
                 var parts = value.split('; ' + name + '=')
@@ -458,6 +513,14 @@
     $('#cboTipoIngresoF').on('change', function(e) {
         app.nuevoIngreso.ingreso = $(this).val();
         app.carga();
+    });
+
+    $('#cboPlanillaI').on('change', function(e) {
+        app.revertirRegistros.planilla = $(this).val();
+    });
+
+    $('#cboTipoIngresoI').on('change', function(e) {
+        app.revertirRegistros.ingreso = $(this).val();
     });
 
 

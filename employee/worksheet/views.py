@@ -2,41 +2,43 @@
 from __future__ import unicode_literals
 import time
 
+from datetime import date, datetime
+from dateutil import relativedelta
+from decimal import *
+from django.db.models import Q,Count, Min, Sum, Avg, OuterRef, Subquery
+from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.core import serializers
 from django.core.mail import EmailMultiAlternatives
 from django.core.serializers import serialize
-from dateutil import relativedelta
-from django.db.models import Count, Min, Sum, Avg, OuterRef, Subquery
 from django.http import JsonResponse, HttpResponseRedirect, HttpResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import redirect, render, get_object_or_404
 from django.template import Context
 from django.template.loader import get_template, render_to_string
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.html import strip_tags
-from decimal import *
-from .forms import *
-from .models import *
-from datetime import date, datetime
-from django.conf import settings
-from .render import Render
-import functools
+from django.views.generic import View
+from email.mime.image import MIMEImage
 from io import BytesIO
+from pathlib import Path
 from reportlab.pdfgen import canvas
 from reportlab.platypus import Table, TableStyle, Paragraph
 from reportlab.lib.units import cm
 from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet
-from django.views.generic import View
 from xhtml2pdf import pisa
+from .forms import *
+from .models import *
+from .render import Render
+import datetime as dtiempo
+import functools
 import json
 import locale
 import operator
-import datetime as dtiempo
-from django.db.models import Q
 import pandas
 import uuid
 import xlsxwriter
@@ -2381,7 +2383,7 @@ def actualizar_empleado(request):
 
                 oEmp.active = activo
                 oEmp.user_mod = request.user
-                oEmp.date_mod = datetime.now()
+                oEmp.date_mod = datetime.datetime.now()
                 oEmp.save()
 
                 mensaje = "Se ha actualizado el registro del Empleado"
@@ -2433,8 +2435,8 @@ def obtener_antiguedad(request):
     data = {}
     if request.is_ajax():
         fecha = request.GET.get("fecha")
-        fecha = datetime.strptime(fecha, "%Y-%m-%d")
-        rd = relativedelta.relativedelta(datetime.today(), date(fecha.year, fecha.month, fecha.day))
+        fecha = datetime.datetime.strptime(fecha, "%Y-%m-%d")
+        rd = relativedelta.relativedelta(datetime.datetime.today(), date(fecha.year, fecha.month, fecha.day))
         antiguedad = "{0.years} años, {0.months} meses y {0.days} días".format(rd)
         data = {"antiguedad": antiguedad}
     return JsonResponse(data)
@@ -2511,7 +2513,7 @@ def actualizar_corporativo(request):
                     oGrupo.nombreComercial = nombre
                     oGrupo.active = activo
                     oGrupo.user_mod = request.user
-                    oGrupo.date_mod = datetime.now()
+                    oGrupo.date_mod = datetime.datetime.now()
                     # oGrupo = GrupoCorporativo(
                     #     razonSocial = razon,
                     #     nombreComercial = nombre,
@@ -2683,7 +2685,7 @@ def actualizar_empresa(request):
                     oEmp.nombreComercial = nombre
                     oEmp.active = activo
                     oEmp.user_mod = request.user
-                    oEmp.date_mod = datetime.now()
+                    oEmp.date_mod = datetime.datetime.now()
                     oEmp.save()
                     emp = {
                         "pk": oEmp.pk,
@@ -2842,7 +2844,7 @@ def actualizar_sucursal(request):
                     oSucursal.description = desc
                     oSucursal.active = activo
                     oSucursal.user_mod = request.user
-                    oSucursal.date_mod = datetime.now()
+                    oSucursal.date_mod = datetime.datetime.now()
                     oSucursal.save()
                     sucursal = {
                         "pk": oSucursal.pk,
@@ -3000,7 +3002,7 @@ def actualizar_division(request):
                     oDiv.descripcion = desc
                     oDiv.active = activo
                     oDiv.user_mod = request.user
-                    oDiv.date_mod = datetime.now()
+                    oDiv.date_mod = datetime.datetime.now()
                     oDiv.save()
                     division = {
                         "pk": oDiv.pk,
@@ -3160,7 +3162,7 @@ def actualizar_departamento(request):
                     oDep.description = desc
                     oDep.active = activo
                     oDep.user_mod = request.user
-                    oDep.date_mod = datetime.now()
+                    oDep.date_mod = datetime.datetime.now()
                     oDep.save()
                     dep = {
                         "pk": oDep.pk,
@@ -3374,7 +3376,7 @@ def actualizar_puesto(request):
                     oPos.description = desc
                     oPos.active = activo
                     oPos.user_mod = request.user
-                    oPos.date_mod = datetime.now()
+                    oPos.date_mod = datetime.datetime.now()
                     oPos.funcion_operativa = oFun
                     oPos.save()
                     pos = {
@@ -4714,7 +4716,7 @@ def actualizar_funcion(request):
                     oFn.descripcion = desc
                     oFn.active = activo
                     oFn.user_mod = request.user
-                    oFn.date_mod = datetime.now()
+                    oFn.date_mod = datetime.datetime.now()
                     oFn.save()
                     funcion = {
                         "pk": oFn.pk,
@@ -4872,7 +4874,7 @@ def actualizar_equipos(request):
                     oMd.descripcion = desc
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.now()
+                    oMd.date_mod = datetime.datetime.now()
                     oMd.save()
                     registro = {
                         "pk": oMd.pk,
@@ -5032,7 +5034,7 @@ def actualizar_estatus_empleado(request):
                         oMd.description = desc
                         oMd.active = activo
                         oMd.user_mod = request.user
-                        oMd.date_mod = datetime.now()
+                        oMd.date_mod = datetime.datetime.now()
                         oMd.save()
                         registro = {
                             "pk": oMd.pk,
@@ -5280,7 +5282,7 @@ def actualizar_ausentismo(request):
                     oMd.fecha_aplica = aplica
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.now()
+                    oMd.date_mod = datetime.datetime.now()
                     oMd.save()
                     registro = {
                         "pk": oMd.pk,
@@ -5457,7 +5459,7 @@ def actualizar_motivo_ausencia(request):
                     oMd.pagado = pagado
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.now()
+                    oMd.date_mod = datetime.datetime.now()
                     oMd.save()
                     registro = {
                         "pk": oMd.pk,
@@ -5616,7 +5618,7 @@ def actualizar_motivo_despido(request):
                         oMd.descripcion = desc
                         oMd.active = activo
                         oMd.user_mod = request.user
-                        oMd.date_mod = datetime.now()
+                        oMd.date_mod = datetime.datetime.now()
                         oMd.save()
                         registro = {
                             "pk": oMd.pk,
@@ -5783,7 +5785,7 @@ def actualizar_motivo_renuncia(request):
                         oMd.descripcion = desc
                         oMd.active = activo
                         oMd.user_mod = request.user
-                        oMd.date_mod = datetime.now()
+                        oMd.date_mod = datetime.datetime.now()
                         oMd.save()
                         registro = {
                             "pk": oMd.pk,
@@ -5929,7 +5931,7 @@ def actualizar_clase_educacion(request):
                         oMd.descripcion = desc
                         oMd.active = activo
                         oMd.user_mod = request.user
-                        oMd.date_mod = datetime.now()
+                        oMd.date_mod = datetime.datetime.now()
                         oMd.save()
                         registro = {
                             "pk": oMd.pk,
@@ -6169,7 +6171,7 @@ def actualizar_educacion(request):
                     oMd.asignatura_principal = asignatura
                     oMd.titulo = titulo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.now()
+                    oMd.date_mod = datetime.datetime.now()
                     oMd.save()
                     registro = {
                         "pk": oMd.pk,
@@ -6391,7 +6393,7 @@ def actualizar_evaluacion(request):
                     oMd.comentario = coment
                     oMd.active = True
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.now()
+                    oMd.date_mod = datetime.datetime.now()
                     oMd.save()
                     mensaje = "Se ha actualizado el registro."
                     data = {"mensaje": mensaje, "error": False}
@@ -6537,7 +6539,7 @@ def actualizar_motivo_aumento_sueldo(request):
                     oMd.descripcion = desc
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.now()
+                    oMd.date_mod = datetime.datetime.now()
                     oMd.save()
                     mensaje = "Se ha actualizado el registro."
                     data = {"mensaje": mensaje, "error": False}
@@ -6684,7 +6686,7 @@ def actualizar_motivo_rescision_contrato(request):
                     oMd.description = desc
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.now()
+                    oMd.date_mod = datetime.datetime.now()
                     oMd.save()
                     mensaje = "Se ha actualizado el registro."
                     data = {"mensaje": mensaje, "error": False}
@@ -6881,7 +6883,7 @@ def actualizar_empleo_anterior(request):
                     oMd.comentario = comentario
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.now()
+                    oMd.date_mod = datetime.datetime.now()
                     oMd.save()
                     mensaje = "Se ha actualizado el registro."
                     data = {"mensaje": mensaje, "error": False}
@@ -7032,7 +7034,7 @@ def actualizar_grupo_comision(request):
                 if oMd:
                     oMd.descripcion = desc1
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.now()
+                    oMd.date_mod = datetime.datetime.now()
                     oMd.active = acti
                     oMd.save()
                     mensaje = "Se ha actualizado el registro."
@@ -7227,7 +7229,7 @@ def actualizar_vendedor(request):
                     oMd.comentario = coment
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.now()
+                    oMd.date_mod = datetime.datetime.now()
                     oMd.save()
                     mensaje = "Se ha actualizado el registro."
                     data = {"mensaje": mensaje, "error": False}
@@ -7389,7 +7391,7 @@ def actualizar_feriado(request):
                     oMd.comentario = comentario
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.now()
+                    oMd.date_mod = datetime.datetime.now()
                     oMd.save()
                     mensaje = "Se ha actualizado el registro."
                     data = {"mensaje": mensaje, "error": False}
@@ -7679,7 +7681,7 @@ def actualizar_tipo_salario(request):
                     oMd.dias_salario = dias
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.now()
+                    oMd.date_mod = datetime.datetime.now()
                     oMd.save()
                     mensaje = "Se ha actualizado el registro."
                     data = {"mensaje": mensaje, "error": False}
@@ -7826,7 +7828,7 @@ def actualizar_costo_empleado(request):
                     oMd.description = desc
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.now()
+                    oMd.date_mod = datetime.datetime.now()
                     oMd.save()
                     mensaje = "Se ha actualizado el registro."
                     data = {"mensaje": mensaje, "error": False}
@@ -7955,7 +7957,7 @@ def actualizar_banco(request):
                     oMd.description = desc
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.now()
+                    oMd.date_mod = datetime.datetime.now()
                     oMd.save()
                     mensaje = "Se ha actualizado el registro."
                     data = {"mensaje": mensaje, "error": False}
@@ -7972,7 +7974,7 @@ def actualizar_banco(request):
         print(ex)
         data = {
             "error": True,
-            "mensaje": "error",
+            "mensaje": str(ex),
         }
     return JsonResponse(data)
 
@@ -8003,7 +8005,7 @@ def eliminar_banco(request):
     except Exception as ex:
         data = {
             "error": True,
-            "mensaje": "error",
+            "mensaje": str(ex),
         }
     return JsonResponse(data)
 
@@ -8146,7 +8148,7 @@ def actualizar_empresa_usuario(request):
                     oMd.usuario = oUsuario
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.now()
+                    oMd.date_mod = datetime.datetime.now()
                     oMd.save()
                     mensaje = "Se ha actualizado el registro."
                     data = {"mensaje": mensaje, "error": False}
@@ -8494,8 +8496,8 @@ def aumento_salario_guardar(request):
                             }
                         )
 
-                fecha_incremento = datetime.strptime(fecha_incremento, "%d/%m/%Y")
-                fecha_incremento = datetime.strftime(fecha_incremento, "%Y-%m-%d")
+                fecha_incremento = datetime.datetime.strptime(fecha_incremento, "%d/%m/%Y")
+                fecha_incremento = datetime.datetime.strftime(fecha_incremento, "%Y-%m-%d")
                 aumentos = IncrementosSalariales.objects.filter(
                     empleado=o_empleado, fecha_incremento=fecha_incremento
                 )
@@ -8610,7 +8612,7 @@ def aumento_salario_actualizar(request):
                     ) + float(incremento)
                     o_Incremento.comentarios = comentarios
                     o_Incremento.user_mod = request.user
-                    o_Incremento.date_mod = datetime.now()
+                    o_Incremento.date_mod = datetime.datetime.now()
                     o_Incremento.save()
                     o_empleado = Employee.objects.get(pk=o_Incremento.empleado.pk)
                     o_empleado.salary = float(o_Incremento.salario_anterior) + float(
@@ -8653,13 +8655,12 @@ def aumento_salario_eliminar(request):
                     empleado_id = oMd.empleado.pk
                     if oMd:
                         oMd.delete()
-                        regs = IncrementosSalariales.objects.filter(
-                            empleado__pk=empleado_id
-                        ).order_by("-fecha_incremento")[:1]
+                        regs = IncrementosSalariales.objects.filter(empleado__pk=empleado_id).order_by("-fecha_incremento")[:1]
                         if regs.count() > 0:
                             incremento = regs[0]
                             incremento.salario_actual = True
                             incremento.save()
+                            print(incremento.nuevo_salario)
                             regs = Employee.objects.filter(pk=empleado_id)
                             if regs.count() > 0:
                                 empleado = Employee.objects.get(pk=empleado_id)
@@ -8672,10 +8673,8 @@ def aumento_salario_eliminar(request):
                                         o_salary_units = SalaryUnit.objects.get(
                                             pk=empleado.salaryUnits.pk
                                         )
-                                        if o_salary_units.dias_salario > 0:
-                                            empleado.salario_diario = float(
-                                                incremento.nuevo_salario
-                                            ) / float(o_salary_units.dias_salario)
+                                        if int(o_salary_units.dias_salario) > 0:
+                                            empleado.salario_diario = float(incremento.nuevo_salario) / 30
                                 empleado.save()
                         mensaje = "Se ha eliminado el registro."
                         data = {"mensaje": mensaje, "error": False}
@@ -8749,6 +8748,7 @@ def aumento_salario_ver_registro(request):
 
 
 def obtener_aumentos_salarios(request):
+    print("Entro aqui")
     datos = []
     try:
         data = {}
@@ -8762,7 +8762,7 @@ def obtener_aumentos_salarios(request):
             if item.empleado.middleName:
                 nombre += " " + item.empleado.middleName
             nombre += item.empleado.lastName
-            fecha = datetime.strftime(item.fecha_incremento, "%d/%m/%Y")
+            fecha = datetime.datetime.strftime(item.fecha_incremento, "%d/%m/%Y")
             o_dato = {
                 "id": item.pk,
                 "codigo": item.empleado.extEmpNo,
@@ -8821,7 +8821,7 @@ def obtener_aumento_salario(request):
                 "empleado": o_datosalario.empleado.pk,
                 "nombre_empleado": nombre,
                 "motivo_aumento": o_datosalario.motivo_aumento.pk,
-                "fecha_incremento": datetime.strftime(
+                "fecha_incremento": datetime.datetime.strftime(
                     o_datosalario.fecha_incremento, "%d/%m/%Y"
                 ),
                 "salario_anterior": formato_millar(o_datosalario.salario_anterior),
@@ -8996,7 +8996,7 @@ def deduccion_individual_actualizar(request):
                     oMd.control_saldo = controla_saldo
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.now()
+                    oMd.date_mod = datetime.datetime.now()
                     oMd.save()
                     mensaje = "Se ha actualizado el registro."
                     data = {"mensaje": mensaje, "error": False}
@@ -9213,8 +9213,8 @@ def deduccion_individual_detalle_guardar(request):
                 else:
                     activo = False
 
-                fecha_valida = datetime.strptime(fecha_valida, "%d/%m/%Y")
-                fecha_valida = datetime.strftime(fecha_valida, "%Y-%m-%d")
+                fecha_valida = datetime.datetime.strptime(fecha_valida, "%d/%m/%Y")
+                fecha_valida = datetime.datetime.strftime(fecha_valida, "%Y-%m-%d")
                 vdeduccion = DeduccionIndividual.objects.get(pk=deduccion_id)
                 vempleado = Employee.objects.get(pk=empleado_id)
                 suc = Branch.objects.get(pk=request.session["sucursal"])
@@ -9346,8 +9346,8 @@ def deduccion_individual_detalle_actualizar(request):
                 else:
                     activo = False
 
-                fecha_valida = datetime.strptime(fecha_valida, "%d/%m/%Y")
-                fecha_valida = datetime.strftime(fecha_valida, "%Y-%m-%d")
+                fecha_valida = datetime.datetime.strptime(fecha_valida, "%d/%m/%Y")
+                fecha_valida = datetime.datetime.strftime(fecha_valida, "%Y-%m-%d")
 
                 vdeduccion = DeduccionIndividual.objects.get(pk=deduccion_id)
                 vempleado = Employee.objects.get(pk=empleado_id)
@@ -9360,7 +9360,7 @@ def deduccion_individual_detalle_actualizar(request):
                     oMd.fecha_valida = fecha_valida
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.now()
+                    oMd.date_mod = datetime.datetime.now()
                     oMd.save()
                     mensaje = "Se ha actualizado el registro."
                     data = {"mensaje": mensaje, "error": False}
@@ -9851,7 +9851,7 @@ def deduccion_individual_planilla_actualizar(request):
                     oMd.planilla = vplanilla
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.now()
+                    oMd.date_mod = datetime.datetime.now()
                     oMd.save()
                     mensaje = "Se ha actualizado el registro."
                     data = {"mensaje": mensaje, "error": False}
@@ -10047,7 +10047,7 @@ def deduccion_general_actualizar(request):
                     oMd.tipo_deduccion = o_tipodeduccion
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.now()
+                    oMd.date_mod = datetime.datetime.now()
                     oMd.save()
                     mensaje = "Se ha actualizado el registro."
                     data = {"mensaje": mensaje, "error": False}
@@ -10458,7 +10458,7 @@ def deduccion_general_detalle_actualizar(request):
                     oMd.fecha_valido = fecha_valida
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.now()
+                    oMd.date_mod = datetime.datetime.now()
                     oMd.save()
                     mensaje = "Se ha actualizado el registro."
                     data = {"mensaje": mensaje, "error": False}
@@ -10999,7 +10999,7 @@ def horaextra_actualizar(request):
                     oMd.horaExtra = horaextra
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.now()
+                    oMd.date_mod = datetime.datetime.now()
                     oMd.save()
                     mensaje = "Se ha actualizado el registro."
                     data = {"mensaje": mensaje, "error": False}
@@ -11408,7 +11408,7 @@ def impuestosobrerenta_actualizar(request):
                     oMd.porcentaje_label = str(porcentaje) + "%"
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.now()
+                    oMd.date_mod = datetime.datetime.now()
                     oMd.save()
                     mensaje = "Se ha actualizado el registro."
                     data = {"mensaje": mensaje, "error": False}
@@ -11626,7 +11626,7 @@ def ingreso_general_actualizar(request):
                     oMd.gravable = gravable
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.now()
+                    oMd.date_mod = datetime.datetime.now()
                     oMd.save()
                     mensaje = "Se ha actualizado el registro."
                     data = {"mensaje": mensaje, "error": False}
@@ -11794,8 +11794,8 @@ def ingreso_general_detalle_guardar(request):
                     data = {"error": True, "mensaje": mensaje}
                     return JsonResponse(data)
 
-                fecha_valida = datetime.strptime(fecha_valida, "%d/%m/%Y")
-                fecha_valida = datetime.strftime(fecha_valida, "%Y-%m-%d")
+                fecha_valida = datetime.datetime.strptime(fecha_valida, "%d/%m/%Y")
+                fecha_valida = datetime.datetime.strftime(fecha_valida, "%Y-%m-%d")
 
                 valor = valor.replace(",", "")
 
@@ -12029,8 +12029,8 @@ def ingreso_general_detalle_actualizar(request):
                 else:
                     activo = False
 
-                fecha_valida = datetime.strptime(fecha_valida, "%d/%m/%Y")
-                fecha_valida = datetime.strftime(fecha_valida, "%Y-%m-%d")
+                fecha_valida = datetime.datetime.strptime(fecha_valida, "%d/%m/%Y")
+                fecha_valida = datetime.datetime.strftime(fecha_valida, "%Y-%m-%d")
 
                 vingreso = IngresoGeneral.objects.get(pk=ingreso)
                 vnomina = Planilla.objects.get(pk=nomina)
@@ -12047,7 +12047,7 @@ def ingreso_general_detalle_actualizar(request):
                     oMd.fecha_valida = fecha_valida
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.now()
+                    oMd.date_mod = datetime.datetime.now()
                     oMd.save()
                     mensaje = "Se ha actualizado el registro."
                     data = {"mensaje": mensaje, "error": False}
@@ -12264,7 +12264,7 @@ def ingreso_individual_actualizar(request):
                     oMd.gravable = gravable
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.now()
+                    oMd.date_mod = datetime.datetime.now()
                     oMd.save()
                     mensaje = "Se ha actualizado el registro."
                     data = {"mensaje": mensaje, "error": False}
@@ -12582,7 +12582,7 @@ def ingreso_individual_detalle_actualizar(request):
                     oMd.fecha_valida = fecha_valida
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.now()
+                    oMd.date_mod = datetime.datetime.now()
                     oMd.save()
                     mensaje = "Se ha actualizado el registro."
                     data = {"mensaje": mensaje, "error": False}
@@ -12933,7 +12933,7 @@ def ingreso_individual_planilla_actualizar(request):
                     oMd.active = activo
 
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.now()
+                    oMd.date_mod = datetime.datetime.now()
                     oMd.save()
                     mensaje = "Se ha actualizado el registro."
                     data = {"mensaje": mensaje, "error": False}
@@ -12991,19 +12991,17 @@ def ingreso_individual_planilla_eliminar(request):
 
 # region Código para Planilla
 
-
 @login_required(login_url="/form/iniciar-sesion/")
 @permission_required("worksheet.see_planilla", raise_exception=True)
 def planilla_listado(request):
 
     suc = Branch.objects.get(pk=request.session["sucursal"])
-    datos = Planilla.objects.filter(sucursal_reg=suc, active=True)
+    datos = Planilla.objects.filter(sucursal_reg=suc, active=True).order_by('-fecha_pago', 'pk')
     # if request.user.has_perm("worksheet.see_all_planilla"):
     #     datos = Planilla.objects.filter(empresa_reg=suc.empresa, active=True)
     # else:
     #     datos = Planilla.objects.filter(sucursal_reg=suc, active=True)
     return render(request, "planilla-listado.html", {"datos": datos})
-
 
 @login_required(login_url="/form/iniciar-sesion/")
 @permission_required("worksheet.add_planilla", raise_exception=True)
@@ -13021,7 +13019,6 @@ def planilla_form(request):
             "tipos_contrato": tipo_contrato,
         },
     )
-
 
 @login_required(login_url="/form/iniciar-sesion/")
 def planilla_registro_ver(request, id):
@@ -13473,7 +13470,6 @@ def planilla_guardar(request):
                 fecha_fin = request.POST["fecha_fin"]
                 descripcion = request.POST["descripcion"]
                 chk_especial = request.POST["especial"]
-                # chk_dedrap = request.POST["ded_rap"]
                 # chk_dedisr = request.POST["ded_isr"]
                 # chk_dedimv = request.POST["ded_imv"]
 
@@ -13693,6 +13689,10 @@ def planilla_generar_calculos(request):
                                 res_dia_trab = 0
                                 res_dia_plan = 0
                                 res_dia_plan =+ (o_planilla.fecha_fin - o_planilla.fecha_inicio).days + 1
+                                # if res_dia_plan < o_planilla.frecuencia_pago.dias_salario:
+                                #     datee = datetime.datetime.strptime(o_planilla.fecha_inicio, "%Y-%m-%d")
+                                #     if datee.month == 2:
+                                #         res_dia_plan = total_dias_trabajados
 
                                 if contratos.count() > 0:
                                     for contrato in contratos:
@@ -13713,20 +13713,37 @@ def planilla_generar_calculos(request):
                                         else:
                                             v_fecha_final = contrato.fecha_fin # Se asigna como fecha final el valor final de contrato en caso que en la info del empleado no tenga fecha final
 
+                                        #Se evalúa si la fecha que iniciar contrato y finaliza relación laboral estan dentro del rango de fecha de la planilla
                                         if contrato.fecha_inicio >= o_planilla.fecha_inicio and v_fecha_final <= o_planilla.fecha_fin:
+                                            #Se suma a resultado de dias trabajados el restante entre la fecha final de la relación profesional y
+                                            #la fecha de inicio del contrato
                                             res_dia_trab += (v_fecha_final - contrato.fecha_inicio).days + 1
                                             
+                                        #Se evalúa si la fecha inicio de contrato es antes que la fecha inicio de planilla y la fecha final de
+                                        #relación profesional está entre el rango de fecha de inicio y final de planilla
                                         if contrato.fecha_inicio < o_planilla.fecha_inicio and (v_fecha_final >= o_planilla.fecha_inicio and v_fecha_final <= o_planilla.fecha_fin):
+                                            #Se suma a resultado de dias trabajados el restante entre la fecha final de la relación profesional y
+                                            #la fecha de incio de la planilla
                                             res_dia_trab += (v_fecha_final - o_planilla.fecha_inicio).days + 1
 
+                                        #Se evalúa si la fecha final de relación profesional es después de la fecha final de la planilla y
+                                        #la fecha inicial del contrato es entre el rango de fecha inicial y final de la planilla
                                         if v_fecha_final > o_planilla.fecha_fin and (contrato.fecha_inicio >= o_planilla.fecha_inicio and contrato.fecha_inicio <= o_planilla.fecha_fin):
+                                            #Se suma a resultado de dias trabajados el restante entre la final de planilla y la fecha inicio de contrato
                                             res_dia_trab += (o_planilla.fecha_fin - contrato.fecha_inicio).days + 1
+                                
+                                #Si el empleado no tiene contratos pero si tiene una fecha de finalización de relación profesional
                                 elif item.termDate:
+                                    #Se toma como fecha final el campo termDate del maestro de empleados
                                     v_fecha_final = item.termDate
+                                    #Se evalua si la fecha final está entre el rango de fecha inicial y final de la planilla
                                     if v_fecha_final >= o_planilla.fecha_inicio and v_fecha_final <= o_planilla.fecha_fin:
+                                        #Se suma a resultado de dias trabajados el restante entre la fecha final y la fecha inicial de planilla
                                         res_dia_trab += (v_fecha_final - o_planilla.fecha_inicio).days + 1
 
-                                res_fec += res_dia_plan - res_dia_trab
+                                
+                                #res_fec += res_dia_plan - res_dia_trab
+                                res_fec += total_dias_trabajados - res_dia_trab
                                 
                                 # if item.startDate:
                                 #     res_fec += (item.startDate - o_planilla.fecha_inicio).days
@@ -14644,8 +14661,8 @@ def generar_reporte_general(request):
         data = {"error": True, "mensaje": "Seleccione un rango de fecha válido"}
         return render(request, "reportes/reporte-planilla-general.html", data)
 
-    desde = datetime.strptime(desde, "%d/%m/%Y").date()
-    hasta = datetime.strptime(hasta, "%d/%m/%Y").date()
+    desde = datetime.datetime.strptime(desde, "%d/%m/%Y").date()
+    hasta = datetime.datetime.strptime(hasta, "%d/%m/%Y").date()
     if estado_contrato == "2":
         q_list.append(Q(planilla__cerrada=True))
     elif estado_contrato == "1":
@@ -15443,7 +15460,7 @@ def segurosocial_actualizar(request):
                     oMd.valor_p = valor_p
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.now()
+                    oMd.date_mod = datetime.datetime.now()
                     oMd.save()
                     mensaje = "Se ha actualizado el registro."
                     data = {"mensaje": mensaje, "error": False}
@@ -15574,7 +15591,7 @@ def guardar_rap(request):
                         o_rap.techo = techo
                         o_rap.porcentaje = porcentaje
                         o_rap.user_mod = request.user
-                        o_rap.date_mod = datetime.now()
+                        o_rap.date_mod = datetime.datetime.now()
                         o_rap.save()
                         data = {
                             "error": False,
@@ -15767,7 +15784,7 @@ def salariominimo_eliminar(request):
                             salario = salarios[0]
                             salario.vigente = True
                             salario.user_mod = request.user
-                            salario.date_mod = datetime.now()
+                            salario.date_mod = datetime.datetime.now()
                             salario.save()
                     else:
                         mensaje = "No existe el registro."
@@ -15918,7 +15935,7 @@ def tipo_deduccion_actualizar(request):
                     oMd.descripcion = desc
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.now()
+                    oMd.date_mod = datetime.datetime.now()
                     oMd.save()
                     mensaje = "Se ha actualizado el registro."
                     data = {"mensaje": mensaje, "error": False}
@@ -16090,7 +16107,7 @@ def tipo_nomina_actualizar(request):
                     oMd.descripcion = desc
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.now()
+                    oMd.date_mod = datetime.datetime.now()
                     oMd.save()
                     mensaje = "Se ha actualizado el registro."
                     data = {"mensaje": mensaje, "error": False}
@@ -16281,7 +16298,7 @@ def tipo_ingreso_actualizar(request):
                     oMd.orden = orden
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.now()
+                    oMd.date_mod = datetime.datetime.now()
                     oMd.save()
                     mensaje = "Se ha actualizado el registro."
                     data = {"mensaje": mensaje, "error": False}
@@ -16504,7 +16521,7 @@ def impuestovecinal_actualizar(request):
                     oMd.porcentaje_label = str(porcentaje) + "%"
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.now()
+                    oMd.date_mod = datetime.datetime.now()
                     oMd.save()
                     mensaje = "Se ha actualizado el registro."
                     data = {"mensaje": mensaje, "error": False}
@@ -16681,7 +16698,7 @@ def tipo_contrato_actualizar(request):
                     oMd.descripcion = desc
                     oMd.active = activo
                     oMd.user_mod = request.user
-                    oMd.date_mod = datetime.now()
+                    oMd.date_mod = datetime.datetime.now()
                     oMd.save()
                     mensaje = "Se ha actualizado el registro."
                     data = {"mensaje": mensaje, "error": False}
@@ -16765,7 +16782,7 @@ def boleta_pago_reporte(request):
     pdf.setFont("Helvetica", 7)
     pdf.drawString(15, 310, "Fecha de pago: ")
     pdf.setFont("Helvetica", 7)
-    pdf.drawString(65, 310, datetime.strftime(o_planilla.fecha_pago, "%d/%m/%Y"))
+    pdf.drawString(65, 310, datetime.datetime.strftime(o_planilla.fecha_pago, "%d/%m/%Y"))
 
     punto_tabla = 240
     styles = getSampleStyleSheet()
@@ -16815,6 +16832,8 @@ def boleta_pago_reporte(request):
 
 
 def boleta_pago_email(request):
+    image_path = '././static/images/promaco-logo.png'
+    image_name = Path(image_path).name
     empleado_id = request.GET.get("empleado_id")
     planilla_id = request.GET.get("planilla_id")
     detalles = []
@@ -16853,13 +16872,34 @@ def boleta_pago_email(request):
         "no-replay@gmail.com",
         o_empleado.email,
     )
-    html_contenido = render_to_string(
-        "correo/boleta_pago_html.html",
+    # html_message = f"""<!DOCTYPE html>"
+    # "<html lang='es'>"
+    # "<head>"
+    # "<meta chartse='UTF-8'>"
+    # "<title>Some title</title>"""
+    # html_message += ("<style>"
+    #         " *{padding; 0; margin; 0;}"
+    #         " h1{text-align:center;}"
+    #         " img{width: 100px;}"
+    #         "</style>")
+    # html_message += f"""<body>"
+    # "<div class='contenido'>"
+    # "<img src='cid:{image_name}' />"
+    # "<h1>Boleta de Pago</h1>"
+    # "</div>"
+    # "</body>"
+    # "</head>"
+    # "</html>"""
+    html_contenido_txt = render_to_string(
+        "correo/boleta_pago_text.txt",
         {
             "empleado": o_empleado,
+            "detalle": o_pla_de,
             "planilla": o_planilla,
+            "dias_trabajados": int(o_pla_de.dias_salario) - int(o_pla_de.dias_ausentes_sin_pago),
             "detalle_ingreso": detalle_ing,
             "detalle_deduccion": detalle_ded,
+            "logo": 'cid:{image_name}',
             "total_ingreso": formato_millar(o_pla_de.total_ingresos),
             "total_deduccion": formato_millar(o_pla_de.total_deducciones),
             "sueldo_neto": formato_millar(
@@ -16867,12 +16907,79 @@ def boleta_pago_email(request):
             ),
         },
     )
-    text_contenido = strip_tags(html_contenido)
-    msg = EmailMultiAlternatives(asunto, text_contenido, remite, [destinatario])
-    msg.attach_alternative(html_contenido, "text/html")
+    html_contenido = render_to_string(
+        "correo/boleta_pago_html.html",
+        {
+            "empleado": o_empleado,
+            "detalle": o_pla_de,
+            "planilla": o_planilla,
+            "dias_trabajados": int(o_pla_de.dias_salario) - int(o_pla_de.dias_ausentes_sin_pago),
+            "detalle_ingreso": detalle_ing,
+            "detalle_deduccion": detalle_ded,
+            "logo": 'cid:{image_name}',
+            "total_ingreso": formato_millar(o_pla_de.total_ingresos),
+            "total_deduccion": formato_millar(o_pla_de.total_deducciones),
+            "sueldo_neto": formato_millar(
+                o_pla_de.total_ingresos - o_pla_de.total_deducciones
+            ),
+        },
+    )
+    #text_contenido = strip_tags(html_contenido)
+    msg = EmailMultiAlternatives(asunto, html_contenido_txt, remite, [destinatario])
+    #msg = EmailMultiAlternatives(asunto, html_message, remite, [destinatario])
+    if all([html_contenido, image_path, image_name]):
+        msg.attach_alternative(html_contenido, "text/html")
+        #msg.content_subtype = 'html'
+        msg.mixed_subtype = 'related'
+
+        with open(image_path, mode='rb')as f:
+            image = MIMEImage(f.read())
+            image.add_header('Content-ID', f"<{image_name}>")
+            msg.attach(image)
     msg.send()
     data = {"error": True, "mensaje": "El email se ha enviado"}
     return JsonResponse(data)
+
+def boleta_pago_email_masivo(ingresos, deducciones, empleado, planilla, detalle):
+    detalle_ing = []
+    detalle_ded = []
+    for item in ingresos:
+        data = {"ingreso": item.ingreso, "valor": formato_millar(item.valor)}
+        detalle_ing.append(data)
+    for item in deducciones:
+        data = {
+            "deduccion": item.deduccion,
+            "valor": formato_millar(item.valor),
+        }
+        detalle_ded.append(data)
+    asunto, remite, destinatario = (
+        "Boleta de Pago",
+        "no-replay@gmail.com",
+        empleado.email,
+    )
+    print(empleado.firstName)
+    html_contenido = render_to_string(
+        "correo/boleta_pago_html.html",
+        {
+            "empleado": empleado,
+            "detalle": detalle,
+            "planilla": planilla,
+            "dias_trabajados": int(detalle.dias_salario) - int(detalle.dias_ausentes_sin_pago),
+            "detalle_ingreso": detalle_ing,
+            "detalle_deduccion": detalle_ded,
+            "total_ingreso": formato_millar(detalle.total_ingresos),
+            "total_deduccion": formato_millar(detalle.total_deducciones),
+            "sueldo_neto": formato_millar(
+                detalle.total_ingresos - detalle.total_deducciones
+            ),
+        },
+    )
+    text_contenido = strip_tags(html_contenido)
+    msg = EmailMultiAlternatives(asunto, text_contenido, remite, [destinatario])
+    msg.attach_alternative(html_contenido, "text/html")
+    #msg.send()
+    # data = {"error": True, "mensaje": "El email se ha enviado"}
+    # return JsonResponse(data)
 
 
 def reporte_probando(request):
@@ -16897,6 +17004,7 @@ def deducciones_empleado_listado(request):
             return HttpResponseRedirect("/salir/")
     suc = Branch.objects.get(pk=request.session["sucursal"])
     empleados = Employee.objects.filter(branch=suc, active=True).order_by("firstName")
+    empleados_l= Employee.objects.filter(branch=suc).order_by("first_name")
     planillas = Planilla.objects.filter(cerrada=False, sucursal_reg=suc, active=True)
     planillas_l = Planilla.objects.filter(sucursal_reg=suc, active=True)
     tipos_deduccion = DeduccionTipo.objects.filter(active=True, visible=True)
@@ -16928,7 +17036,16 @@ def deducciones_empleado_filtro_obtener(request):
 
         if len(empleado_id) > 0:
             if int(empleado_id) > 0:
-                q_list.append(Q(empleado__pk=empleado_id))
+                empleado_obj = Employee.objects.get(pk=empleado_id)
+                print(empleado_obj.active)
+                if empleado_obj.active:
+                    q_list.append(Q(empleado__pk=empleado_id))
+                else:
+                    return JsonResponse({
+                        "error": True,
+                        "mensaje": "El empleado asignado a la deducción no está activo."
+                    })
+
 
         if len(planilla_id) > 0:
             if int(planilla_id) > 0:
@@ -16975,14 +17092,19 @@ def deducciones_empleado_registro_obtener(request):
         tot_det = 0
         id = request.GET.get("id")
         obj = DeduccionEmpleado.objects.get(pk=id)
+        if not obj.empleado.active:
+            return JsonResponse({'error':True, 'mensaje': 'El empleado no está activo'})
+        elif obj.planilla.cerrada:
+            return JsonResponse({'error':True, 'mensaje': 'La planilla está cerrada'})
         dets = DeduccionIndividualSubDetalle.objects.filter(deduccion=obj)
+
         for detalle in dets:
             tot_det += detalle.monto
             obj_E = {
                 'id':detalle.id,
                 'descripcion': detalle.descripcion,
                 'monto': formato_millar(detalle.monto),
-                'fecha': datetime.strftime(detalle.fecha, "%d/%m/%Y"),
+                'fecha': datetime.datetime.strftime(detalle.fecha, "%d/%m/%Y"),
             }
             det_l.append(obj_E)
         obj_V = {
@@ -17133,7 +17255,7 @@ def deducciones_empleado_actualizar(request):
                 # obj.detalle = detalle
                 obj.active = active
                 obj.user_mod = request.user
-                obj.date_mod = datetime.now()
+                #obj.date_mod = datetime.now()
                 obj.save()
                 data = {"mensaje": "Se ha actualizado el registro", "error": False}
             else:
@@ -17208,6 +17330,45 @@ def deducciones_detalle_empleado_eliminar(request):
 
     return JsonResponse(data)
 
+def deducciones_reversion(request):
+    data = {}
+    try:
+        if request.is_ajax():
+            if request.method == "POST":
+                data = json.loads(request.body.decode("utf-8"))
+                planilla_id = data['planilla']
+                deduccion_id = data['deduccion']
+                if int(planilla_id) == 0:
+                    data = {
+                        "mensaje": "No se pasó un valor válido en el campo 'Planilla'",
+                        "error": True,
+                    }
+                else:
+                    o_planilla = Planilla.objects.get(pk=planilla_id)
+                    planilla_detalles = PlanillaDetalle.objects.filter(planilla=o_planilla)
+                    if int(deduccion_id) == 0:
+                        deducciones_detalle = PlanillaDetalleDeducciones.objects.filter(planilla=o_planilla)
+                        deducciones = DeduccionEmpleado.objects.filter(planilla=o_planilla)
+                    else:
+                        o_tipodeduccion = DeduccionTipo.objects.get(pk=deduccion_id)
+                        deducciones_detalle = PlanillaDetalleDeducciones.objects.filter(planilla=o_planilla, tipo_deduccion=o_tipodeduccion)
+                        deducciones = DeduccionEmpleado.objects.filter(planilla=o_planilla, deduccion=o_tipodeduccion)
+                    if deducciones_detalle:
+                        deducciones_detalle.delete()
+                    if deducciones:
+                        deducciones.delete()
+                    data = {
+                        "mensaje": "Se han revertido los datos",
+                        "error": False,
+                    }
+            else:
+                data = {"mensaje": "El método no está permitido", "error": True}
+        else:
+            data = {"mensaje": "El tipo de petición no está permitido", "error": True}
+    except Exception as e:
+        data = {"mensaje": str(e), "error": True}
+    return JsonResponse(data)
+
 def deduccion_detalles_guardar(request):
     data = {}
     try:
@@ -17236,7 +17397,7 @@ def deduccion_detalles_guardar(request):
                         "error": True,
                     }
 
-                fecha = datetime.strptime(fecha, "%d/%m/%Y").date()
+                fecha = datetime.datetime.strptime(fecha, "%d/%m/%Y").date()
 
                 o_deduccion = DeduccionEmpleado.objects.get(pk=deduccion_id)
                 
@@ -17612,21 +17773,17 @@ def ingreso_tipo_actualizar(request):
     if request.method == "POST":
         data = json.loads(request.body.decode("utf-8"))
         id = data["id"]
-        deduccion_tipo = data["ingreso_tipo"]
-        es_legal = data["es_legal"]
-        es_externa = data["es_externa"]
-        visible = data["visible"]
+        ingreso_tipo = data["ingreso_tipo"]
+        indice = data["indice_relevancia"]
         active = data["active"]
-        obj = DeduccionTipo.objects.get(pk=id)
-        obj.deduccion_tipo = deduccion_tipo
-        obj.es_legal = es_legal
-        obj.es_externa = es_externa
-        obj.visible = visible
+        obj = IngresoTipo.objects.get(pk=id)
+        obj.ingreso_tipo = ingreso_tipo
+        obj.indice_relevancia = indice
         obj.active = active
         obj.save()
-        data = {"mensaje": "Se ha actualizado el registro"}
+        data = {"mensaje": "Se ha actualizado el registro","error": False}
     else:
-        data = {"mensaje": "Método no válido"}
+        data = {"mensaje": "Método no válido", "error": True}
 
     return JsonResponse(data)
 
@@ -17739,7 +17896,6 @@ def ingresos_empleados_obtener_filtro(request):
     data = {"datos": datos_l, "total": formato_millar(total_monto)}
     return JsonResponse(data)
 
-
 def ingresos_empleados_guardar(request):
     data = {}
     try:
@@ -17816,7 +17972,6 @@ def ingresos_empleados_guardar(request):
         data = {"mensaje": str(e), "error": True}
     return JsonResponse(data)
 
-
 def ingresos_empleados_eliminar(request):
     data = {}
     try:
@@ -17841,6 +17996,43 @@ def ingresos_empleados_eliminar(request):
         data = {"mensaje": str(e), "error": True}
     return JsonResponse(data)
 
+def ingresos_reversion(request):
+    data = {}
+    try:
+        if request.is_ajax():
+            if request.method == "POST":
+                data = json.loads(request.body.decode("utf-8"))
+                planilla_id = data['planilla']
+                ingreso_id = data['ingreso']
+                if int(planilla_id) == 0:
+                    data = {
+                        "mensaje": "No se pasó un valor válido en el campo 'Planilla'",
+                        "error": True,
+                    }
+                else:
+                    o_planilla = Planilla.objects.get(pk=planilla_id)
+                    if int(ingreso_id) == 0:
+                        ingresos_detalle = PlanillaDetalleIngresos.objects.filter(planilla=o_planilla)
+                        ingresos = IngresoEmpleado.objects.filter(planilla=o_planilla)
+                    else:
+                        o_tipoingreso = IngresoTipo.objects.get(pk=ingreso_id)
+                        ingresos_detalle = PlanillaDetalleIngresos.objects.filter(planilla=o_planilla, tipo_ingreso=o_tipoingreso)
+                        ingresos = IngresoEmpleado.objects.filter(planilla=o_planilla, ingreso=o_tipoingreso)
+                    if ingresos_detalle:
+                        ingresos_detalle.delete()
+                    if ingresos:
+                        ingresos.delete()
+                    data = {
+                        "mensaje": "Se han revertido los datos",
+                        "error": False,
+                    }
+            else:
+                data = {"mensaje": "El método no está permitido", "error": True}
+        else:
+            data = {"mensaje": "El tipo de petición no está permitido", "error": True}
+    except Exception as e:
+        data = {"mensaje": str(e), "error": True}
+    return JsonResponse(data)
 
 def ingresos_empleados_obtener(request):
     data = {}
@@ -17859,7 +18051,6 @@ def ingresos_empleados_obtener(request):
     except Exception as e:
         data = {"mensaje": str(e), "error": True}
     return JsonResponse(data)
-
 
 def ingresos_empleados_actualizar(request):
     data = {}
@@ -17888,7 +18079,7 @@ def ingresos_empleados_actualizar(request):
                 obj.monto = monto
                 obj.active = active
                 obj.user_mod = request.user
-                obj.date_mod = datetime.now()
+                obj.date_mod = datetime.datetime.now()
                 obj.save()
                 data = {"mensaje": "Se ha actualizado el registro", "error": False}
             else:
@@ -17898,7 +18089,6 @@ def ingresos_empleados_actualizar(request):
     except Exception as e:
         data = {"mensaje": str(e), "error": True}
     return JsonResponse(data)
-
 
 def ingresos_empleados_archivo_guardar(request):
     data = {}
@@ -18057,8 +18247,8 @@ def contratos_listado(request):
                 "id": item.pk,
                 "numero_contrato": item.numero,
                 "empleado": empleado,
-                "fecha_inicio": datetime.strftime(item.fecha_inicio,"%d/%m/%Y"),
-                "fecha_fin": datetime.strftime(item.fecha_fin, "%d/%m/%Y"),
+                "fecha_inicio": datetime.datetime.strftime(item.fecha_inicio,"%d/%m/%Y"),
+                "fecha_fin": datetime.datetime.strftime(item.fecha_fin, "%d/%m/%Y"),
                 "tipo_contrato": item.tipo_contrato.tipo_contrato,
                 "active": item.active,
             }
@@ -18105,8 +18295,8 @@ def contratos_guardar(request):
                 vfe1 = str(fecha_inicio)
                 vfe2 = str(fecha_fin)
 
-                fecha_inicio = datetime.strptime(vfe1, '%d/%m/%Y')
-                fecha_fin = datetime.strptime(vfe2, '%d/%m/%Y')
+                fecha_inicio = datetime.datetime.strptime(vfe1, '%d/%m/%Y')
+                fecha_fin = datetime.datetime.strptime(vfe2, '%d/%m/%Y')
                 
                 o_tipocontrato = TipoContrato.objects.get(pk=tipo_contrato_id)
                 o_empleado = Employee.objects.get(pk=empleado_id)
@@ -18173,8 +18363,8 @@ def contrato_obtener(request):
             "id": obj.pk,
             "numero": obj.numero,
             "empleado": obj.empleado.pk,
-            "fecha_inicio": datetime.strftime(obj.fecha_inicio, "%d/%m/%Y"),
-            "fecha_fin": datetime.strftime( obj.fecha_fin, "%d/%m/%Y"),
+            "fecha_inicio": datetime.datetime.strftime(obj.fecha_inicio, "%d/%m/%Y"),
+            "fecha_fin": datetime.datetime.strftime( obj.fecha_fin, "%d/%m/%Y"),
             "tipo_contrato": obj.tipo_contrato.pk,
             "active": obj.active,
         }
@@ -18209,8 +18399,8 @@ def contrato_actualizar(request):
                 vfe1 = str(fecha_inicio)
                 vfe2 = str(fecha_fin)
 
-                fecha_inicio = datetime.strptime(vfe1, '%d/%m/%Y')
-                fecha_fin = datetime.strptime(vfe2, '%d/%m/%Y')
+                fecha_inicio = datetime.datetime.strptime(vfe1, '%d/%m/%Y')
+                fecha_fin = datetime.datetime.strptime(vfe2, '%d/%m/%Y')
                 print(fecha_inicio)
                 print(fecha_fin)
 
@@ -18220,7 +18410,7 @@ def contrato_actualizar(request):
                 obj.fecha_fin = fecha_fin
                 obj.active = active
                 obj.user_mod = request.user
-                obj.date_mod = datetime.now()
+                obj.date_mod = datetime.datetime.now()
                 obj.save()
                 data = {"mensaje": "Se ha actualizado el registro", "error": False}
             else:
@@ -18244,7 +18434,67 @@ def impresion_boletas(request):
         'departamentos': departamentos
     }
     return render(request, "reportes/impresion_boletas.html", context)
+
+def envio_boleta_correo(request):
+    if request.method == 'POST':
+        planilla_id = request.POST['cboPlanillaC']
+        departamento_id = request.POST['cboDepartamentoC']
+        if int(planilla_id) == 0:
+            messages.add_message(request, messages.WARNING, 'El campo "Planilla" requiere un valor.')
+            return redirect('impresion_boletas')
+        else:
+            o_planilla = Planilla.objects.get(pk=planilla_id)
+            if int(departamento_id) == 0:
+                detalles_planillas = PlanillaDetalle.objects.filter(planilla=o_planilla).exclude(empleado__email='')
+            elif int(departamento_id) > 0:
+                o_depto = Department.objects.get(pk=int(departamento_id))
+                detalles_planillas = PlanillaDetalle.objects.filter(planilla=o_planilla, empleado__dept=o_depto).exclude(empleado__email='')
+            for item in detalles_planillas:
+                detalle_deducciones = PlanillaDetalleDeducciones.objects.filter(planilla=o_planilla, empleado=item.empleado)
+                detalle_ingresos = PlanillaDetalleIngresos.objects.filter(planilla=o_planilla, empleado=item.empleado)
+                boleta_pago_email_masivo(detalle_ingresos, detalle_deducciones, item.empleado, o_planilla, item)
+                
+            messages.add_message(request, messages.SUCCESS, 'Se enviaron los correos.')
+    return redirect('impresion_boletas')
 # endregion
+
+#region Código para Reporte de Cuentas Contables
+def cuentas_contables_page(request):
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    planillas = Planilla.objects.filter(sucursal_reg=suc, active=True, cerrada=True).order_by('-fecha_pago', 'pk')
+    return render(request, 'reportes/cuentas_contables.html', {"planillas": planillas})
+
+#--------------------------->>> AJAX <<<<--------------------
+
+def cuentas_contables_generar(request):
+    try:
+        datos = []
+        total = 0
+        if not request.user.is_anonymous():
+            planilla_id = request.GET.get("planilla_id")
+            planilla_obj = Planilla.objects.get(pk=planilla_id)
+            detalle = PlanillaDetalle.objects.filter(planilla=planilla_obj).values('empleado__dept__description').annotate(Sum("total_ingresos"), Sum("total_deducciones"))
+            for item in detalle:
+                objeto = {
+                    'departamento': item["empleado__dept__description"],
+                    'total': formato_millar(item["total_ingresos__sum"] - item["total_deducciones__sum"])
+                }
+                datos.append(objeto)
+                total += (item["total_ingresos__sum"] - item["total_deducciones__sum"])
+            data = {
+                "mensaje": None,
+                "datos": datos,
+                "total": formato_millar(total)
+            }
+        else:
+            data = {
+                "mensaje": "El tipo de petición no está permitida",
+            }
+        return JsonResponse(data)
+    except Exception as ex:
+        return JsonResponse({"mensaje": str(ex)})
+
+#endregion
 
 def verifica_saldo_controlado(request):
     try:
@@ -18320,9 +18570,9 @@ def obtener_fecha_limite(request):
 
         dias_t = int(o_empleado.salaryUnits.dias_salario) * int(cuota)
         print(dias_t)
-        fecha_inicial = datetime.strptime(fecha_inicial, "%d/%m/%Y")
+        fecha_inicial = datetime.datetime.strptime(fecha_inicial, "%d/%m/%Y")
         fecha_limite = fecha_inicial + dtiempo.timedelta(days=dias_t)
-        fecha_limite = datetime.strftime(fecha_limite, "%d/%m/%Y")
+        fecha_limite = datetime.datetime.strftime(fecha_limite, "%d/%m/%Y")
         data = {"error": False, "fecha": fecha_limite}
         return JsonResponse(data)
     else:
@@ -18784,10 +19034,10 @@ class ReportePlanilla(View):
         if len(fecha_hasta) == 0:
             data = {"error": True, "mensaje": "Seleccione un rango de fecha válido"}
             return render(request, "reportes/reporte-planilla-general.html", data)
-        vdesde = datetime.strptime(fecha_desde, "%d/%m/%Y").date()
-        vhasta = datetime.strptime(fecha_hasta, "%d/%m/%Y").date()
-        vdesde = datetime.strftime(vdesde, "%Y-%m-%d")
-        vhasta = datetime.strftime(vhasta, "%Y-%m-%d")
+        vdesde = datetime.datetime.strptime(fecha_desde, "%d/%m/%Y").date()
+        vhasta = datetime.datetime.strptime(fecha_hasta, "%d/%m/%Y").date()
+        vdesde = datetime.datetime.strftime(vdesde, "%Y-%m-%d")
+        vhasta = datetime.datetime.strftime(vhasta, "%Y-%m-%d")
 
         if estado_contrato == "2":
             q_list.append(Q(planilla__cerrada=True))

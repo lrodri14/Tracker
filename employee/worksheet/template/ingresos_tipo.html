@@ -64,7 +64,9 @@ Tipo de Ingreso
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h4 class="modal-title">Agregar Deducción de Empleado</h4> </div>
+                    <h4 class="modal-title" v-if="!ingreso_tipo.editar">Agregar Tipo de Ingreso</h4>
+                    <h4 class="modal-title" v-else>Editar Tipo de Ingreso</h4>
+                </div>
                 <div class="modal-body">
                     <form>
                         <div class="form-group">
@@ -207,7 +209,14 @@ Tipo de Ingreso
                         'Content-Type': 'application/json;charset=UTF-8',
                     })
                     .then((response) => {
-                        $('#frmEditar-modal').modal('toggle');
+                        if(response.data.error) {
+                            swal("¡Algo salió mal!", response.data.mensaje, "error");
+                        }else{
+                            this.limpiar();
+                            this.cargarDatos();
+                            $('#formulario-modal').modal('toggle');
+                            swal("¡Éxito!", response.data.mensaje, "success");
+                        }
                     })
                     .catch((err) => {
                         this.loading = false;

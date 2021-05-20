@@ -27,6 +27,7 @@ Deducciones de empleado
                             <ul class="nav nav-tabs" role="tablist">
                                 <li role="presentation" class="active"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-user"></i></span> <span class="hidden-xs">Listado de deducciones</span></a></li>
                                 <li role="presentation" class=""><a href="#home" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true"><span class="visible-xs"><i class="ti-home"></i></span><span class="hidden-xs"> Formulario</span></a></li>
+                                <li role="presentation" class=""><a href="#reversion" aria-controls="reversion" role="tab" data-toggle="tab" aria-expanded="true"><span class="visible-xs"><i class="ti-revertir"></i></span><span class="hidden-xs"> Revertir datos</span></a></li>
                             </ul>
                             <!-- Tab panes -->
                             <div class="tab-content">
@@ -144,6 +145,29 @@ Deducciones de empleado
                                         </div>
                                     </div>
                                 </div>
+                                <div role="tabpanel" class="tab-pane" id="reversion">
+                                    <div class="col-md-6 form-group">
+                                        <label for="cboPlanillaI">Planilla</label>
+                                        <select id="cboPlanillaI"  class="form-control select2" >
+                                            <option value="0">Seleccionar...</option>
+                                            {% for planilla in planillas %}
+                                            <option value="{{planilla.pk}}">{{planilla.descripcion}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 form-group">
+                                        <label for="cboDeduccionI">Tipo de Deducción</label>
+                                        <select id="cboDeduccionI" class="form-control select2">
+                                            <option value="0">Seleccionar...</option>
+                                            {% for tipo in tipos_deduccion %}
+                                            <option value="{{tipo.pk}}">{{tipo.deduccion_tipo}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-12 form-group text-right">
+                                        <button class="btn btn-info" @click="revertirDeduccion();">Revertir</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -209,7 +233,8 @@ Deducciones de empleado
                         <div class="modal-content">
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                                <h4 class="modal-title">Editar Deducción de Empleado</h4> </div>
+                                <h4 class="modal-title">Editar Deducción de Empleado 1</h4>
+                            </div>
                             <div class="modal-body">
                                 <form>
                                     <div class="form-group">
@@ -222,17 +247,17 @@ Deducciones de empleado
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label for="cboPlanillaE">Planilla</label>
-                                        <select id="cboPlanillaE" class="form-control select2">
+                                        <label for="cboPlanillaEd">Planilla</label>
+                                        <select id="cboPlanillaEd"  class="form-control select2" disabled>
                                             <option value="0">Seleccionar...</option>
-                                            {% for planilla in planillas %}
+                                            {% for planilla in planillas_l %}
                                             <option value="{{planilla.pk}}">{{planilla.descripcion}}</option>
                                             {% endfor %}
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label for="cboEmpleadoE">Empleado</label>
-                                        <select id="cboEmpleadoE" class="form-control select2">
+                                        <label for="cboEmpleadoEd">Empleado</label>
+                                        <select id="cboEmpleadoEd" class="form-control select2" disabled>
                                             <option value="0">Seleccionar...</option>
                                             {% for empleado in empleados %}
                                             <option value="{{empleado.pk}}">{{empleado.firstName}} {% if empleado.middleName %}{{empleado.middleName}}{% endif %} {{empleado.lastName}}</option>
@@ -354,9 +379,11 @@ Deducciones de empleado
             nuevoDetalle: {"deduccion": 0, "descripcion": '', "monto": 0.0, "fecha": ''},
             actualRegistro: {},
             nuevaDeduccion: {"deduccion": 0, "planilla": 0, "empleado": 0, "monto": null, "detalle": false},
+            revertirRegistros: {"deduccion": 0, "planilla": 0},
             total_monto: 0,
         },
         mounted: function() {
+            //$('#cboPlanillaE').select2();
             $('.select2').select2();
             $('#side-menu a').removeClass('active');
             $('#aAcciones').addClass('active');
@@ -432,9 +459,10 @@ Deducciones de empleado
                         swal("¡Algo salió mal!", response.data.mensaje, "warning");
                     }else{
                         self.actualRegistro = response.data.dato;
+                        
                         $('#cboDeduccionE').select2('val', response.data.dato.deduccion);
-                        $('#cboPlanillaE').select2('val', response.data.dato.planilla);
-                        $('#cboEmpleadoE').select2('val', response.data.dato.empleado);
+                        $('#cboPlanillaEd').select2('val', self.actualRegistro.planilla);
+                        $('#cboEmpleadoEd').select2('val', self.actualRegistro.empleado);
                         $('#frmEditar-modal').modal('toggle');
                     }
                 }).catch(function(error) {
@@ -614,6 +642,39 @@ Deducciones de empleado
                         swal("¡Algo salió mal!", error, "warning");
                     });
             },
+            revertirDeduccion: function() {
+                var self = this;
+                event.preventDefault();
+                swal({   
+                    title: "¿Desea revertir los registros?",   
+                    text: "Al eliminar éste registro no se podrá recuperar en la base de datos. Si no ha seleccionado un 'Tipo de Deducción' se procederá a revertir todos los registros de deducción de la planilla seleccionada.",   
+                    type: "warning",   
+                    showCancelButton: true,   
+                    confirmButtonColor: "#DD6B55",   
+                    confirmButtonText: "Si, eliminar",   
+                    closeOnConfirm: false 
+                }, function(){   
+                    axios.post('/revertir/deducciones/', self.revertirRegistros, 
+                        {
+                            headers: {
+                                'X-Requested-With' : 'XMLHttpRequest',
+                                'X-CSRFToken': self.getCookie('csrftoken'),
+                                'Content-Type': 'application/json;charset=UTF-8',
+                            }
+                        })
+                        .then(function(response){
+                            if(response.data.error){
+                                swal("Algo salió mal!", response.data.mensaje, "warning");
+                            }else{
+                                //self.busqueda();
+                                //$('#frmVerDetalle-modal').modal('toggle');
+                                swal("¡Exito!", response.data.mensaje, "success");
+                            }
+                        }).catch(function(error){
+                            swal("¡Algo salió mal!", error.mensaje, "warning");
+                        });
+                });
+            },
             getCookie (name) {
                 var value = '; ' + document.cookie
                 var parts = value.split('; ' + name + '=')
@@ -657,6 +718,12 @@ Deducciones de empleado
     });
     $('#cboEmpleadoE').on('change', function() {
         app.actualRegistro.empleado = $(this).val();
+    });
+    $('#cboPlanillaI').on('change', function() {
+        app.revertirRegistros.planilla = $(this).val();
+    });
+    $('#cboDeduccionI').on('change', function() {
+        app.revertirRegistros.deduccion = $(this).val();
     });
 </script>
 {% endblock scripts %}

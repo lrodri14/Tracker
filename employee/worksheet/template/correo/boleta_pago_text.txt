@@ -7,6 +7,11 @@
     <title>Boleta de Pago</title>
 </head>
 <body>
-    <h1>Boleta de Pago - {{usuario}}</h1>
+    <h1>Boleta de Pago</h1>
+    <div class="encabezado">
+        <div>
+            <label>Código empleado: </label><label><strong>{{empleado.extEmpNo}}</strong></label>
+        </div>
+    </div>
 </body>
 </html>

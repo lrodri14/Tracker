@@ -103,7 +103,8 @@ class Position(models.Model):
 class Department(models.Model):
     code = models.CharField(max_length=5, blank=True, null=True)
     description = models.CharField(max_length=250)
-    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.DO_NOTHING, related_name="dep_empreg", related_query_name="dep_empreg")
+    empresa_reg = models.ForeignKey(Empresa, blank=True, null=True, on_delete=models.PROTECT, related_name="dep_empreg", related_query_name="dep_empreg")
+    cuenta_contable = models.CharField(("Cuenta contable"), max_length=150, default='')
     user_reg = models.ForeignKey(User, on_delete=models.PROTECT)
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='dep_usermod', related_query_name='dep_usermod')
@@ -1028,6 +1029,7 @@ class Planilla(models.Model):
 class PlanillaDetalle(models.Model):
     planilla = models.ForeignKey("worksheet.Planilla", on_delete=models.PROTECT)
     empleado = models.ForeignKey("worksheet.Employee", on_delete=models.PROTECT)
+    departamento = models.ForeignKey("worksheet.Department", verbose_name=("Departamento"), on_delete=models.PROTECT, blank=True, null=True)
     salario_diario = models.CharField(max_length=50)
     dias_salario = models.CharField(max_length=50)
     dias_ausentes_sin_pago = models.CharField(max_length=50)
@@ -1331,16 +1333,16 @@ class DeduccionTipo(models.Model):
         return reverse("deducciontipo_detail", kwargs={"pk": self.pk})
 
 class DeduccionEmpleado(models.Model):
-    empleado = models.ForeignKey("worksheet.Employee", verbose_name=("Empleado"), on_delete=models.PROTECT)
-    planilla = models.ForeignKey("worksheet.Planilla", verbose_name=("Planilla"), on_delete=models.PROTECT)
-    deduccion = models.ForeignKey("worksheet.DeduccionTipo", verbose_name=("Tipo Deduccion"), on_delete=models.PROTECT)
+    empleado = models.ForeignKey("worksheet.Employee", verbose_name=("Empleado"), on_delete=models.DO_NOTHING)
+    planilla = models.ForeignKey("worksheet.Planilla", verbose_name=("Planilla"), on_delete=models.CASCADE)
+    deduccion = models.ForeignKey("worksheet.DeduccionTipo", verbose_name=("Tipo Deduccion"), on_delete=models.DO_NOTHING)
     monto = models.DecimalField(("Monto"), max_digits=16, decimal_places=4)
     detalle = models.BooleanField(("Requiere detalle"), default=False)
 
-    user_reg = models.ForeignKey(User, on_delete=models.PROTECT, related_name='dedemp_userreg', related_query_name='dedemp_userreg')
+    user_reg = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='dedemp_userreg', related_query_name='dedemp_userreg')
     date_reg = models.DateTimeField(("Fecha registro"), auto_now_add=True)
-    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT, related_name='dedemp_usermod', related_query_name='dedemp_usermod')
-    date_mod = models.DateTimeField(blank=True, null=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.DO_NOTHING, related_name='dedemp_usermod', related_query_name='dedemp_usermod')
+    date_mod = models.DateTimeField(auto_now=True, blank=True, null=True)
     active = models.BooleanField(("Activo"), default=True)
 
     class Meta:
@@ -1418,15 +1420,15 @@ class DeduccionesEmpleadoArchivo(models.Model):
     archivo = models.FileField(("Archivo deducciones"), upload_to=None, blank=False, null=False)
 
 class PlanillaDetalleDeducciones(models.Model):
-    empleado = models.ForeignKey("worksheet.Employee", verbose_name=("Empleado"), on_delete=models.PROTECT)
-    planilla = models.ForeignKey("worksheet.Planilla", verbose_name=("Planilla"), on_delete=models.PROTECT)
+    empleado = models.ForeignKey("worksheet.Employee", verbose_name=("Empleado"), on_delete=models.DO_NOTHING)
+    planilla = models.ForeignKey("worksheet.Planilla", verbose_name=("Planilla"), on_delete=models.DO_NOTHING)
     deduccion = models.CharField(("Deduccion"), max_length=250)
-    deduccion_f = models.ForeignKey("worksheet.DeduccionEmpleado", verbose_name=("Deduccion empleado"), on_delete=models.PROTECT, blank=True, null=True)
+    deduccion_f = models.ForeignKey("worksheet.DeduccionEmpleado", verbose_name=("Deduccion empleado"), on_delete=models.CASCADE, blank=True, null=True)
     valor = models.DecimalField(("Valor"), max_digits=18, decimal_places=2)
-    tipo_deduccion = models.ForeignKey("worksheet.DeduccionTipo", verbose_name=("Tipo Deduccion"), on_delete=models.PROTECT, blank=True, null=True)
-    empresa_reg = models.ForeignKey(Empresa, on_delete=models.PROTECT)
-    sucursal_reg = models.ForeignKey(Branch, on_delete=models.PROTECT)
-    user_reg = models.ForeignKey(User, on_delete=models.PROTECT)
+    tipo_deduccion = models.ForeignKey("worksheet.DeduccionTipo", verbose_name=("Tipo Deduccion"), on_delete=models.DO_NOTHING, blank=True, null=True)
+    empresa_reg = models.ForeignKey(Empresa, on_delete=models.DO_NOTHING)
+    sucursal_reg = models.ForeignKey(Branch, on_delete=models.DO_NOTHING)
+    user_reg = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     date_reg = models.DateTimeField(auto_now_add=True)
 
     class Meta:

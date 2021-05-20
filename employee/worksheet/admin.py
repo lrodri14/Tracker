@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 from django.contrib.auth.models import Permission
 from django.contrib import admin
-from employee.worksheet.models import *
+from .models import *
 
 admin.site.site_header = "Tracker"
 admin.site.title = "Tracker"

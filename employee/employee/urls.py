@@ -32,6 +32,7 @@ urlpatterns = [
     #url(r'^salir/$', logout, name="salir", kwargs={'next_page': '/'}),
     url(r'^login/$', views.login, name="login"),
     url(r'^impresion-boletas/', views.impresion_boletas, name="impresion_boletas"),
+    url(r'^envio/boletas/correo/', views.envio_boleta_correo, name="envio_boleta_correo"),
     url(r'reporte-pdf-boletas/$', views.ReporteBoletas.as_view(), name='reporte-pdf-boletas'),
 
 
@@ -311,6 +312,7 @@ urlpatterns = [
     url(r'^actualizar/ingresos-empleados/$', views.ingresos_empleados_actualizar, name='ingresos_empleados_actualizar'),
     url(r'^actualizar/ingreso-individual-detalle/$', views.ingreso_individual_detalle_actualizar, name='ingreso_individual_detalle_actualizar'),
     url(r'^actualizar/ingreso-individual-planilla/$', views.ingreso_individual_planilla_actualizar, name='ingreso_individual_planilla_actualizar'),
+    url(r'^actualizar/ingresos-tipos/$', views.ingreso_tipo_actualizar, name='ingreso_tipo_actualizar'),
     url(r'^actualizar/impuesto-vecinal/$', views.impuestovecinal_actualizar, name='impuestovecinal_actualizar'),
     url(r'^actualizar/isr/$', views.impuestosobrerenta_actualizar, name='impuestosobrerenta_actualizar'),
     url(r'^actualizar/motivo-aumento-sueldo/$', views.actualizar_motivo_aumento_sueldo, name='actualizar_motivo_aumento_sueldo'),
@@ -452,6 +454,8 @@ urlpatterns = [
     url(r'^obtener/reg_rap/$', views.obtener_reg_rap, name="obtener_reg_rap"),
     url(r'^enviar/aumento-salario/$', views.aumento_salario_guardar, name="aumento_salario_guardar"),
     url(r'^enviar/sucursal/$', views.enviar_sucursal, name="enviar_sucursal"),
+    url(r'^revertir/deducciones/$', views.deducciones_reversion, name="deducciones_reversion"),
+    url(r'^revertir/ingresos/$', views.ingresos_reversion, name="ingresos_reversion"),
 
     url(r'^ver-registro/aumento-salario/$', views.aumento_salario_ver_registro, name="aumento_salario_ver_registro"),
     url(r'^ver-registro/planilla/$', views.planilla_ver_registro, name="planilla_ver_registro"),
@@ -465,6 +469,8 @@ urlpatterns = [
     url(r'reporte/boleta-pago/$', views.boleta_pago_reporte, name='boleta_pago_reporte'),
     url(r'reporte/boleta-pago-prueba/$', views.reporte_probando, name='reporte_probando'),
     url(r'reporte/empleados-lista1/$', views.reporte_empleados, name='reporte_empleados'),
+    url(r'reporte/cuentas-contables/$', views.cuentas_contables_page, name='cuentas_contables_page'),
+    url(r'reporte/cuentas-contables/generar/$', views.cuentas_contables_generar, name='cuentas_contables_generar'),
     url(r'reporte/planilla-total/$', views.ReportePlanilla.as_view(), name='reporte_planilla'),
     url(r'reporte/planilla-especifica/$', views.ReportePlanillaSeleccion.as_view(), name='reporte_planilla_especifica'),
     url(r'reporte/planilla-total-excel/$', views.ReportePlanillaExcel.as_view(), name='reporte_planilla_excel'),
