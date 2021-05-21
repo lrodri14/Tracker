@@ -13731,6 +13731,8 @@ def planilla_generar_calculos(request):
                                         if v_fecha_final > o_planilla.fecha_fin and (contrato.fecha_inicio >= o_planilla.fecha_inicio and contrato.fecha_inicio <= o_planilla.fecha_fin):
                                             #Se suma a resultado de dias trabajados el restante entre la final de planilla y la fecha inicio de contrato
                                             res_dia_trab += (o_planilla.fecha_fin - contrato.fecha_inicio).days + 1
+                                            if res_dia_trab < total_dias_trabajados:
+                                                res_dia_trab = total_dias_trabajados
                                 
                                 #Si el empleado no tiene contratos pero si tiene una fecha de finalización de relación profesional
                                 elif item.termDate:
@@ -13740,7 +13742,6 @@ def planilla_generar_calculos(request):
                                     if v_fecha_final >= o_planilla.fecha_inicio and v_fecha_final <= o_planilla.fecha_fin:
                                         #Se suma a resultado de dias trabajados el restante entre la fecha final y la fecha inicial de planilla
                                         res_dia_trab += (v_fecha_final - o_planilla.fecha_inicio).days + 1
-
                                 
                                 #res_fec += res_dia_plan - res_dia_trab
                                 res_fec += total_dias_trabajados - res_dia_trab
