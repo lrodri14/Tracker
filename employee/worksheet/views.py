@@ -10105,7 +10105,6 @@ def deduccion_general_eliminar(request):
 
 # region Código para Deduccion General Detalle
 
-
 @login_required(login_url="/form/iniciar-sesion/")
 @permission_required("worksheet.see_deducciongeneraldetalle", raise_exception=True)
 def deduccion_general_detalle_listado(request):
@@ -13718,6 +13717,8 @@ def planilla_generar_calculos(request):
                                             #Se suma a resultado de dias trabajados el restante entre la fecha final de la relación profesional y
                                             #la fecha de inicio del contrato
                                             res_dia_trab += (v_fecha_final - contrato.fecha_inicio).days + 1
+                                            if res_dia_trab < total_dias_trabajados:
+                                                res_dia_trab = total_dias_trabajados
                                             
                                         #Se evalúa si la fecha inicio de contrato es antes que la fecha inicio de planilla y la fecha final de
                                         #relación profesional está entre el rango de fecha de inicio y final de planilla
@@ -13725,6 +13726,8 @@ def planilla_generar_calculos(request):
                                             #Se suma a resultado de dias trabajados el restante entre la fecha final de la relación profesional y
                                             #la fecha de incio de la planilla
                                             res_dia_trab += (v_fecha_final - o_planilla.fecha_inicio).days + 1
+                                            if res_dia_trab < total_dias_trabajados:
+                                                res_dia_trab = total_dias_trabajados
 
                                         #Se evalúa si la fecha final de relación profesional es después de la fecha final de la planilla y
                                         #la fecha inicial del contrato es entre el rango de fecha inicial y final de la planilla
