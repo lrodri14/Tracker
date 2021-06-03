@@ -13702,10 +13702,7 @@ def planilla_generar_calculos(request):
                                             # Se procede a evaluar si la fecha de finalización del empleado es mayor
                                             # a la fecha final de contrato
                                             if item.termDate >= o_planilla.fecha_inicio and item.termDate <= o_planilla.fecha_fin:
-                                                if item.termDate >= contrato.fecha_fin:
-                                                    v_fecha_final = contrato.fecha_fin # Se asigna como fecha final la fecha de contrato
-                                                else:
-                                                    v_fecha_final = item.termDate
+                                                v_fecha_final = item.termDate
                                             else:
                                                 v_fecha_final = contrato.fecha_fin
                                                 # Se asigna como fecha final el valor que está en la información del empleado
@@ -13717,7 +13714,7 @@ def planilla_generar_calculos(request):
                                             #Se suma a resultado de dias trabajados el restante entre la fecha final de la relación profesional y
                                             #la fecha de inicio del contrato
                                             res_dia_trab += (v_fecha_final - contrato.fecha_inicio).days + 1
-                                            if not item.termDate:
+                                            if not item.termDate and not contrato.fecha_fin < o_planilla.fecha_fin:
                                                 if res_dia_trab < total_dias_trabajados:
                                                     res_dia_trab = total_dias_trabajados
                                             
@@ -13727,7 +13724,7 @@ def planilla_generar_calculos(request):
                                             #Se suma a resultado de dias trabajados el restante entre la fecha final de la relación profesional y
                                             #la fecha de incio de la planilla
                                             res_dia_trab += (v_fecha_final - o_planilla.fecha_inicio).days + 1
-                                            if not item.termDate:
+                                            if not item.termDate and not contrato.fecha_fin < o_planilla.fecha_fin:
                                                 if res_dia_trab < total_dias_trabajados:
                                                     res_dia_trab = total_dias_trabajados
 
