@@ -1478,3 +1478,19 @@ class Contrato(models.Model):
 
     def get_absolute_url(self):
         return reverse("contrato_detail", kwargs={"pk": self.pk})
+
+class CuentaContableAsignacion(models.Model):
+    tipo_ingreso = models.ForeignKey("worksheet.IngresoTipo", verbose_name=("Tipo Ingreso"), on_delete=models.PROTECT, related_name="tipoingreso")
+    departamento = models.ForeignKey("worksheet.Department", verbose_name=("Departamento"), on_delete=models.PROTECT, related_name="departamento")
+    cuenta_contable = models.CharField(("Cuenta contable"), max_length=150)
+    user_reg = models.ForeignKey(User, on_delete=models.PROTECT, related_name='user_reg', related_query_name='user_reg')
+    date_reg = models.DateTimeField(("Fecha registro"), auto_now_add=True)
+    user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT, related_name='user_mod', related_query_name='user_mod')
+    date_mod = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = ("cuentacontableasignacion")
+        verbose_name_plural = ("cuentacontableasignaciones")
+
+    def __str__(self):
+        return self.tipo_ingreso.tipo_ingreso + " - " + self.departamento.description

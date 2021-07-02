@@ -1,0 +1,274 @@
+{% extends 'base.html' %}
+{% block titulo %}Agregar cuenta contable{% endblock titulo %}
+{% block estilo %}{% endblock estilo %}
+{% block contenido %}
+{% load static %}
+<div id="app" class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="text-bold"><i class="ti-pencil-alt"></i> Listado de Cuentas Contables</h2>
+            </div>
+            <div class="panel-wrapper">
+                <div class="panel-body">
+                    <!--Código para la tabla-->
+                    <div class="row">
+                        <button class="btn btn-primary" @click="agregar();">Agregar</button>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr >
+                                        <th>Departamento</th>
+                                        <th>Tipo de Ingreso</th>
+                                        <th>Cuenta Contable</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="cc in cuentas_contables">
+                                        <td>${cc.departamento.descripcion}</td>
+                                        <td>${cc.tipo_ingreso.descripcion}</td>
+                                        <td>${cc.cuenta_contable}</td>
+                                        <td class="opciones">
+                                            <a href="#" class="text-danger" @click="eliminarCuentaContable(cc.id, $event)"><i class="ti-close"></i></a>
+                                            <a href="#" @click="editarCuenta(cc.id, $event)"><i class="icon-pencil"></i></a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!--Fin de código para la tabla-->
+                    <!-- /.modal Agregar -->
+                    <div id="Formulario-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="Formulario-modalLabel" aria-hidden="true" style="display: none;">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true" @click="limpiar();">×</button>
+                                    <h4 class="modal-title">Agregar Cuenta Contable</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <form>
+                                        <div class="form-group">
+                                            <label for="cboTipoIngreso">Tipo de Ingreso</label>
+                                            <select id="cboTipoIngreso" class="form-control select2">
+                                                <option value="0">Seleccionar...</option>
+                                                {% for tipo in tipos_ingresos %}
+                                                <option value="{{tipo.pk}}">{{tipo.ingreso_tipo}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="cboDepto">Departamento</label>
+                                            <select id="cboDepto" class="form-control select2">
+                                                <option value="0">Seleccionar...</option>
+                                                {% for depto in departamentos %}
+                                                <option value="{{depto.pk}}">{{depto.description}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="txtCuenta">Cuenta Contable</label>
+                                            <input type="text" id="txtCuenta" class="form-control" v-model="cuenta_contable.cuenta" required="True"/>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default waves-effect" data-dismiss="modal" @click="limpiar();">Cerrar</button>
+                                    <button v-if="!editar" type="button" class="btn btn-success waves-effect waves-light" @click="guardarCuentaContable();">Guardar</button>
+                                    <button v-else type="button" class="btn btn-success waves-effect waves-light" @click="actualizarCuentaContable();">Actualizar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contenido %}
+{% block scripts %}
+<script>
+    var app = new Vue({
+        el: '#app',
+        delimiters: ["${","}"],
+        data: {
+            cuentas_contables: [],
+            cuenta_contable: {
+                id: 0, 
+                departamento: {
+                    id: 0
+                }, 
+                tipo_ingreso: {
+                    id: 0
+                }, 
+                cuenta: ''
+            },
+            editar: false,
+        },
+        mounted: function() {
+            $('.select2').select2();
+            $('#side-menu a').removeClass('active');
+            $('#aConceptos').addClass('active');
+            $('#aCuentasContables').addClass('active');
+            $('#aPersonal').addClass('active');
+            $('#aConceptos').parents('li').addClass('active');
+            $('#aCuentasContables').parents('li').addClass('active');
+            this.obtenerCuentas()
+        },
+        methods: {
+            obtenerCuentas() {
+                var self = this;
+                axios.get('/obtener/cuentas-contables/', 
+                    {
+                        headers: {
+                            'X-Requested-With' : 'XMLHttpRequest',
+                        }
+                    })
+                    .then(function(response){
+                        self.cuentas_contables = response.data.datos;
+                    }).catch(function(error){
+                        swal("¡Algo salió mal!", error, "warning", {
+                            buttons: ["Cancelar", "Aceptar"],
+                        })
+                    })
+            },
+            agregar() {
+                this.limpiar();
+                $('#Formulario-modal').modal('toggle')
+            },
+            editarCuenta (id, event) {
+                event.preventDefault();
+                var self = this;
+                self.editar = true
+                axios.get('/obtener/cuenta-contable/', {params:{'id':id}},{
+                    headers: {
+                        'X-Requested-With' : 'XMLHttpRequest',
+                    }
+                }).then((response) => {
+                    if(response.data.error){
+                        swal("¡Algo salió mal!", response.data.mensaje, "warning")
+                    }else{
+                        self.cuenta_contable = response.data.cuenta_contable;
+                        
+                        $('#cboDepto').select2('val', self.cuenta_contable.departamento.id)
+                        $('#cboTipoIngreso').select2('val', self.cuenta_contable.tipo_ingreso.id)
+                        $('#Formulario-modal').modal('toggle')
+                    }
+                }).catch(function(error) {
+                    swal("¡Algo salió mal!", error, "warning")
+                })
+            },
+            guardarCuentaContable() {
+                var self = this;
+                var datos = {
+                    'departamento': self.cuenta_contable.departamento.id,
+                    'tipo_ingreso': self.cuenta_contable.tipo_ingreso.id,
+                    'cuenta': self.cuenta_contable.cuenta,
+                }
+                axios.post('/guardar/cuenta-contable/', datos, 
+                    {
+                        headers: {
+                            'X-Requested-With' : 'XMLHttpRequest',
+                            'X-CSRFToken': this.getCookie('csrftoken')}, 
+                            'Content-Type': 'application/json;charset=UTF-8',
+                            })
+                    .then((response) => {
+                        if(response.data.error){
+                            swal("¡Algo salió mal!", response.data.mensaje, "warning");
+                        }else{
+                            $('#Formulario-modal').modal('toggle');
+                            swal("¡Éxito!", response.data.mensaje, "success");
+                            self.limpiar();
+                            this.obtenerCuentas();
+                        }
+                    }).catch(function(error) {
+                        swal("¡Algo salió mal!", error, "warning");
+                    });
+            },
+            actualizarCuentaContable() {
+                var self = this;
+                var datos = {
+                    'id': self.cuenta_contable.id,
+                    'departamento': self.cuenta_contable.departamento.id,
+                    'tipo_ingreso': self.cuenta_contable.tipo_ingreso.id,
+                    'cuenta': self.cuenta_contable.cuenta,
+                }
+                axios.post('/actualizar/cuenta-contable/', datos, 
+                    {
+                        headers: {
+                            'X-Requested-With' : 'XMLHttpRequest',
+                            'X-CSRFToken': this.getCookie('csrftoken')
+                        }, 
+                        'Content-Type': 'application/json;charset=UTF-8',
+                    })
+                    .then((response) => {
+                        if(response.data.error){
+                            swal("¡Algo salió mal!", response.data.mensaje, "warning");
+                        }else{
+                            $('#Formulario-modal').modal('toggle');
+                            swal("¡Éxito!", response.data.mensaje, "success");
+                            self.limpiar();
+                            this.obtenerCuentas();
+                        }
+                    }).catch(function(error) {
+                        swal("¡Algo salió mal!", error, "warning");
+                    });
+            },
+            eliminarCuentaContable: function(id, event) {
+                var self = this;
+                event.preventDefault();
+                swal({   
+                    title: "¿Desea eliminar el registro?",   
+                    text: "Al eliminar éste registro no se podrá recuperar en la base de datos.",   
+                    type: "warning",   
+                    showCancelButton: true,   
+                    confirmButtonColor: "#DD6B55",   
+                    confirmButtonText: "Si, eliminar",   
+                    closeOnConfirm: false 
+                }, function(){   
+                    axios.post('/eliminar/cuenta-contable/', {"id": id}, 
+                        {
+                            headers: {
+                                'X-Requested-With' : 'XMLHttpRequest',
+                                'X-CSRFToken': self.getCookie('csrftoken'),
+                                'Content-Type': 'application/json;charset=UTF-8',
+                            }
+                        })
+                        .then(function(response){
+                            console.log(response)
+                            if(response.data.error){
+                                swal("Algo salió mal!", response.data.mensaje, "warning")
+                            }else{
+                                this.obtenerCuentas()
+                                swal("¡Exito!", response.data.mensaje, "success")
+                            }
+                        }).catch(function(error){
+                            swal("¡Algo salió mal!", error.mensaje, "warning")
+                        })
+                })
+            },
+            limpiar() {
+                this.cuenta_contable.departamento.id = 0
+                this.cuenta_contable.tipo_ingreso.id = 0
+                this.cuenta_contable.cuenta = ''
+                this.editar = false
+                $('#Formulario-modal .select2').select2('val', '0')
+                
+            },
+            getCookie (name) {
+                var value = '; ' + document.cookie
+                var parts = value.split('; ' + name + '=')
+                if (parts.length === 2) return parts.pop().split(';').shift()
+            },
+        },
+    });
+
+    $('#cboDepto').on('change', function() {
+        app.cuenta_contable.departamento.id = $(this).val();
+    });
+    $('#cboTipoIngreso').on('change', function() {
+        app.cuenta_contable.tipo_ingreso.id = $(this).val();
+    });
+</script>
+{% endblock scripts %}

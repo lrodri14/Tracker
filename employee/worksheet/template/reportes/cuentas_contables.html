@@ -27,8 +27,17 @@
                                     <option value="{{planilla.id}}">{{planilla.descripcion}}</option>
                                     {% endfor %}
                                 </select>
-                                <button class="btn btn-default" @click="buscar();">Buscar</button>
                             </div>
+                            <div class="form-group">
+                                <label>Seleccione tipo de ingreso: </label>
+                                <select id="cboTipoIngreso" name="cboTipoIngreso" class="form-control select2">
+                                    <option value="0">Seleccione...</option>
+                                    {% for tipo_ingreso in tipos_ingresos %}
+                                    <option value="{{tipo_ingreso.id}}">{{tipo_ingreso.ingreso_tipo}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <button class="btn btn-default" @click="buscar();">Buscar</button>
                         </div>
                         <br>
                         <div class="table-responsive col-md-offset-3 col-md-6">
@@ -37,16 +46,20 @@
                                 <thead>
                                     <tr >
                                         <th>DEPARTAMENTO</th>
+                                        <th>CUENTA CONTABLE</th>
+                                        <th>TIPO DE INGRESO</th>
                                         <th class="text-center">TOTAL</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="cuenta in cuentas" :key="cuenta.departamento">
+                                    <tr v-for="cuenta in cuentas" :key="cuenta.index">
                                         <td>${cuenta.departamento}</td>
+                                        <td>${cuenta.cuenta_contable}</td>
+                                        <td>${cuenta.tipo_ingreso}</td>
                                         <td class="text-right">${cuenta.total}</td>
                                     </tr>
                                     <tr>
-                                        <td><strong>TOTAL</strong></td>
+                                        <td colspan="3"><strong>TOTAL</strong></td>
                                         <td class="text-right"><strong>${total}</strong></td>
                                     </tr>
                                 </tbody>
@@ -65,7 +78,7 @@
         'el': '#app',
         delimiters: ["${","}"],
         data: {
-            parametros: {"planilla_id": 0},
+            parametros: {"planilla_id": 0, "tipo_ingreso_id": 0},
             cuentas: [],
             total: 0.00,
         },
@@ -74,6 +87,12 @@
         },
         mounted: function() {
             $('.select2').select2()
+            $('#side-menu a').removeClass('active')
+            $('#aAcciones').addClass('active')
+            $('#aRCuentasContables').addClass('active')
+            $('#accionesReportes').addClass('active')
+            $('#aAcciones').parents('li').addClass('active')
+            $('#aRCuentasContables').parents('li').addClass('active')
         },
         methods: {
             buscar: function() {
@@ -130,6 +149,10 @@
 
     $("#cboPlanilla").on('change', function() {
         app.parametros.planilla_id = $(this).val();
+    });
+
+    $("#cboTipoIngreso").on('change', function() {
+        app.parametros.tipo_ingreso_id = $(this).val();
     });
 
     // $('#cuentas').DataTable({

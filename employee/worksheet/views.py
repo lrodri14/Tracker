@@ -13714,7 +13714,12 @@ def planilla_generar_calculos(request):
                                             #Se suma a resultado de dias trabajados el restante entre la fecha final de la relación profesional y
                                             #la fecha de inicio del contrato
                                             res_dia_trab += (v_fecha_final - contrato.fecha_inicio).days + 1
+                                            #Se procede a evaluar si el empleado no renunció o fue despedido y
+                                            #si el contrato no vence antes de la fecha final de la planilla
                                             if not item.termDate and not contrato.fecha_fin < o_planilla.fecha_fin:
+                                                # se cumple entonces se entiende que el empleado trabajó la planilla completa
+                                                # entonces se procede a evaluar si los dias trabajados son iguales o los dias
+                                                # que da al resultado de la diferencia entre fecha final y fecha inicio de planilla
                                                 if res_dia_trab < total_dias_trabajados:
                                                     res_dia_trab = total_dias_trabajados
                                             
@@ -13724,7 +13729,12 @@ def planilla_generar_calculos(request):
                                             #Se suma a resultado de dias trabajados el restante entre la fecha final de la relación profesional y
                                             #la fecha de incio de la planilla
                                             res_dia_trab += (v_fecha_final - o_planilla.fecha_inicio).days + 1
+                                            #Se procede a evaluar si el empleado no renunció o fue despedido y
+                                            #si el contrato no vence antes de la fecha final de la planilla
                                             if not item.termDate and not contrato.fecha_fin < o_planilla.fecha_fin:
+                                                # se cumple entonces se entiende que el empleado trabajó la planilla completa
+                                                # entonces se procede a evaluar si los dias trabajados son iguales o los dias
+                                                # que da al resultado de la diferencia entre fecha final y fecha inicio de planilla
                                                 if res_dia_trab < total_dias_trabajados:
                                                     res_dia_trab = total_dias_trabajados
 
@@ -14154,6 +14164,7 @@ def planilla_generar_calculos(request):
                                 o_planilla_detalle = PlanillaDetalle(
                                     planilla=o_planilla,
                                     empleado=item,
+                                    departamento=item.dept,
                                     salario_diario=salario_diario,
                                     dias_salario=item.salaryUnits.dias_salario,
                                     dias_ausentes_sin_pago=dias_ausencia_sin_pago,
@@ -18460,44 +18471,266 @@ def envio_boleta_correo(request):
             messages.add_message(request, messages.SUCCESS, 'Se enviaron los correos.')
     return redirect('impresion_boletas')
 # endregion
-
 #region Código para Reporte de Cuentas Contables
-def cuentas_contables_page(request):
+def cuentas_contables_listado(request):
     suc = Branch.objects.get(pk=request.session["sucursal"])
+    tipos_ingresos = IngresoTipo.objects.filter(empresa_reg=suc.empresa, active=True)
+    departamentos = Department.objects.filter(empresa_reg=suc.empresa, active=True)
     planillas = Planilla.objects.filter(sucursal_reg=suc, active=True, cerrada=True).order_by('-fecha_pago', 'pk')
-    return render(request, 'reportes/cuentas_contables.html', {"planillas": planillas})
+    context = {
+        'departamentos': departamentos,
+        'tipos_ingresos': tipos_ingresos
+    }
+    return render(request, 'cuentas_contables.html', context)
+
+def cuentas_contables_reporte(request):
+    suc = Branch.objects.get(pk=request.session["sucursal"])
+    planillas = Planilla.objects.filter(sucursal_reg=suc, active=True).order_by('-fecha_pago', 'pk')
+    tipos_ingresos = IngresoTipo.objects.filter(empresa_reg=suc.empresa, active=True)
+    return render(request, 'reportes/cuentas_contables.html', {"planillas": planillas, "tipos_ingresos": tipos_ingresos})
 
 #--------------------------->>> AJAX <<<<--------------------
+
+def cuentas_contables_obtener(request):
+    try:
+        cuentas_contables = []
+        if request.is_ajax():
+            suc = Branch.objects.get(pk=request.session["sucursal"])
+            resultado = CuentaContableAsignacion.objects.filter(departamento__empresa_reg=suc.empresa)
+            for item in resultado:
+                obj = {
+                    'id': item.id,
+                    'cuenta_contable': item.cuenta_contable,
+                    'departamento': {'id': item.departamento.id, 'descripcion': item.departamento.description},
+                    'tipo_ingreso': {'id': item.tipo_ingreso.id, 'descripcion': item.tipo_ingreso.ingreso_tipo},
+                }
+                cuentas_contables.append(obj)
+            return JsonResponse({'mensaje': '¡Éxito!', 'datos': cuentas_contables})
+        else:
+            return JsonResponse({'mensaje': 'Tipo de petición no permitido.'})
+    except Exception as ex:
+        return JsonResponse({"mensaje": str(ex)})
+
+def cuenta_contable_registro_obtener(request):
+    try:
+        id = request.GET.get("id")
+        cuenta_contable = CuentaContableAsignacion.objects.get(pk=id)
+
+        departamento = {
+            'id': cuenta_contable.departamento.id,
+            'descripcion': cuenta_contable.departamento.description,
+        }
+
+        tipo_ingreso = {
+            'id': cuenta_contable.tipo_ingreso.id,
+            'descripcion': cuenta_contable.tipo_ingreso.ingreso_tipo,
+        }
+
+        context = {
+            'id': cuenta_contable.id,
+            'departamento': departamento,
+            'tipo_ingreso': tipo_ingreso,
+            'cuenta': cuenta_contable.cuenta_contable,
+        }
+        data = {"mensaje": "Exito", "cuenta_contable":context, 'error':False}
+    except Exception as e:
+        data = {"mensaje": str(e), "error": True}
+    return JsonResponse(data)
+
+def cuentas_contables_guardar(request):
+    data = {}
+    try:
+        if request.is_ajax():
+            if request.method == "POST":
+                data = json.loads(request.body.decode("utf-8"))
+                depto_id = data["departamento"]
+                tipo_ingreso_id = data["tipo_ingreso"]
+                cuenta = data["cuenta"]
+                if int(depto_id) == 0:
+                    data = {
+                        "mensaje": 'No se ha pasado un valor válido para el campo "Departamento"',
+                        "error": True,
+                    }
+                    return JsonResponse(data)
+
+                if int(tipo_ingreso_id) == 0:
+                    data = {
+                        "mensaje": 'No se ha pasado un valor válido para el campo "Tipo de Ingreso"',
+                        "error": True,
+                    }
+                    return JsonResponse(data)
+
+                if len(cuenta) == 0:
+                    data = {
+                        "mensaje": 'No se ha pasado un valor válido para el campo "Cuenta Contable"',
+                        "error": True,
+                    }
+                    return JsonResponse(data)
+
+                depto = Department.objects.get(pk=depto_id)
+                tipo_ingreso = IngresoTipo.objects.get(pk=tipo_ingreso_id)
+
+                cons = CuentaContableAsignacion.objects.filter(
+                    departamento=depto, tipo_ingreso=tipo_ingreso, cuenta_contable=cuenta
+                )
+                if cons.exists():
+                    data = {
+                        "mensaje": "Ya está asignada la cuenta contable.",
+                        "error": True,
+                    }
+                else:
+                    o_bj = CuentaContableAsignacion(
+                        departamento=depto,
+                        tipo_ingreso=tipo_ingreso,
+                        cuenta_contable=cuenta,
+                        user_reg=request.user,
+                    )
+                    o_bj.save()
+                    data = {"mensaje": "Se ha creado el registro.", "error": False}
+            else:
+                data = {"mensaje": "El método no está permitido", "error": True}
+        else:
+            data = {
+                "mensaje": "El tipo de petición http no está permitido",
+                "error": True,
+            }
+    except Exception as e:
+        data = {"mensaje": str(e), "error": True}
+    return JsonResponse(data)
+
+def cuentas_contables_actualizar(request):
+    data = {}
+    try:
+        if request.is_ajax():
+            if request.method == "POST":
+                data = json.loads(request.body.decode("utf-8"))
+                cc_id = data["id"]
+                depto_id = data["departamento"]
+                tipo_ingreso_id = data["tipo_ingreso"]
+                cuenta = data["cuenta"]
+                if int(depto_id) == 0:
+                    data = {
+                        "mensaje": 'No se ha pasado un valor válido para el campo "Departamento"',
+                        "error": True,
+                    }
+                    return JsonResponse(data)
+
+                if int(tipo_ingreso_id) == 0:
+                    data = {
+                        "mensaje": 'No se ha pasado un valor válido para el campo "Tipo de Ingreso"',
+                        "error": True,
+                    }
+                    return JsonResponse(data)
+
+                if len(cuenta) == 0:
+                    data = {
+                        "mensaje": 'No se ha pasado un valor válido para el campo "Cuenta Contable"',
+                        "error": True,
+                    }
+                    return JsonResponse(data)
+
+                depto = Department.objects.get(pk=depto_id)
+                cuenta_contable = CuentaContableAsignacion.objects.get(pk=cc_id)
+                tipo_ingreso = IngresoTipo.objects.get(pk=tipo_ingreso_id)
+
+                cons = CuentaContableAsignacion.objects.filter(
+                    departamento=depto, tipo_ingreso=tipo_ingreso, cuenta_contable=cuenta
+                )
+                if cons.exists():
+                    data = {
+                        "mensaje": "Ya está asignada la cuenta contable.",
+                        "error": True,
+                    }
+                else:
+                    cuenta_contable.departamento = depto
+                    cuenta_contable.tipo_ingreso = tipo_ingreso
+                    cuenta_contable.cuenta_contable = cuenta
+                    cuenta_contable.save()
+                    data = {"mensaje": "Se ha actualizado el registro.", "error": False}
+            else:
+                data = {"mensaje": "El método no está permitido", "error": True}
+        else:
+            data = {
+                "mensaje": "El tipo de petición http no está permitido",
+                "error": True,
+            }
+    except Exception as e:
+        data = {"mensaje": str(e), "error": True}
+    return JsonResponse(data)
+
+def cuentas_contables_eliminar(request):
+    data = {}
+    try:
+        if request.is_ajax():
+            if request.method == "POST":
+                data = json.loads(request.body.decode("utf-8"))
+                cc_id = data["id"]
+                if int(cc_id) == 0:
+                    data = {
+                        "mensaje": "No se pasó un valor válido para el registro a eliminar.",
+                        "error": True,
+                    }
+                else:
+                    cc = CuentaContableAsignacion.objects.get(pk=cc_id)
+                    cc.delete()
+                    data = {"mensaje": "El registro ha sido eliminado", "error": False}
+            else:
+                data = {"mensaje": "El método no está permitido", "error": True}
+        else:
+            data = {"mensaje": "El tipo de petición no está permitido", "error": True}
+    except Exception as e:
+        data = {"mensaje": str(e), "error": True}
+
+    return JsonResponse(data)
 
 def cuentas_contables_generar(request):
     try:
         datos = []
         total = 0
-        if not request.user.is_anonymous():
-            planilla_id = request.GET.get("planilla_id")
-            planilla_obj = Planilla.objects.get(pk=planilla_id)
-            detalle = PlanillaDetalle.objects.filter(planilla=planilla_obj).values('empleado__dept__description').annotate(Sum("total_ingresos"), Sum("total_deducciones"))
-            for item in detalle:
-                objeto = {
-                    'departamento': item["empleado__dept__description"],
-                    'total': formato_millar(item["total_ingresos__sum"] - item["total_deducciones__sum"])
-                }
-                datos.append(objeto)
-                total += (item["total_ingresos__sum"] - item["total_deducciones__sum"])
-            data = {
-                "mensaje": None,
-                "datos": datos,
-                "total": formato_millar(total)
-            }
+        data = {'error':False}
+        planilla_id = request.GET.get("planilla_id")
+        tipo_ingreso_id = request.GET.get("tipo_ingreso_id")
+        suc = Branch.objects.get(pk=request.session["sucursal"])
+        if int(tipo_ingreso_id) < 1:
+            cc = CuentaContableAsignacion.objects.filter(departamento__empresa_reg=suc.empresa)
+            lista = cc.values_list('departamento__id', flat=True)
+            pdi = PlanillaDetalleIngresos.objects.filter(planilla__id=planilla_id, empleado__dept__in=lista)
         else:
-            data = {
-                "mensaje": "El tipo de petición no está permitida",
+            cc = CuentaContableAsignacion.objects.filter(departamento__empresa_reg=suc.empresa, tipo_ingreso__id=tipo_ingreso_id)
+            lista = cc.values_list('departamento__id', flat=True)
+            pdi = PlanillaDetalleIngresos.objects.filter(planilla__id=planilla_id, empleado__dept__in=lista, tipo_ingreso_id=tipo_ingreso_id)
+
+        # lista = cc.values_list('departamento__id', flat=True)
+
+        # pdi = PlanillaDetalleIngresos.objects.filter(planilla__id=planilla_id, empleado__dept__in=lista, tipo_ingreso_id=tipo_ingreso_id)
+        #datos2 = PlanillaDetalle.objects.filter(planilla=planilla_obj, empleado__dept__in=lista)
+        for item in cc:
+            suma = 0
+            for item2 in pdi:
+                if item.departamento == item2.empleado.dept:
+                    if item.tipo_ingreso == item2.tipo_ingreso:
+                        suma += item2.valor
+            objeto = {
+                'tipo_ingreso': item.tipo_ingreso.ingreso_tipo,
+                'cuenta_contable': item.cuenta_contable,
+                'departamento': item.departamento.description,
+                'total': formato_millar(suma),
             }
+            if suma > 0:
+                datos.append(objeto)
+            total += suma
+        data = {
+            "mensaje": None,
+            "datos": datos,
+            "total": formato_millar(total),
+            "error": False
+        }
         return JsonResponse(data)
     except Exception as ex:
-        return JsonResponse({"mensaje": str(ex)})
+        return JsonResponse({"mensaje": str(ex), 'error': True})
 
 #endregion
+
 
 def verifica_saldo_controlado(request):
     try:

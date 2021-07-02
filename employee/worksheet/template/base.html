@@ -336,6 +336,9 @@
                                     <!--li><a href="{% url 'tipo_deduccion_listado' %}" id="aTipoDeduccion" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Tipo de Deducción</span></a></li-->
                                     <li><a href="{% url 'deducciones_tipos' %}" id="aTipoDeduccion" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Deducción</span></a></li>
                                     {% endif %}
+                                    {% if perms.worksheet.see_tipodeduccion %}
+                                    <li><a href="{% url 'cuentas_contables_listado' %}" id="aCuentasContables" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Cuentas Contables</span></a></li>
+                                    {% endif %}
                                 </ul>
                             </li>
                         </ul>
@@ -405,6 +408,7 @@
                                 <ul class="nav nav-third-level">
                                     <li><a href="{% url 'reporte_empleados' %}" id="aReporte1" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Datos de Salario</span></a></li>
                                     <li><a href="{% url 'impresion_boletas' %}" id="aImpresionBoleta" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Impresión de Boletas</span></a></li>
+                                    <li><a href="{% url 'cuentas_contables_reporte' %}" id="aRCuentasContables" class="waves-effect"><i data-icon="" class="linea-icon linea-basic fa-fw"></i><span class="hide-menu">Cuentas Contables</span></a></li>
                                 </ul>
                             </li>
                         </ul>
