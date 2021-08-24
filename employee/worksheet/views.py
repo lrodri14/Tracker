@@ -72,16 +72,16 @@ def home(request):
 
 
 def inicia_sesion(request):
-    if request.user.is_authenticated():
-        return HttpResponseRedirect("/")
+    # if request.user:
+        # return HttpResponseRedirect("/")
     return render(request, "iniciar-sesion.html")
 
 
 def ingresar(request):
     Sucursales = None
 
-    if not request.user.is_anonymous():
-        return HttpResponseRedirect("/")
+    # if not request.user.is_anonymous():
+    #     return HttpResponseRedirect("/")
 
     # if "next" in request.GET:
     #     if not request.GET._mutable:
@@ -17018,7 +17018,7 @@ def deducciones_empleado_listado(request):
             return HttpResponseRedirect("/salir/")
     suc = Branch.objects.get(pk=request.session["sucursal"])
     empleados = Employee.objects.filter(branch=suc, active=True).order_by("firstName")
-    empleados_l= Employee.objects.filter(branch=suc).order_by("first_name")
+    empleados_l= Employee.objects.filter(branch=suc).order_by("firstName")
     planillas = Planilla.objects.filter(cerrada=False, sucursal_reg=suc, active=True)
     planillas_l = Planilla.objects.filter(sucursal_reg=suc, active=True)
     tipos_deduccion = DeduccionTipo.objects.filter(active=True, visible=True)
@@ -19295,7 +19295,7 @@ class ReportePlanilla(View):
         if int(tipo_contrato_id) > 0:
             tot_reg = TipoContrato.objects.filter(pk=tipo_contrato_id).count()
             if tot_reg > 0:
-                o_tipo_contrato = TipoContrato.objects.filter(pk=tipo_contrato_id)
+                o_tipo_contrato = TipoContrato.objects.get(pk=tipo_contrato_id)
                 if o_tipo_contrato:
                     q_list.append(Q(empleado__tipo_contrato=o_tipo_contrato))
 

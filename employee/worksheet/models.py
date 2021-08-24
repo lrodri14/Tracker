@@ -8,6 +8,7 @@ import datetime
 
 from django.db import models
 from django.urls import reverse
+from django.utils.translation import deactivate
 
 # Create your models here.
 
@@ -256,7 +257,7 @@ class GrupoComisiones(models.Model):
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='grpcom_usermod', related_query_name='grpcom_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.NullBooleanField(blank=True, null=True)
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.descripcion
@@ -289,7 +290,7 @@ class TipoNomina(models.Model):
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL,
                                  related_name='tnom_usermod', related_query_name='tnom_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.NullBooleanField(blank=True, null=True)
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.tipo_planilla
@@ -302,7 +303,7 @@ class TipoContrato(models.Model):
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL,related_name='tcon_usermod', related_query_name='tcon_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.NullBooleanField(blank=True, null=True)
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.tipo_contrato
@@ -640,7 +641,7 @@ class ActivoAsignado(models.Model):
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='actasig_usermod', related_query_name='actasig_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.NullBooleanField(blank=True, null=True)
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.descripcion
@@ -652,7 +653,7 @@ class UsuarioEmpresa(models.Model):
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='usemp_usermod', related_query_name='usemp_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.NullBooleanField(blank=True, null=True)
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.usuario.username + " - " + self.empresa.nombreComercial
@@ -664,7 +665,7 @@ class UsuarioSucursal(models.Model):
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='usbranc_usermod', related_query_name='usbranch_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.NullBooleanField(blank=True, null=True)
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.usuario.username + " - " + self.sucursal.description
@@ -677,7 +678,7 @@ class ImagenEmpleado(models.Model):
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='imgemp_usermod', related_query_name='imgemp_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.NullBooleanField(blank=True, null=True)
+    active = models.BooleanField(default=True)
     
     def __str__(self):
         return self.empleado.firstName + " " + self.empleado.lastName
@@ -737,7 +738,7 @@ class TipoIngreso(models.Model):
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='ting_usermod', related_query_name='ting_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.NullBooleanField(blank=True, null=True)
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.tipo_ingreso + " - " + str(self.orden)
@@ -752,7 +753,7 @@ class IngresoIndividual(models.Model):
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT, related_name='ingind_usermod', related_query_name='ingind_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.NullBooleanField()
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.ingreso_i
@@ -767,7 +768,7 @@ class IngresoGeneral(models.Model):
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT, related_name='ingg_usermod', related_query_name='ingg_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.NullBooleanField()
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.ingreso_g
@@ -782,7 +783,7 @@ class DeduccionIndividual(models.Model):
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT, related_name='dedind_usermod', related_query_name='dedind_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.NullBooleanField()
+    active = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = "Deduccion Individual"
@@ -803,7 +804,7 @@ class DeduccionGeneral(models.Model):
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT, related_name='deg_usermod', related_query_name='deg_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.NullBooleanField()
+    active = models.BooleanField(default=True)
     
     class Meta:
         verbose_name = "Deduccion General"
@@ -827,7 +828,7 @@ class IncrementosSalariales(models.Model):
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='incsal_usermod', related_query_name='incsal_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.NullBooleanField(blank=True, null=True)
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         return self.empleado.firstName + ' ' + self.empleado.lastName + ' | ' + str(self.fecha_incremento)
@@ -870,7 +871,7 @@ class EncabezadoImpuestoSobreRenta(models.Model):
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='isr_enc_usermod', related_query_name='isr_enc_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.NullBooleanField(blank=True, null=True)
+    active = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = ("EncabezadoImpuestoSobreRenta")
@@ -890,7 +891,7 @@ class ImpuestoSobreRenta(models.Model):
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='isv_usermod', related_query_name='isv_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.NullBooleanField(blank=True, null=True)
+    active = models.BooleanField(default=True)
     
     class Meta:
         verbose_name ="impuesto sobre renta"
@@ -913,7 +914,7 @@ class SeguroSocial(models.Model):
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='ss_usermod', related_query_name='ss_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.NullBooleanField(blank=True, null=True)
+    active = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = "Seguro Social"
@@ -932,7 +933,7 @@ class ImpuestoVecinal(models.Model):
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='iv_usermod', related_query_name='iv_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.NullBooleanField(blank=True, null=True)
+    active = models.BooleanField(default=True)
     
     class Meta:
         verbose_name = ("Impuesto Vecinal")
@@ -954,7 +955,7 @@ class HoraExtra(models.Model):
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='he_usermod', related_query_name='he_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.NullBooleanField(blank=True, null=True)
+    active = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = ("Hora Extra")
@@ -966,7 +967,7 @@ class HoraExtra(models.Model):
 class SalarioMinimo(models.Model):
     fecha = models.DateField(("Fecha"), auto_now_add=True)
     salario_minimo = models.DecimalField(("Salario Minimo"), max_digits=18, decimal_places=4)
-    forzar_salario = models.NullBooleanField(("Forzar salario"))
+    forzar_salario = models.BooleanField(("Forzar salario"), default=False)
     vigente = models.BooleanField(("Vigente"))
     empresa_reg = models.ForeignKey(Empresa, on_delete=models.PROTECT)
     sucursal_reg = models.ForeignKey(Branch, on_delete=models.PROTECT)
@@ -974,7 +975,7 @@ class SalarioMinimo(models.Model):
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT, related_name='sm_usermod', related_query_name='sm_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.NullBooleanField()
+    active = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = ("Salario Minimo")
@@ -1017,7 +1018,7 @@ class Planilla(models.Model):
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT, related_name='plan_usermod', related_query_name='plan_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.NullBooleanField()
+    active = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = ("planilla")
@@ -1044,7 +1045,7 @@ class PlanillaDetalle(models.Model):
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT, related_name='plandet_usermod', related_query_name='plandet_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.NullBooleanField()
+    active = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = ("detalle de planilla")
@@ -1069,7 +1070,7 @@ class IngresoGeneralDetalle(models.Model):
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='igd_usermod', related_query_name='igd_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.NullBooleanField(blank=True, null=True)
+    active = models.BooleanField(default=True)
     
     class Meta:
         verbose_name = ("Ingreso general detalle")
@@ -1089,7 +1090,7 @@ class IngresoIndividualDetalle(models.Model):
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='iid_usermod', related_query_name='iid_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.NullBooleanField(blank=True, null=True)
+    active = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = ("Ingreso Individual Detalle")
@@ -1111,7 +1112,7 @@ class DeduccionGeneralDetalle(models.Model):
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='dgd_usermod', related_query_name='dgd_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.NullBooleanField(blank=True, null=True)
+    active = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = ("Deduccion General Detalle")
@@ -1131,7 +1132,7 @@ class DeduccionIndividualDetalle(models.Model):
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='did_usermod', related_query_name='did_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.NullBooleanField(blank=True, null=True)
+    active = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = ("Deduccion Individual Detalle")
@@ -1202,7 +1203,7 @@ class UsuarioCorporacion(models.Model):
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='uscorp_usermod', related_query_name='uscorp_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.NullBooleanField(blank=True, null=True)
+    active = models.BooleanField(default=True)
     
     class Meta:
         verbose_name = ("Usuario Corporacion")
@@ -1238,7 +1239,7 @@ class RapDeduccion(models.Model):
     date_reg = models.DateTimeField(auto_now_add=True)
     user_mod = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL, related_name='rapded_usermod', related_query_name='rapded_usermod')
     date_mod = models.DateTimeField(blank=True, null=True)
-    active = models.NullBooleanField(blank=True, null=True)
+    active = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = ("Rap Deduccion")
@@ -1362,7 +1363,7 @@ class DeduccionIndividualSubDetalle(models.Model):
     fecha = models.DateField(("Fecha"), blank=True, null=True)
     user_reg = models.ForeignKey(User, blank=True, null=True, on_delete=models.PROTECT)
     date_reg = models.DateTimeField(auto_now_add=True)
-    active = models.NullBooleanField(default=True)
+    active = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = ("deduccionindividualsubdetalle")
