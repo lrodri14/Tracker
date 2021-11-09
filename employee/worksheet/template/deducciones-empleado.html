@@ -1,0 +1,729 @@
+{% extends 'base.html' %}
+{% block titulo %}
+Deducciones de empleado
+{% endblock titulo %}
+{% block estilo %}
+<style>
+    .checkbox{
+        font-weight: 500;
+    }
+    .checkbox label{
+        font-weight: 500;
+    }
+</style>
+{% endblock estilo %}
+{% block contenido %}
+    {% load static %}
+    <div id="app">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h2 class="text-bold"><i class="ti-pencil-alt"></i> Deducciones de empleado</h2>
+                    </div>
+                    <div class="panel-wrapper">
+                        <div class="panel-body">
+                            <!-- Nav tabs -->
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li role="presentation" class="active"><a href="#profile" aria-controls="profile" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-user"></i></span> <span class="hidden-xs">Listado de deducciones</span></a></li>
+                                <li role="presentation" class=""><a href="#home" aria-controls="home" role="tab" data-toggle="tab" aria-expanded="true"><span class="visible-xs"><i class="ti-home"></i></span><span class="hidden-xs"> Formulario</span></a></li>
+                                <li role="presentation" class=""><a href="#reversion" aria-controls="reversion" role="tab" data-toggle="tab" aria-expanded="true"><span class="visible-xs"><i class="ti-revertir"></i></span><span class="hidden-xs"> Revertir datos</span></a></li>
+                            </ul>
+                            <!-- Tab panes -->
+                            <div class="tab-content">
+                                <div role="tabpanel" class="tab-pane" id="home">
+                                    <div class="row">
+                                        <div class="col-md-6 form-group">
+                                            <label for="cboPlanilla">Planilla</label>
+                                            <select name="cboPlanilla" id="cboPlanilla" class="form-control" v-model="nuevoRegistro.planilla_id">
+                                                <option value="0">Seleccionar...</option>
+                                                {% for planilla in planillas %}
+                                                <option value="{{planilla.id}}">{{planilla.descripcion}}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <br>
+                                            <label for="cboTipoDeduccion">Tipo de Deduccción</label>
+                                            <select name="cboTipoDeduccion" id="cboTipoDeduccion" class="form-control" v-model="nuevoRegistro.tipo_deduccion">
+                                                <option value="0">Seleccionar...</option>
+                                                {% for tipo in tipos_deduccion %}
+                                                <option value="{{tipo.id}}">{{tipo.deduccion_tipo}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="input-file-now">Cargar archivo con datos de deducciones.</label>
+                                            <input type="file" id="archivosDeducciones" ref="file" class="dropify" />
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div class="row">
+                                        <div class="col-md-12 text-right">
+                                            <button class="btn btn-primary" @click="enviar();">GUARDAR</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div role="tabpanel" class="tab-pane active" id="profile">
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <h2>Busqueda</h2>
+                                            <div class="text-right">
+                                                <button class="btn btn-default" @click="agregar();" >Agregar</button>
+                                                <button class="btn btn-info" @click="busqueda();" >Refrescar</button>
+                                            </div>
+                                            <br>
+                                            <div class="col-md-6 form-group">
+                                                <label for="cboEmpleadoB">Empleado</label>
+                                                <select id="cboEmpleadoB"  class="form-control select2">
+                                                    <option value="0">Seleccionar...</option>
+                                                    {% for empleado in empleados %}
+                                                    <option value="{{empleado.pk}}">{{empleado.extEmpNo}} | {{empleado.firstName}} {% if empleado.middleName %}{{empleado.middleName}}{% endif %} {{empleado.lastName}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6 form-group">
+                                                <label for="cboPlanillaB">Planilla</label>
+                                                <select id="cboPlanillaB"  class="form-control select2" >
+                                                    <option value="0">Seleccionar...</option>
+                                                    {% for planilla in planillas_l %}
+                                                    <option value="{{planilla.pk}}">{{planilla.descripcion}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6 form-group">
+                                                <label for="cboDeduccionB">Tipo de Deducción</label>
+                                                <select id="cboDeduccionB" class="form-control select2">
+                                                    <option value="0">Seleccionar...</option>
+                                                    {% for tipo in tipos_deduccion %}
+                                                    <option value="{{tipo.pk}}">{{tipo.deduccion_tipo}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <!-- .row -->
+                                        <div class="row">
+                                            <div class="table-responsive">
+                                                <table class="table">
+                                                    <thead>
+                                                        <tr >
+                                                            <th>Código</th>
+                                                            <th>Empleado</th>
+                                                            <th>Deducción</th>
+                                                            <th class="text-right">Monto(Lps)</th>
+                                                            <th class="text-center">Estado</th>
+                                                            <th></th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr v-for="deduccion in deducciones">
+                                                            <td>${deduccion.codigo}</td>
+                                                            <td>${deduccion.empleado}</td>
+                                                            <td>${deduccion.deduccion}</td>
+                                                            <td class="text-right">${deduccion.monto}</td>
+                                                            <td class="text-center">
+                                                                <span v-if="deduccion.active" class="label label-success">Activo</span>
+                                                                <span v-else class="label label-danger">Inactivo</span>
+                                                            </td>
+                                                            <td class="opciones">
+                                                                <a href="#" class="text-danger" @click="eliminarDed(deduccion.id, $event);"><i class="ti-close"></i></a>
+                                                                <a href="#" @click="editar(deduccion.id, $event)"><i class="icon-pencil"></i></a>                                                                
+                                                                <a v-if="deduccion.detalle" href="#" @click="verDetalle(deduccion.id, $event)"><i class="fas fa-list"></i></a>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                    <tfoot>
+                                                        <tr>
+                                                            <td><strong>TOTAL:</strong></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td class="text-right"><strong>${total_monto}</strong></td>
+                                                            <td></td>
+                                                            <td></td>
+                                                        </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div role="tabpanel" class="tab-pane" id="reversion">
+                                    <div class="col-md-6 form-group">
+                                        <label for="cboPlanillaI">Planilla</label>
+                                        <select id="cboPlanillaI"  class="form-control select2" >
+                                            <option value="0">Seleccionar...</option>
+                                            {% for planilla in planillas %}
+                                            <option value="{{planilla.pk}}">{{planilla.descripcion}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 form-group">
+                                        <label for="cboDeduccionI">Tipo de Deducción</label>
+                                        <select id="cboDeduccionI" class="form-control select2">
+                                            <option value="0">Seleccionar...</option>
+                                            {% for tipo in tipos_deduccion %}
+                                            <option value="{{tipo.pk}}">{{tipo.deduccion_tipo}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-12 form-group text-right">
+                                        <button class="btn btn-info" @click="revertirDeduccion();">Revertir</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.modal Agregar -->
+                <div id="frmAgregar-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                <h4 class="modal-title">Agregar Deducción de Empleado</h4> </div>
+                            <div class="modal-body">
+                                <form>
+                                    <div class="form-group">
+                                        <label for="cboDeduccion">Deducción</label>
+                                        <select id="cboDeduccion" class="form-control select2">
+                                            <option value="0">Seleccionar...</option>
+                                            {% for deduccion in tipos_deduccion %}
+                                            <option value="{{deduccion.pk}}">{{deduccion.deduccion_tipo}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="cboPlanillaA">Planilla</label>
+                                        <select id="cboPlanillaA" class="form-control select2">
+                                            <option value="0">Seleccionar...</option>
+                                            {% for planilla in planillas %}
+                                            <option value="{{planilla.pk}}">{{planilla.descripcion}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="cboEmpleado">Empleado</label>
+                                        <select id="cboEmpleado" class="form-control select2">
+                                            <option value="0">Seleccionar...</option>
+                                            {% for empleado in empleados %}
+                                            <option value="{{empleado.pk}}">{{empleado.extEmpNo}} | {{empleado.firstName}} {% if empleado.middleName %}{{empleado.middleName}}{% endif %} {{empleado.lastName}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="txtMonto">Monto</label>
+                                        <input type="text" class="form-control" id="txtMonto" v-model="nuevaDeduccion.monto" required="True"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="checkbox">
+                                            <input id="chkDetalle" type="checkbox" v-model="nuevaDeduccion.detalle">
+                                            <label for="chkDetalle"> Requiere detalle </label>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default waves-effect" data-dismiss="modal" @click="limpiar2();">Cerrar</button>
+                                <button type="button" class="btn btn-success waves-effect waves-light" @click="guardarDeduccion();">Guardar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.modal Editar -->
+                <div id="frmEditar-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                <h4 class="modal-title">Editar Deducción de Empleado 1</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form>
+                                    <div class="form-group">
+                                        <label for="cboDeduccionE">Deducción</label>
+                                        <select id="cboDeduccionE" class="form-control select2" disabled>
+                                            <option value="0">Seleccionar...</option>
+                                            {% for deduccion in tipos_deduccion %}
+                                            <option value="{{deduccion.pk}}">{{deduccion.deduccion_tipo}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="cboPlanillaEd">Planilla</label>
+                                        <select id="cboPlanillaEd"  class="form-control select2" disabled>
+                                            <option value="0">Seleccionar...</option>
+                                            {% for planilla in planillas_l %}
+                                            <option value="{{planilla.pk}}">{{planilla.descripcion}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="cboEmpleadoEd">Empleado</label>
+                                        <select id="cboEmpleadoEd" class="form-control select2" disabled>
+                                            <option value="0">Seleccionar...</option>
+                                            {% for empleado in empleados %}
+                                            <option value="{{empleado.pk}}">{{empleado.firstName}} {% if empleado.middleName %}{{empleado.middleName}}{% endif %} {{empleado.lastName}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="txtMontoE">Monto</label>
+                                        <input type="text" class="form-control" id="txtMontoE" v-model="actualRegistro.monto"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="checkbox">
+                                            <input id="chkActivo" type="checkbox" v-model="actualRegistro.active">
+                                            <label for="chkActivo"> Es activo </label>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
+                                <button type="button" class="btn btn-success waves-effect waves-light" @click="actualizarDeduccion();">Actualizar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Ver listado detalle -->
+                <div id="frmVerDetalle-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                <h4 class="modal-title">Detalles de la deducción</h4> </div>
+                            <div class="modal-body">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Descripción</th>
+                                            <th>Monto</th>
+                                            <th>Fecha</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody v-if="actualRegistro.detalle">
+                                        <tr v-for="item in actualRegistro.detalle">
+                                            <td>${item.descripcion}</td>
+                                            <td>${item.monto}</td>
+                                            <td>${item.fecha}</td>
+                                            <td>
+                                                <a href="#" class="text-danger" @click="eliminarDetDed(item.id, $event);"><i class="ti-close"></i></a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <tbody v-else>
+                                        <tr>
+                                            <td colspan="3" class="text-center">No hay datos</td>
+                                        </tr>
+                                    </tbody>
+                                    <tfooter>
+                                        <tr>
+                                            <td><strong>Total:</strong></td>
+                                            <td><strong>${actualRegistro.detalle_total}</strong></td>
+                                            <td></td>
+                                        </tr>
+                                    </tfooter>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default waves-effect" data-dismiss="modal" @click="limpiar2();">Cerrar</button>
+                                <button type="button" class="btn btn-success waves-effect waves-light" @click="agregarDetalle();">Agregar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Agregar Detalle -->
+                <div id="frmAgregarDetalle-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                <h4 class="modal-title">Agregar Detalle Deducción de Empleado</h4> </div>
+                            <div class="modal-body">
+                                <form>
+                                    <div class="form-group">
+                                        <label for="cboDeduccion">Descripción:</label>
+                                        <textarea class="form-control" name="txtDescripcion" id="txtDescripcion" cols="8" rows="10" v-model="nuevoDetalle.descripcion"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="cboPlanillaA">Monto:</label>
+                                        <input class="form-control" type="text" name="txtMontoDetalle" id="txtMontoDetalle" v-model="nuevoDetalle.monto" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="cboEmpleado">Fecha:</label>
+                                        <input class="form-control mydatepicker" placeholder="dd/mm/yyyy" type="text" id="txtFechaDetalle" class="date" />
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default waves-effect" data-dismiss="modal" >Cerrar</button>
+                                <button type="button" class="btn btn-success waves-effect waves-light" @click="guardarDetalle();">Guardar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock contenido %}
+{% block scripts %}
+<script>
+    
+    var app = new Vue({
+        el: '#app',
+        delimiters: ["${","}"],
+        data: {
+            file: "",
+            deducciones: [],
+            nuevoRegistro: {"archivo": null, "planilla_id": 0, "tipo_deduccion": 0},
+            nuevaBusqueda: {"empleado": 0, "planilla": 0, "deduccion": 0},
+            nuevoDetalle: {"deduccion": 0, "descripcion": '', "monto": 0.0, "fecha": ''},
+            actualRegistro: {},
+            nuevaDeduccion: {"deduccion": 0, "planilla": 0, "empleado": 0, "monto": null, "detalle": false},
+            revertirRegistros: {"deduccion": 0, "planilla": 0},
+            total_monto: 0,
+        },
+        mounted: function() {
+            //$('#cboPlanillaE').select2();
+            $('.select2').select2();
+            $('#side-menu a').removeClass('active');
+            $('#aAcciones').addClass('active');
+            $('#accionesNomina').addClass('active');
+            $('#aDE').addClass('active');
+            $('#aAcciones').parents('li').addClass('active');
+            $('#accionesNomina').parents('li').addClass('active');
+        },
+        methods: {
+            limpiar: function() {
+                this.nuevoRegistro.archivo = null;
+                this.nuevoRegistro.planilla_id = 0;
+                this.nuevoRegistro.tipo_deduccion = 0;
+                
+                var fileArchivo = $('.dropify').data('dropify');
+                fileArchivo.resetPreview();
+                fileArchivo.clearElement();
+                $('.select2').select2('val', '0');
+            },
+            limpiar2: function() {
+                var self = this;
+                this.nuevaDeduccion.planilla = 0;
+                this.nuevaDeduccion.deduccion = 0;
+                this.nuevaDeduccion.empleado = 0;
+                this.nuevaDeduccion.monto = 0;
+                $('#frmAgregar-modal .select2').select2('val', '0');
+            },
+            enviar: function() {
+                var self = this;
+                $('.preloader').fadeIn();
+                this.nuevoRegistro.archivo = this.$refs.file.files[0];
+                let formData = new FormData();
+                formData.append('archivo', this.nuevoRegistro.archivo);
+                formData.append('planilla_id', this.nuevoRegistro.planilla_id);
+                formData.append('tipo_deduccion', this.nuevoRegistro.tipo_deduccion);
+
+                axios.post('/guardar/archivo/deducciones-empleado/', formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'X-CSRFToken': this.getCookie('csrftoken'),
+                        'X-Requested-With' : 'XMLHttpRequest',
+                    }
+                })
+                .then(function(response) {
+                    $('.preloader').fadeOut();
+                    if(response.data.error) {
+                        swal("¡Algo salio mal!", response.data.mensaje, "warning");
+                    }else{
+                        swal("¡Exito!", response.data.mensaje, "success");
+                        self.limpiar();
+                    }
+                })
+                .catch(function (error){
+                    console.log(error);
+                    $('.preloader').fadeOut();
+                    swal("¡Algo salió mal!", error, "warning");
+                });
+            },
+            agregar: function() {
+                $('#frmAgregar-modal').modal('toggle');
+            },
+            editar: function(id, event) {
+                event.preventDefault();
+                var self = this;
+                axios.get('/obtener/empleado-deducciones/', {params:{'id':id}},{
+                    headers: {
+                        'X-Requested-With' : 'XMLHttpRequest',
+                        'Content-Type': 'application/json;charset=UTF-8',
+                    }
+                }).then((response) => {
+                    if(response.data.error){
+                        swal("¡Algo salió mal!", response.data.mensaje, "warning");
+                    }else{
+                        self.actualRegistro = response.data.dato;
+                        
+                        $('#cboDeduccionE').select2('val', response.data.dato.deduccion);
+                        $('#cboPlanillaEd').select2('val', self.actualRegistro.planilla);
+                        $('#cboEmpleadoEd').select2('val', self.actualRegistro.empleado);
+                        $('#frmEditar-modal').modal('toggle');
+                    }
+                }).catch(function(error) {
+                    swal("¡Algo salió mal!", error, "warning");
+                });
+            },
+            guardarDeduccion: function() {
+                var self = this;
+                axios.post('/guardar/deducciones-empleado/', self.nuevaDeduccion, 
+                    {
+                        headers: {
+                            'X-Requested-With' : 'XMLHttpRequest',
+                            'X-CSRFToken': this.getCookie('csrftoken')}, 
+                            'Content-Type': 'application/json;charset=UTF-8',
+                            })
+                    .then((response) => {
+                        if(response.data.error){
+                            swal("¡Algo salió mal!", response.data.mensaje, "warning");
+                        }else{
+                            $('#frmAgregar-modal').modal('toggle');
+                            swal("¡Éxito!", response.data.mensaje, "success");
+                            self.limpiar();
+                        }
+                    }).catch(function(error) {
+                        swal("¡Algo salió mal!", error, "warning");
+                    });
+            },
+            actualizarDeduccion: function() {
+                var self = this;
+                axios.post('/actualizar/deducciones-empleado/', self.actualRegistro, 
+                    {
+                        headers: {
+                            'X-Requested-With' : 'XMLHttpRequest',
+                            'X-CSRFToken': this.getCookie('csrftoken')}, 
+                            'Content-Type': 'application/json;charset=UTF-8',
+                    })
+                    .then((response) => {
+                        if(response.data.error){
+                            swal("¡Algo salió mal!", response.data.mensaje, "warning");
+                        }else{
+                            $('#frmEditar-modal').modal('toggle');
+                            swal("¡Éxito!", response.data.mensaje, "success");
+                        }
+                    }).catch(function(error) {
+                        swal("¡Algo salió mal!", error, "warning");
+                    });
+            },
+            busqueda: function() {
+                var self = this;
+                axios.get('/obtener/filtro/deduccion-empleado/', {params: this.nuevaBusqueda }, 
+                    {
+                        headers: {
+                            'X-Requested-With' : 'XMLHttpRequest',
+                        }
+                    })
+                    .then(function(response){
+                        self.deducciones = response.data.deducciones;
+                        self.total_monto = response.data.total_deduccion;
+                    }).catch(function(error){
+                        swal("¡Algo salió mal!", error, "warning", {
+                            buttons: ["Cancelar", "Aceptar"],
+                        });
+                    });
+            },
+            eliminarDed: function(id, event) {
+                var self = this;
+                event.preventDefault();
+                swal({   
+                    title: "¿Desea eliminar el registro?",   
+                    text: "Al eliminar éste registro no se podrá recuperar en la base de datos.",   
+                    type: "warning",   
+                    showCancelButton: true,   
+                    confirmButtonColor: "#DD6B55",   
+                    confirmButtonText: "Si, eliminar",   
+                    closeOnConfirm: false 
+                }, function(){   
+                    axios.post('/eliminar/deducciones-empleado/', {"id": id}, 
+                        {
+                            headers: {
+                                'X-Requested-With' : 'XMLHttpRequest',
+                                'X-CSRFToken': self.getCookie('csrftoken'),
+                                'Content-Type': 'application/json;charset=UTF-8',
+                            }
+                        })
+                        .then(function(response){
+                            if(response.data.error){
+                                swal("Algo salió mal!", response.data.mensaje, "warning");
+                            }else{
+                                self.busqueda();
+                                swal("¡Exito!", response.data.mensaje, "success");
+                            }
+                        }).catch(function(error){
+                            swal("¡Algo salió mal!", error.mensaje, "warning");
+                        });
+                });
+            },
+            verDetalle: function(id, event) {
+                event.preventDefault();
+                var self = this;
+                axios.get('/obtener/empleado-deducciones/', {params:{'id':id}},{
+                    headers: {
+                        'X-Requested-With' : 'XMLHttpRequest',
+                        'Content-Type': 'application/json;charset=UTF-8',
+                    }
+                }).then((response) => {
+                    if(response.data.error){
+                        swal("¡Algo salió mal!", response.data.mensaje, "warning");
+                    }else{
+                        self.actualRegistro = response.data.dato;
+                        /*$('#cboDeduccionE').select2('val', response.data.dato.deduccion);
+                        $('#cboPlanillaE').select2('val', response.data.dato.planilla);
+                        $('#cboEmpleadoE').select2('val', response.data.dato.empleado);*/
+                        $('#frmVerDetalle-modal').modal('toggle');
+                    }
+                }).catch(function(error) {
+                    swal("¡Algo salió mal!", error, "warning");
+                });
+            },
+            eliminarDetDed: function(id, event) {
+                event.preventDefault();
+                var self = this;
+                event.preventDefault();
+                swal({   
+                    title: "¿Desea eliminar el registro?",   
+                    text: "Al eliminar éste registro no se podrá recuperar en la base de datos.",   
+                    type: "warning",   
+                    showCancelButton: true,   
+                    confirmButtonColor: "#DD6B55",   
+                    confirmButtonText: "Si, eliminar",   
+                    closeOnConfirm: false 
+                }, function(){   
+                    axios.post('/eliminar/deducciones-detalle-empleado/', {"id": id}, 
+                        {
+                            headers: {
+                                'X-Requested-With' : 'XMLHttpRequest',
+                                'X-CSRFToken': self.getCookie('csrftoken'),
+                                'Content-Type': 'application/json;charset=UTF-8',
+                            }
+                        })
+                        .then(function(response){
+                            if(response.data.error){
+                                swal("Algo salió mal!", response.data.mensaje, "warning");
+                            }else{
+                                //self.busqueda();
+                                $('#frmVerDetalle-modal').modal('toggle');
+                                swal("¡Exito!", response.data.mensaje, "success");
+                            }
+                        }).catch(function(error){
+                            swal("¡Algo salió mal!", error.mensaje, "warning");
+                        });
+                });
+            },
+            agregarDetalle: function() {
+                $('#frmVerDetalle-modal').modal('toggle');
+                $('#frmAgregarDetalle-modal').modal('toggle');
+            },
+            guardarDetalle: function() {
+                var self = this;
+                self.nuevoDetalle.deduccion = self.actualRegistro.id;
+                self.nuevoDetalle.fecha = $('#txtFechaDetalle').val();
+                axios.post('/guardar/deduccion-empleado-detalles/', self.nuevoDetalle, 
+                    {
+                        headers: {
+                            'X-Requested-With' : 'XMLHttpRequest',
+                            'X-CSRFToken': this.getCookie('csrftoken')}, 
+                            'Content-Type': 'application/json;charset=UTF-8',
+                            })
+                    .then((response) => {
+                        if(response.data.error){
+                            swal("¡Algo salió mal!", response.data.mensaje, "warning");
+                        }else{
+                            $('#frmAgregarDetalle-modal').modal('toggle');
+                            swal("¡Éxito!", response.data.mensaje, "success");
+                            //self.limpiar();
+                        }
+                    }).catch(function(error) {
+                        swal("¡Algo salió mal!", error, "warning");
+                    });
+            },
+            revertirDeduccion: function() {
+                var self = this;
+                event.preventDefault();
+                swal({   
+                    title: "¿Desea revertir los registros?",   
+                    text: "Al eliminar éste registro no se podrá recuperar en la base de datos. Si no ha seleccionado un 'Tipo de Deducción' se procederá a revertir todos los registros de deducción de la planilla seleccionada.",   
+                    type: "warning",   
+                    showCancelButton: true,   
+                    confirmButtonColor: "#DD6B55",   
+                    confirmButtonText: "Si, eliminar",   
+                    closeOnConfirm: false 
+                }, function(){   
+                    axios.post('/revertir/deducciones/', self.revertirRegistros, 
+                        {
+                            headers: {
+                                'X-Requested-With' : 'XMLHttpRequest',
+                                'X-CSRFToken': self.getCookie('csrftoken'),
+                                'Content-Type': 'application/json;charset=UTF-8',
+                            }
+                        })
+                        .then(function(response){
+                            if(response.data.error){
+                                swal("Algo salió mal!", response.data.mensaje, "warning");
+                            }else{
+                                //self.busqueda();
+                                //$('#frmVerDetalle-modal').modal('toggle');
+                                swal("¡Exito!", response.data.mensaje, "success");
+                            }
+                        }).catch(function(error){
+                            swal("¡Algo salió mal!", error.mensaje, "warning");
+                        });
+                });
+            },
+            getCookie (name) {
+                var value = '; ' + document.cookie
+                var parts = value.split('; ' + name + '=')
+                if (parts.length === 2) return parts.pop().split(';').shift()
+            },
+        }
+    });
+
+    jQuery('.mydatepicker, #datepicker').datepicker({
+        format: 'dd/mm/yyyy',
+        autoclose:true,
+        todayHighlight: true,
+    });
+
+    $('#cboDeduccion').on('change', function() {
+        app.nuevaDeduccion.deduccion = $(this).val();
+    });
+    $('#cboPlanillaA').on('change', function() {
+        app.nuevaDeduccion.planilla = $(this).val();
+    });
+    $('#cboEmpleado').on('change', function() {
+        app.nuevaDeduccion.empleado = $(this).val();
+    });
+    $('#cboEmpleadoB').on('change', function() {
+        app.nuevaBusqueda.empleado = $(this).val();
+        app.busqueda();
+    });
+    $('#cboPlanillaB').on('change', function() {
+        app.nuevaBusqueda.planilla = $(this).val();
+        app.busqueda();
+    });
+    $('#cboDeduccionB').on('change', function() {
+        app.nuevaBusqueda.deduccion = $(this).val();
+        app.busqueda();
+    });
+    $('#cboDeduccionE').on('change', function() {
+        app.actualRegistro.deduccion = $(this).val();
+    });
+    $('#cboPlanillaE').on('change', function() {
+        app.actualRegistro.planilla = $(this).val();
+    });
+    $('#cboEmpleadoE').on('change', function() {
+        app.actualRegistro.empleado = $(this).val();
+    });
+    $('#cboPlanillaI').on('change', function() {
+        app.revertirRegistros.planilla = $(this).val();
+    });
+    $('#cboDeduccionI').on('change', function() {
+        app.revertirRegistros.deduccion = $(this).val();
+    });
+</script>
+{% endblock scripts %}

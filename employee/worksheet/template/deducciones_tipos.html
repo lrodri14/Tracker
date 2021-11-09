@@ -1,0 +1,258 @@
+{% extends 'base.html' %}
+{% block titulo %}
+Tipo de Deducciones
+{% endblock titulo %}
+{% block estilo %}
+<style>
+    /*.btn-default{
+        font-size:11px;
+        font-weight: 500;
+        padding: 3px 12px
+    }*/
+</style>
+{% endblock estilo %}
+{% block contenido %}
+    <div id="app" class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2 class="text-bold"><i class="ti-pencil-alt"></i> Tipos de Deducciones</h2>
+                    
+                </div>
+                
+                <div class="panel-wrapper">
+                    <div class="panel-body">
+                        <div class="col-sm-12">
+                            <div class="text-right">
+                                <button class="btn btn-primary" data-toggle="modal" data-target="#frmAgregar-modal">Agregar</button>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Tipo de deducción</th>
+                                            <th>Es legal</th>
+                                            <th>Es externa</th>
+                                            <th>Indice de relevancia</th>
+                                            <th>Estado</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="item in tipos">
+                                            <td>${item.deduccion_tipo}</td>
+                                            <td v-if="item.es_legal"><i class="mdi mdi-checkbox-marked text-success"></i></td>
+                                            <td v-else><i class="mdi mdi-close-box text-danger"></i></td>
+                                            <td v-if="item.es_externa"><i class="mdi mdi-checkbox-marked text-success"></i></td>
+                                            <td v-else><i class="mdi mdi-close-box text-danger"></i></td>
+                                            <td>${item.indice_relevancia}</td>
+                                            <td>
+                                                <span v-if="item.active" class="label label-success">Activo</span>
+                                                <span v-else class="label label-danger">Inactivo</span>
+                                            </td>
+                                            <td>
+                                                {% comment '' %}
+                                                <a href="#" class="btn btn-default" @click="editar(item.id, $event)" data->Editar</a>
+                                                {% endcomment %}
+                                                <a href="#" @click="editar(item.id, $event)">
+                                                    <i class="icon-pencil"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.modal Agregar -->
+                    <div id="frmAgregar-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                    <h4 class="modal-title">Agregar Tipo de Deducción</h4> </div>
+                                <div class="modal-body">
+                                    <form>
+                                        <div class="form-group">
+                                            <label for="txtTipoDeduccion">Tipo de Deducción</label>
+                                            <input type="text" class="form-control" id="txtTipoDeduccion" v-model="newReg.deduccion_tipo" placeholder="Ingrese tipo de deducción">
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="checkbox">
+                                                <input id="chkEsLegal" type="checkbox" v-model="newReg.es_legal" />
+                                                <label for="chkEsLegal"> Es legal </label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="checkbox">
+                                                <input id="chkEsExterna" type="checkbox" v-model="newReg.es_externa">
+                                                <label for="chkEsExterna"> Es externa </label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="txtTipoDeduccion">Indice de relevancia</label>
+                                            <input type="text" class="form-control" id="txtIndicieRelevancia" v-model="newReg.indice_relevancia" placeholder="Ingrese indice de relevancia">
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
+                                    <button type="button" class="btn btn-danger waves-effect waves-light" @click="agregar($event);">Guardar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.modal Agregar -->
+                    <div id="frmEditar-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                    <h4 class="modal-title">Editar Tipo de Deducción</h4> </div>
+                                <div class="modal-body">
+                                    <form>
+                                        <div class="form-group">
+                                            <label for="txtTipoDeduccion">Tipo de Deducción</label>
+                                            <input type="text" class="form-control" id="txtTipoDeduccion" v-model="itemActual.deduccion_tipo" placeholder="Ingrese tipo de deducción">
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="checkbox">
+                                                <input id="chkEsLegal" type="checkbox" v-model="itemActual.es_legal" >
+                                                <label for="chkEsLegal"> Es legal </label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="checkbox">
+                                                <input id="chkEsExterna" type="checkbox" v-model="itemActual.es_externa">
+                                                <label for="chkEsExterna"> Es externa </label>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="checkbox">
+                                                <input id="chkActivo" type="checkbox" v-model="itemActual.active">
+                                                <label for="chkActivo"> Es activo </label>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
+                                    <button type="button" class="btn btn-danger waves-effect waves-light" @click="actualizar();">Guardar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock contenido %}
+{% block scripts %}
+<script>
+    var app = new Vue({
+        el: '#app',
+        delimiters: ["${","}"],
+        data: {
+            tipos: [],
+            itemActual: {},
+            msj: "",
+            newReg: {"deduccion_tipo": null, "es_legal": false, "es_externa": false, "indice_relevancia": null}
+        },
+        mounted: function() {
+            $(".select2").select2();
+            this.cargar();
+            $('#side-menu a').removeClass('active');
+            $('#aPersonal').addClass('active');
+            $('#aConceptos').addClass('active');
+            $('#aTipoDeduccion').addClass('active');
+            $('#aConceptos').parents('li').addClass('active');
+        },
+        methods: {
+            cargar: function() {
+                var self = this;
+                axios.get('/obtener/deducciones-tipos/')
+                    .then(function(response) {
+                        self.tipos = response.data.datos;
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+            },
+            agregar: function(event) {
+                event.preventDefault();
+                var self = this;
+                $('.preloader').fadeIn();
+                axios.post('/guardar/deduccion-tipo/', this.newReg, 
+                    {
+                        headers: {
+                            'X-CSRFToken': this.getCookie('csrftoken'),
+                            'Content-Type': 'application/json;charset=UTF-8',
+                            'X-Requested-With' : 'XMLHttpRequest',
+                        }, 
+                    }).then(function(response) {
+                        $('.preloader').fadeOut();
+                        if(response.data.error) {
+                            console.log("Entró aqui");
+                            swal("¡Algo salió mal!", response.data.mensaje, "error");
+                        }else{
+                            self.cargar();
+                            self.limpiar();
+                            $('#frmAgregar-modal').modal('toggle');
+                            swal("¡Éxito!", response.data.mensaje, "success");
+                        }
+                    }).catch(function(error) {
+                        $('.preloader').fadeOut();
+                        swal("¡Algo salió mal!", error, "error");
+                    });
+
+            },
+            editar:function(Id, event) {
+                $('.preloader').fadeIn();
+                var self = this;
+                event.preventDefault();
+                axios.get('/obtener/deduccion-tipo/', {params: {'id': Id}},{
+                    headers: {
+                        'X-Requested-With' : 'XMLHttpRequest',
+                        'Content-Type': 'application/json;charset=UTF-8',
+                    }
+                }).then((response) => {
+                    $('.preloader').fadeOut();
+                    if(response.data.error){
+                        swal("¡Algo salió mal!", response.data.mensaje, "warning");
+                    }else{
+                        self.itemActual = response.data;
+                        $('#frmEditar-modal').modal('toggle');
+                    }
+                }).catch(function (error) {
+                    swal("¡Algo salió mal!", error, "warning");
+                });
+            },
+            actualizar: function() {
+                axios.post(`/actualizar/deduccion-tipo/`, this.itemActual, {headers: {'X-CSRFToken': this.getCookie('csrftoken')}, 'Content-Type': 'application/json;charset=UTF-8'})
+                    .then((response) => {
+                        this.cargar();
+                        $('#frmEditar-modal').modal('toggle');
+                    })
+                    .catch((err) => {
+                        this.loading = false;
+                        console.log(err);
+                    });
+            },
+            mensaje: function() {
+                $('.preloader').fadeIn();
+                //console.log('Click desde botón');
+            },
+            limpiar: function() {
+                this.newReg.deduccion_tipo = null;
+                this.newReg.es_legal = false;
+                this.newReg.es_externa = false;
+                this.newReg.indice_relevancia = null;
+            },
+            getCookie (name) {
+                var value = '; ' + document.cookie
+                var parts = value.split('; ' + name + '=')
+                if (parts.length === 2) return parts.pop().split(';').shift()
+            },
+        }
+    });
+</script>
+{% endblock scripts %}

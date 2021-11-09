@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% block titulo %}Reporte | Cuenta Contable{% endblock titulo %}
+{% block contenido %}
+{% block estilo %}
+<style>
+    #cuentas{
+        margin-top: 7px;
+    }
+</style>
+{% endblock estilo %}
+{% load static %}
+<div id="app">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2 class="text-bold"><i class="ti-pencil-alt"></i> Reporte de Cuentas Contables</h2>
+                </div>
+                <div class="panel-wrapper">
+                    <div class="panel-body">
+                        <div class="form-inline">
+                            <div class="form-group">
+                                <label>Seleccione planilla: </label>
+                                <select id="cboPlanilla" name="cboPlanilla" class="form-control select2">
+                                    <option value="0">Seleccione...</option>
+                                    {% for planilla in planillas %}
+                                    <option value="{{planilla.id}}">{{planilla.descripcion}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Seleccione tipo de ingreso: </label>
+                                <select id="cboTipoIngreso" name="cboTipoIngreso" class="form-control select2">
+                                    <option value="0">Seleccione...</option>
+                                    {% for tipo_ingreso in tipos_ingresos %}
+                                    <option value="{{tipo_ingreso.id}}">{{tipo_ingreso.ingreso_tipo}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <button class="btn btn-default" @click="buscar();">Buscar</button>
+                        </div>
+                        <br>
+                        <div class="table-responsive col-md-offset-3 col-md-6">
+                            <button class="btn btn-info" v-if="cuentas.length" @click="exportarExcel('cuentas')">Exportar a Excel</button>
+                            <table id="cuentas" class="display nowrap table table-hover table-striped table-bordered" cellspacing="0" width="100%">
+                                <thead>
+                                    <tr >
+                                        <th>DEPARTAMENTO</th>
+                                        <th>CUENTA CONTABLE</th>
+                                        <th>TIPO DE INGRESO</th>
+                                        <th class="text-center">TOTAL</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="cuenta in cuentas" :key="cuenta.index">
+                                        <td>${cuenta.departamento}</td>
+                                        <td>${cuenta.cuenta_contable}</td>
+                                        <td>${cuenta.tipo_ingreso}</td>
+                                        <td class="text-right">${cuenta.total}</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3"><strong>TOTAL</strong></td>
+                                        <td class="text-right"><strong>${total}</strong></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contenido %}
+{% block scripts %}
+<script>
+    var app = new Vue({
+        'el': '#app',
+        delimiters: ["${","}"],
+        data: {
+            parametros: {"planilla_id": 0, "tipo_ingreso_id": 0},
+            cuentas: [],
+            total: 0.00,
+        },
+        created: function() {
+            
+        },
+        mounted: function() {
+            $('.select2').select2()
+            $('#side-menu a').removeClass('active')
+            $('#aAcciones').addClass('active')
+            $('#aRCuentasContables').addClass('active')
+            $('#accionesReportes').addClass('active')
+            $('#aAcciones').parents('li').addClass('active')
+            $('#aRCuentasContables').parents('li').addClass('active')
+        },
+        methods: {
+            buscar: function() {
+                var self = this;
+                axios.get('/reporte/cuentas-contables/generar/', {params: self.parametros},
+                    {
+                        'headers': {
+                            'X-Requested-With' : 'XMLHttpRequest',
+                        }
+                    })
+                    .then(function(response) {
+                        if(response.data.mensaje){
+                            swal("¡Algo salió mal!", response.data.mensaje, "warning");
+                        }else{
+                            self.cuentas = response.data.datos;
+                            self.total = response.data.total;
+                        }
+                    }).catch(function(error) {
+                        swal("¡Algo salió mal!", error, "warning");
+                    });
+            },
+            exportarExcel: function(tableID, filename='') {
+                var downlink;
+                var dataType = 'application/vnd.ms-excel';
+                var tableSelect = document.getElementById(tableID);
+                var tableHTML = tableSelect.outerHTML.replace(/ /g, '%20');
+
+                //Specify file name
+                filename = filename?filename+'.xls':'excel_data.xls';
+
+                //Create download link element
+                downloadLink = document.createElement("a");
+
+                document.body.appendChild(downloadLink);
+
+                if (navigator.msSaveOrOpenBlob) {
+                    var blob = new Blob(['\ufeff', tableHTML], {
+                        type: dataType
+                    });
+                    navigator.msSaveOrOpenBlob(blob, filename);
+                } else {
+                    //Create a link to the file
+                    downloadLink.href = 'data:' + dataType + ', ' + tableHTML;
+
+                    //Setting the file name
+                    downloadLink.downloadLink = filename;
+
+                    //triggering the function
+                    downloadLink.click();
+                }
+            }
+        }
+    });
+
+    $("#cboPlanilla").on('change', function() {
+        app.parametros.planilla_id = $(this).val();
+    });
+
+    $("#cboTipoIngreso").on('change', function() {
+        app.parametros.tipo_ingreso_id = $(this).val();
+    });
+
+    // $('#cuentas').DataTable({
+    //     buttons: [
+    //         'copy', 'csv', 'excel', 'pdf', 'print'
+    //     ]
+    // });
+    // $('.buttons-copy, .buttons-csv, .buttons-print, .buttons-pdf, .buttons-excel').addClass('btn btn-primary m-r-10');
+</script>
+{% endblock scripts %}

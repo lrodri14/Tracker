@@ -1,0 +1,327 @@
+{% extends 'base.html' %}
+{% block titulo %}
+Reporte
+{% endblock titulo %}
+{% block contenido %}
+<div id="app" class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2 class="text-bold"><i class="ti-pencil-alt"></i>Reporte de Empleados</h2>
+            </div>
+            <div class="panel-wrapper">
+                <div class="panel-body">
+                    {% comment '' %}
+                    <form class="form-horizontal">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <label>Tipo de Contrato:</span></label>
+                                <select id="cboTiposContratos" class="form-control select2">
+                                    <option value="0">Seleccione...</option>
+                                    {% for tipo_contrato in tipos_contratos %}
+                                        <option value="{{tipo_contrato.pk}}">{{tipo_contrato.tipo_contrato}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-sm-3">
+                                <label>Tipo de Nómina:</span></label>
+                                <select id="cboTiposNominas" class="form-control select2">
+                                    <option value="0">Seleccione...</option>
+                                    {% for tipo_nomina in tipos_nominas %}
+                                        <option value="{{tipo_nomina.pk}}">{{tipo_nomina.tipo_planilla}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <div class="col-sm-12 text-right">
+                                <button id="__btnBuscar" @click="cargar($event);" class="btn btn-default">Buscar</button>
+                            </div>
+                        </div>
+                    </form>
+                    <hr>
+                    {% endcomment %}
+                    <div class="row">
+                        <div class="col-lg-8 col-md-8 col-sm-8 col-xs-8 col-xs-offset-2">
+                            <table id="mitabla" class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th class="text-center">DEPARTAMENTO</th>
+                                        <th class="text-center">TOTAL EMPLEADOS</th>
+                                        <th class="text-center">SALARIO MENSUAL</th>
+                                        <th class="text-center">ACCIÓN</th>
+                                    </tr>
+                                </thead>
+                                <!--tbody>
+                                    <tr v-for="item in registros.datos">
+                                        <td v-if="item.descripcion">${item.descripcion}</td>
+                                        <td v-else>NULL</td>
+                                        <td class="text-center">${item.total_empleados}</td>
+                                        <td class="text-right">${item.total_salarios}</td>
+                                        <td class="text-center"><a href="#" @click="ver_empleados(item.id, $event)"><span class="fa fa-search"></span></a></td>
+                                    </tr>
+                                </tbody-->
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="2"></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <!-- /.modal Agregar -->
+                        <div id="frmVerEmpleados-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                        <h4 class="modal-title">LISTA DE EMPLEADOS.</h4> </div>
+                                    <div class="modal-body">
+                                       <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center">CÓDIGO</th>
+                                                    <th class="text-center">EMPLEADO</th>
+                                                    <th class="text-center">SALARIO</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-for="empleado in empleados.datos">
+                                                    <td>${empleado.codigo}</td>
+                                                    <td>${empleado.nombre}</td>
+                                                    <td class="text-right">${empleado.salario}</td>
+                                                </tr>
+                                            </tbody>
+                                            <tfooter>
+                                                <tr>
+                                                    <td colspan="2"><strong>TOTAL</strong></td>
+                                                    <td class="text-right"><strong>${empleados.total_salarios}</strong></td>
+                                                </tr>
+                                            </tfooter>
+                                       </table>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default waves-effect" data-dismiss="modal">Cerrar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contenido %}
+{% block scripts %}
+<script>
+
+var app = new Vue({
+    el: '#app',
+    delimiters: ["${","}"],
+    data: {
+        registros:{"datos": []},
+        empleados: {},
+        busqueda: {"tipo_contrato": 0, "tipo_nomina": 0}
+    },
+    mounted: function() {
+        //cargarTabla(this);
+        $('#side-menu a').removeClass('active');
+        $('#aAcciones').addClass('active');
+        $('#accionesReportes').addClass('active');
+        $('#aReporte1').addClass('active');
+        $('#aAcciones').parents('li').addClass('active');
+        $('#accionesReportes').parents('li').addClass('active');
+    },
+    methods: {
+        cargar: function(event) {
+            event.preventDefault();
+            var self = this;
+            axios.get('/obtener/departamentos-empleados/',  {
+                headers: {
+                    'X-Requested-With' : 'XMLHttpRequest',
+                }, 
+            }).then(function(response) {
+                //self.registros = response.data;
+            }).catch(function (error) {
+                console.log(error);
+            });
+        },
+        ver_empleados: function(id, event) {
+            event.preventDefault();
+            var self = this;
+            axios.get('/obtener/empleados-depto/?id='+id, {
+                headers: {
+                    'X-Requested-With' : 'XMLHttpRequest',
+                }, 
+            }).then(function(response) {
+                self.empleados = response.data;
+                if(response.data.error) {
+                    swal("¡Algo salió mal!", response.data.mensaje, "error");
+                }else{
+                    $('#frmVerEmpleados-modal').modal('toggle');
+                }
+            }).catch(function (error) {
+                console.log(error);
+            });
+        },
+        getCookie (name) {
+            var value = '; ' + document.cookie
+            var parts = value.split('; ' + name + '=')
+            if (parts.length === 2) return parts.pop().split(';').shift()
+        },
+    }
+});
+
+var tabla = $('#mitabla').DataTable({
+    "ajax": {
+        url: '/obtener/departamentos-empleados/',
+        data: function(d) {
+            d.tipo_contrato = app.busqueda.tipo_contrato,
+            d.tipo_nomina = app.busqueda.tipo_nomina
+        },
+        dataType: 'json',
+
+    },
+    "order": [[0, "asc"]],
+    columns: [
+        {
+            "data": "id",
+            render: function(data, type, row, meta) {
+                return meta.row + meta.settings._iDisplayStart + 1;
+            }
+        },
+        { data: 'descripcion' },
+        { data: 'total_empleados' },
+        { data: 'total_salarios' },
+        {
+            "data": "id",
+            render : function(data, type, row) {
+                html = '<a href="#" class="btnVerEmpleados" data-rf="'+data+'"><span class="fa fa-search"></span></a>';
+                return html;
+            }
+        }
+    ],
+    "columnDefs": [
+        {
+            "targets": 4,
+            "className": "text-center",
+        },
+        {
+            "targets": 3,
+            "className": "text-right",
+        },
+        {
+            "targets": 2,
+            "width": "13%",
+            "className": "text-center",
+        }
+    ],
+    "language": {
+        "lengthMenu": "Mostrar _MENU_ registros por página",
+        "zeroRecords": "No se encontraron datos.",
+        "info": "Página _PAGE_ de _PAGES_",
+        "infoEmpty": "No existen registros",
+        "infoFiltered": "(resultado de _MAX_ registros en total.)",
+        "paginate": {
+            "first": "Primer registro",
+            "last": "Último registro",
+            "next": "Siguiente",
+            "previous": "Anterior"
+        },
+        "search": "Buscar:",
+    },
+    dom: 'Bfrtip',
+    buttons: [
+        {
+            extend: 'copyHtml5',
+            "exportOptions": {
+                columns: [0, 1, 2, 3]
+            }
+        },
+        {
+            extend: 'excelHtml5',
+            "exportOptions": {
+                columns: [0, 1, 2, 3]
+            }
+        }
+    ],
+    "footerCallback": function(row, data, start, end, display) {
+        var api = this.api(), data;
+
+        var intVal = function ( i ) {
+            return typeof i === 'string' ?
+                i.replace(/[\$,]/g, '')*1 :
+                typeof i === 'number' ?
+                    i : 0;
+        };
+
+        var monTotal = api
+            .column(2)
+            .data()
+            .reduce( function (a, b) {
+                return intVal(a) + intVal(b);
+            }, 0);
+
+        var monTotal2 = api
+            .column(3)
+            .data()
+            .reduce( function (a, b) {
+                return intVal(a) + intVal(b);
+            }, 0);
+
+        var locality = 'es-HN';
+        var numberToFormat = monTotal2.toLocaleString(locality, {
+            minimunFractionDigits: 2
+        });
+
+        $(api.column(1).footer()).html('<strong>TOTAL</strong>');
+        $(api.column(2).footer()).html('<strong>'+monTotal+'</strong>');
+        $(api.column(3).footer()).html('<strong>'+humanizeNumber(monTotal2)+'</strong>');
+    },
+});
+$('.buttons-copy, .buttons-csv, .buttons-print, .buttons-pdf, .buttons-excel').addClass('btn btn-primary m-r-10');
+
+$('#app').on('click', '.btnVerEmpleados', function(e) {
+    e.preventDefault();
+    app.ver_empleados($(this).attr('data-rf'), e);
+});
+
+$('#cboTiposContratos').on('change', function() {
+    app.busqueda.tipo_contrato = $(this).val();
+});
+
+$('#cboTiposNominas').on('change', function() {
+    app.busqueda.tipo_nomina = $(this).val();
+});
+
+$('#btnBuscar').on('click', function(e) {
+    e.preventDefault();
+    /*$('#miTabla').DataTable({
+        ajax: {
+            url: "/obtener/departamentos-empleados/",
+            data: {
+                d.tipo_contrato = app.busqueda.tipo_contrato,
+                d.tipo_nomina = app.busqueda.tipo_nomina
+            }
+        }
+    });*/
+});
+
+
+$('.select2').select2();
+
+function humanizeNumber(n) {
+     n = n.toString()
+     while (true) {
+       var n2 = n.replace(/(\d)(\d{3})($|,|\.)/g, '$1,$2$3')
+       if (n == n2) break
+       n = n2
+     }
+     return n
+}
+</script>
+{% endblock scripts %}

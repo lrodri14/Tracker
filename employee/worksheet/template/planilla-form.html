@@ -142,23 +142,29 @@
                             <div class="col-md-12">
                                 <div class="col-md-6">
                                     <div class="form-group">
+                                        <!-- CHECK BOX PLANILLA ESPECIAL -->
+                                        <!-- Este define cuando una planilla será
+                                        para pagar o deducir en tiempo fuera de una planilla normal, como ser 
+                                        aguinaldos, comisiones etc... -->
                                         <div class="col-md-5 text-right"></div>
                                         <div class="col-md-7">
                                             <div class="checkbox checkbox-info">
                                                 {% if editar %}
-                                                    {% if dato.ihss %}
-                                                    <input id="chkIHSS" name="ded_ihss" type="checkbox" checked>
+                                                    {% if dato.especial %}
+                                                    <input id="chkEspecial" name="especial" type="checkbox" checked>
                                                     {% else %}
-                                                    <input id="chkIHSS" name="ded_ihss" type="checkbox">
+                                                    <input id="chkEspecial" name="especial" type="checkbox">
                                                     {% endif %}
                                                 {% else %}
-                                                <input id="chkIHSS" name="ded_ihss" type="checkbox">
+                                                <input id="chkEspecial" name="especial" type="checkbox">
                                                 {% endif %}
-                                                <label for="chkIHSS">Deducción IHSS </label>
+                                                <label for="chkEspecial">Planilla Especial </label>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                            {% comment 'Se deshabilitan los checkbox' %}
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <div class="col-md-5 text-right"></div>
@@ -196,6 +202,7 @@
                                 </div>
                             </div>
                             <!-- CHECKBOX -->
+                            {% endcomment %}
                             <div class="col-md-12">
                                 <div class="col-md-6">
                                     <div class="form-group">
@@ -235,6 +242,85 @@
     $('#aPlanilla').addClass('active');
     $('#aAcciones').parents('li').addClass('active');
     $('#accionesNomina').parents('li').addClass('active');
+
+    var mensaje = '';
+    var especial = '';
+    var tipo_contrato = '';
+    var tipo_planilla = '';
+
+    $('#txtFechaInicio').on('change', function(e) {
+        autonombre();
+    });
+
+    $('#txtFechaFin').on('change', function(e) {
+        autonombre();
+    });
+
+    $('#chkEspecial').on('change', function(e) {
+        especial = ''
+        if($(this).is(":checked")) {
+            especial = 'E';
+        }else{
+            especial = '';
+        }
+        autonombre();
+    });
+
+    $('select[name="tipo_planilla"]').on('change', function() {
+        var data = $('select[name="tipo_planilla"] option:selected').text();
+        if(data != "Seleccionar...") {
+            tipo_planilla = data;
+        }else{
+            tipo_planilla = '';
+        }
+        autonombre();
+    });
+
+    $('select[name="tipo_contrato"]').on('change', function() {
+        var data = $('select[name="tipo_contrato"] option:selected').text();
+        if(data != "Seleccionar...") {
+            tipo_contrato = data;
+        }else{
+            tipo_contrato = '';
+        }
+        autonombre();
+    });
+
+    function autonombre() {
+        fecha1 = '';
+        fecha2 = '';
+        fecha1 = $('#txtFechaFin').val();
+        fecha2 = $('#txtFechaInicio').val();
+        mensaje = '';
+        if(fecha1.length > 0) {
+            mensaje += fecha1;
+        }
+        if(fecha2.length > 0) {
+            mensaje += "-" + fecha2;
+        }
+        //mensaje +=   + " ";
+        if(especial){
+            mensaje += "-" + especial;
+        }
+        if(tipo_planilla.length > 0) {
+            mensaje += "-" + nombreAbreve(tipo_planilla);
+        }
+        if(tipo_contrato.length > 0) {
+            mensaje += "-" + nombreAbreve(tipo_contrato);
+        }
+        $('textarea[name="descripcion"]').val(mensaje);
+        
+    }
+
+    function nombreAbreve(palabra) {
+        var array = palabra.split(" "),
+            total = array.length,
+            resultado = "";
+        if(palabra.length > 0){
+            for( var i = 0; i < total; resultado += array[i][0], i++);
+        }
+        return resultado;
+    }
 
     jQuery('.mydatepicker, #datepicker').datepicker({
         format: 'yyyy-mm-dd',

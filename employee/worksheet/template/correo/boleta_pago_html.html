@@ -12,11 +12,10 @@
             margin; 0;
         }
         h1{
-            text-align:center;
+            text-align:left;
         }
         .contenido{
             display: block;
-            
         }
         .encabezado{
             margin-bottom: 20px;
@@ -40,22 +39,37 @@
         .sueldo_neto td{
             border-top: 1px solid blue;
         }
+        img{
+            width: 100px;
+        }
     </style>
     <title>Boleta de Pago</title>
 </head>
 <body>
     <div class="contenido">
-        <img src="http://www.promacohn.com/wp-content/uploads/2019/03/promaco-con-lema-v1.png" alt="Logo de Promaco">
+        <img src="cid:promaco-logo.png" alt="Logo de Promaco">
         <h1>Boleta de Pago</h1>
         <div class="encabezado">
             <div>
-                <label>Código empleado: </label><label><strong>{{empleado.id}}</strong></label>
+                <label>Código empleado: </label><label><strong>{{empleado.extEmpNo}}</strong></label>
             </div>
             <div>
                 <label>Empleado: </label><label><strong>{{empleado.firstName}} {% if empleado.middleName %}{{empleado.middleName}}{% endif %} {{empleado.lastName}}</strong></label>
             </div>
             <div>
-                <label>Fecha de pago: </label><label><strong>{{planilla.fecha_pago}}</strong></label>
+                <label>Fecha de pago: </label><label><strong>{{planilla.fecha_pago|date:"d/m/Y"}}</strong></label>
+            </div>
+            <div>
+                <label>Planilla desde: </label><label><strong>{{planilla.fecha_inicio|date:"d/m/Y"}}</strong></label>
+            </div>
+            <div>
+                <label>Planilla hasta: </label><label><strong>{{planilla.fecha_fin|date:"d/m/Y"}}</strong></label>
+            </div>
+            <div>
+                <label>Cuenta: </label><label><strong>{{empleado.bankAccount}}</strong></label>
+            </div>
+            <div>
+                <label>Dias laborados: </label><label><strong>{{dias_trabajados}}</strong></label>
             </div>
         </div>
         <table class="tabla-pagos">

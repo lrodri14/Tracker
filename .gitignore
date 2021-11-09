@@ -1,8 +1,10 @@
 employee/employee/settings.py
+employee/employee/settings_20202020202.py
 employee/employee/*.pyc
 employee/worksheet/*.pyc
 employee/worksheet/migrations/*.pyc
 employee/*.sqlite3
+employee/tracker_env
 __pycache__/
 .vscode
 employee/worksheet/fcgi.py

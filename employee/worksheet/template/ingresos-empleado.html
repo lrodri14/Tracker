@@ -1,0 +1,528 @@
+{% extends 'base.html' %}
+{% block titulo %}Ingresos de empleado{% endblock %}
+{% block estilo %}
+{% endblock estilo %}
+{% block contenido %}
+<div id="app">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2 class="text-bold"><i class="ti-pencil-alt"></i> Ingresos de Empleado</i></h2>
+                </div>
+                <div class="panel-wrapper">
+                    <div class="panel-body">
+                        <!-- Nav tabs -->
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li role="presentation" class="active"><a href="#listado" aria-controls="listado" role="tab" data-toggle="tab" aria-expanded="true"><span class="visible-xs"><i class="ti-user"></i></span> <span class="hidden-xs">Listado de deducciones</span></a></li>
+                            <li role="presentation" class=""><a href="#formulario" aria-controls="formulario" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-home"></i></span><span class="hidden-xs"> Formulario</span></a></li>
+                            <li role="presentation" class=""><a href="#revertir" aria-controls="revertir" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-home"></i></span><span class="hidden-xs"> Revertir datos</span></a></li>
+                        </ul>
+                        <!-- Tab panes -->
+                        <div class="tab-content">
+                            <div role="tabpanel" class="tab-pane active" id="listado">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <h2>Busqueda</h2>
+                                        <div class="text-right">
+                                            <button class="btn btn-default" @click="agregar();" >Agregar</button>
+                                            <button class="btn btn-info" @click="carga();" >Refrescar</button>
+                                        </div>
+                                        <br>
+                                        <div class="col-md-6 form-group">
+                                            <label for="cboEmpleadoB">Empleado</label>
+                                            <select id="cboEmpleadoB"  class="form-control select2">
+                                                <option value="0">Seleccionar...</option>
+                                                {% for empleado in empleados %}
+                                                <option value="{{empleado.pk}}">{{empleado.extEmpNo}} | {{empleado.firstName}} {% if empleado.middleName %}{{empleado.middleName}}{% endif %} {{empleado.lastName}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 form-group">
+                                            <label for="cboPlanillaB">Planilla</label>
+                                            <select id="cboPlanillaB"  class="form-control select2" >
+                                                <option value="0">Seleccionar...</option>
+                                                {% for planilla in planillas_l %}
+                                                <option value="{{planilla.pk}}">{{planilla.descripcion}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 form-group">
+                                            <label for="cboTipoIngresoB">Tipo de Ingreso</label>
+                                            <select id="cboTipoIngresoB" class="form-control select2">
+                                                <option value="0">Seleccionar...</option>
+                                                {% for tipo in ingresos %}
+                                                <option value="{{tipo.pk}}">{{tipo.ingreso_tipo}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                     <!-- .row -->
+                                    <div class="row">
+                                        <div class="table-responsive">
+                                            <table id="tabla-datos" class="table">
+                                                <thead>
+                                                    <tr >
+                                                        <th>Código</th>
+                                                        <th>Empleado</th>
+                                                        <th>Ingreso</th>
+                                                        <th class="text-right">Monto(Lps)</th>
+                                                        <th class="text-center">Estado</th>
+                                                        <th></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr class="text-center" v-if="!ingresos.length">
+                                                        <td colspan="6"><p class="text-danger"><strong>No se encontraron datos.</strong></p></td>
+                                                    </tr>
+                                                    <tr v-for="item in ingresos">
+                                                        <td>${item.codigo}</td>
+                                                        <td>${item.empleado}</td>
+                                                        <td>${item.ingreso}</td>
+                                                        <td class="text-right">${item.monto}</td>
+                                                        <td class="text-center">
+                                                            <span v-if="item.active" class="label label-success">Activo</span>
+                                                            <span v-else class="label label-danger">Inactivo</span>
+                                                        </td>
+                                                        <td class="opciones">
+                                                            <a href="#" class="text-danger" @click="eliminar(item.id, $event);">
+                                                                <i class="ti-close"></i>
+                                                            </a>
+                                                            <a href="#" @click="editar(item.id, $event)"><i class="fas fa-search"></i></a>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                                <tfoot>
+                                                    <tr>
+                                                        <td><strong>Total:</strong></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td class="text-right"><strong>${total}</strong></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                    </tr>
+                                                </tfoot>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div role="tabpanel" class="tab-pane" id="formulario">
+                                <div class="row">
+                                    <div class="col-md-6 form-group">
+                                        <label for="cboPlanilla">Planilla</label>
+                                        <select name="cboPlanilla" id="cboPlanilla" class="form-control" v-model="nuevoRegistro.planilla">
+                                            <option value="0">Seleccionar...</option>
+                                            {% for planilla in planillas %}
+                                            <option value="{{planilla.id}}">{{planilla.descripcion}}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <br>
+                                        <label for="cboTipoDeduccion">Tipo de Ingresos</label>
+                                        <select name="cboTipoDeduccion" id="cboTipoDeduccion" class="form-control" v-model="nuevoRegistro.ingreso">
+                                            <option value="0">Seleccionar...</option>
+                                            {% for tipo in ingresos %}
+                                            <option value="{{tipo.id}}">{{tipo.ingreso_tipo}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="input-file-now">Cargar archivo con datos de ingresos.</label>
+                                        <input type="file" id="archivosDeducciones" ref="file" class="dropify" />
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="col-md-12 text-right">
+                                        <button class="btn btn-primary" @click="guardarArchivo();">GUARDAR</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div role="tabpanel" class="tab-pane" id="revertir">
+                                <div class="col-md-6 form-group">
+                                    <label for="cboPlanillaI">Planilla</label>
+                                    <select id="cboPlanillaI"  class="form-control select2" >
+                                        <option value="0">Seleccionar...</option>
+                                        {% for planilla in planillas %}
+                                        <option value="{{planilla.pk}}">{{planilla.descripcion}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-6 form-group">
+                                    <label for="cboTipoIngresoI">Tipo de Ingreso</label>
+                                    <select id="cboTipoIngresoI" class="form-control select2">
+                                        <option value="0">Seleccionar...</option>
+                                        {% for tipo in ingresos %}
+                                        <option value="{{tipo.pk}}">{{tipo.ingreso_tipo}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-12 form-group text-right">
+                                    <button class="btn btn-info" @click="revertirIngresos();">Revertir</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.modal Formulario -->
+    <div id="formulario-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" v-if="!edicion">Agregar Ingreso de Empleado</h4>
+                    <h4 class="modal-title" v-else>Editar Ingreso de Empleado</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="cboTipoIngresoF">Tipo de Ingreso</label>
+                            <select v-if="!edicion" id="cboTipoIngresoF" class="form-control select2" >
+                                <option value="0">Seleccionar...</option>
+                                {% for ingreso in ingresos %}
+                                <option value="{{ingreso.pk}}">{{ingreso.ingreso_tipo}}</option>
+                                {% endfor %}
+                            </select>
+                            <select v-else id="cboTipoIngresoF" class="form-control select2"  disabled>
+                                <option value="0">Seleccionar...</option>
+                                {% for ingreso in ingresos %}
+                                <option value="{{ingreso.pk}}">{{ingreso.ingreso_tipo}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="cboPlanillaF">Planilla</label>
+                            <select id="cboPlanillaF" class="form-control select2" v-if="!edicion">
+                                <option value="0">Seleccionar...</option>
+                                {% for planilla in planillas %}
+                                <option value="{{planilla.pk}}">{{planilla.descripcion}}</option>
+                                {% endfor %}
+                            </select>
+                            <select id="cboPlanillaF" class="form-control select2" disabled v-else>
+                                <option value="0">Seleccionar...</option>
+                                {% for planilla in planillas %}
+                                <option value="{{planilla.pk}}">{{planilla.descripcion}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="cboEmpleadoF">Empleado</label>
+                            <select id="cboEmpleadoF" class="form-control select2" v-if="!edicion">
+                                <option value="0">Seleccionar...</option>
+                                {% for empleado in empleados %}
+                                <option value="{{empleado.pk}}">{{empleado.extEmpNo}} | {{empleado.firstName}} {% if empleado.middleName %}{{empleado.middleName}}{% endif %} {{empleado.lastName}}</option>
+                                {% endfor %}
+                            </select>
+                            <select id="cboEmpleadoF" class="form-control select2" v-else disabled>
+                                <option value="0">Seleccionar...</option>
+                                {% for empleado in empleados %}
+                                <option value="{{empleado.pk}}">{{empleado.extEmpNo}} | {{empleado.firstName}} {% if empleado.middleName %}{{empleado.middleName}}{% endif %} {{empleado.lastName}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="txtMonto">Monto</label>
+                            <input type="text" class="form-control" id="txtMonto" v-model="nuevoIngreso.monto" required="True"/>
+                        </div>
+                        <div v-if="edicion" class="form-group">
+                            <div class="checkbox">
+                                <input id="chkActivo" type="checkbox" v-model="nuevoIngreso.active">
+                                <label for="chkActivo"> Es activo </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default waves-effect" data-dismiss="modal" @click="limpiar();">Cerrar</button>
+                    <button type="button" class="btn btn-danger waves-effect waves-light" @click="actualizar();" v-if="edicion">Actualizar</button>
+                    <button type="button" class="btn btn-danger waves-effect waves-light" @click="guardar();" v-else>Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contenido %}
+{% block scripts %}
+<script>
+    var app = new Vue({
+        el: '#app',
+        delimiters: ['${', '}'],
+        data: {
+            ingresos: [],
+            busqueda: {"planilla": 0, "empleado": 0, "ingreso": 0},
+            total: 0.00,
+            nuevoIngreso: {"id": 0, "planilla": 0, "empleado": 0, "ingreso": 0, "monto": 0.00, "active": true},
+            nuevoRegistro: {"planilla": 0, "ingreso": 0},
+            revertirRegistros: {"planilla": 0, "ingreso": 0},
+            edicion: false,
+        },
+        mounted: function() {
+            $('.select2').select2();
+            $('#side-menu a').removeClass('active');
+            $('#aAcciones').addClass('active');
+            $('#accionesNomina').addClass('active');
+            $('#aIE').addClass('active');
+            $('#aAcciones').parents('li').addClass('active');
+            $('#accionesNomina').parents('li').addClass('active');
+            this.carga();
+        },
+        methods: {
+            carga: function() {
+                var self = this;
+                axios.get('/obtener/ingresos-empleado/', {params: this.busqueda }, 
+                    {
+                        headers: {
+                            'X-Requested-With' : 'XMLHttpRequest',
+                        }
+                    })
+                    .then(function(response){
+                        self.ingresos = response.data.datos;
+                        self.total = response.data.total;
+                    }).catch(function(error){
+                        swal("¡Algo salió mal!", error, "warning", {
+                            buttons: ["Cancelar", "Aceptar"],
+                        });
+                    });
+            },
+            agregar: function() {
+                $('#formulario-modal').modal('toggle');
+            },
+            eliminar: function(id, event) {
+                var self = this;
+                event.preventDefault();
+                swal({   
+                    title: "¿Desea eliminar el registro?",   
+                    text: "Al eliminar éste registro no se podrá recuperar en la base de datos.",   
+                    type: "warning",   
+                    showCancelButton: true,   
+                    confirmButtonColor: "#DD6B55",   
+                    confirmButtonText: "Si, eliminar",   
+                    closeOnConfirm: false 
+                }, function(){
+                    $('.preloader').fadeIn();
+                    axios.post('/eliminar/ingresos-empleado/', {"id": id}, 
+                        {
+                            headers: {
+                                'X-Requested-With' : 'XMLHttpRequest',
+                                'X-CSRFToken': self.getCookie('csrftoken'),
+                                'Content-Type': 'application/json;charset=UTF-8',
+                            }
+                        })
+                        .then(function(response){
+                            $('.preloader').fadeOut();
+                            if(response.data.error){
+                                swal("Algo salió mal!", response.data.mensaje, "warning");
+                            }else{
+                                self.carga();
+                                swal("¡Exito!", response.data.mensaje, "success");
+                            }
+                        }).catch(function(error){
+                            swal("¡Algo salió mal!", error.mensaje, "warning");
+                        });
+                });
+            },
+            limpiar2: function() {
+                this.nuevoRegistro.archivo = null;
+                this.nuevoRegistro.planilla = 0;
+                this.nuevoRegistro.ingreso = 0;
+                
+                var fileArchivo = $('.dropify').data('dropify');
+                fileArchivo.resetPreview();
+                fileArchivo.clearElement();
+                $('.select2').select2('val', '0');
+            },
+            editar: function(id, event) {
+                $('.preloader').fadeIn();
+                var self = this;
+                event.preventDefault();
+                self.edicion = true;
+                axios.get('/obtener/ingresos-empleado/registro/', {params:{'id':id}},{
+                    headers: {
+                        'X-Requested-With' : 'XMLHttpRequest',
+                        'Content-Type': 'application/json;charset=UTF-8',
+                    }
+                }).then((response) => {
+                    $('.preloader').fadeOut();
+                    if(response.data.error){
+                        swal("¡Algo salió mal!", response.data.mensaje, "warning");
+                    }else{
+                        self.nuevoIngreso = response.data.dato;
+                        $('#cboTipoIngresoF').select2('val', response.data.dato.deduccion);
+                        $('#cboPlanillaF').select2('val', response.data.dato.planilla);
+                        $('#cboEmpleadoF').select2('val', response.data.dato.empleado);
+                        $('#formulario-modal').modal('toggle');
+                    }
+                }).catch(function(error) {
+                    swal("¡Algo salió mal!", error, "warning");
+                });
+            },
+            limpiar: function() {
+                this.nuevoIngreso.empleado = 0;
+                this.nuevoIngreso.planilla = 0;
+                this.nuevoIngreso.ingreso = 0;
+                this.nuevoIngreso.monto = 0.00;
+                this.edicion = false;
+                
+                $('.select2').select2('val', '0');
+            },
+            guardar: function() {
+                $('.preloader').fadeIn();
+                var self = this;
+                axios.post('/guardar/ingresos-empleados/', self.nuevoIngreso, 
+                    {
+                        headers: {
+                            'X-Requested-With' : 'XMLHttpRequest',
+                            'X-CSRFToken': this.getCookie('csrftoken')}, 
+                            'Content-Type': 'application/json;charset=UTF-8',
+                            })
+                    .then((response) => {
+                        $('.preloader').fadeOut();
+                        if(response.data.error){
+                            swal("¡Algo salió mal!", response.data.mensaje, "warning");
+                        }else{
+                            $('#formulario-modal').modal('toggle');
+                            swal("¡Éxito!", response.data.mensaje, "success");
+                            self.limpiar();
+                        }
+                    }).catch(function(error) {
+                        $('.preloader').fadeOut();
+                        swal("¡Algo salió mal!", error, "warning");
+                    });
+            },
+            guardarArchivo: function() {
+                var self = this;
+                $('.preloader').fadeIn();
+                this.nuevoRegistro.archivo = this.$refs.file.files[0];
+                let formData = new FormData();
+                formData.append('archivo', this.nuevoRegistro.archivo);
+                formData.append('planilla', this.nuevoRegistro.planilla);
+                formData.append('ingreso', this.nuevoRegistro.ingreso);
+
+                axios.post('/guardar/archivo/ingresos-empleados/', formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'X-CSRFToken': this.getCookie('csrftoken'),
+                        'X-Requested-With' : 'XMLHttpRequest',
+                    }
+                })
+                .then(function(response) {
+                    $('.preloader').fadeOut();
+                    if(response.data.error) {
+                        swal("¡Algo salio mal!", response.data.mensaje, "warning");
+                    }else{
+                        swal("¡Exito!", response.data.mensaje, "success");
+                        self.limpiar2();
+                    }
+                })
+                .catch(function (error){
+                    $('.preloader').fadeOut();
+                    swal("¡Algo salió mal!", error, "warning");
+                });
+            },
+            actualizar: function() {
+                $('.preloader').fadeIn();
+                var self = this;
+                axios.post('/actualizar/ingresos-empleados/', self.nuevoIngreso, 
+                    {
+                        headers: {
+                            'X-Requested-With' : 'XMLHttpRequest',
+                            'X-CSRFToken': this.getCookie('csrftoken')}, 
+                            'Content-Type': 'application/json;charset=UTF-8',
+                    })
+                    .then((response) => {
+                        $('.preloader').fadeOut();
+                        if(response.data.error){
+                            swal("¡Algo salió mal!", response.data.mensaje, "warning");
+                        }else{
+                            self.carga();
+                            $('#formulario-modal').modal('toggle');
+                            swal("¡Éxito!", response.data.mensaje, "success");
+                        }
+                    }).catch(function(error) {
+                        swal("¡Algo salió mal!", error, "warning");
+                    });
+            },
+            revertirIngresos: function() {
+                var self = this;
+                event.preventDefault();
+                swal({   
+                    title: "¿Desea revertir los registros?",   
+                    text: "Al eliminar éste registro no se podrá recuperar en la base de datos. Si no ha seleccionado un 'Tipo de Ingreso' se procederá a revertir todos los registros de ingreso de la planilla seleccionada.",   
+                    type: "warning",   
+                    showCancelButton: true,   
+                    confirmButtonColor: "#DD6B55",   
+                    confirmButtonText: "Si, eliminar",   
+                    closeOnConfirm: false 
+                }, function(){   
+                    axios.post('/revertir/ingresos/', self.revertirRegistros, 
+                        {
+                            headers: {
+                                'X-Requested-With' : 'XMLHttpRequest',
+                                'X-CSRFToken': self.getCookie('csrftoken'),
+                                'Content-Type': 'application/json;charset=UTF-8',
+                            }
+                        })
+                        .then(function(response){
+                            if(response.data.error){
+                                swal("Algo salió mal!", response.data.mensaje, "warning");
+                            }else{
+                                swal("¡Exito!", response.data.mensaje, "success");
+                            }
+                        }).catch(function(error){
+                            swal("¡Algo salió mal!", error.mensaje, "warning");
+                        });
+                });
+            },
+            getCookie (name) {
+                var value = '; ' + document.cookie
+                var parts = value.split('; ' + name + '=')
+                if (parts.length === 2) return parts.pop().split(';').shift()
+            },
+        }
+    });
+
+    $('#cboEmpleadoB').on('change', function(e) {
+        app.busqueda.empleado = $(this).val();
+        app.carga();
+    });
+
+    $('#cboPlanillaB').on('change', function(e) {
+        app.busqueda.planilla = $(this).val();
+        app.carga();
+    });
+
+    $('#cboTipoIngresoB').on('change', function(e) {
+        app.busqueda.ingreso = $(this).val();
+        app.carga();
+    });
+
+    $('#cboEmpleadoF').on('change', function(e) {
+        app.nuevoIngreso.empleado = $(this).val();
+        app.carga();
+    });
+
+    $('#cboPlanillaF').on('change', function(e) {
+        app.nuevoIngreso.planilla = $(this).val();
+        app.carga();
+    });
+
+    $('#cboTipoIngresoF').on('change', function(e) {
+        app.nuevoIngreso.ingreso = $(this).val();
+        app.carga();
+    });
+
+    $('#cboPlanillaI').on('change', function(e) {
+        app.revertirRegistros.planilla = $(this).val();
+    });
+
+    $('#cboTipoIngresoI').on('change', function(e) {
+        app.revertirRegistros.ingreso = $(this).val();
+    });
+
+
+</script>
+{% endblock scripts %}

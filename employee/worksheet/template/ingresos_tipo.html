@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+{% block titulo %}
+Tipo de Ingreso
+{% endblock titulo %}
+{% block estilo %}
+{% endblock estilo %}
+{% block contenido %}
+<div id="app">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2 class="text-bold"><i class="ti-pencil-alt"></i> Tipos de Ingreso</h2>
+                </div>
+                <div class="panel-wrapper">
+                    <div class="panel-body">
+                        <div class="col-sm-12">
+                            <div class="text-right">
+                                <button class="btn btn-primary" @click="agregar();">Agregar</button>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Tipo de Ingreso</th>
+                                            <th>Indice de relevancia</th>
+                                            <th>Estado</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                        <tr class="text-center" v-if="!tipos.length">
+                                            <td colspan="4"><p class="text-danger"><strong>No se encontraron datos.</strong></p></td>
+                                        </tr>
+                                        <tr v-for="tipo in tipos">
+                                            <td>${tipo.ingreso_tipo}</td>
+                                            <td>${tipo.indice_relevancia}</td>
+                                            <td>
+                                                <span v-if="tipo.active" class="label label-success">Activo</span>
+                                                <span v-else class="label label-danger">Inactivo</span>
+                                            </td>
+                                            <td class="opciones">
+                                                <a href="#" class="text-danger" @click="eliminar(tipo.id, $event);">
+                                                    <i class="ti-close"></i>
+                                                </a>
+                                                <a href="#" @click="editar(tipo.id, $event)">
+                                                    <i class="icon-pencil"></i>
+                                                </a>
+                                                <a href="#" @click="editar(tipo.id, $event)">
+                                                    <i class="icon-search"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.modal Agregar -->
+    <div id="formulario-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" v-if="!ingreso_tipo.editar">Agregar Tipo de Ingreso</h4>
+                    <h4 class="modal-title" v-else>Editar Tipo de Ingreso</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="txtIngreso">Tipo de ingreso</label>
+                            <input type="text" class="form-control" id="txtIngreso" v-model="ingreso_tipo.ingreso_tipo" required="True" placeholder="Ingrese tipo de ingreso"/>
+                        </div>
+                        <div class="form-group">
+                            <label for="txtIndiceRelevancia">Indice de relevancia</label>
+                            <input type="text" class="form-control" id="txtIndiceRelevancia" v-model="ingreso_tipo.indice_relevancia" placeholder="Ingrese indice de relevancia" required="True">
+                        </div>
+                        <div class="form-group" v-if="ingreso_tipo.editar">
+                            <div class="checkbox">
+                                <input id="chkActivo" type="checkbox" v-model="ingreso_tipo.active">
+                                <label for="chkActivo"> Activo </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default waves-effect" data-dismiss="modal" @click="limpiar();">Cerrar</button>
+                    <button type="button" class="btn btn-danger waves-effect waves-light" @click="guardar();" v-if="!ingreso_tipo.editar">Guardar</button>
+                    <button type="button" class="btn btn-danger waves-effect waves-light" @click="actualizar();" v-else>Actualizar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock contenido %}
+{% block scripts %}
+<script>
+    var app = new Vue({
+        el: '#app',
+        delimiters: ["${","}"],
+        data: {
+            tipos: [],
+            ingreso_tipo: {"editar":false, "ingreso_tipo": "", "indice_relevancia": "", "active":true}
+        },
+        mounted: function() {
+            this.cargarDatos();
+            $('#side-menu a').removeClass('active');
+            $('#aPersonal').addClass('active');
+            $('#aConceptos').addClass('active');
+            $('#aTipoIngreso').addClass('active');
+            $('#aPersonal').parents('li').addClass('active');
+            $('#aConceptos').parents('li').addClass('active');
+        },
+        methods: {
+            cargarDatos: function() {
+                axios.get('/obtener/ingresos-tipos/',{
+                    headers: {
+                        'X-Requested-With' : 'XMLHttpRequest',
+                    }
+                })
+                    .then((response) => {
+                        this.tipos = response.data.tipos;
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+            },
+            agregar: function() {
+                $('#formulario-modal').modal('toggle');
+            },
+            guardar: function() {
+                $('.preloader').fadeIn();
+                var self = this;
+                axios.post('/guardar/ingresos-tipos/', this.ingreso_tipo, {
+                    headers: {
+                        'X-Requested-With' : 'XMLHttpRequest',
+                        'X-CSRFToken': self.getCookie('csrftoken'),
+                        'Content-Type': 'application/json;charset=UTF-8',
+                        }
+                    })
+                    .then((response) => {
+                        $('.preloader').fadeOut();
+                        if(response.data.error) {
+                            swal("¡Algo salió mal!", response.data.mensaje, "error");
+                        }else{
+                            this.limpiar();
+                            this.cargarDatos();
+                            $('#formulario-modal').modal('toggle');
+                            swal("¡Éxito!", response.data.mensaje, "success");
+                        }
+                    }).catch(function(error) {
+                        $('.preloader').fadeOut();
+                        swal("¡Algo salió mal!", error.mensaje, "error");
+                    });
+            },
+            eliminar: function(id, event) {
+                var self = this;
+                event.preventDefault();
+                swal({   
+                    title: "¿Desea eliminar el registro?",   
+                    text: "Al eliminar éste registro no se podrá recuperar en la base de datos.",   
+                    type: "warning",   
+                    showCancelButton: true,   
+                    confirmButtonColor: "#DD6B55",   
+                    confirmButtonText: "Si, eliminar",   
+                    closeOnConfirm: false 
+                }, function(){
+                    $('.preloader').fadeIn();
+                    axios.post('/eliminar/ingresos-tipos/', {"id": id}, 
+                        {
+                            headers: {
+                                'X-Requested-With' : 'XMLHttpRequest',
+                                'X-CSRFToken': self.getCookie('csrftoken'),
+                                'Content-Type': 'application/json;charset=UTF-8',
+                            }
+                        })
+                        .then(function(response){
+                            $('.preloader').fadeOut();
+                            if(response.data.error){
+                                swal("Algo salió mal!", response.data.mensaje, "warning");
+                            }else{
+                                self.cargarDatos();
+                                swal("¡Exito!", response.data.mensaje, "success");
+                            }
+                        }).catch(function(error){
+                            $('.preloader').fadeOut();
+                            swal("¡Algo salió mal!", error, "warning");
+                        });
+                });
+            },
+            editar: function(Id, event) {
+                event.preventDefault();
+                axios.get('/obtener/ingresos-tipos/registro/',{params: {'id': Id}})
+                    .then((response) => {
+                        this.ingreso_tipo = response.data;
+                        this.ingreso_tipo.editar = true;
+                        $('#formulario-modal').modal('toggle');
+                    }).catch(function (error) {
+                        console.log(error);
+                    });
+            },
+            actualizar: function() {
+                var self = this;
+                axios.post(`/actualizar/ingresos-tipos/`, this.ingreso_tipo, {
+                    headers: {
+                        'X-Requested-With' : 'XMLHttpRequest',
+                        'X-CSRFToken': this.getCookie('csrftoken')}, 
+                        'Content-Type': 'application/json;charset=UTF-8',
+                    })
+                    .then((response) => {
+                        if(response.data.error) {
+                            swal("¡Algo salió mal!", response.data.mensaje, "error");
+                        }else{
+                            this.limpiar();
+                            this.cargarDatos();
+                            $('#formulario-modal').modal('toggle');
+                            swal("¡Éxito!", response.data.mensaje, "success");
+                        }
+                    })
+                    .catch((err) => {
+                        this.loading = false;
+                        console.log(err);
+                    });
+            },
+            limpiar: function() {
+                var self = this;
+                self.ingreso_tipo.ingreso_tipo = null;
+                self.ingreso_tipo.indice_relevancia = null;
+                self.ingreso_tipo.editar = false;
+            },
+            getCookie (name) {
+                var value = '; ' + document.cookie
+                var parts = value.split('; ' + name + '=')
+                if (parts.length === 2) return parts.pop().split(';').shift()
+            },
+        }
+    });
+</script>
+{% endblock scripts %}

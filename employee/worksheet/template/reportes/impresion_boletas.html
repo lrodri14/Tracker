@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% block titulo %}Impresión de Boleta de Pago{% endblock titulo %}
+{% load static %}
+{% block contenido %}
+    <div id="app">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert {% if message.tags %}alert-{{message.tags}}{% endif %}  alert-dismissable">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button> 
+                        {{message}}
+                    </div>
+                    </br>
+                    {% endfor %}
+                    {% endif %}
+                    <div class="panel-heading">
+                        <h2 class="text-bold"><i class="ti-pencil-alt"></i> Impresión de Boleta de Pagos</h2>
+                    </div>
+                    <div class="panel-wrapper">
+                        <div class="panel-body">
+                            <!-- Nav tabs -->
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li role="presentation" class="active"><a href="#impresion" aria-controls="impresion" role="tab" data-toggle="tab" aria-expanded="true"><span class="visible-xs"><i class="ti-impresion"></i></span> <span class="hidden-xs">Imprimir boleta</span></a></li>
+                                <li role="presentation" class=""><a href="#correo" aria-controls="correo" role="tab" data-toggle="tab" aria-expanded="false"><span class="visible-xs"><i class="ti-correo"></i></span><span class="hidden-xs"> Enviar correo</span></a></li>
+                            </ul>
+                            <!-- Tab panes -->
+                            <div class="tab-content">
+                                <div role="tabpanel" class="tab-pane active" id="impresion">
+                                    <form action="{% url 'reporte-pdf-boletas' %}" target="_blank">
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label for="">Planilla: </label>
+                                                <select name="cboPlanilla" class="form-control select2" >
+                                                    <option value="0">Seleccionar...</option>
+                                                    {% for planilla in planillas %}
+                                                    <option value="{{planilla.pk}}">{{planilla.descripcion}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="cboDeduccionB">Departamento: </label>
+                                                <select name="cboDepartamento" class="form-control select2">
+                                                    <option value="0">Seleccionar...</option>
+                                                    {% for departamento in departamentos %}
+                                                    <option value="{{departamento.pk}}">{{departamento.description}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="form-group text-right">
+                                                <button class="btn btn-primary" type="submit">Buscar</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div role="tabpanel" class="tab-pane" id="correo">
+                                    <form action="{% url 'envio_boleta_correo' %}" method="post">
+                                    {% csrf_token %}
+                                        <div class="col-lg-6">
+                                            <div class="form-group">
+                                                <label for="">Planilla: </label>
+                                                <select name="cboPlanillaC" class="form-control select2" >
+                                                    <option value="0">Seleccionar...</option>
+                                                    {% for planilla in planillas %}
+                                                    <option value="{{planilla.pk}}">{{planilla.descripcion}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="cboDepartamentoC">Departamento: </label>
+                                                <select name="cboDepartamentoC" class="form-control select2">
+                                                    <option value="0">Seleccionar...</option>
+                                                    {% for departamento in departamentos %}
+                                                    <option value="{{departamento.pk}}">{{departamento.description}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                            <div class="form-group text-right">
+                                                <button class="btn btn-primary" type="submit">Enviar</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock contenido %}
+{% block scripts %}
+<script>
+    $('#side-menu a').removeClass('active');
+    $('#aAcciones').addClass('active');
+    $('#accionesReportes').addClass('active');
+    $('#aImpresionBoleta').addClass('active');
+    $('#aAcciones').parents('li').addClass('active');
+    $('#accionesReportes').parents('li').addClass('active');
+</script>
+{% endblock scripts %}

@@ -8,55 +8,55 @@ Ver registros de Planilla
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h2><i class="ti-pencil-alt"></i> Registros de planilla </h2>
+                <h2><i class="ti-pencil-alt"></i> REGISTROS DE PLANILLA </h2>
             </div>
             <div class="panel-wrapper">
                 <div class="panel-body">
                     <div class="row">
                         <input type="hidden" name="reg_id" value="{{planilla.pk}}" />
                         <div class="col-md-12">
-                            <div class="col-md-3 col-xs-6 b-r"> <strong>Descripción</strong>
+                            <div class="col-md-3 col-xs-6 b-r"> <strong>DESCRIPCIÓN</strong>
                                 <br>
-                                <p class="text-muted">{{planilla.descripcion}}</p>
+                                <p class="text-muted">{{planilla.descripcion|upper}}</p>
                             </div>
-                            <div class="col-md-3 col-xs-6 b-r"> <strong>Tipo de planilla</strong>
+                            <div class="col-md-3 col-xs-6 b-r"> <strong>TIPO DE PLANILLA</strong>
                                 <br>
-                                <p class="text-muted">{{planilla.tipo_planilla.descripcion}}</p>
+                                <p class="text-muted">{{planilla.tipo_planilla.tipo_planilla|upper}}</p>
                             </div>
-                            <div class="col-md-3 col-xs-6 b-r"> <strong>Frecuencia de Pago</strong>
+                            <div class="col-md-3 col-xs-6 b-r"> <strong>FRECUENCIA DE PAGO</strong>
                                 <br>
                                 <p class="text-muted">{{planilla.frecuencia_pago.description|upper}}</p>
                             </div>
-                            <div class="col-md-3 col-xs-6"> <strong>Tipo de Contrato</strong>
+                            <div class="col-md-3 col-xs-6"> <strong>TIPO DE CONTRATO</strong>
                                 <br>
-                                <p class="text-muted">{{planilla.tipo_contrato.descripcion}}</p>
+                                <p class="text-muted">{{planilla.tipo_contrato.tipo_contrato|upper}}</p>
                             </div>
-                            <div class="col-md-3 col-xs-6"> <strong>Fecha de Pago</strong>
+                            <div class="col-md-3 col-xs-6"> <strong>FECHA DE PAGO</strong>
                                 <br>
-                                <p class="text-muted">{{planilla.fecha_pago}}</p>
+                                <p class="text-muted">{{planilla.fecha_pago|date:"d/m/Y"}}</p>
                             </div>
-                            <div class="col-md-3 col-xs-6"> <strong>Estado</strong>
+                            <div class="col-md-3 col-xs-6"> <strong>ESTADO</strong>
                                 <br>
                                 <p class="text-muted"><span {% if planilla.cerrada %}class="label label-danger estado-planilla"{% else %}class="label label-success estado-planilla"{% endif %} >{% if planilla.cerrada %}CERRADA{% else %}ABIERTA{% endif %}</span></p>
                             </div>
-                            <div class="col-md-3 col-xs-6"> <strong>Desde</strong>
+                            <div class="col-md-3 col-xs-6"> <strong>DESDE</strong>
                                 <br>
-                                <p class="text-muted">{{planilla.fecha_inicio}}</p>
+                                <p class="text-muted">{{planilla.fecha_inicio|date:"d/m/Y"}}</p>
                             </div>
-                            <div class="col-md-3 col-xs-6"> <strong>Hasta</strong>
+                            <div class="col-md-3 col-xs-6"> <strong>HASTA</strong>
                                 <br>
-                                <p class="text-muted">{{planilla.fecha_fin}}</p>
+                                <p class="text-muted">{{planilla.fecha_fin|date:"d/m/Y"}}</p>
                             </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-12 text-right">
-                            <a href="#" id="btnVerIngresos" class="btn btn-info" data-toggle="modal" data-target="#frmVerIngresos">Ver Ingresos</a>
-                            <a href="#" id="btnVerDeducciones" class="btn btn-info" data-toggle="modal" data-target="#frmVerDeducciones">Ver Deducciones</a>
+                            <a href="#" id="btnVerIngresos" class="btn btn-info" data-toggle="modal" data-target="#frmVerIngresos">VER INGRESOS</a>
+                            <a href="#" id="btnVerDeducciones" class="btn btn-info" data-toggle="modal" data-target="#frmVerDeducciones">VER DEDUCCIONES</a>
                             <!--button id="btnVerIngresos" class="btn btn-info">Ver Ingresos</button-->
                             <!--button id="btnVerDeducciones" class="btn btn-info">Ver Deducciones</button-->
                             {% if planilla.cerrada == False %}
-                            <button id="btnCerrarPlanilla" class="btn btn-warning">Cerrar Planilla</button>
+                            <button id="btnCerrarPlanilla" class="btn btn-warning">CERRAR PLANILLA</button>
                             {% endif %}
                         </div>
                     </div>
@@ -66,15 +66,19 @@ Ver registros de Planilla
                                 <table id="detalle_planilla" class="table">
                                     <thead class="planilla-encabezado">
                                         <tr>
-                                            <th>Empleado</th>
-                                            <th class="text-right">Ingresos</th>
-                                            <th class="text-right">Deducción</th>
-                                            <th class="text-right">Salario Neto</th>
+                                            <th>#</th>
+                                            <th>CÓDIGO</th>
+                                            <th>EMPLEADO</th>
+                                            <th class="text-right">INGRESOS</th>
+                                            <th class="text-right">DEDUCCIÓN</th>
+                                            <th class="text-right">SALARIO NETO</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {% for item in detalle %}
                                         <tr data-toggle="collapse" data-target="#vdet{{item.id}}" class="planilla-fila detalle_item accordion-toggle">
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{item.empleado.extEmpNo}}</td>
                                             <td>{{item.empleado.firstName}} {% if item.empleado.middleName %}{{item.empleado.middleName}}{% endif %} {{item.empleado.lastName}}</td>
                                             <td class="text-right">{{item.total_ingresos}}</td>
                                             <td class="text-right">{{item.total_deducciones}}</td>
@@ -86,9 +90,9 @@ Ver registros de Planilla
                                                     <div class="table-responsive col-md-6">
                                                         <table class="table">
                                                             <thead class="detalle-encabezado">
-                                                                <th>Descripción</th>
-                                                                <th class="text-right"><span >Ingreso</span></th>
-                                                                <th class="text-right"><span >Deducción</span></th>
+                                                                <th>DESCRIPCIÓN</th>
+                                                                <th class="text-right"><span >INGRESO</span></th>
+                                                                <th class="text-right"><span >DEDUCCIÓN</span></th>
                                                             </thead>
                                                             <tbody class="body-item-detalle">
                                                                 {% for item1 in item.detalle_ingresos %}
@@ -96,7 +100,7 @@ Ver registros de Planilla
                                                                     {% if item.empleado == item1.empleado %}
                                                                     {% endcomment %}
                                                                     <tr>
-                                                                        <td>{{item1.ingreso}}</td>
+                                                                        <td>{{item1.ingreso|upper}}</td>
                                                                         <td class="text-right"><span class="text-success text-right"><strong>{{item1.valor}}</strong></span></td>
                                                                         <td></td>
                                                                     </tr>
@@ -106,7 +110,7 @@ Ver registros de Planilla
                                                                 {% endfor %}
                                                                 {% for item2 in item.detalle_egresos %}
                                                                     <tr class="planilla-segundafila">
-                                                                        <td>{{item2.deduccion}}</td>
+                                                                        <td>{{item2.deduccion|upper}}</td>
                                                                         <td></td>
                                                                         <td class="text-right"><span class="text-danger text-right"><strong>{{item2.valor}}</strong></span></td>
                                                                     </tr>
@@ -114,6 +118,7 @@ Ver registros de Planilla
                                                             </tbody>
                                                         </table>
                                                     </div>
+                                                    {% comment "" %}
                                                     <div class="table-responsive col-md-6">
                                                         <table class="table">
                                                             <thead class="detalle-encabezado">
@@ -139,11 +144,12 @@ Ver registros de Planilla
                                                             </tbody>
                                                         </table>
                                                     </div>
+                                                    {% endcomment %}
                                                 </div>
                                             </td>
                                         {% endfor %}
                                         <tr>
-                                            <td><strong>Total Neto</strong></td>
+                                            <td colspan="3"><strong>TOTAL NETO</strong></td>
                                             <td class="text-right"><strong>{{suma_total_ingresos}}</strong></td>
                                             <td class="text-right"><strong>{{suma_total_deducciones}}</strong></td>
                                             <td class="text-right"><strong>{{suma_total_neto}}</strong></td>
@@ -210,26 +216,38 @@ Ver registros de Planilla
                                             <th class="text-center">VALOR</th>
                                         </tr>
                                     </thead>
-                                    {% for deduccion in gdeducciones %}
-                                        {% for detalle in deduccion.detalle %}
+                                    <tbody>
+                                    {% for deduccion in gdeducciones_i %}
                                         <tr>
-                                            <td>{{detalle.deduccion}}</td>
-                                            <td class="text-right">{{detalle.valor}}</td>
+                                            <td>{{deduccion.deduccion}}</td>
+                                            <td class="text-right">{{deduccion.valor}}</td>
                                         </tr>
-                                        {% endfor %}
-                                    <tr>
-                                        <td><strong>SUBTOTAL {{deduccion.grupo}}</strong></td>
-                                        <td class="text-right"><strong>{{deduccion.valor}}</strong></td>
-                                    </tr>
                                     {% empty %}
                                     <tr>
                                         <td colspan="2">No se encontraron datos</td>
                                     </tr>
                                     {% endfor %}
                                     <tr>
+                                        <td><strong>SUBTOTAL DEDUCCIONES INTERNAS</strong></td>
+                                        <td class="text-right"><strong>{{suma_ded_i}}</strong></td>
+                                    </tr>
+                                    {% for deduccion in gdeducciones_e %}
+                                        <tr>
+                                            <td>{{deduccion.deduccion}}</td>
+                                            <td class="text-right">{{deduccion.valor}}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    <tr>
+                                        <td><strong>SUBTOTAL DEDUCCIONES EXTERNAS</strong></td>
+                                        <td class="text-right"><strong>{{suma_ded_e}}</strong></td>
+                                    </tr>
+                                    </tbody>
+                                    <tfooter>
+                                    <tr>
                                         <td><strong>TOTAL</strong></td>
                                         <td class="text-right"><strong>{{sum_gdeducciones}}</strong></td>
                                     </tr>
+                                    </tfooter>
                                 </table>
                             </div>
                             <div class="modal-footer">
